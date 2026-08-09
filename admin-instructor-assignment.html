@@ -1,0 +1,132 @@
+<!DOCTYPE html><html lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Instructor Assignment</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="css/global.css" rel="stylesheet" />
+<script src="js/tailwind-config.js"></script>
+<style>
+        body {
+            background-color: theme('colors.surface-dim');
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4 md:p-8">
+<!-- Dialog Overlay & Container -->
+<div class="fixed inset-0 bg-on-surface/40 backdrop-blur-sm z-40 flex items-center justify-center p-4">
+<div class="bg-surface-container-lowest w-full max-w-2xl rounded-xl shadow-lg flex flex-col max-h-[921px] overflow-hidden z-50">
+<!-- Header -->
+<div class="flex items-center justify-between p-gutter border-b border-outline-variant bg-surface-container-lowest sticky top-0 z-10">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface font-bold mb-1">Assign Instructors</h2>
+<p class="font-label-md text-on-surface-variant mt-1">Module: Introduction to Sustainable Practices</p>
+</div>
+<button aria-label="Close" class="p-2 rounded-full hover:bg-surface-container-highest transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="close">close</span>
+</button>
+</div>
+<!-- Body Content -->
+<div class="p-gutter overflow-y-auto flex-1 space-y-6">
+<!-- Assigned Instructors Chips -->
+<div>
+<label class="font-label-lg text-label-lg text-on-surface block mb-3">Currently Assigned</label>
+<div class="flex flex-wrap gap-2">
+<div class="inline-flex items-center gap-2 bg-secondary-container text-on-secondary-container px-3 py-1.5 rounded-full border border-secondary-container/50">
+<img class="w-6 h-6 rounded-full object-cover" data-alt="A small circular profile portrait of a professional woman with glasses, neutral background, soft lighting, professional attire, clear and focused." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCsWPGSTzxtWGPdmjaJLszGRwTckA3lfQSI8LQofychnl2Rfz3GqEzwZRilA6gKxjycTp33b7odgU9p35UDR8dn6wgx-mZfKZP--8RKmqEMYtraNJ6ZJ-RsYadygYxoKyOJcoYmsFOVhEPMe_s9PWzM_VYbqq5Nd-og-3MoekpetxJa3tXpawR0mJNp5y3YT7bwX2CWeWOMwt3toHv7iqWeAFErEo0xWoNHHGODX5KkEpsLhqcczx0Oog">
+<span class="font-label-md text-label-md">Dr. Sarah Jenkins</span>
+<button class="text-on-secondary-container/70 hover:text-on-secondary-container ml-1 focus:outline-none">
+<span class="material-symbols-outlined text-[16px]" data-icon="cancel">cancel</span>
+</button>
+</div>
+<div class="inline-flex items-center gap-2 bg-secondary-container text-on-secondary-container px-3 py-1.5 rounded-full border border-secondary-container/50">
+<img class="w-6 h-6 rounded-full object-cover" data-alt="A small circular profile portrait of a professional man with a beard, neutral background, soft lighting, professional attire, clear and focused." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBUr-yX7Wl9GgWClgQkjjzfwqnkQXCdoFWWE-g84hcOhVR79m_MkOHfzTPnkID0JDZnSj7Bb6tihph1k2tnos7mQxK1Kvt4eorbH_ugMkY_QL0bvFwLfPgNc-SO4JtxbEGvnHEiaA4LNGL2qQkPw0FGh2O8KPAmhPw8lIWpZd1BtwIn_MdDPdBEfuOlJfHF8eShA_S3k4G6yLwNtdcKFGg_GMrYU_wEDQtR2RuxwYu0NUcCbMy2r2jVig">
+<span class="font-label-md text-label-md">Prof. Michael Chang</span>
+<button class="text-on-secondary-container/70 hover:text-on-secondary-container ml-1 focus:outline-none">
+<span class="material-symbols-outlined text-[16px]" data-icon="cancel">cancel</span>
+</button>
+</div>
+</div>
+</div>
+<hr class="border-outline-variant">
+<!-- Search -->
+<div>
+<label class="font-label-lg text-label-lg text-on-surface block mb-2">Search &amp; Add Instructors</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant" data-icon="search">search</span>
+<input class="w-full pl-10 pr-4 py-3 bg-surface-container border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all font-body-md text-body-md text-on-surface placeholder:text-on-surface-variant/70 rounded-full" placeholder="Search by name or department..." type="text">
+</div>
+</div>
+<!-- Search Results / List -->
+<div class="space-y-2">
+<!-- Item 1 -->
+<label class="flex items-center p-3 border hover:border-primary-fixed-dim hover:shadow-md hover:bg-surface-container-low transition-all cursor-pointer group rounded-xl bg-surface-container-low border-outline-variant">
+<input checked="" class="w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary focus:ring-offset-surface-container-lowest" type="checkbox">
+<div class="ml-4 flex items-center gap-3 flex-1">
+<img class="w-10 h-10 rounded-full object-cover border border-surface-variant" data-alt="A small circular profile portrait of a professional woman with glasses, neutral background, soft lighting, professional attire, clear and focused." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBqNsAt3PKXhzX0sl1f0DgBiEsjVv84NtpE110vC5KrSn5Dq0TuDmNb8QJEA-3mzbD66Rx3FhzaVxSBOljeA0m_QaQKpTeShXU5a_j0KqdkZW3BK4mtnMFZoQXUs2TdVl53S7PsqaZVUbNdlNd-JyEBGt8wUQsTOP4vX9ER5ZfmDoU3yibJO03WIX9_q4tvPEdzYHSkMLnnpWHbyg29XgJEepOgx2Ekfuq4oijNhd2WeTjRHsp4Cany9g">
+<div>
+<h4 class="font-title-lg text-on-surface leading-tight font-semibold text-body-lg">Dr. Sarah Jenkins</h4>
+<p class="font-body-md text-on-surface-variant text-[12px] text-label-md">Environmental Science Dept.</p>
+</div>
+</div>
+<span class="bg-primary/10 text-primary px-2 py-0.5 uppercase text-[10px] tracking-[0.1em] font-semibold hidden md:inline-block rounded-full">Assigned</span>
+</label>
+<!-- Item 2 -->
+<label class="flex items-center p-3 border hover:border-primary-fixed-dim hover:shadow-md hover:bg-surface-container-low transition-all cursor-pointer group rounded-xl bg-surface-container-low border-outline-variant">
+<input class="w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary focus:ring-offset-surface-container-lowest" type="checkbox">
+<div class="ml-4 flex items-center gap-3 flex-1">
+<div class="w-10 h-10 rounded-full bg-tertiary-container flex items-center justify-center text-on-tertiary-container font-label-lg text-label-lg border border-surface-variant">
+                                AL
+                            </div>
+<div>
+<h4 class="font-title-lg text-on-surface leading-tight font-semibold text-body-lg">Amanda Lewis</h4>
+<p class="font-body-md text-on-surface-variant text-[12px] text-label-md">Policy &amp; Planning Dept.</p>
+</div>
+</div>
+</label>
+<!-- Item 3 -->
+<label class="flex items-center p-3 border hover:border-primary-fixed-dim hover:shadow-md hover:bg-surface-container-low transition-all cursor-pointer group rounded-xl bg-surface-container-low border-outline-variant">
+<input checked="" class="w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary focus:ring-offset-surface-container-lowest" type="checkbox">
+<div class="ml-4 flex items-center gap-3 flex-1">
+<img class="w-10 h-10 rounded-full object-cover border border-surface-variant" data-alt="A small circular profile portrait of a professional man with a beard, neutral background, soft lighting, professional attire, clear and focused." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDTqC7CTtwzq3cQPHMTFB-DfZ7kxqNP5z1xsps6V_jkdeM3GHyjf0XdfsPNs7LAPtWFPWtoQ_PqlQHjhrFEKu5quX_p0qNUTvxwtICeVntyjuffIoFUb99rhGw-TJgykkXg9tg1_1nHoJMq4fYrrN7rZLX7BKmHJgaJgDnJg8aEi8zcJlPiSiop8ZlHJ5iOqx2MYGeJXvJm63jH95yaunogoiQY95s0fjluvSkKjlHxLVldCIT_3hpCGQ">
+<div>
+<h4 class="font-title-lg text-on-surface leading-tight font-semibold text-body-lg">Prof. Michael Chang</h4>
+<p class="font-body-md text-on-surface-variant text-[12px] text-label-md">Sustainable Engineering Dept.</p>
+</div>
+</div>
+<span class="bg-primary/10 text-primary px-2 py-0.5 uppercase text-[10px] tracking-[0.1em] font-semibold hidden md:inline-block rounded-full">Assigned</span>
+</label>
+<!-- Item 4 -->
+<label class="flex items-center p-3 border hover:border-primary-fixed-dim hover:shadow-md hover:bg-surface-container-low transition-all cursor-pointer group rounded-xl bg-surface-container-low border-outline-variant">
+<input class="w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary focus:ring-offset-surface-container-lowest" type="checkbox">
+<div class="ml-4 flex items-center gap-3 flex-1">
+<div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container font-label-lg text-label-lg border border-surface-variant">
+                                RJ
+                            </div>
+<div>
+<h4 class="font-title-lg text-on-surface leading-tight font-semibold text-body-lg">Robert Johnson</h4>
+<p class="font-body-md text-on-surface-variant text-[12px] text-label-md">External Consultant</p>
+</div>
+</div>
+</label>
+</div>
+</div>
+<!-- Footer Actions -->
+<div class="p-gutter border-t border-outline-variant bg-surface-container-lowest flex justify-end gap-3 sticky bottom-0 z-10">
+<button class="px-6 py-2.5 rounded-full font-label-lg text-label-lg text-primary border border-outline hover:bg-surface-container transition-colors focus:ring-2 focus:ring-primary focus:ring-offset-2">
+                    Cancel
+                </button>
+<button class="px-6 py-2.5 rounded-full font-label-lg text-label-lg bg-primary text-on-primary hover:bg-surface-tint shadow-sm hover:shadow-md transition-all focus:ring-2 focus:ring-primary focus:ring-offset-2 flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]" data-icon="save">save</span>
+                    Save Assignments
+                </button>
+</div>
+</div>
+</div>
+
+
+
+
+</body></html>

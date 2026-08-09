@@ -1,0 +1,338 @@
+<!DOCTYPE html><html class="light" lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Students Management - EcoLearn Admin</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="css/global.css" rel="stylesheet" />
+<script src="js/tailwind-config.js"></script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex antialiased selection:bg-primary-container selection:text-on-primary-container">
+<!-- SideNavBar -->
+<aside class="h-screen w-64 fixed left-0 top-0 bg-surface dark:bg-inverse-surface flex flex-col py-base px-base border-r border-outline-variant z-20 hidden md:flex">
+<a class="px-4 py-6 mb-4 flex items-center gap-3" href="admin-dashboard.html">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined fill text-on-primary-container">eco</span>
+</div>
+<div>
+<h1 class="font-headline-lg text-headline-lg font-bold text-primary dark:text-inverse-primary text-xl tracking-tight leading-none mb-1">EcoLearn</h1>
+<p class="font-label-md text-label-md text-on-surface-variant">Super Admin</p>
+</div>
+</a>
+  <nav class="flex-1 overflow-y-auto space-y-1">
+<a class="flex items-center gap-3 text-on-surface-variant dark:text-surface-variant px-4 py-2 hover:bg-surface-container-highest dark:hover:bg-surface-variant rounded-full font-label-lg text-label-lg transition-colors duration-200 scale-95 active:scale-100" href="admin-dashboard.html">
+<span class="material-symbols-outlined">dashboard</span>
+      Dashboard
+    </a>
+<a class="flex items-center gap-3 bg-secondary-container dark:bg-primary-container text-on-secondary-container dark:text-on-primary-container rounded-full px-4 py-2 font-bold font-label-lg text-label-lg transition-transform duration-200 scale-95 active:scale-100" href="admin-students-management.html">
+<span class="material-symbols-outlined fill">group</span>
+      Students
+    </a>
+<a class="flex items-center gap-3 text-on-surface-variant dark:text-surface-variant px-4 py-2 hover:bg-surface-container-highest dark:hover:bg-surface-variant rounded-full font-label-lg text-label-lg transition-colors duration-200 scale-95 active:scale-100" href="admin-instructors-management.html">
+<span class="material-symbols-outlined">school</span>
+      Instructors
+    </a>
+<a class="flex items-center gap-3 text-on-surface-variant dark:text-surface-variant px-4 py-2 hover:bg-surface-container-highest dark:hover:bg-surface-variant rounded-full font-label-lg text-label-lg transition-colors duration-200 scale-95 active:scale-100" href="admin-modules-management.html">
+<span class="material-symbols-outlined">menu_book</span>
+      Modules
+    </a>
+<a class="flex items-center gap-3 text-on-surface-variant dark:text-surface-variant px-4 py-2 hover:bg-surface-container-highest dark:hover:bg-surface-variant rounded-full font-label-lg text-label-lg transition-colors duration-200 scale-95 active:scale-100" href="admin-enrollment-management.html">
+<span class="material-symbols-outlined">how_to_reg</span>
+      Enrollments
+    </a>
+<a class="flex items-center gap-3 text-on-surface-variant dark:text-surface-variant px-4 py-2 hover:bg-surface-container-highest dark:hover:bg-surface-variant rounded-full font-label-lg text-label-lg transition-colors duration-200 scale-95 active:scale-100" href="admin-reviews-moderation.html">
+<span class="material-symbols-outlined">reviews</span>
+      Reviews
+    </a>
+<a class="flex items-center gap-3 text-on-surface-variant dark:text-surface-variant px-4 py-2 hover:bg-surface-container-highest dark:hover:bg-surface-variant rounded-full font-label-lg text-label-lg transition-colors duration-200 scale-95 active:scale-100" href="admin-certificate-management.html">
+<span class="material-symbols-outlined">card_membership</span>
+      Certificates
+    </a>
+<a class="flex items-center gap-3 text-on-surface-variant dark:text-surface-variant px-4 py-2 hover:bg-surface-container-highest dark:hover:bg-surface-variant rounded-full font-label-lg text-label-lg transition-colors duration-200 scale-95 active:scale-100" href="admin-analytics.html">
+<span class="material-symbols-outlined">analytics</span>
+      Analytics
+    </a>
+<a class="flex items-center gap-3 text-on-surface-variant dark:text-surface-variant px-4 py-2 hover:bg-surface-container-highest dark:hover:bg-surface-variant rounded-full font-label-lg text-label-lg transition-colors duration-200 scale-95 active:scale-100" href="admin-categories-tags.html">
+<span class="material-symbols-outlined">sell</span>
+      Categories &amp; Tags
+    </a>
+<a class="flex items-center gap-3 text-on-surface-variant dark:text-surface-variant px-4 py-2 hover:bg-surface-container-highest dark:hover:bg-surface-variant rounded-full font-label-lg text-label-lg transition-colors duration-200 scale-95 active:scale-100" href="admin-audit-logs.html">
+<span class="material-symbols-outlined">history_edu</span>
+      Audit Logs
+    </a>
+<a class="flex items-center gap-3 text-on-surface-variant dark:text-surface-variant px-4 py-2 hover:bg-surface-container-highest dark:hover:bg-surface-variant rounded-full font-label-lg text-label-lg transition-colors duration-200 scale-95 active:scale-100 mt-auto" href="admin-settings.html">
+<span class="material-symbols-outlined">settings</span>
+      Settings
+    </a>
+</nav>
+<div class="p-4 mt-4">
+<button class="w-full bg-primary text-on-primary rounded-full py-2.5 px-4 font-label-lg text-label-lg font-bold hover:bg-primary-container hover:text-on-primary-container transition-colors duration-200 flex items-center justify-center gap-2 shadow-sm">
+<span class="material-symbols-outlined text-sm">download</span>
+      Generate Report
+    </button>
+</div>
+</aside>
+<!-- Main Content Wrapper -->
+<div class="flex-1 flex flex-col md:ml-64 min-w-0">
+<!-- TopNavBar -->
+<header class="docked full-width top-0 sticky bg-surface dark:bg-inverse-surface shadow-sm z-10">
+<div class="flex justify-between items-center h-16 px-margin-desktop md:px-gutter">
+<!-- Mobile Menu Button -->
+<button class="md:hidden p-2 text-on-surface hover:bg-surface-container rounded-full transition-colors mr-2">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<!-- Title replacing search context in this specific design if desired, but request says exact header structure. We'll add the title and adapt the search slightly to match the target shell -->
+<div class="flex items-center gap-4 w-full max-w-md hidden sm:flex flex-1">
+
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="w-full bg-surface-container-low border border-outline-variant rounded-lg py-2 pl-10 pr-4 text-body-md text-on-surface placeholder-outline focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors" placeholder="Search students..." type="text">
+</div>
+</div>
+<!-- Actions & Profile -->
+<div class="flex items-center gap-2 sm:gap-4 ml-auto">
+<button class="text-on-surface-variant dark:text-surface-variant hover:bg-surface-container dark:hover:bg-surface-variant rounded-full p-2 cursor-pointer transition-all active:opacity-70 relative group">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full ring-2 ring-surface"></span>
+</button>
+<button class="text-on-surface-variant dark:text-surface-variant hover:bg-surface-container dark:hover:bg-surface-variant rounded-full p-2 cursor-pointer transition-all active:opacity-70">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<a class="h-8 w-8 rounded-full overflow-hidden border border-outline-variant cursor-pointer ml-2 block" href="admin-settings.html">
+<img alt="Super Admin Avatar" class="w-full h-full object-cover" data-alt="A close-up, highly detailed portrait of a professional woman with a welcoming smile, wearing a subtle earth-toned blazer. Bright, clean, corporate lighting. The background is a soft, out-of-focus modern office setting, enhancing the professional and reliable mood of the light-mode UI." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoDUabU0O5G9EKfeQNcY7C9SzrIiaqO_4BY_9ft6ZRP2EPZjfw7Od0_KMrRkYuWlllNt71ydaoLF8_svaQoX6C7xZIt78taWQuIhQh_N2hRk-2Rx3R_QWdqECQTx94CosCYYxeTEf4vwT2xE9nV2lJIUtqVY6SbtSx4vy0p0l_OGqRbvhF5QXHw53sQAGS2P4JE2EYfnBYiCIArvxndmVoZvRZuVst6O_h8rmOSBdIe74G2MeMBzpwjQ">
+</a>
+</div>
+</div>
+</header>
+<!-- Canvas -->
+<main class="flex-1 p-margin-mobile md:p-gutter max-w-[1280px] mx-auto w-full">
+<!-- Page Header & Actions -->
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+<div>
+<h2 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface font-bold">Student Directory</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">Manage and review student accounts, enrollments, and status across the platform.</p>
+</div>
+<div class="flex gap-2">
+<button class="flex items-center gap-2 bg-surface-container-lowest border border-outline-variant text-on-surface hover:bg-surface-container-low py-2 px-4 rounded-full font-label-lg text-label-lg transition-colors">
+<span class="material-symbols-outlined text-[18px]">filter_list</span>
+                    Filter
+                </button>
+<button class="flex items-center gap-2 bg-primary text-on-primary hover:bg-primary-container hover:text-on-primary-container py-2 px-4 rounded-full font-label-lg text-label-lg shadow-sm transition-colors">
+<span class="material-symbols-outlined text-[18px]">person_add</span>
+                    Add Student
+                </button>
+</div>
+</div>
+<!-- Filters Row -->
+<div class="bg-surface-container-lowest p-4 rounded-xl border border-surface-variant shadow-sm mb-6 flex flex-col md:flex-row gap-4 items-center justify-between">
+<div class="flex flex-wrap gap-2 items-center w-full md:w-auto">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mr-2">Status:</span>
+<button class="bg-primary-container text-on-primary-container font-label-lg text-label-lg px-3 py-1 rounded-full text-sm">All</button>
+<button class="bg-surface-container hover:bg-surface-container-high text-on-surface font-label-lg text-label-lg px-3 py-1 rounded-full text-sm transition-colors border border-outline-variant">Active</button>
+<button class="bg-surface-container hover:bg-surface-container-high text-on-surface font-label-lg text-label-lg px-3 py-1 rounded-full text-sm transition-colors border border-outline-variant">Pending</button>
+<button class="bg-surface-container hover:bg-surface-container-high text-on-surface font-label-lg text-label-lg px-3 py-1 rounded-full text-sm transition-colors border border-outline-variant">Suspended</button>
+</div>
+<div class="w-full md:w-auto flex gap-2">
+<div class="relative flex-grow">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px]">search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-surface-container-lowest border border-outline-variant rounded-lg focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary text-sm transition-all" placeholder="Search by name or email..." type="text">
+</div>
+</div>
+</div>
+<!-- Data Table Container -->
+<div class="bg-surface-container-lowest rounded-xl border border-surface-variant shadow-sm overflow-hidden">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead class="bg-surface-container-low text-on-surface-variant font-label-md text-label-md uppercase tracking-wider border-b border-outline-variant">
+<tr>
+<th class="p-4 font-medium min-w-[200px]">Student Name</th>
+<th class="p-4 font-medium min-w-[250px]">Email Contact</th>
+<th class="p-4 font-medium">Account Status</th>
+<th class="p-4 font-medium text-right">Enrolled</th>
+<th class="p-4 font-medium text-right">Completed</th>
+<th class="p-4 font-medium hidden lg:table-cell">Join Date</th>
+<th class="p-4 font-medium text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="text-on-surface text-body-md font-body-md divide-y divide-surface-variant">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-lowest transition-colors group">
+<td class="p-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-tertiary-container text-on-tertiary-container flex items-center justify-center font-bold text-sm shrink-0">
+                                        AR
+                                    </div>
+<span class="font-medium">Alex Rivera</span>
+</div>
+</td>
+<td class="p-4 text-on-surface-variant">alex.rivera@example.com</td>
+<td class="p-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[12px] font-medium bg-secondary-container/50 text-secondary border border-secondary/30">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                                    Active
+                                </span>
+</td>
+<td class="p-4 text-right">4</td>
+<td class="p-4 text-right">2</td>
+<td class="p-4 text-on-surface-variant hidden lg:table-cell">Oct 12, 2023</td>
+<td class="p-4 text-right">
+<div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-1.5 text-secondary hover:bg-secondary-container rounded-md transition-colors" title="View Profile">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</button>
+<button class="p-1.5 text-on-surface-variant hover:bg-surface-container-high rounded-md transition-colors" title="Suspend Account">
+<span class="material-symbols-outlined text-[20px]">pause_circle</span>
+</button>
+<button class="p-1.5 text-error hover:bg-error-container rounded-md transition-colors" title="Deactivate">
+<span class="material-symbols-outlined text-[20px]">person_off</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-lowest transition-colors group">
+<td class="p-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container-high border border-outline-variant overflow-hidden shrink-0">
+<img class="w-full h-full object-cover" data-alt="A close up professional headshot of a confident young student with short hair, softly lit against a neutral gray background in a modern aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDI9HIpenrqVGSW_9UNv0PBrVutWVHVqzFqtEwqNE0tdgv6hxHVzJfNZU43CZGfpcGJ5ZfBigCNqaVUTD9YsjD0jb0nY4jfpw8lFxkrpY6NXCYZEyZtM7_9BQW1sjb1XtyrN33tilETDiANsXixNW-me8cnqAHipPk9iKpF5vaoIK3wvkEUuA2QKTiiCk3PIGd-taStGb81k8NgA0fvHz76zkIlWOQ26yQBEEnVc4LbUCbv01UaPPXvTg">
+</div>
+<span class="font-medium">Jordan Smith</span>
+</div>
+</td>
+<td class="p-4 text-on-surface-variant">j.smith.edu@learning.org</td>
+<td class="p-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[12px] font-medium bg-surface-container text-on-surface-variant border border-outline-variant">
+<span class="w-1.5 h-1.5 rounded-full bg-outline"></span>
+                                    Pending
+                                </span>
+</td>
+<td class="p-4 text-right">1</td>
+<td class="p-4 text-right">0</td>
+<td class="p-4 text-on-surface-variant hidden lg:table-cell">Jan 05, 2024</td>
+<td class="p-4 text-right">
+<div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-1.5 text-secondary hover:bg-secondary-container rounded-md transition-colors" title="View Profile">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</button>
+<button class="p-1.5 text-on-surface-variant hover:bg-surface-container-high rounded-md transition-colors" title="Suspend Account">
+<span class="material-symbols-outlined text-[20px]">pause_circle</span>
+</button>
+<button class="p-1.5 text-error hover:bg-error-container rounded-md transition-colors" title="Deactivate">
+<span class="material-symbols-outlined text-[20px]">person_off</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-lowest transition-colors group">
+<td class="p-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-tertiary text-on-tertiary flex items-center justify-center font-bold text-sm shrink-0">
+                                        MC
+                                    </div>
+<span class="font-medium">Maria Chen</span>
+</div>
+</td>
+<td class="p-4 text-on-surface-variant">mchen_sustainability@domain.net</td>
+<td class="p-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[12px] font-medium bg-secondary-container/50 text-secondary border border-secondary/30">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                                    Active
+                                </span>
+</td>
+<td class="p-4 text-right">8</td>
+<td class="p-4 text-right">7</td>
+<td class="p-4 text-on-surface-variant hidden lg:table-cell">Aug 22, 2022</td>
+<td class="p-4 text-right">
+<div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-1.5 text-secondary hover:bg-secondary-container rounded-md transition-colors" title="View Profile">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</button>
+<button class="p-1.5 text-on-surface-variant hover:bg-surface-container-high rounded-md transition-colors" title="Suspend Account">
+<span class="material-symbols-outlined text-[20px]">pause_circle</span>
+</button>
+<button class="p-1.5 text-error hover:bg-error-container rounded-md transition-colors" title="Deactivate">
+<span class="material-symbols-outlined text-[20px]">person_off</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-surface-container-lowest transition-colors group">
+<td class="p-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container-high border border-outline-variant overflow-hidden shrink-0">
+<img class="w-full h-full object-cover" data-alt="A portrait photograph of a mature male professional student, casually dressed, looking thoughtfully off-camera, set in a bright, modern learning environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCAaPTiqU8f2beCSn2cqI5XQ0IyjYOTj4Ij2LaONONltzKocABh_B8I6CvFEY688epEkekiLCOCPWWM_FJd8VSZewJ2I6S9bw5_wKiHGSg0cZ8wCMB1FsN5cTql50c2BHcNh0FW_LgdY-BRfoVSV3aq1i4gZ3EpQO3pX25SSZypBo7OZP_mB-SCqxCVweyzuN1JtUq-LPOPxxCpr4KZShcWtf-EhVNSBCp2vUq048pluCiRZsU6ODLcmg">
+</div>
+<span class="font-medium text-on-surface-variant line-through">David Park</span>
+</div>
+</td>
+<td class="p-4 text-on-surface-variant">dpark99@corporate.org</td>
+<td class="p-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[12px] font-medium bg-error-container text-on-error-container border border-error/30">
+<span class="w-1.5 h-1.5 rounded-full bg-error"></span>
+                                    Suspended
+                                </span>
+</td>
+<td class="p-4 text-right text-on-surface-variant">2</td>
+<td class="p-4 text-right text-on-surface-variant">0</td>
+<td class="p-4 text-on-surface-variant hidden lg:table-cell">Nov 30, 2023</td>
+<td class="p-4 text-right">
+<div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-1.5 text-secondary hover:bg-secondary-container rounded-md transition-colors" title="View Profile">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</button>
+<button class="p-1.5 text-on-surface-variant hover:bg-surface-container-high rounded-md transition-colors" title="Restore Account">
+<span class="material-symbols-outlined text-[20px]">play_circle</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination -->
+<div class="bg-surface-container-lowest border-t border-outline-variant px-4 py-3 flex items-center justify-between">
+<div class="text-sm text-on-surface-variant font-body-md">
+                    Showing <span class="font-medium text-on-surface">1</span> to <span class="font-medium text-on-surface">4</span> of <span class="font-medium text-on-surface">128</span> students
+                </div>
+<div class="flex gap-1">
+<button class="p-2 border border-outline-variant rounded-md text-on-surface-variant hover:bg-surface-container disabled:opacity-50 disabled:cursor-not-allowed" disabled="">
+<span class="material-symbols-outlined text-sm">chevron_left</span>
+</button>
+<button class="px-3 py-1 bg-primary text-on-primary rounded-md font-medium text-sm">1</button>
+<button class="px-3 py-1 border border-outline-variant text-on-surface hover:bg-surface-container rounded-md font-medium text-sm">2</button>
+<button class="px-3 py-1 border border-outline-variant text-on-surface hover:bg-surface-container rounded-md font-medium text-sm">3</button>
+<span class="px-2 py-1 text-on-surface-variant">...</span>
+<button class="p-2 border border-outline-variant rounded-md text-on-surface-variant hover:bg-surface-container">
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="full-width bottom-0 bg-surface-container-lowest dark:bg-surface-dim border-t border-outline-variant py-4 px-margin-desktop md:px-gutter mt-auto flex flex-col md:flex-row justify-between items-center gap-4 z-10 relative">
+<div class="font-label-lg text-label-lg font-bold text-primary">EcoLearn</div>
+<div class="font-label-md text-label-md text-secondary dark:text-secondary-fixed">
+                © 2024 GGGI EcoLearn Platform. All rights reserved.
+            </div>
+<div class="flex gap-4">
+<a class="font-label-md text-label-md text-on-surface-variant dark:text-surface-variant hover:text-primary transition-colors opacity-100 hover:opacity-80" href="#">Version 2.4.0-release</a>
+<a class="font-label-md text-label-md text-on-surface-variant dark:text-surface-variant hover:text-primary transition-colors opacity-100 hover:opacity-80" href="#">Privacy Policy</a>
+<a class="font-label-md text-label-md text-on-surface-variant dark:text-surface-variant hover:text-primary transition-colors opacity-100 hover:opacity-80" href="#">System Status</a>
+</div>
+</footer>
+</div>
+
+
+</body></html>

@@ -1,0 +1,250 @@
+<!DOCTYPE html><html class="light" lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>EcoLearn Admin - Categories &amp; Tags</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="css/global.css" rel="stylesheet" />
+<script src="js/tailwind-config.js"></script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex antialiased selection:bg-primary-container selection:text-on-primary-container">
+<!-- SideNavBar -->
+<aside class="h-screen w-64 fixed left-0 top-0 bg-surface dark:bg-inverse-surface flex flex-col py-base px-base border-r border-outline-variant z-20 hidden md:flex">
+<a class="px-4 py-6 mb-4 flex items-center gap-3" href="admin-dashboard.html">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined fill text-on-primary-container">eco</span>
+</div>
+<div>
+<h1 class="font-headline-lg text-headline-lg font-bold text-primary dark:text-inverse-primary text-xl tracking-tight leading-none mb-1">EcoLearn</h1>
+<p class="font-label-md text-label-md text-on-surface-variant">Super Admin</p>
+</div>
+</a>
+  <nav class="flex-1 overflow-y-auto space-y-1">
+<a class="flex items-center gap-3 text-on-surface-variant dark:text-surface-variant px-4 py-2 hover:bg-surface-container-highest dark:hover:bg-surface-variant rounded-full font-label-lg text-label-lg transition-colors duration-200 scale-95 active:scale-100" href="admin-dashboard.html">
+<span class="material-symbols-outlined">dashboard</span>
+      Dashboard
+    </a>
+<a class="flex items-center gap-3 text-on-surface-variant dark:text-surface-variant px-4 py-2 hover:bg-surface-container-highest dark:hover:bg-surface-variant rounded-full font-label-lg text-label-lg transition-colors duration-200 scale-95 active:scale-100" href="admin-students-management.html">
+<span class="material-symbols-outlined">group</span>
+      Students
+    </a>
+<a class="flex items-center gap-3 text-on-surface-variant dark:text-surface-variant px-4 py-2 hover:bg-surface-container-highest dark:hover:bg-surface-variant rounded-full font-label-lg text-label-lg transition-colors duration-200 scale-95 active:scale-100" href="admin-instructors-management.html">
+<span class="material-symbols-outlined">school</span>
+      Instructors
+    </a>
+<a class="flex items-center gap-3 text-on-surface-variant dark:text-surface-variant px-4 py-2 hover:bg-surface-container-highest dark:hover:bg-surface-variant rounded-full font-label-lg text-label-lg transition-colors duration-200 scale-95 active:scale-100" href="admin-modules-management.html">
+<span class="material-symbols-outlined">menu_book</span>
+      Modules
+    </a>
+<a class="flex items-center gap-3 text-on-surface-variant dark:text-surface-variant px-4 py-2 hover:bg-surface-container-highest dark:hover:bg-surface-variant rounded-full font-label-lg text-label-lg transition-colors duration-200 scale-95 active:scale-100" href="admin-enrollment-management.html">
+<span class="material-symbols-outlined">how_to_reg</span>
+      Enrollments
+    </a>
+<a class="flex items-center gap-3 text-on-surface-variant dark:text-surface-variant px-4 py-2 hover:bg-surface-container-highest dark:hover:bg-surface-variant rounded-full font-label-lg text-label-lg transition-colors duration-200 scale-95 active:scale-100" href="admin-reviews-moderation.html">
+<span class="material-symbols-outlined">reviews</span>
+      Reviews
+    </a>
+<a class="flex items-center gap-3 text-on-surface-variant dark:text-surface-variant px-4 py-2 hover:bg-surface-container-highest dark:hover:bg-surface-variant rounded-full font-label-lg text-label-lg transition-colors duration-200 scale-95 active:scale-100" href="admin-certificate-management.html">
+<span class="material-symbols-outlined">card_membership</span>
+      Certificates
+    </a>
+<a class="flex items-center gap-3 text-on-surface-variant dark:text-surface-variant px-4 py-2 hover:bg-surface-container-highest dark:hover:bg-surface-variant rounded-full font-label-lg text-label-lg transition-colors duration-200 scale-95 active:scale-100" href="admin-analytics.html">
+<span class="material-symbols-outlined">analytics</span>
+      Analytics
+    </a>
+<a class="flex items-center gap-3 bg-secondary-container dark:bg-primary-container text-on-secondary-container dark:text-on-primary-container rounded-full px-4 py-2 font-bold font-label-lg text-label-lg transition-transform duration-200 scale-95 active:scale-100" href="admin-categories-tags.html">
+<span class="material-symbols-outlined fill">sell</span>
+      Categories &amp; Tags
+    </a>
+<a class="flex items-center gap-3 text-on-surface-variant dark:text-surface-variant px-4 py-2 hover:bg-surface-container-highest dark:hover:bg-surface-variant rounded-full font-label-lg text-label-lg transition-colors duration-200 scale-95 active:scale-100" href="admin-audit-logs.html">
+<span class="material-symbols-outlined">history_edu</span>
+      Audit Logs
+    </a>
+<a class="flex items-center gap-3 text-on-surface-variant dark:text-surface-variant px-4 py-2 hover:bg-surface-container-highest dark:hover:bg-surface-variant rounded-full font-label-lg text-label-lg transition-colors duration-200 scale-95 active:scale-100 mt-auto" href="admin-settings.html">
+<span class="material-symbols-outlined">settings</span>
+      Settings
+    </a>
+</nav>
+<div class="p-4 mt-4">
+<button class="w-full bg-primary text-on-primary rounded-full py-2.5 px-4 font-label-lg text-label-lg font-bold hover:bg-primary-container hover:text-on-primary-container transition-colors duration-200 flex items-center justify-center gap-2 shadow-sm">
+<span class="material-symbols-outlined text-sm">download</span>
+      Generate Report
+    </button>
+</div>
+</aside>
+<!-- Main Content Wrapper -->
+<div class="flex-1 flex flex-col md:ml-64 min-w-0 bg-surface-container-lowest">
+<!-- TopNavBar -->
+<header class="docked full-width top-0 sticky bg-surface dark:bg-inverse-surface shadow-sm z-10"><div class="flex justify-between items-center h-16 px-margin-desktop md:px-gutter">
+<!-- Mobile Menu Button -->
+<button class="md:hidden p-2 text-on-surface hover:bg-surface-container rounded-full transition-colors mr-2">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<!-- Search -->
+<div class="flex-1 flex items-center">
+<div class="relative w-full max-w-md hidden sm:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="w-full bg-surface-container-low border border-outline-variant rounded-lg py-2 pl-10 pr-4 text-body-md text-on-surface placeholder-outline focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors" placeholder="Search resources, students..." type="text">
+</div>
+</div>
+<!-- Actions & Profile -->
+<div class="flex items-center gap-2 sm:gap-4">
+<button class="text-on-surface-variant dark:text-surface-variant hover:bg-surface-container dark:hover:bg-surface-variant rounded-full p-2 cursor-pointer transition-all active:opacity-70 relative group">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full ring-2 ring-surface"></span>
+</button>
+<button class="text-on-surface-variant dark:text-surface-variant hover:bg-surface-container dark:hover:bg-surface-variant rounded-full p-2 cursor-pointer transition-all active:opacity-70">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<a class="h-8 w-8 rounded-full overflow-hidden border border-outline-variant cursor-pointer ml-2 block" href="admin-settings.html">
+<img alt="Super Admin Avatar" class="w-full h-full object-cover" data-alt="A close-up, highly detailed portrait of a professional woman with a welcoming smile, wearing a subtle earth-toned blazer. Bright, clean, corporate lighting. The background is a soft, out-of-focus modern office setting, enhancing the professional and reliable mood of the light-mode UI." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoDUabU0O5G9EKfeQNcY7C9SzrIiaqO_4BY_9ft6ZRP2EPZjfw7Od0_KMrRkYuWlllNt71ydaoLF8_svaQoX6C7xZIt78taWQuIhQh_N2hRk-2Rx3R_QWdqECQTx94CosCYYxeTEf4vwT2xE9nV2lJIUtqVY6SbtSx4vy0p0l_OGqRbvhF5QXHw53sQAGS2P4JE2EYfnBYiCIArvxndmVoZvRZuVst6O_h8rmOSBdIe74G2MeMBzpwjQ">
+</a>
+</div>
+</div></header>
+<!-- Main Canvas -->
+<main class="flex-1 overflow-y-auto p-margin-desktop md:p-gutter max-w-container-max mx-auto w-full">
+<!-- Page Header -->
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+<div>
+<h2 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface font-bold">Categories &amp; Tags</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">Manage the organizational structure for educational modules.</p>
+</div>
+<button class="flex items-center gap-2 bg-primary text-on-primary px-4 py-2 rounded-full font-label-lg text-label-lg hover:shadow-md transition-all active:scale-95" onclick="document.getElementById('addCategoryModal').classList.remove('hidden')">
+<span class="material-symbols-outlined text-[18px]" data-icon="add">add</span>
+                        Add Category
+                    </button>
+</div>
+<!-- Content Area -->
+<div class="bg-surface rounded-xl border border-surface-variant shadow-[0px_1px_3px_rgba(0,0,0,0.12),0px_1px_2px_rgba(0,0,0,0.24)] overflow-hidden">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-surface-variant bg-surface-container-low">
+<th class="py-3 px-6 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Name</th>
+<th class="py-3 px-6 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Module Count</th>
+<th class="py-3 px-6 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-variant">
+<tr class="hover:bg-surface-container-lowest transition-colors group">
+<td class="py-4 px-6 font-body-md text-body-md text-on-surface font-medium flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container">
+<span class="material-symbols-outlined text-[16px]" data-icon="forest">forest</span>
+</div>
+                                    Sustainability Basics
+                                </td>
+<td class="py-4 px-6 font-body-md text-body-md text-on-surface-variant">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-surface-container-high text-on-surface">
+                                        24 Modules
+                                    </span>
+</td>
+<td class="py-4 px-6 text-right">
+<div class="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container rounded-full transition-colors">
+<span class="material-symbols-outlined text-[20px]" data-icon="edit">edit</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:text-error hover:bg-error-container rounded-full transition-colors">
+<span class="material-symbols-outlined text-[20px]" data-icon="delete">delete</span>
+</button>
+</div>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest transition-colors group">
+<td class="py-4 px-6 font-body-md text-body-md text-on-surface font-medium flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-tertiary-container flex items-center justify-center text-on-tertiary-container">
+<span class="material-symbols-outlined text-[16px]" data-icon="solar_power">solar_power</span>
+</div>
+                                    Renewable Energy
+                                </td>
+<td class="py-4 px-6 font-body-md text-body-md text-on-surface-variant">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-surface-container-high text-on-surface">
+                                        18 Modules
+                                    </span>
+</td>
+<td class="py-4 px-6 text-right">
+<div class="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container rounded-full transition-colors">
+<span class="material-symbols-outlined text-[20px]" data-icon="edit">edit</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:text-error hover:bg-error-container rounded-full transition-colors">
+<span class="material-symbols-outlined text-[20px]" data-icon="delete">delete</span>
+</button>
+</div>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest transition-colors group">
+<td class="py-4 px-6 font-body-md text-body-md text-on-surface font-medium flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container">
+<span class="material-symbols-outlined text-[16px]" data-icon="water_drop">water_drop</span>
+</div>
+                                    Water Conservation
+                                </td>
+<td class="py-4 px-6 font-body-md text-body-md text-on-surface-variant">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-surface-container-high text-on-surface">
+                                        12 Modules
+                                    </span>
+</td>
+<td class="py-4 px-6 text-right">
+<div class="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container rounded-full transition-colors">
+<span class="material-symbols-outlined text-[20px]" data-icon="edit">edit</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:text-error hover:bg-error-container rounded-full transition-colors">
+<span class="material-symbols-outlined text-[20px]" data-icon="delete">delete</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</main>
+<!-- Footer -->
+<footer class="full-width bottom-0 bg-surface-container-lowest dark:bg-surface-dim border-t border-outline-variant py-4 px-margin-desktop md:px-gutter mt-auto flex flex-col md:flex-row justify-between items-center gap-4 z-10 relative">
+<div class="font-label-md text-label-md text-secondary dark:text-secondary-fixed">
+                © 2024 GGGI EcoLearn Platform. All rights reserved.
+            </div>
+<div class="flex gap-4">
+<a class="font-label-md text-label-md text-on-surface-variant dark:text-surface-variant hover:text-primary transition-colors opacity-100 hover:opacity-80" href="#">Version 2.4.0-release</a>
+<a class="font-label-md text-label-md text-on-surface-variant dark:text-surface-variant hover:text-primary transition-colors opacity-100 hover:opacity-80" href="#">Privacy Policy</a>
+<a class="font-label-md text-label-md text-on-surface-variant dark:text-surface-variant hover:text-primary transition-colors opacity-100 hover:opacity-80" href="#">System Status</a>
+</div>
+</footer>
+</div>
+<!-- Add Category Dialog -->
+<div class="hidden fixed inset-0 z-50 bg-on-background/50 flex items-center justify-center p-4 backdrop-blur-sm transition-opacity" id="addCategoryModal">
+<div class="bg-surface rounded-xl shadow-lg w-full max-w-md overflow-hidden transform scale-100 transition-transform">
+<div class="px-6 py-4 border-b border-surface-variant flex justify-between items-center bg-surface-container-lowest">
+<h3 class="font-title-lg text-title-lg text-on-surface">Add New Category</h3>
+<button class="text-on-surface-variant hover:bg-surface-container rounded-full p-1 transition-colors" onclick="document.getElementById('addCategoryModal').classList.add('hidden')">
+<span class="material-symbols-outlined" data-icon="close">close</span>
+</button>
+</div>
+<div class="p-6 space-y-4">
+<div>
+<label class="block font-label-md text-label-md text-on-surface-variant mb-1" for="categoryName">Category Name</label>
+<input class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-3 font-body-lg text-body-lg text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors" id="categoryName" placeholder="e.g. Urban Agriculture" type="text">
+</div>
+</div>
+<div class="px-6 py-4 border-t border-surface-variant bg-surface-container-lowest flex justify-end gap-3">
+<button class="px-4 py-2 rounded-full font-label-lg text-label-lg text-primary hover:bg-surface-container transition-colors" onclick="document.getElementById('addCategoryModal').classList.add('hidden')">
+                    Cancel
+                </button>
+<button class="px-4 py-2 rounded-full font-label-lg text-label-lg bg-primary text-on-primary hover:shadow-md transition-all active:scale-95" onclick="document.getElementById('addCategoryModal').classList.add('hidden')">
+                    Save Category
+                </button>
+</div>
+</div>
+</div>
+
+
+</body></html>

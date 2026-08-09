@@ -1,0 +1,370 @@
+<!DOCTYPE html><html lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>EcoLearn Admin Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="css/global.css" rel="stylesheet" />
+<script src="js/tailwind-config.js"></script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface antialiased min-h-screen flex font-body-md selection:bg-primary-container selection:text-on-primary-container">
+<!-- SideNavBar -->
+<aside class="h-screen w-64 fixed left-0 top-0 bg-surface dark:bg-inverse-surface flex flex-col py-base px-base border-r border-outline-variant z-20 hidden md:flex">
+<a class="px-4 py-6 mb-4 flex items-center gap-3" href="admin-dashboard.html">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined fill text-on-primary-container">eco</span>
+</div>
+<div>
+<h1 class="font-headline-lg text-headline-lg font-bold text-primary dark:text-inverse-primary text-xl tracking-tight leading-none mb-1">EcoLearn</h1>
+<p class="font-label-md text-label-md text-on-surface-variant">Super Admin</p>
+</div>
+</a>
+  <nav class="flex-1 overflow-y-auto space-y-1">
+<a class="flex items-center gap-3 text-on-surface-variant dark:text-surface-variant px-4 py-2 hover:bg-surface-container-highest dark:hover:bg-surface-variant rounded-full font-label-lg text-label-lg transition-colors duration-200 scale-95 active:scale-100" href="admin-dashboard.html">
+<span class="material-symbols-outlined">dashboard</span>
+      Dashboard
+    </a>
+<a class="flex items-center gap-3 bg-secondary-container dark:bg-primary-container text-on-secondary-container dark:text-on-primary-container rounded-full px-4 py-2 font-bold font-label-lg text-label-lg transition-transform duration-200 scale-95 active:scale-100" href="admin-students-management.html">
+<span class="material-symbols-outlined fill">group</span>
+      Students
+    </a>
+<a class="flex items-center gap-3 text-on-surface-variant dark:text-surface-variant px-4 py-2 hover:bg-surface-container-highest dark:hover:bg-surface-variant rounded-full font-label-lg text-label-lg transition-colors duration-200 scale-95 active:scale-100" href="admin-instructors-management.html">
+<span class="material-symbols-outlined">school</span>
+      Instructors
+    </a>
+<a class="flex items-center gap-3 text-on-surface-variant dark:text-surface-variant px-4 py-2 hover:bg-surface-container-highest dark:hover:bg-surface-variant rounded-full font-label-lg text-label-lg transition-colors duration-200 scale-95 active:scale-100" href="admin-modules-management.html">
+<span class="material-symbols-outlined">menu_book</span>
+      Modules
+    </a>
+<a class="flex items-center gap-3 text-on-surface-variant dark:text-surface-variant px-4 py-2 hover:bg-surface-container-highest dark:hover:bg-surface-variant rounded-full font-label-lg text-label-lg transition-colors duration-200 scale-95 active:scale-100" href="admin-enrollment-management.html">
+<span class="material-symbols-outlined">how_to_reg</span>
+      Enrollments
+    </a>
+<a class="flex items-center gap-3 text-on-surface-variant dark:text-surface-variant px-4 py-2 hover:bg-surface-container-highest dark:hover:bg-surface-variant rounded-full font-label-lg text-label-lg transition-colors duration-200 scale-95 active:scale-100" href="admin-reviews-moderation.html">
+<span class="material-symbols-outlined">reviews</span>
+      Reviews
+    </a>
+<a class="flex items-center gap-3 text-on-surface-variant dark:text-surface-variant px-4 py-2 hover:bg-surface-container-highest dark:hover:bg-surface-variant rounded-full font-label-lg text-label-lg transition-colors duration-200 scale-95 active:scale-100" href="admin-certificate-management.html">
+<span class="material-symbols-outlined">card_membership</span>
+      Certificates
+    </a>
+<a class="flex items-center gap-3 text-on-surface-variant dark:text-surface-variant px-4 py-2 hover:bg-surface-container-highest dark:hover:bg-surface-variant rounded-full font-label-lg text-label-lg transition-colors duration-200 scale-95 active:scale-100" href="admin-analytics.html">
+<span class="material-symbols-outlined">analytics</span>
+      Analytics
+    </a>
+<a class="flex items-center gap-3 text-on-surface-variant dark:text-surface-variant px-4 py-2 hover:bg-surface-container-highest dark:hover:bg-surface-variant rounded-full font-label-lg text-label-lg transition-colors duration-200 scale-95 active:scale-100" href="admin-categories-tags.html">
+<span class="material-symbols-outlined">sell</span>
+      Categories &amp; Tags
+    </a>
+<a class="flex items-center gap-3 text-on-surface-variant dark:text-surface-variant px-4 py-2 hover:bg-surface-container-highest dark:hover:bg-surface-variant rounded-full font-label-lg text-label-lg transition-colors duration-200 scale-95 active:scale-100" href="admin-audit-logs.html">
+<span class="material-symbols-outlined">history_edu</span>
+      Audit Logs
+    </a>
+<a class="flex items-center gap-3 text-on-surface-variant dark:text-surface-variant px-4 py-2 hover:bg-surface-container-highest dark:hover:bg-surface-variant rounded-full font-label-lg text-label-lg transition-colors duration-200 scale-95 active:scale-100 mt-auto" href="admin-settings.html">
+<span class="material-symbols-outlined">settings</span>
+      Settings
+    </a>
+</nav>
+<div class="p-4 mt-4">
+<button class="w-full bg-primary text-on-primary rounded-full py-2.5 px-4 font-label-lg text-label-lg font-bold hover:bg-primary-container hover:text-on-primary-container transition-colors duration-200 flex items-center justify-center gap-2 shadow-sm">
+<span class="material-symbols-outlined text-sm">download</span>
+      Generate Report
+    </button>
+</div>
+</aside>
+<!-- Main Content Area -->
+<div class="flex-1 flex flex-col md:ml-64 min-w-0">
+<!-- TopNavBar -->
+<header class="docked full-width top-0 sticky bg-surface dark:bg-inverse-surface shadow-sm z-10">
+<div class="flex justify-between items-center h-16 px-margin-desktop md:px-gutter">
+<!-- Mobile Menu Button -->
+<button class="md:hidden p-2 text-on-surface hover:bg-surface-container rounded-full transition-colors mr-2">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<!-- Search -->
+<div class="flex-1 flex items-center">
+<div class="relative w-full max-w-md hidden sm:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="w-full bg-surface-container-low border border-outline-variant rounded-lg py-2 pl-10 pr-4 text-body-md text-on-surface placeholder-outline focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors" placeholder="Search resources, students..." type="text">
+</div>
+</div>
+<!-- Actions & Profile -->
+<div class="flex items-center gap-2 sm:gap-4">
+<button class="text-on-surface-variant dark:text-surface-variant hover:bg-surface-container dark:hover:bg-surface-variant rounded-full p-2 cursor-pointer transition-all active:opacity-70 relative group">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full ring-2 ring-surface"></span>
+</button>
+<button class="text-on-surface-variant dark:text-surface-variant hover:bg-surface-container dark:hover:bg-surface-variant rounded-full p-2 cursor-pointer transition-all active:opacity-70">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<a class="h-8 w-8 rounded-full overflow-hidden border border-outline-variant cursor-pointer ml-2 block" href="admin-settings.html">
+<img alt="Super Admin Avatar" class="w-full h-full object-cover" data-alt="A close-up, highly detailed portrait of a professional woman with a welcoming smile, wearing a subtle earth-toned blazer. Bright, clean, corporate lighting. The background is a soft, out-of-focus modern office setting, enhancing the professional and reliable mood of the light-mode UI." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoDUabU0O5G9EKfeQNcY7C9SzrIiaqO_4BY_9ft6ZRP2EPZjfw7Od0_KMrRkYuWlllNt71ydaoLF8_svaQoX6C7xZIt78taWQuIhQh_N2hRk-2Rx3R_QWdqECQTx94CosCYYxeTEf4vwT2xE9nV2lJIUtqVY6SbtSx4vy0p0l_OGqRbvhF5QXHw53sQAGS2P4JE2EYfnBYiCIArvxndmVoZvRZuVst6O_h8rmOSBdIe74G2MeMBzpwjQ">
+</a>
+</div>
+</div>
+</header>
+<!-- Canvas -->
+<main class="flex-1 p-margin-mobile md:p-gutter max-w-[1280px] mx-auto w-full">
+<!-- Breadcrumbs & Header -->
+<div class="mb-gutter flex items-center justify-between flex-wrap gap-4">
+<div>
+<div class="flex items-center gap-2 text-label-md text-on-surface-variant mb-2">
+<a class="hover:text-primary transition-colors" href="#">Students</a>
+<span class="material-symbols-outlined text-[16px]" data-icon="chevron_right">chevron_right</span>
+<span class="text-on-surface">Alex Rivera</span>
+</div>
+<h2 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface font-bold flex items-center gap-3">
+                        Student Details
+                        <span class="bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full font-label-md text-label-md uppercase tracking-wider">Active</span>
+</h2>
+</div>
+<div class="flex gap-2">
+<button class="px-4 py-2 border border-outline-variant rounded-full font-label-lg text-label-lg hover:bg-surface-container-low transition-colors text-error flex items-center gap-2">
+<span class="material-symbols-outlined text-sm" data-icon="block">block</span> Suspend
+                    </button>
+<button class="px-4 py-2 bg-primary text-on-primary rounded-full font-label-lg text-label-lg hover:bg-primary-container hover:text-on-primary-container transition-colors flex items-center gap-2 shadow-sm">
+<span class="material-symbols-outlined text-sm" data-icon="manage_accounts">manage_accounts</span> Edit Profile
+                    </button>
+</div>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Left Column: Profile & Actions -->
+<div class="lg:col-span-4 flex flex-col gap-gutter">
+<!-- Profile Card -->
+<div class="bg-surface-container-lowest rounded-xl p-6 border border-surface-variant shadow-[0px_1px_3px_rgba(0,0,0,0.12),0px_1px_2px_rgba(0,0,0,0.24)]">
+<div class="flex flex-col items-center text-center">
+<div class="w-32 h-32 rounded-full overflow-hidden border-4 border-surface shadow-sm mb-4">
+<img class="w-full h-full object-cover" data-alt="A clear, professional headshot portrait of Alex Rivera, a young male student in his 20s, smiling softly, wearing casual business attire, well-lit with natural lighting against a neutral background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDfRNsTpHLP1wbq9cMUh-tV7Iiu_7PNrbjJRhrko8P6zKXEOgII7Iez_JQao2DPNim6qFE5-BRDS_bSbaXNF2_ZERUi28oV6w9ZEZ_rRmYvjEYcd-WzpMxPnPVi2Rvk1h5XivrRopLTWtx1R7dsSVwhlovthtaMdbW7I0kGFcofM8mst6qL_Wxc0Gqksw-Ux3DD_kB57x0UTiM5G2gbUBrUiH8-za_hnKiZe0rbJ8Ey6u0LHDHD88MIDQ">
+</div>
+<h3 class="font-title-lg text-title-lg text-on-surface font-semibold">Alex Rivera</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">alex.rivera@example.com</p>
+<p class="font-label-md text-label-md text-outline mt-2">ID: STU-88492-AR</p>
+<p class="font-label-md text-label-md text-outline">Joined: Sep 12, 2023</p>
+</div>
+<div class="mt-6 pt-6 border-t border-outline-variant space-y-3">
+<div class="flex justify-between items-center font-body-md text-body-md">
+<span class="text-on-surface-variant">Location</span>
+<span class="text-on-surface font-medium">Seattle, WA</span>
+</div>
+<div class="flex justify-between items-center font-body-md text-body-md">
+<span class="text-on-surface-variant">Department</span>
+<span class="text-on-surface font-medium">Environmental Sciences</span>
+</div>
+<div class="flex justify-between items-center font-body-md text-body-md">
+<span class="text-on-surface-variant">Last Login</span>
+<span class="text-on-surface font-medium">2 hours ago</span>
+</div>
+</div>
+</div>
+<!-- Account Actions -->
+<div class="bg-surface-container-lowest rounded-xl p-6 border border-surface-variant shadow-[0px_1px_3px_rgba(0,0,0,0.12),0px_1px_2px_rgba(0,0,0,0.24)]">
+<h4 class="font-title-lg text-title-lg text-on-surface font-medium mb-4">Account Actions</h4>
+<div class="space-y-3">
+<button class="w-full text-left px-4 py-3 rounded-lg border border-outline-variant hover:bg-surface-container-low transition-colors font-label-lg text-label-lg flex items-center gap-3">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="lock_reset">lock_reset</span>
+                                Reset Password
+                            </button>
+<button class="w-full text-left px-4 py-3 rounded-lg border border-outline-variant hover:bg-surface-container-low transition-colors font-label-lg text-label-lg flex items-center gap-3 text-error">
+<span class="material-symbols-outlined" data-icon="person_off">person_off</span>
+                                Deactivate Account
+                            </button>
+</div>
+</div>
+</div>
+<!-- Right Column: Stats & Data -->
+<div class="lg:col-span-8 flex flex-col gap-gutter">
+<!-- Stats Row -->
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-gutter">
+<div class="bg-surface-container-lowest border border-outline-variant/30 rounded-xl p-6 shadow-sm hover:shadow-md transition-all flex flex-col gap-4">
+  <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+    <span class="material-symbols-outlined text-primary text-[24px]" data-icon="grading">grading</span>
+  </div>
+  <div>
+    <p class="font-label-md text-label-md text-on-surface-variant mb-1 uppercase tracking-wider">Avg Score</p>
+    <h3 class="font-headline-lg text-headline-lg font-bold text-on-surface leading-none">92<span class="text-title-lg text-outline ml-1 font-normal">%</span></h3>
+  </div>
+  <div class="flex items-center gap-2">
+    <span class="font-label-md text-label-md text-primary bg-primary-container/20 px-2 py-1 rounded-full flex items-center gap-1 w-fit">
+      <span class="material-symbols-outlined text-[14px]">trending_up</span> +2.4%
+    </span>
+    <span class="font-label-md text-label-md text-outline">vs last month</span>
+  </div>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant/30 rounded-xl p-6 shadow-sm hover:shadow-md transition-all flex flex-col gap-4">
+  <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+    <span class="material-symbols-outlined text-primary text-[24px]" data-icon="task_alt">task_alt</span>
+  </div>
+  <div>
+    <p class="font-label-md text-label-md text-on-surface-variant mb-1 uppercase tracking-wider">Completed</p>
+    <h3 class="font-headline-lg text-headline-lg font-bold text-on-surface leading-none">14</h3>
+  </div>
+  <div class="flex items-center gap-2">
+    <span class="font-label-md text-label-md text-primary bg-primary-container/20 px-2 py-1 rounded-full flex items-center gap-1 w-fit">
+      <span class="material-symbols-outlined text-[14px]">check_circle</span> +3
+    </span>
+    <span class="font-label-md text-label-md text-outline">this semester</span>
+  </div>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant/30 rounded-xl p-6 shadow-sm hover:shadow-md transition-all flex flex-col gap-4">
+  <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+    <span class="material-symbols-outlined text-primary text-[24px]" data-icon="schedule">schedule</span>
+  </div>
+  <div>
+    <p class="font-label-md text-label-md text-on-surface-variant mb-1 uppercase tracking-wider">Hours Learned</p>
+    <h3 class="font-headline-lg text-headline-lg font-bold text-on-surface leading-none">128</h3>
+  </div>
+  <div class="flex items-center gap-2">
+    <span class="font-label-md text-label-md text-primary bg-primary-container/20 px-2 py-1 rounded-full flex items-center gap-1 w-fit">
+      <span class="material-symbols-outlined text-[14px]">timer</span> +12h
+    </span>
+    <span class="font-label-md text-label-md text-outline">this week</span>
+  </div>
+</div>
+</div>
+<!-- Enrolled Modules -->
+<div class="bg-surface-container-lowest rounded-xl border border-surface-variant shadow-[0px_1px_3px_rgba(0,0,0,0.12),0px_1px_2px_rgba(0,0,0,0.24)] overflow-hidden">
+<div class="p-6 border-b border-outline-variant flex justify-between items-center">
+<h4 class="font-title-lg text-title-lg text-on-surface font-medium">Enrolled Modules</h4>
+<button class="text-primary hover:bg-surface-container-low p-2 rounded-full transition-colors">
+<span class="material-symbols-outlined" data-icon="filter_list">filter_list</span>
+</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead class="bg-surface-container-low font-label-md text-label-md text-on-surface-variant uppercase tracking-wider border-b border-outline-variant">
+<tr>
+<th class="px-6 py-4 font-medium">Module Name</th>
+<th class="px-6 py-4 font-medium">Progress</th>
+<th class="px-6 py-4 font-medium">Status</th>
+<th class="px-6 py-4 font-medium text-right">Action</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant font-body-md text-body-md text-on-surface">
+<tr class="hover:bg-surface-container-lowest/50 transition-colors">
+<td class="px-6 py-4 font-medium">Climate Change Mitigation Strategies</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<span class="w-8 text-right font-medium">75%</span>
+<div class="flex-1 h-2 bg-secondary-container rounded-full overflow-hidden min-w-[100px]">
+<div class="h-full bg-primary rounded-full" style="width: 75%"></div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-tertiary-container/10 text-tertiary">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span> In Progress
+                                            </span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="more_vert">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest/50 transition-colors">
+<td class="px-6 py-4 font-medium">Renewable Energy Fundamentals</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<span class="w-8 text-right font-medium">100%</span>
+<div class="flex-1 h-2 bg-secondary-container rounded-full overflow-hidden min-w-[100px]">
+<div class="h-full bg-primary rounded-full" style="width: 100%"></div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-primary-container/10 text-primary">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span> Completed
+                                            </span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="more_vert">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest/50 transition-colors">
+<td class="px-6 py-4 font-medium">Sustainable Urban Planning</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<span class="w-8 text-right font-medium">30%</span>
+<div class="flex-1 h-2 bg-secondary-container rounded-full overflow-hidden min-w-[100px]">
+<div class="h-full bg-primary rounded-full" style="width: 30%"></div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-tertiary-container/10 text-tertiary">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span> In Progress
+                                            </span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="more_vert">more_vert</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Earned Certificates -->
+<div class="bg-surface-container-lowest rounded-xl p-6 border border-surface-variant shadow-[0px_1px_3px_rgba(0,0,0,0.12),0px_1px_2px_rgba(0,0,0,0.24)]">
+<div class="flex justify-between items-center mb-6">
+<h4 class="font-title-lg text-title-lg text-on-surface font-medium">Earned Certificates</h4>
+<button class="font-label-lg text-label-lg text-primary hover:underline">View All</button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<!-- Cert Card 1 -->
+<div class="flex items-start gap-4 p-4 rounded-lg border border-outline-variant hover:border-primary-fixed-dim hover:shadow-sm transition-all group">
+<div class="w-12 h-12 rounded-lg bg-surface-container-high flex items-center justify-center flex-shrink-0 group-hover:bg-primary-container/10 transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors" data-icon="workspace_premium" data-weight="fill">workspace_premium</span>
+</div>
+<div>
+<h5 class="font-label-lg text-label-lg text-on-surface font-semibold mb-1 line-clamp-1">Renewable Energy Fundamentals</h5>
+<p class="font-label-md text-label-md text-on-surface-variant">Issued: Oct 24, 2023</p>
+<a class="font-label-md text-label-md text-primary hover:underline mt-2 inline-block" href="#">Download PDF</a>
+</div>
+</div>
+<!-- Cert Card 2 -->
+<div class="flex items-start gap-4 p-4 rounded-lg border border-outline-variant hover:border-primary-fixed-dim hover:shadow-sm transition-all group">
+<div class="w-12 h-12 rounded-lg bg-surface-container-high flex items-center justify-center flex-shrink-0 group-hover:bg-primary-container/10 transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors" data-icon="workspace_premium" data-weight="fill">workspace_premium</span>
+</div>
+<div>
+<h5 class="font-label-lg text-label-lg text-on-surface font-semibold mb-1 line-clamp-1">Intro to Circular Economy</h5>
+<p class="font-label-md text-label-md text-on-surface-variant">Issued: Aug 15, 2023</p>
+<a class="font-label-md text-label-md text-primary hover:underline mt-2 inline-block" href="#">Download PDF</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="full-width bottom-0 bg-surface-container-lowest dark:bg-surface-dim border-t border-outline-variant py-4 px-margin-desktop md:px-gutter mt-auto flex flex-col md:flex-row justify-between items-center gap-4 z-10 relative">
+<div class="font-label-lg text-label-lg font-bold text-primary">EcoLearn</div>
+<div class="font-label-md text-label-md text-secondary dark:text-secondary-fixed">© 2024 GGGI EcoLearn Platform. All rights reserved.</div>
+<div class="flex gap-4">
+<a class="font-label-md text-label-md text-on-surface-variant dark:text-surface-variant hover:text-primary transition-colors opacity-100 hover:opacity-80" href="#">Version 2.4.0-release</a>
+<a class="font-label-md text-label-md text-on-surface-variant dark:text-surface-variant hover:text-primary transition-colors opacity-100 hover:opacity-80" href="#">Privacy Policy</a>
+<a class="font-label-md text-label-md text-on-surface-variant dark:text-surface-variant hover:text-primary transition-colors opacity-100 hover:opacity-80" href="#">System Status</a>
+</div>
+</footer>
+</div>
+
+
+
+
+</body></html>
