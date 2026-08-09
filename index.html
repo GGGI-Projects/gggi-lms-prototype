@@ -1,0 +1,412 @@
+<!doctype html>
+<html class="light" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>GGGI EcoLearn - Landing Page</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-secondary-fixed-variant": "#24502c",
+              "surface-container-highest": "#e2e2e2",
+              "surface-container": "#eeeeee",
+              "on-primary-container": "#cbffc2",
+              "on-primary-fixed-variant": "#005312",
+              "tertiary-fixed-dim": "#a9c7ff",
+              "surface-container-high": "#e8e8e8",
+              "surface-container-lowest": "#ffffff",
+              "outline-variant": "#bfcaba",
+              "surface-bright": "#f9f9f9",
+              "error-container": "#ffdad6",
+              "on-tertiary-fixed": "#001b3d",
+              "inverse-primary": "#88d982",
+              secondary: "#3c6842",
+              tertiary: "#0054a7",
+              "secondary-container": "#bdefbe",
+              "on-secondary-container": "#426e47",
+              "on-primary-fixed": "#002204",
+              "on-surface": "#1a1c1c",
+              "on-tertiary": "#ffffff",
+              "on-secondary-fixed": "#002109",
+              surface: "#f9f9f9",
+              "on-background": "#1a1c1c",
+              "surface-container-low": "#f3f3f3",
+              "secondary-fixed": "#bdefbe",
+              background: "#f9f9f9",
+              "tertiary-fixed": "#d6e3ff",
+              "secondary-fixed-dim": "#a2d3a4",
+              "on-secondary": "#ffffff",
+              outline: "#707a6c",
+              "on-tertiary-container": "#edf1ff",
+              "surface-dim": "#dadada",
+              "primary-container": "#2e7d32",
+              "inverse-surface": "#2f3131",
+              "on-error": "#ffffff",
+              "on-surface-variant": "#40493d",
+              "surface-variant": "#e2e2e2",
+              "tertiary-container": "#246dc8",
+              "primary-fixed": "#a3f69c",
+              "on-tertiary-fixed-variant": "#00468c",
+              "on-primary": "#ffffff",
+              "primary-fixed-dim": "#88d982",
+              primary: "#0d631b",
+              "surface-tint": "#1b6d24",
+              "on-error-container": "#93000a",
+              "inverse-on-surface": "#f1f1f1",
+              error: "#ba1a1a",
+            },
+            borderRadius: {
+              DEFAULT: "0.25rem",
+              lg: "0.5rem",
+              xl: "0.75rem",
+              full: "9999px",
+            },
+            spacing: {
+              "margin-mobile": "16px",
+              "container-max": "1280px",
+              gutter: "24px",
+              "margin-desktop": "32px",
+              base: "8px",
+            },
+            fontFamily: {
+              "body-md": ["Inter"],
+              "display-lg": ["Inter"],
+              "label-lg": ["Inter"],
+              "label-md": ["Inter"],
+              "title-lg": ["Inter"],
+              "headline-lg": ["Inter"],
+              "headline-lg-mobile": ["Inter"],
+              "body-lg": ["Inter"],
+            },
+            fontSize: {
+              "body-md": [
+                "14px",
+                {
+                  lineHeight: "20px",
+                  letterSpacing: "0.25px",
+                  fontWeight: "400",
+                },
+              ],
+              "display-lg": [
+                "57px",
+                {
+                  lineHeight: "64px",
+                  letterSpacing: "-0.25px",
+                  fontWeight: "700",
+                },
+              ],
+              "label-lg": [
+                "14px",
+                {
+                  lineHeight: "20px",
+                  letterSpacing: "0.1px",
+                  fontWeight: "500",
+                },
+              ],
+              "label-md": [
+                "12px",
+                {
+                  lineHeight: "16px",
+                  letterSpacing: "0.5px",
+                  fontWeight: "500",
+                },
+              ],
+              "title-lg": [
+                "22px",
+                { lineHeight: "28px", letterSpacing: "0px", fontWeight: "500" },
+              ],
+              "headline-lg": [
+                "32px",
+                { lineHeight: "40px", letterSpacing: "0px", fontWeight: "600" },
+              ],
+              "headline-lg-mobile": [
+                "28px",
+                { lineHeight: "36px", letterSpacing: "0px", fontWeight: "600" },
+              ],
+              "body-lg": [
+                "16px",
+                {
+                  lineHeight: "24px",
+                  letterSpacing: "0.5px",
+                  fontWeight: "400",
+                },
+              ],
+            },
+            boxShadow: {
+              "level-1":
+                "0px 1px 3px rgba(0,0,0,0.12), 0px 1px 2px rgba(0,0,0,0.24)",
+              "level-2":
+                "0px 3px 6px rgba(13, 99, 27, 0.16), 0px 3px 6px rgba(13, 99, 27, 0.23)",
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+      }
+    </style>
+  </head>
+  <body
+    class="bg-surface text-on-surface min-h-screen flex flex-col antialiased"
+  >
+    <!-- TopNavBar -->
+    <header
+      class="bg-surface-bright dark:bg-surface-container-high w-full top-0 sticky bg-surface-container/5 shadow-sm z-50"
+    >
+      <div
+        class="flex justify-between items-center px-margin-desktop py-4 max-w-container-max mx-auto hidden md:flex"
+      >
+        <!-- Brand -->
+        <div
+          class="font-headline-lg text-headline-lg font-bold text-primary dark:text-primary-fixed flex items-center gap-2"
+        >
+          <span
+            class="material-symbols-outlined"
+            style="font-variation-settings: &quot;FILL&quot; 1"
+            >eco</span
+          >
+          GGGI EcoLearn
+        </div>
+        <!-- Navigation Links -->
+        <nav class="flex gap-gutter">
+          <a
+            class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-200 font-label-lg text-label-lg"
+            href="#"
+            >Programs</a
+          >
+          <a
+            class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-200 font-label-lg text-label-lg"
+            href="#"
+            >Impact</a
+          >
+          <a
+            class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-200 font-label-lg text-label-lg"
+            href="#"
+            >Resources</a
+          >
+        </nav>
+        <!-- Actions -->
+        <div class="flex items-center gap-4">
+          <button
+            class="font-label-lg text-label-lg border border-outline-variant text-primary px-4 py-2 rounded-lg hover:bg-surface-container-highest transition-colors duration-200 active:scale-95 transition-transform"
+            onclick="window.location.href='student-login.html'"
+          >
+            Sign In
+          </button>
+          <button
+            class="font-label-lg text-label-lg bg-primary text-on-primary px-4 py-2 rounded-lg shadow-level-1 hover:shadow-level-2 transition-shadow duration-200 active:scale-95 transition-transform"
+            onclick="window.location.href='student-signup.html'"
+          >
+            Get Started
+          </button>
+        </div>
+      </div>
+      <!-- Mobile Header -->
+      <div
+        class="flex justify-between items-center px-margin-mobile py-4 md:hidden"
+      >
+        <div
+          class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-primary dark:text-primary-fixed flex items-center gap-2"
+        >
+          <span
+            class="material-symbols-outlined"
+            style="font-variation-settings: &quot;FILL&quot; 1"
+            >eco</span
+          >
+          GGGI EcoLearn
+        </div>
+        <button class="text-on-surface">
+          <span class="material-symbols-outlined">menu</span>
+        </button>
+      </div>
+    </header>
+    <!-- Main Content -->
+    <main class="flex-grow">
+      <!-- Hero Section -->
+      <section class="relative bg-surface-container-low overflow-hidden">
+        <div
+          class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-16 md:py-32 flex flex-col md:flex-row items-center gap-gutter"
+        >
+          <!-- Text Content -->
+          <div class="md:w-1/2 z-10 space-y-6">
+            <h1 class="font-display-lg text-display-lg text-on-surface">
+              Master the Future of Sustainability
+            </h1>
+            <p class="font-body-lg text-body-lg text-on-surface-variant">
+              Join thousands of global leaders in environmental and climate
+              education. Build the skills necessary to drive meaningful change
+              in a rapidly evolving world.
+            </p>
+            <div class="pt-4 flex flex-col sm:flex-row gap-4">
+              <button
+                class="font-label-lg text-label-lg bg-primary text-on-primary px-8 py-3 rounded-lg shadow-level-1 hover:shadow-level-2 transition-shadow duration-200 active:scale-95 transition-transform"
+                onclick="window.location.href='student-signup.html'"
+              >
+                Get Started
+              </button>
+              <button
+                class="font-label-lg text-label-lg border border-outline-variant text-primary px-8 py-3 rounded-lg hover:bg-surface-container-highest transition-colors duration-200 active:scale-95 transition-transform"
+              >
+                View Programs
+              </button>
+            </div>
+          </div>
+          <!-- Hero Image -->
+          <div
+            class="md:w-1/2 w-full mt-8 md:mt-0 relative rounded-xl overflow-hidden shadow-level-1 aspect-video md:aspect-square"
+          >
+            <img
+              class="w-full h-full object-cover"
+              data-alt="A breathtaking, high-resolution photograph of modern wind turbines standing tall on a lush, vibrant green hillside against a clear, bright blue sky with soft white clouds. The lighting is sunny and optimistic, reflecting a modern corporate sustainability theme with a crisp, clean aesthetic favoring vibrant greens and crisp whites. The image conveys progress, clean energy, and a hopeful future."
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuAW_YH8z9aMUtQUqKGnA-eCGZ_0a9OuoToAEK6L73ocG2t9qEs1uxceGIjJrgvjOg4IA3YdfCtwt2YU2bjeVzfr97KbSbqUWIDKVZpKK9fmQoYvIx_d2nfyJNwQvcxfLEkPNxGKMVd2EIjjDog1ijDmBqefQ1OFD8_4nE09De6oROXspCmN_dGDzkS7_-lmQ1XuducDlyvMFB365T5ZPBJJUVKmuVAAC6zZmOM85C_Hv1XGMcoZtGPM_Q"
+            />
+            <!-- Subtle overlay -->
+            <div
+              class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"
+            ></div>
+          </div>
+        </div>
+      </section>
+      <!-- Features Section -->
+      <section class="py-16 md:py-32 bg-surface">
+        <div
+          class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop"
+        >
+          <div class="text-center mb-16">
+            <h2 class="font-headline-lg text-headline-lg text-on-surface mb-4">
+              Why Choose GGGI EcoLearn?
+            </h2>
+            <p
+              class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto"
+            >
+              Our platform combines institutional rigor with modern digital
+              learning to empower the next generation of climate advocates.
+            </p>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+            <!-- Feature Card 1 -->
+            <div
+              class="bg-surface-container-lowest rounded-xl p-8 shadow-level-1 hover:shadow-level-2 transition-shadow duration-300 flex flex-col items-start border border-surface-container-highest"
+            >
+              <div class="bg-primary/10 p-4 rounded-full mb-6">
+                <span
+                  class="material-symbols-outlined text-primary text-3xl"
+                  style="font-variation-settings: &quot;FILL&quot; 1"
+                  >person_apron</span
+                >
+              </div>
+              <h3 class="font-title-lg text-title-lg text-on-surface mb-3">
+                Expert Instructors
+              </h3>
+              <p
+                class="font-body-md text-body-md text-on-surface-variant leading-relaxed"
+              >
+                Learn directly from world-renowned sustainability experts,
+                policy makers, and climate scientists shaping global green
+                growth strategies.
+              </p>
+            </div>
+            <!-- Feature Card 2 -->
+            <div
+              class="bg-surface-container-lowest rounded-xl p-8 shadow-level-1 hover:shadow-level-2 transition-shadow duration-300 flex flex-col items-start border border-surface-container-highest"
+            >
+              <div class="bg-primary/10 p-4 rounded-full mb-6">
+                <span
+                  class="material-symbols-outlined text-primary text-3xl"
+                  style="font-variation-settings: &quot;FILL&quot; 1"
+                  >workspace_premium</span
+                >
+              </div>
+              <h3 class="font-title-lg text-title-lg text-on-surface mb-3">
+                Global Certification
+              </h3>
+              <p
+                class="font-body-md text-body-md text-on-surface-variant leading-relaxed"
+              >
+                Earn internationally recognized credentials that validate your
+                expertise and commitment to sustainable development goals.
+              </p>
+            </div>
+            <!-- Feature Card 3 -->
+            <div
+              class="bg-surface-container-lowest rounded-xl p-8 shadow-level-1 hover:shadow-level-2 transition-shadow duration-300 flex flex-col items-start border border-surface-container-highest"
+            >
+              <div class="bg-primary/10 p-4 rounded-full mb-6">
+                <span
+                  class="material-symbols-outlined text-primary text-3xl"
+                  style="font-variation-settings: &quot;FILL&quot; 1"
+                  >schedule</span
+                >
+              </div>
+              <h3 class="font-title-lg text-title-lg text-on-surface mb-3">
+                Self-Paced Learning
+              </h3>
+              <p
+                class="font-body-md text-body-md text-on-surface-variant leading-relaxed"
+              >
+                Access comprehensive curriculum materials anytime, anywhere.
+                Tailor your educational journey to fit your professional
+                schedule.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <!-- Footer -->
+    <footer
+      class="bg-surface-container-highest dark:bg-surface-container w-full bottom-0 border-t border-outline-variant mt-auto"
+    >
+      <div
+        class="flex flex-col md:flex-row justify-between items-center px-margin-desktop py-8 max-w-container-max mx-auto gap-4"
+      >
+        <div
+          class="font-title-lg text-title-lg text-on-surface flex items-center gap-2"
+        >
+          <span class="material-symbols-outlined text-primary">eco</span>
+          <span class="font-semibold">GGGI EcoLearn</span>
+        </div>
+        <nav class="flex flex-wrap justify-center gap-6">
+          <a
+            class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors"
+            href="#"
+            >Privacy Policy</a
+          >
+          <a
+            class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors"
+            href="#"
+            >Terms of Service</a
+          >
+          <a
+            class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors"
+            href="#"
+            >Sustainability Commitment</a
+          >
+        </nav>
+        <div
+          class="font-body-md text-body-md text-secondary dark:text-secondary-fixed text-center md:text-right"
+        >
+          © 2024 Global Green Growth Institute (GGGI). All rights reserved.
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

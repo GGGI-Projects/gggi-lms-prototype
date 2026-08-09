@@ -1,0 +1,932 @@
+<!doctype html>
+<html class="light" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Quiz Result - GGGI EcoLearn</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-secondary-fixed-variant": "#24502c",
+              "surface-container-highest": "#e2e2e2",
+              "surface-container": "#eeeeee",
+              "on-primary-container": "#cbffc2",
+              "on-primary-fixed-variant": "#005312",
+              "tertiary-fixed-dim": "#a9c7ff",
+              "surface-container-high": "#e8e8e8",
+              "surface-container-lowest": "#ffffff",
+              "outline-variant": "#bfcaba",
+              "surface-bright": "#f9f9f9",
+              "error-container": "#ffdad6",
+              "on-tertiary-fixed": "#001b3d",
+              "inverse-primary": "#88d982",
+              secondary: "#3c6842",
+              tertiary: "#0054a7",
+              "secondary-container": "#bdefbe",
+              "on-secondary-container": "#426e47",
+              "on-primary-fixed": "#002204",
+              "on-surface": "#1a1c1c",
+              "on-tertiary": "#ffffff",
+              "on-secondary-fixed": "#002109",
+              surface: "#f9f9f9",
+              "on-background": "#1a1c1c",
+              "surface-container-low": "#f3f3f3",
+              "secondary-fixed": "#bdefbe",
+              background: "#f9f9f9",
+              "tertiary-fixed": "#d6e3ff",
+              "secondary-fixed-dim": "#a2d3a4",
+              "on-secondary": "#ffffff",
+              outline: "#707a6c",
+              "on-tertiary-container": "#edf1ff",
+              "surface-dim": "#dadada",
+              "primary-container": "#2e7d32",
+              "inverse-surface": "#2f3131",
+              "on-error": "#ffffff",
+              "on-surface-variant": "#40493d",
+              "surface-variant": "#e2e2e2",
+              "tertiary-container": "#246dc8",
+              "primary-fixed": "#a3f69c",
+              "on-tertiary-fixed-variant": "#00468c",
+              "on-primary": "#ffffff",
+              "primary-fixed-dim": "#88d982",
+              primary: "#0d631b",
+              "surface-tint": "#1b6d24",
+              "on-error-container": "#93000a",
+              "inverse-on-surface": "#f1f1f1",
+              error: "#ba1a1a",
+            },
+            borderRadius: {
+              DEFAULT: "0.25rem",
+              lg: "0.5rem",
+              xl: "0.75rem",
+              full: "9999px",
+            },
+            spacing: {
+              "margin-mobile": "16px",
+              "container-max": "1280px",
+              gutter: "24px",
+              "margin-desktop": "32px",
+              base: "8px",
+            },
+            fontFamily: {
+              "body-md": ["Inter"],
+              "display-lg": ["Inter"],
+              "label-lg": ["Inter"],
+              "label-md": ["Inter"],
+              "title-lg": ["Inter"],
+              "headline-lg": ["Inter"],
+              "headline-lg-mobile": ["Inter"],
+              "body-lg": ["Inter"],
+            },
+            fontSize: {
+              "body-md": [
+                "14px",
+                {
+                  lineHeight: "20px",
+                  letterSpacing: "0.25px",
+                  fontWeight: "400",
+                },
+              ],
+              "display-lg": [
+                "57px",
+                {
+                  lineHeight: "64px",
+                  letterSpacing: "-0.25px",
+                  fontWeight: "700",
+                },
+              ],
+              "label-lg": [
+                "14px",
+                {
+                  lineHeight: "20px",
+                  letterSpacing: "0.1px",
+                  fontWeight: "500",
+                },
+              ],
+              "label-md": [
+                "12px",
+                {
+                  lineHeight: "16px",
+                  letterSpacing: "0.5px",
+                  fontWeight: "500",
+                },
+              ],
+              "title-lg": [
+                "22px",
+                { lineHeight: "28px", letterSpacing: "0px", fontWeight: "500" },
+              ],
+              "headline-lg": [
+                "32px",
+                { lineHeight: "40px", letterSpacing: "0px", fontWeight: "600" },
+              ],
+              "headline-lg-mobile": [
+                "28px",
+                { lineHeight: "36px", letterSpacing: "0px", fontWeight: "600" },
+              ],
+              "body-lg": [
+                "16px",
+                {
+                  lineHeight: "24px",
+                  letterSpacing: "0.5px",
+                  fontWeight: "400",
+                },
+              ],
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      .material-symbols-outlined {
+        font-variation-settings:
+          "FILL" 0,
+          "wght" 400,
+          "GRAD" 0,
+          "opsz" 24;
+      }
+      .material-symbols-outlined.fill {
+        font-variation-settings: "FILL" 1;
+      }
+      .elevation-1 {
+        box-shadow:
+          0px 1px 3px rgba(0, 0, 0, 0.12),
+          0px 1px 2px rgba(0, 0, 0, 0.24);
+      }
+      .elevation-2 {
+        box-shadow:
+          0px 3px 6px rgba(0, 0, 0, 0.16),
+          0px 3px 6px rgba(0, 0, 0, 0.23);
+      }
+
+      /* Celebration Confetti Animation */
+      @keyframes confetti-fall {
+        0% {
+          transform: translateY(-100%) rotate(0deg);
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(100vh) rotate(360deg);
+          opacity: 0;
+        }
+      }
+      .confetti-piece {
+        position: absolute;
+        top: -50px;
+        z-index: 10;
+        opacity: 0;
+        animation: confetti-fall 3s ease-in-out infinite;
+      }
+    </style>
+  </head>
+  <body
+    class="bg-surface-container-lowest min-h-screen font-body-md text-on-surface flex flex-col justify-center items-center p-margin-mobile md:p-margin-desktop relative overflow-hidden"
+  >
+    <!-- Confetti Background Layer -->
+    <div
+      class="absolute inset-0 pointer-events-none overflow-hidden"
+      id="confetti-container"
+    >
+      <!-- Confetti generated via JS -->
+      <div
+        class="confetti-piece"
+        style="
+          left: 83.8619vw;
+          width: 12.3401px;
+          height: 12.3401px;
+          background-color: rgb(13, 99, 27);
+          border-radius: 0%;
+          animation-duration: 6.52031s;
+          animation-delay: 2.28807s;
+        "
+      ></div>
+      <div
+        class="confetti-piece"
+        style="
+          left: 93.9266vw;
+          width: 12.5276px;
+          height: 12.5276px;
+          background-color: rgb(163, 246, 156);
+          border-radius: 0%;
+          animation-duration: 3.39443s;
+          animation-delay: 2.62069s;
+        "
+      ></div>
+      <div
+        class="confetti-piece"
+        style="
+          left: 90.9067vw;
+          width: 6.32228px;
+          height: 6.32228px;
+          background-color: rgb(13, 99, 27);
+          border-radius: 0%;
+          animation-duration: 6.26011s;
+          animation-delay: 3.72298s;
+        "
+      ></div>
+      <div
+        class="confetti-piece"
+        style="
+          left: 82.4701vw;
+          width: 11.4675px;
+          height: 11.4675px;
+          background-color: rgb(163, 246, 156);
+          border-radius: 50%;
+          animation-duration: 5.42615s;
+          animation-delay: 2.13345s;
+        "
+      ></div>
+      <div
+        class="confetti-piece"
+        style="
+          left: 75.7002vw;
+          width: 6.33433px;
+          height: 6.33433px;
+          background-color: rgb(163, 246, 156);
+          border-radius: 50%;
+          animation-duration: 3.04391s;
+          animation-delay: 2.1718s;
+        "
+      ></div>
+      <div
+        class="confetti-piece"
+        style="
+          left: 5.7568vw;
+          width: 9.1365px;
+          height: 9.1365px;
+          background-color: rgb(163, 246, 156);
+          border-radius: 50%;
+          animation-duration: 3.98404s;
+          animation-delay: 2.17567s;
+        "
+      ></div>
+      <div
+        class="confetti-piece"
+        style="
+          left: 3.42639vw;
+          width: 10.0454px;
+          height: 10.0454px;
+          background-color: rgb(189, 239, 190);
+          border-radius: 50%;
+          animation-duration: 5.29174s;
+          animation-delay: 0.471353s;
+        "
+      ></div>
+      <div
+        class="confetti-piece"
+        style="
+          left: 61.6206vw;
+          width: 12.6437px;
+          height: 12.6437px;
+          background-color: rgb(163, 246, 156);
+          border-radius: 50%;
+          animation-duration: 6.6608s;
+          animation-delay: 1.59968s;
+        "
+      ></div>
+      <div
+        class="confetti-piece"
+        style="
+          left: 22.6921vw;
+          width: 10.4606px;
+          height: 10.4606px;
+          background-color: rgb(136, 217, 130);
+          border-radius: 50%;
+          animation-duration: 3.32718s;
+          animation-delay: 2.71425s;
+        "
+      ></div>
+      <div
+        class="confetti-piece"
+        style="
+          left: 33.3052vw;
+          width: 9.27022px;
+          height: 9.27022px;
+          background-color: rgb(163, 246, 156);
+          border-radius: 0%;
+          animation-duration: 3.40578s;
+          animation-delay: 0.277269s;
+        "
+      ></div>
+      <div
+        class="confetti-piece"
+        style="
+          left: 44.5921vw;
+          width: 12.5759px;
+          height: 12.5759px;
+          background-color: rgb(13, 99, 27);
+          border-radius: 0%;
+          animation-duration: 4.4634s;
+          animation-delay: 1.72069s;
+        "
+      ></div>
+      <div
+        class="confetti-piece"
+        style="
+          left: 46.2693vw;
+          width: 7.58837px;
+          height: 7.58837px;
+          background-color: rgb(136, 217, 130);
+          border-radius: 50%;
+          animation-duration: 5.23459s;
+          animation-delay: 2.93615s;
+        "
+      ></div>
+      <div
+        class="confetti-piece"
+        style="
+          left: 4.01533vw;
+          width: 13.0451px;
+          height: 13.0451px;
+          background-color: rgb(136, 217, 130);
+          border-radius: 50%;
+          animation-duration: 4.61742s;
+          animation-delay: 3.85877s;
+        "
+      ></div>
+      <div
+        class="confetti-piece"
+        style="
+          left: 71.5472vw;
+          width: 9.75761px;
+          height: 9.75761px;
+          background-color: rgb(189, 239, 190);
+          border-radius: 50%;
+          animation-duration: 3.73205s;
+          animation-delay: 2.74621s;
+        "
+      ></div>
+      <div
+        class="confetti-piece"
+        style="
+          left: 93.3797vw;
+          width: 12.52px;
+          height: 12.52px;
+          background-color: rgb(136, 217, 130);
+          border-radius: 0%;
+          animation-duration: 6.05555s;
+          animation-delay: 2.08563s;
+        "
+      ></div>
+      <div
+        class="confetti-piece"
+        style="
+          left: 91.9153vw;
+          width: 9.79705px;
+          height: 9.79705px;
+          background-color: rgb(163, 246, 156);
+          border-radius: 0%;
+          animation-duration: 5.92087s;
+          animation-delay: 1.28096s;
+        "
+      ></div>
+      <div
+        class="confetti-piece"
+        style="
+          left: 70.015vw;
+          width: 9.3731px;
+          height: 9.3731px;
+          background-color: rgb(163, 246, 156);
+          border-radius: 50%;
+          animation-duration: 5.17626s;
+          animation-delay: 0.0663124s;
+        "
+      ></div>
+      <div
+        class="confetti-piece"
+        style="
+          left: 36.2302vw;
+          width: 10.6106px;
+          height: 10.6106px;
+          background-color: rgb(189, 239, 190);
+          border-radius: 0%;
+          animation-duration: 4.12514s;
+          animation-delay: 2.78362s;
+        "
+      ></div>
+      <div
+        class="confetti-piece"
+        style="
+          left: 36.0937vw;
+          width: 6.34465px;
+          height: 6.34465px;
+          background-color: rgb(136, 217, 130);
+          border-radius: 0%;
+          animation-duration: 3.19828s;
+          animation-delay: 2.69057s;
+        "
+      ></div>
+      <div
+        class="confetti-piece"
+        style="
+          left: 85.2315vw;
+          width: 12.5086px;
+          height: 12.5086px;
+          background-color: rgb(163, 246, 156);
+          border-radius: 0%;
+          animation-duration: 4.49893s;
+          animation-delay: 1.85628s;
+        "
+      ></div>
+      <div
+        class="confetti-piece"
+        style="
+          left: 34.704vw;
+          width: 8.62712px;
+          height: 8.62712px;
+          background-color: rgb(13, 99, 27);
+          border-radius: 0%;
+          animation-duration: 3.76643s;
+          animation-delay: 1.14192s;
+        "
+      ></div>
+      <div
+        class="confetti-piece"
+        style="
+          left: 36.9673vw;
+          width: 8.68578px;
+          height: 8.68578px;
+          background-color: rgb(163, 246, 156);
+          border-radius: 0%;
+          animation-duration: 4.35447s;
+          animation-delay: 2.01562s;
+        "
+      ></div>
+      <div
+        class="confetti-piece"
+        style="
+          left: 51.1461vw;
+          width: 6.70002px;
+          height: 6.70002px;
+          background-color: rgb(13, 99, 27);
+          border-radius: 0%;
+          animation-duration: 3.17852s;
+          animation-delay: 2.8457s;
+        "
+      ></div>
+      <div
+        class="confetti-piece"
+        style="
+          left: 71.7203vw;
+          width: 11.697px;
+          height: 11.697px;
+          background-color: rgb(13, 99, 27);
+          border-radius: 50%;
+          animation-duration: 5.94726s;
+          animation-delay: 2.81932s;
+        "
+      ></div>
+      <div
+        class="confetti-piece"
+        style="
+          left: 81.4602vw;
+          width: 11.5848px;
+          height: 11.5848px;
+          background-color: rgb(136, 217, 130);
+          border-radius: 0%;
+          animation-duration: 4.3816s;
+          animation-delay: 1.51537s;
+        "
+      ></div>
+      <div
+        class="confetti-piece"
+        style="
+          left: 66.0023vw;
+          width: 6.56613px;
+          height: 6.56613px;
+          background-color: rgb(163, 246, 156);
+          border-radius: 0%;
+          animation-duration: 6.68854s;
+          animation-delay: 2.80004s;
+        "
+      ></div>
+      <div
+        class="confetti-piece"
+        style="
+          left: 79.5939vw;
+          width: 6.00781px;
+          height: 6.00781px;
+          background-color: rgb(163, 246, 156);
+          border-radius: 0%;
+          animation-duration: 6.15584s;
+          animation-delay: 4.29825s;
+        "
+      ></div>
+      <div
+        class="confetti-piece"
+        style="
+          left: 1.9871vw;
+          width: 11.0517px;
+          height: 11.0517px;
+          background-color: rgb(136, 217, 130);
+          border-radius: 0%;
+          animation-duration: 5.61932s;
+          animation-delay: 0.562377s;
+        "
+      ></div>
+      <div
+        class="confetti-piece"
+        style="
+          left: 49.3568vw;
+          width: 10.7672px;
+          height: 10.7672px;
+          background-color: rgb(136, 217, 130);
+          border-radius: 0%;
+          animation-duration: 5.69802s;
+          animation-delay: 1.27804s;
+        "
+      ></div>
+      <div
+        class="confetti-piece"
+        style="
+          left: 37.4637vw;
+          width: 10.7933px;
+          height: 10.7933px;
+          background-color: rgb(189, 239, 190);
+          border-radius: 50%;
+          animation-duration: 6.44772s;
+          animation-delay: 3.27581s;
+        "
+      ></div>
+      <div
+        class="confetti-piece"
+        style="
+          left: 73.6499vw;
+          width: 9.9331px;
+          height: 9.9331px;
+          background-color: rgb(189, 239, 190);
+          border-radius: 0%;
+          animation-duration: 5.39494s;
+          animation-delay: 0.0832078s;
+        "
+      ></div>
+      <div
+        class="confetti-piece"
+        style="
+          left: 97.0236vw;
+          width: 9.38699px;
+          height: 9.38699px;
+          background-color: rgb(13, 99, 27);
+          border-radius: 0%;
+          animation-duration: 6.63111s;
+          animation-delay: 3.91345s;
+        "
+      ></div>
+      <div
+        class="confetti-piece"
+        style="
+          left: 52.6749vw;
+          width: 10.3069px;
+          height: 10.3069px;
+          background-color: rgb(136, 217, 130);
+          border-radius: 0%;
+          animation-duration: 3.15248s;
+          animation-delay: 0.251516s;
+        "
+      ></div>
+      <div
+        class="confetti-piece"
+        style="
+          left: 66.9085vw;
+          width: 10.0696px;
+          height: 10.0696px;
+          background-color: rgb(136, 217, 130);
+          border-radius: 0%;
+          animation-duration: 5.38909s;
+          animation-delay: 0.354635s;
+        "
+      ></div>
+      <div
+        class="confetti-piece"
+        style="
+          left: 52.1114vw;
+          width: 9.37328px;
+          height: 9.37328px;
+          background-color: rgb(189, 239, 190);
+          border-radius: 50%;
+          animation-duration: 4.64747s;
+          animation-delay: 0.86873s;
+        "
+      ></div>
+      <div
+        class="confetti-piece"
+        style="
+          left: 6.17995vw;
+          width: 6.4132px;
+          height: 6.4132px;
+          background-color: rgb(13, 99, 27);
+          border-radius: 50%;
+          animation-duration: 5.72549s;
+          animation-delay: 4.11252s;
+        "
+      ></div>
+      <div
+        class="confetti-piece"
+        style="
+          left: 95.0641vw;
+          width: 13.2722px;
+          height: 13.2722px;
+          background-color: rgb(13, 99, 27);
+          border-radius: 0%;
+          animation-duration: 4.66266s;
+          animation-delay: 2.99865s;
+        "
+      ></div>
+      <div
+        class="confetti-piece"
+        style="
+          left: 73.2471vw;
+          width: 9.66446px;
+          height: 9.66446px;
+          background-color: rgb(13, 99, 27);
+          border-radius: 50%;
+          animation-duration: 4.96894s;
+          animation-delay: 2.42552s;
+        "
+      ></div>
+      <div
+        class="confetti-piece"
+        style="
+          left: 63.9469vw;
+          width: 11.1311px;
+          height: 11.1311px;
+          background-color: rgb(189, 239, 190);
+          border-radius: 50%;
+          animation-duration: 3.9192s;
+          animation-delay: 0.402068s;
+        "
+      ></div>
+      <div
+        class="confetti-piece"
+        style="
+          left: 64.6193vw;
+          width: 7.8663px;
+          height: 7.8663px;
+          background-color: rgb(136, 217, 130);
+          border-radius: 0%;
+          animation-duration: 5.97542s;
+          animation-delay: 1.29868s;
+        "
+      ></div>
+      <div
+        class="confetti-piece"
+        style="
+          left: 84.7734vw;
+          width: 6.10662px;
+          height: 6.10662px;
+          background-color: rgb(163, 246, 156);
+          border-radius: 0%;
+          animation-duration: 3.31544s;
+          animation-delay: 1.96528s;
+        "
+      ></div>
+      <div
+        class="confetti-piece"
+        style="
+          left: 79.553vw;
+          width: 11.0409px;
+          height: 11.0409px;
+          background-color: rgb(13, 99, 27);
+          border-radius: 50%;
+          animation-duration: 5.28731s;
+          animation-delay: 4.36014s;
+        "
+      ></div>
+      <div
+        class="confetti-piece"
+        style="
+          left: 84.3568vw;
+          width: 9.23931px;
+          height: 9.23931px;
+          background-color: rgb(13, 99, 27);
+          border-radius: 50%;
+          animation-duration: 3.57573s;
+          animation-delay: 0.795379s;
+        "
+      ></div>
+      <div
+        class="confetti-piece"
+        style="
+          left: 87.7632vw;
+          width: 13.9794px;
+          height: 13.9794px;
+          background-color: rgb(189, 239, 190);
+          border-radius: 0%;
+          animation-duration: 5.26195s;
+          animation-delay: 0.0560607s;
+        "
+      ></div>
+      <div
+        class="confetti-piece"
+        style="
+          left: 32.9252vw;
+          width: 11.5056px;
+          height: 11.5056px;
+          background-color: rgb(136, 217, 130);
+          border-radius: 0%;
+          animation-duration: 3.24081s;
+          animation-delay: 2.68418s;
+        "
+      ></div>
+      <div
+        class="confetti-piece"
+        style="
+          left: 8.03466vw;
+          width: 11.7338px;
+          height: 11.7338px;
+          background-color: rgb(13, 99, 27);
+          border-radius: 0%;
+          animation-duration: 4.99976s;
+          animation-delay: 4.24485s;
+        "
+      ></div>
+      <div
+        class="confetti-piece"
+        style="
+          left: 31.571vw;
+          width: 7.9972px;
+          height: 7.9972px;
+          background-color: rgb(136, 217, 130);
+          border-radius: 0%;
+          animation-duration: 6.92188s;
+          animation-delay: 2.27234s;
+        "
+      ></div>
+      <div
+        class="confetti-piece"
+        style="
+          left: 90.2753vw;
+          width: 13.0823px;
+          height: 13.0823px;
+          background-color: rgb(136, 217, 130);
+          border-radius: 0%;
+          animation-duration: 3.77684s;
+          animation-delay: 0.267008s;
+        "
+      ></div>
+      <div
+        class="confetti-piece"
+        style="
+          left: 28.4965vw;
+          width: 12.6027px;
+          height: 12.6027px;
+          background-color: rgb(136, 217, 130);
+          border-radius: 0%;
+          animation-duration: 4.20138s;
+          animation-delay: 2.69451s;
+        "
+      ></div>
+      <div
+        class="confetti-piece"
+        style="
+          left: 38.664vw;
+          width: 9.65294px;
+          height: 9.65294px;
+          background-color: rgb(13, 99, 27);
+          border-radius: 0%;
+          animation-duration: 3.76526s;
+          animation-delay: 4.85076s;
+        "
+      ></div>
+    </div>
+    <main class="w-full max-w-md mx-auto relative z-20">
+      <!-- Result Card -->
+      <div
+        class="bg-surface-container-lowest elevation-1 rounded-2xl border border-outline-variant w-full p-8 flex flex-col items-center text-center relative overflow-hidden"
+      >
+        <!-- Decorative Accent -->
+        <div class="absolute top-0 left-0 w-full h-2 bg-primary"></div>
+        <!-- Eco Celebration Icon -->
+        <div class="mb-6 mt-4 relative">
+          <span class="material-symbols-outlined fill text-[64px] text-primary"
+            >eco</span
+          >
+          <div
+            class="absolute inset-0 bg-primary/10 rounded-full scale-150 animate-pulse -z-10"
+          ></div>
+        </div>
+        <h1
+          class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface mb-6"
+        >
+          Quiz Completed!
+        </h1>
+
+        <!-- Score Circle -->
+        <div class="relative flex items-center justify-center mb-8">
+          <!-- SVG Ring -->
+          <svg class="w-40 h-40 transform -rotate-90" viewBox="0 0 100 100">
+            <circle
+              class="text-surface-container-highest"
+              cx="50"
+              cy="50"
+              fill="none"
+              r="45"
+              stroke="currentColor"
+              stroke-width="8"
+            ></circle>
+            <!-- 90% is 283 * 0.9 = 254.7 dasharray, 283 circumference -->
+            <circle
+              class="text-primary"
+              cx="50"
+              cy="50"
+              fill="none"
+              r="45"
+              stroke="currentColor"
+              stroke-dasharray="283"
+              stroke-dashoffset="28.3"
+              stroke-linecap="round"
+              stroke-width="8"
+            ></circle>
+          </svg>
+          <div
+            class="absolute inset-0 flex flex-col items-center justify-center"
+          >
+            <span
+              class="font-display-lg text-display-lg text-primary tracking-tight"
+              >90<span class="text-title-lg">%</span></span
+            >
+          </div>
+        </div>
+        <!-- Status & Summary -->
+        <div
+          class="bg-secondary-container rounded-lg px-6 py-4 w-full mb-8 flex flex-col items-center gap-2"
+        >
+          <div class="flex items-center gap-2">
+            <span
+              class="material-symbols-outlined fill text-on-secondary-container"
+              >check_circle</span
+            >
+            <span
+              class="font-title-lg text-title-lg text-on-secondary-container font-semibold"
+              >Status: Passed</span
+            >
+          </div>
+          <p class="font-label-lg text-label-lg text-on-secondary-container/80">
+            9/10 Correct
+          </p>
+        </div>
+        <!-- Action Buttons -->
+        <div class="w-full flex flex-col sm:flex-row gap-3">
+          <button
+            class="flex-1 bg-surface-container-lowest border border-[#BDBDBD] text-primary hover:bg-surface-container-low font-label-lg text-label-lg rounded-full py-3 px-4 transition-colors active:scale-95 flex items-center justify-center gap-2"
+            onclick="window.location.href = 'student-quiz-view.html'"
+          >
+            <span class="material-symbols-outlined text-[20px]">refresh</span>
+            Retry Quiz
+          </button>
+          <button
+            class="flex-1 bg-primary text-on-primary elevation-1 hover:elevation-2 hover:bg-surface-tint font-label-lg text-label-lg rounded-full py-3 px-4 transition-all active:scale-95 flex items-center justify-center gap-2"
+            onclick="window.location.href = 'student-learning-view.html'"
+          >
+            Continue to Module
+            <span class="material-symbols-outlined text-[20px]"
+              >arrow_forward</span
+            >
+          </button>
+        </div>
+      </div>
+    </main>
+    <!-- Confetti Script -->
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const container = document.getElementById("confetti-container");
+        const colors = ["#0d631b", "#88d982", "#bdefbe", "#a3f69c"]; // primary, inverse, secondary-container, primary-fixed
+        const numConfetti = 50;
+
+        for (let i = 0; i < numConfetti; i++) {
+          const confetti = document.createElement("div");
+          confetti.classList.add("confetti-piece");
+
+          // Randomize properties
+          const left = Math.random() * 100;
+          const animDuration = 3 + Math.random() * 4; // 3 to 7 seconds
+          const animDelay = Math.random() * 5;
+          const size = 6 + Math.random() * 8;
+          const color = colors[Math.floor(Math.random() * colors.length)];
+          const shape = Math.random() > 0.5 ? "50%" : "0%"; // mix of circles and squares
+
+          confetti.style.left = `${left}vw`;
+          confetti.style.width = `${size}px`;
+          confetti.style.height = `${size}px`;
+          confetti.style.backgroundColor = color;
+          confetti.style.borderRadius = shape;
+          confetti.style.animationDuration = `${animDuration}s`;
+          confetti.style.animationDelay = `${animDelay}s`;
+
+          container.appendChild(confetti);
+        }
+      });
+    </script>
+  </body>
+</html>

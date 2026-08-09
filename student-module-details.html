@@ -1,0 +1,673 @@
+<!doctype html>
+<html class="light" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Module Details - GGGI EcoLearn</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link href="css/global.css" rel="stylesheet" />
+    <script src="js/tailwind-config.js"></script>
+  </head>
+  <body
+    class="bg-background text-on-background font-body-md min-h-screen flex antialiased selection:bg-primary-container selection:text-on-primary-container"
+  >
+    <!-- SideNavBar -->
+    <aside
+      class="h-screen w-64 fixed left-0 top-0 bg-surface dark:bg-inverse-surface flex flex-col py-base px-base border-r border-outline-variant z-20 hidden md:flex"
+    >
+      <a
+        class="px-4 py-6 mb-4 flex items-center gap-3"
+        href="student-dashboard.html"
+      >
+        <div
+          class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center shrink-0"
+        >
+          <span class="material-symbols-outlined fill text-on-primary-container"
+            >eco</span
+          >
+        </div>
+        <div>
+          <h1
+            class="font-headline-lg text-headline-lg font-bold text-primary dark:text-inverse-primary text-xl tracking-tight leading-none mb-1"
+          >
+            EcoLearn
+          </h1>
+          <p class="font-label-md text-label-md text-on-surface-variant">
+            Sustainability Portal
+          </p>
+        </div>
+      </a>
+      <nav class="flex-1 overflow-y-auto space-y-1">
+        <a
+          class="flex items-center gap-3 text-on-surface-variant dark:text-surface-variant px-4 py-2 hover:bg-surface-container-highest dark:hover:bg-surface-variant rounded-full font-label-lg text-label-lg transition-colors duration-200 scale-95 active:scale-100"
+          href="student-dashboard.html"
+        >
+          <span class="material-symbols-outlined fill">dashboard</span>
+          Dashboard
+        </a>
+        <a
+          class="flex items-center gap-3 bg-secondary-container dark:bg-primary-container text-on-secondary-container dark:text-on-primary-container rounded-full px-4 py-2 font-bold font-label-lg text-label-lg transition-transform duration-200 scale-95 active:scale-100"
+          href="student-browse-modules.html"
+        >
+          <span class="material-symbols-outlined fill">explore</span>
+          Browse Modules
+        </a>
+        <a
+          class="flex items-center gap-3 text-on-surface-variant dark:text-surface-variant px-4 py-2 hover:bg-surface-container-highest dark:hover:bg-surface-variant rounded-full font-label-lg text-label-lg transition-colors duration-200 scale-95 active:scale-100"
+          href="student-my-learning.html"
+        >
+          <span class="material-symbols-outlined fill">school</span>
+          My Learning
+        </a>
+        <a
+          class="flex items-center gap-3 text-on-surface-variant dark:text-surface-variant px-4 py-2 hover:bg-surface-container-highest dark:hover:bg-surface-variant rounded-full font-label-lg text-label-lg transition-colors duration-200 scale-95 active:scale-100"
+          href="student-my-certificates.html"
+        >
+          <span class="material-symbols-outlined">workspace_premium</span>
+          Certificates
+        </a>
+        <a
+          class="flex items-center gap-3 text-on-surface-variant dark:text-surface-variant px-4 py-2 hover:bg-surface-container-highest dark:hover:bg-surface-variant rounded-full font-label-lg text-label-lg transition-colors duration-200 scale-95 active:scale-100"
+          href="student-settings.html"
+        >
+          <span class="material-symbols-outlined">settings</span>
+          Settings
+        </a>
+      </nav>
+      <div class="space-y-1 pt-4 border-t border-outline-variant/30 mt-auto">
+        <a
+          class="flex items-center gap-3 text-on-surface-variant dark:text-surface-variant px-4 py-2 hover:bg-surface-container-highest dark:hover:bg-surface-variant rounded-full font-label-lg text-label-lg transition-colors duration-200 scale-95 active:scale-100"
+          href="#"
+        >
+          <span class="material-symbols-outlined">help</span>
+          Help Center
+        </a>
+        <a
+          class="flex items-center gap-3 text-on-surface-variant dark:text-surface-variant px-4 py-2 hover:bg-surface-container-highest dark:hover:bg-surface-variant rounded-full font-label-lg text-label-lg transition-colors duration-200 scale-95 active:scale-100"
+          href="student-login.html"
+        >
+          <span class="material-symbols-outlined">logout</span>
+          Log Out
+        </a>
+      </div>
+    </aside>
+    <!-- Main Content Wrapper -->
+    <div class="flex-1 flex flex-col md:ml-64 min-w-0">
+      <!-- TopNavBar -->
+      <header
+        class="docked full-width top-0 sticky bg-surface dark:bg-inverse-surface shadow-sm z-10"
+      >
+        <div
+          class="flex justify-between items-center h-16 px-margin-desktop md:px-gutter"
+        >
+          <!-- Mobile Menu Button -->
+          <button
+            class="md:hidden p-2 text-on-surface hover:bg-surface-container rounded-full transition-colors mr-2"
+          >
+            <span class="material-symbols-outlined">menu</span>
+          </button>
+          <!-- Search -->
+          <div class="flex-1 flex items-center"></div>
+          <!-- Actions & Profile -->
+          <div class="flex items-center gap-2 sm:gap-4">
+            <button
+              class="text-on-surface-variant dark:text-surface-variant hover:bg-surface-container dark:hover:bg-surface-variant rounded-full p-2 cursor-pointer transition-all active:opacity-70 relative group"
+            >
+              <span class="material-symbols-outlined" data-icon="notifications"
+                >notifications</span
+              >
+              <span
+                class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full ring-2 ring-surface"
+              ></span>
+            </button>
+            <button
+              class="text-on-surface-variant dark:text-surface-variant hover:bg-surface-container dark:hover:bg-surface-variant rounded-full p-2 cursor-pointer transition-all active:opacity-70"
+            >
+              <span class="material-symbols-outlined" data-icon="settings"
+                >settings</span
+              >
+            </button>
+            <a
+              class="h-8 w-8 rounded-full overflow-hidden border border-outline-variant cursor-pointer ml-2 block"
+              href="student-profile.html"
+            >
+              <img
+                alt="User avatar"
+                class="w-full h-full object-cover"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoDUabU0O5G9EKfeQNcY7C9SzrIiaqO_4BY_9ft6ZRP2EPZjfw7Od0_KMrRkYuWlllNt71ydaoLF8_svaQoX6C7xZIt78taWQuIhQh_N2hRk-2Rx3R_QWdqECQTx94CosCYYxeTEf4vwT2xE9nV2lJIUtqVY6SbtSx4vy0p0l_OGqRbvhF5QXHw53sQAGS2P4JE2EYfnBYiCIArvxndmVoZvRZuVst6O_h8rmOSBdIe74G2MeMBzpwjQ"
+              />
+            </a>
+          </div>
+        </div>
+      </header>
+      <!-- Canvas -->
+      <main
+        class="flex-1 p-margin-mobile md:p-gutter max-w-[1280px] mx-auto w-full"
+      >
+        <div
+          class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4"
+        >
+          <div>
+            <h2
+              class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface font-bold"
+            >
+              Module Details
+            </h2>
+            <p class="font-body-md text-body-md text-on-surface-variant mt-1">
+              Review course curriculum and enroll
+            </p>
+          </div>
+        </div>
+        <div class="space-y-8">
+          <!-- Hero Section (Bento style integration) -->
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+            <!-- Thumbnail / Visual -->
+            <div
+              class="lg:col-span-7 rounded-xl overflow-hidden shadow-sm border border-outline-variant/30 relative h-64 md:h-[400px]"
+            >
+              <img
+                alt="Climate Change Thumbnail"
+                class="w-full h-full object-cover absolute inset-0"
+                data-alt="High-quality, abstract visualization of global climate patterns. Features glowing topographical lines and temperature gradients over a dark, stylized earth globe. Soft ambient light, modern corporate data-viz aesthetic, utilizing shades of green, deep blue, and subtle warm tones to indicate climate shifts. Clean, uncluttered, professional."
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuD8y8jr_BIYZekEAk2CzkjD7zCJiEcw0wTwIcr5G2GUM0xueJ3NKA91pZjfGwkk6iaaQ0ddKPEmKLOCIslQvXDHvu_YxgyycOnOq8emhn38Dr_iutFKNOilhn03GLHh62phQEQPwQvepXErMgSvonWPYsRyt91rZwv3AHj5fRVO3CUir6w_9M_BF8zTPKzdLSPfOIBcEUxweeSpLUynyVkGBECE_eqzxV6U9Y4mIgQ6bcsmeoGzjhKyWA"
+              />
+              <div
+                class="absolute inset-0 bg-gradient-to-t from-on-background/80 via-transparent to-transparent"
+              ></div>
+              <div class="absolute bottom-6 left-6 flex space-x-2">
+                <div
+                  class="px-3 py-1 bg-surface-bright/90 backdrop-blur-sm border border-outline-variant/50 rounded-lg font-label-md text-label-md text-on-surface-variant flex items-center space-x-1 shadow-sm"
+                >
+                  <span class="material-symbols-outlined text-[16px]"
+                    >signal_cellular_alt</span
+                  >
+                  <span class="">Intermediate</span>
+                </div>
+                <div
+                  class="px-3 py-1 bg-primary-container/90 backdrop-blur-sm rounded-lg font-label-md text-label-md text-on-primary-container flex items-center space-x-1 shadow-sm"
+                >
+                  <span class="material-symbols-outlined text-[16px]"
+                    >public</span
+                  >
+                  <span class="">Climate Science</span>
+                </div>
+              </div>
+            </div>
+            <!-- Title & CTA -->
+            <div
+              class="lg:col-span-5 flex flex-col justify-center bg-surface-container-lowest rounded-xl p-8 shadow-sm border border-outline-variant/30"
+            >
+              <h1
+                class="font-headline-lg text-headline-lg-mobile md:text-headline-lg font-bold text-on-surface mb-6 mt-0"
+              >
+                Climate Change Fundamentals
+              </h1>
+              <!-- Stats Row -->
+              <div class="grid grid-cols-3 gap-4 mb-8">
+                <div
+                  class="flex flex-col items-center text-center gap-2 p-3 bg-surface-container-low rounded-lg"
+                >
+                  <div
+                    class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0"
+                  >
+                    <span class="material-symbols-outlined text-primary text-[20px]"
+                      >schedule</span
+                    >
+                  </div>
+                  <div>
+                    <p
+                      class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-1"
+                    >
+                      Duration
+                    </p>
+                    <p class="font-title-lg text-title-lg font-bold text-on-surface leading-none">
+                      10h
+                    </p>
+                  </div>
+                </div>
+                <div
+                  class="flex flex-col items-center text-center gap-2 p-3 bg-surface-container-low rounded-lg"
+                >
+                  <div
+                    class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0"
+                  >
+                    <span class="material-symbols-outlined text-primary text-[20px]"
+                      >menu_book</span
+                    >
+                  </div>
+                  <div>
+                    <p
+                      class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-1"
+                    >
+                      Lectures
+                    </p>
+                    <p class="font-title-lg text-title-lg font-bold text-on-surface leading-none">
+                      15
+                    </p>
+                  </div>
+                </div>
+                <div
+                  class="flex flex-col items-center text-center gap-2 p-3 bg-surface-container-low rounded-lg"
+                >
+                  <div
+                    class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0"
+                  >
+                    <span class="material-symbols-outlined text-primary text-[20px]"
+                      >language</span
+                    >
+                  </div>
+                  <div>
+                    <p
+                      class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-1"
+                    >
+                      Language
+                    </p>
+                    <p class="font-title-lg text-title-lg font-bold text-on-surface leading-none">
+                      EN
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <button
+                class="w-full bg-primary text-on-primary font-label-lg text-label-lg py-4 rounded-lg shadow-sm hover:shadow-md hover:bg-surface-tint transition-all flex justify-center items-center space-x-2"
+                onclick="window.location.href='student-learning-view.html'"
+              >
+                <span class="">Enroll Now</span>
+                <span class="material-symbols-outlined">arrow_forward</span>
+              </button>
+            </div>
+          </div>
+          <!-- Content Grid -->
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter pb-12">
+            <!-- Left Column (Description & Reviews) -->
+            <div class="lg:col-span-8 space-y-8">
+              <section
+                class="bg-surface-container-lowest rounded-xl p-8 shadow-sm border border-outline-variant/30"
+              >
+                <h2 class="font-title-lg text-title-lg text-on-surface mb-4">
+                  About this Module
+                </h2>
+                <div
+                  class="font-body-md text-body-md text-on-surface-variant space-y-4"
+                >
+                  <p class="">
+                    This module provides a rigorous foundation in the science of
+                    climate change. It explores the Earth's energy balance, the
+                    greenhouse effect, and the role of anthropogenic emissions
+                    in altering global climate systems. Designed for
+                    professionals seeking to ground their sustainability
+                    initiatives in sound science, the course covers historical
+                    climate data, future projections, and the complex feedback
+                    loops that accelerate warming.
+                  </p>
+                  <p class="">
+                    Participants will engage with data from the IPCC and other
+                    leading scientific bodies, developing the ability to
+                    critically analyze climate reports and communicate
+                    scientific findings to non-technical stakeholders.
+                  </p>
+                </div>
+                <h3
+                  class="font-label-lg text-label-lg font-bold text-on-surface mt-8 mb-4 flex items-center"
+                >
+                  <span class="material-symbols-outlined mr-2 text-primary"
+                    >done_all</span
+                  >
+                  Learning Objectives
+                </h3>
+                <ul
+                  class="space-y-3 font-body-md text-body-md text-on-surface-variant"
+                >
+                  <li class="flex items-start">
+                    <span
+                      class="material-symbols-outlined text-primary text-[20px] mr-3 shrink-0 mt-0.5"
+                      >check_circle</span
+                    >
+                    <span class=""
+                      >Understand the fundamental physical science basis of the
+                      climate system.</span
+                    >
+                  </li>
+                  <li class="flex items-start">
+                    <span
+                      class="material-symbols-outlined text-primary text-[20px] mr-3 shrink-0 mt-0.5"
+                      >check_circle</span
+                    >
+                    <span class=""
+                      >Analyze human influence on the climate and quantify
+                      greenhouse gas emissions.</span
+                    >
+                  </li>
+                  <li class="flex items-start">
+                    <span
+                      class="material-symbols-outlined text-primary text-[20px] mr-3 shrink-0 mt-0.5"
+                      >check_circle</span
+                    >
+                    <span class=""
+                      >Evaluate projected global and regional climate changes
+                      under various scenarios.</span
+                    >
+                  </li>
+                  <li class="flex items-start">
+                    <span
+                      class="material-symbols-outlined text-primary text-[20px] mr-3 shrink-0 mt-0.5"
+                      >check_circle</span
+                    >
+                    <span class=""
+                      >Assess climate risks and the necessity of immediate
+                      mitigation actions.</span
+                    >
+                  </li>
+                </ul>
+              </section>
+              <section
+                class="bg-surface-container-lowest rounded-xl p-8 shadow-sm border border-outline-variant/30"
+              >
+                <div class="flex items-center justify-between mb-6">
+                  <h2 class="font-title-lg text-title-lg text-on-surface">
+                    Student Reviews
+                  </h2>
+                  <div class="flex items-center space-x-1">
+                    <span
+                      class="font-title-lg text-title-lg font-bold text-on-surface"
+                      >4.8</span
+                    >
+                    <div class="flex text-[#FFB400]">
+                      <span
+                        class="material-symbols-outlined"
+                        style="font-variation-settings: &quot;FILL&quot; 1"
+                        >star</span
+                      >
+                      <span
+                        class="material-symbols-outlined"
+                        style="font-variation-settings: &quot;FILL&quot; 1"
+                        >star</span
+                      >
+                      <span
+                        class="material-symbols-outlined"
+                        style="font-variation-settings: &quot;FILL&quot; 1"
+                        >star</span
+                      >
+                      <span
+                        class="material-symbols-outlined"
+                        style="font-variation-settings: &quot;FILL&quot; 1"
+                        >star</span
+                      >
+                      <span
+                        class="material-symbols-outlined"
+                        style="font-variation-settings: &quot;FILL&quot; 1"
+                        >star_half</span
+                      >
+                    </div>
+                    <span
+                      class="font-label-md text-label-md text-on-surface-variant ml-2"
+                      >(124 reviews)</span
+                    >
+                  </div>
+                </div>
+                <div class="space-y-6">
+                  <!-- Review Item -->
+                  <div
+                    class="border-b border-outline-variant/30 pb-6 last:border-0 last:pb-0"
+                  >
+                    <div class="flex justify-between items-start mb-2">
+                      <div class="flex items-center space-x-3">
+                        <div
+                          class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center font-label-lg text-label-lg text-on-surface"
+                        >
+                          JS
+                        </div>
+                        <div>
+                          <div
+                            class="font-label-lg text-label-lg text-on-surface"
+                          >
+                            Jane Smith
+                          </div>
+                          <div
+                            class="font-label-md text-label-md text-on-surface-variant"
+                          >
+                            Policy Analyst
+                          </div>
+                        </div>
+                      </div>
+                      <div class="flex text-[#FFB400] text-[16px]">
+                        <span
+                          class="material-symbols-outlined"
+                          style="font-variation-settings: &quot;FILL&quot; 1"
+                          >star</span
+                        >
+                        <span
+                          class="material-symbols-outlined"
+                          style="font-variation-settings: &quot;FILL&quot; 1"
+                          >star</span
+                        >
+                        <span
+                          class="material-symbols-outlined"
+                          style="font-variation-settings: &quot;FILL&quot; 1"
+                          >star</span
+                        >
+                        <span
+                          class="material-symbols-outlined"
+                          style="font-variation-settings: &quot;FILL&quot; 1"
+                          >star</span
+                        >
+                        <span
+                          class="material-symbols-outlined"
+                          style="font-variation-settings: &quot;FILL&quot; 1"
+                          >star</span
+                        >
+                      </div>
+                    </div>
+                    <p
+                      class="font-body-md text-body-md text-on-surface-variant ml-13 pl-13"
+                    >
+                      "Exceptional breakdown of complex data. The visualizations
+                      used in the lectures made understanding the IPCC reports
+                      significantly easier. Highly recommended for
+                      policymakers."
+                    </p>
+                  </div>
+                </div>
+              </section>
+            </div>
+            <!-- Right Column (Curriculum) -->
+            <div class="lg:col-span-4">
+              <div
+                class="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/30 sticky top-24"
+              >
+                <div
+                  class="p-6 border-b border-outline-variant/20 bg-surface-container-low/50 rounded-t-xl"
+                >
+                  <h2 class="font-title-lg text-title-lg text-on-surface">
+                    Course Curriculum
+                  </h2>
+                  <p
+                    class="font-label-md text-label-md text-on-surface-variant mt-1"
+                  >
+                    5 Modules • 15 Lectures
+                  </p>
+                </div>
+                <div class="divide-y divide-outline-variant/20">
+                  <!-- Lecture 1 (Expanded) -->
+                  <div class="p-4 bg-surface-bright">
+                    <div
+                      class="flex justify-between items-center cursor-pointer mb-2"
+                    >
+                      <h3
+                        class="font-label-lg text-label-lg text-on-surface font-bold"
+                      >
+                        1. The Earth's Energy Balance
+                      </h3>
+                      <span
+                        class="material-symbols-outlined text-on-surface-variant transition-transform rotate-180"
+                        >expand_more</span
+                      >
+                    </div>
+                    <div class="space-y-2 mt-3">
+                      <div
+                        class="flex justify-between items-center p-2 rounded hover:bg-surface-container-low transition-colors group"
+                      >
+                        <div class="flex items-center space-x-3">
+                          <span
+                            class="material-symbols-outlined text-primary text-[20px]"
+                            >play_circle</span
+                          >
+                          <span
+                            class="font-body-md text-body-md text-on-surface-variant group-hover:text-primary transition-colors"
+                            >Solar Radiation &amp; Albedo</span
+                          >
+                        </div>
+                        <span
+                          class="font-label-md text-label-md text-on-surface-variant"
+                          >15:30</span
+                        >
+                      </div>
+                      <div
+                        class="flex justify-between items-center p-2 rounded hover:bg-surface-container-low transition-colors group"
+                      >
+                        <div class="flex items-center space-x-3">
+                          <span
+                            class="material-symbols-outlined text-primary text-[20px]"
+                            >play_circle</span
+                          >
+                          <span
+                            class="font-body-md text-body-md text-on-surface-variant group-hover:text-primary transition-colors"
+                            >The Greenhouse Effect</span
+                          >
+                        </div>
+                        <span
+                          class="font-label-md text-label-md text-on-surface-variant"
+                          >22:15</span
+                        >
+                      </div>
+                      <div
+                        class="flex justify-between items-center p-2 rounded hover:bg-surface-container-low transition-colors group"
+                      >
+                        <div class="flex items-center space-x-3">
+                          <span
+                            class="material-symbols-outlined text-outline text-[20px]"
+                            >description</span
+                          >
+                          <span
+                            class="font-body-md text-body-md text-on-surface-variant group-hover:text-primary transition-colors"
+                            >Reading: Radiative Forcing</span
+                          >
+                        </div>
+                        <span
+                          class="font-label-md text-label-md text-on-surface-variant"
+                          >10 min</span
+                        >
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Lecture 2 (Collapsed) -->
+                  <div
+                    class="p-4 hover:bg-surface-container-low/50 transition-colors cursor-pointer"
+                  >
+                    <div class="flex justify-between items-center">
+                      <h3
+                        class="font-label-lg text-label-lg text-on-surface font-medium"
+                      >
+                        2. Drivers of Climate Change
+                      </h3>
+                      <span
+                        class="material-symbols-outlined text-on-surface-variant"
+                        >expand_more</span
+                      >
+                    </div>
+                  </div>
+                  <!-- Lecture 3 (Collapsed) -->
+                  <div
+                    class="p-4 hover:bg-surface-container-low/50 transition-colors cursor-pointer"
+                  >
+                    <div class="flex justify-between items-center">
+                      <h3
+                        class="font-label-lg text-label-lg text-on-surface font-medium"
+                      >
+                        3. Historical Climate Records
+                      </h3>
+                      <span
+                        class="material-symbols-outlined text-on-surface-variant"
+                        >expand_more</span
+                      >
+                    </div>
+                  </div>
+                  <!-- Lecture 4 (Collapsed) -->
+                  <div
+                    class="p-4 hover:bg-surface-container-low/50 transition-colors cursor-pointer"
+                  >
+                    <div class="flex justify-between items-center">
+                      <h3
+                        class="font-label-lg text-label-lg text-on-surface font-medium"
+                      >
+                        4. Climate Modeling &amp; Projections
+                      </h3>
+                      <span
+                        class="material-symbols-outlined text-on-surface-variant"
+                        >expand_more</span
+                      >
+                    </div>
+                  </div>
+                  <!-- Lecture 5 (Collapsed) -->
+                  <div
+                    class="p-4 hover:bg-surface-container-low/50 transition-colors cursor-pointer rounded-b-xl"
+                  >
+                    <div class="flex justify-between items-center">
+                      <h3
+                        class="font-label-lg text-label-lg text-on-surface font-medium"
+                      >
+                        5. Assessing Climate Risks
+                      </h3>
+                      <span
+                        class="material-symbols-outlined text-on-surface-variant"
+                        >expand_more</span
+                      >
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+      <!-- Footer -->
+      <footer
+        class="full-width bottom-0 bg-surface-container-lowest dark:bg-surface-dim border-t border-outline-variant py-4 px-margin-desktop md:px-gutter mt-auto flex flex-col md:flex-row justify-between items-center gap-4 z-10 relative"
+      >
+        <div class="font-label-lg text-label-lg font-bold text-primary">
+          EcoLearn
+        </div>
+        <div
+          class="font-label-md text-label-md text-secondary dark:text-secondary-fixed"
+        >
+          © 2024 GGGI EcoLearn Platform. All rights reserved.
+        </div>
+        <div class="flex gap-4">
+          <a
+            class="font-label-md text-label-md text-on-surface-variant dark:text-surface-variant hover:text-primary transition-colors opacity-100 hover:opacity-80"
+            href="#"
+            >Version 2.4.0-release</a
+          >
+          <a
+            class="font-label-md text-label-md text-on-surface-variant dark:text-surface-variant hover:text-primary transition-colors opacity-100 hover:opacity-80"
+            href="#"
+            >Privacy Policy</a
+          >
+          <a
+            class="font-label-md text-label-md text-on-surface-variant dark:text-surface-variant hover:text-primary transition-colors opacity-100 hover:opacity-80"
+            href="#"
+            >System Status</a
+          >
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>

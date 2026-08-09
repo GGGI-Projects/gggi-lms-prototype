@@ -1,0 +1,728 @@
+<!doctype html>
+<html class="light" lang="en" style="">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Student Dashboard - GGGI EcoLearn</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link href="css/global.css" rel="stylesheet" />
+    <script src="js/tailwind-config.js"></script>
+  </head>
+  <body
+    class="bg-background text-on-background font-body-md min-h-screen flex antialiased selection:bg-primary-container selection:text-on-primary-container"
+  >
+    <!-- SideNavBar -->
+    <aside
+      class="h-screen w-64 fixed left-0 top-0 bg-surface dark:bg-inverse-surface flex flex-col py-base px-base border-r border-outline-variant z-20 hidden md:flex"
+    >
+      <a
+        class="px-4 py-6 mb-4 flex items-center gap-3"
+        href="student-dashboard.html"
+      >
+        <div
+          class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center shrink-0"
+        >
+          <span class="material-symbols-outlined fill text-on-primary-container"
+            >eco</span
+          >
+        </div>
+        <div>
+          <h1
+            class="font-headline-lg text-headline-lg font-bold text-primary dark:text-inverse-primary text-xl tracking-tight leading-none mb-1"
+          >
+            EcoLearn
+          </h1>
+          <p class="font-label-md text-label-md text-on-surface-variant">
+            Sustainability Portal
+          </p>
+        </div>
+      </a>
+      <nav class="flex-1 overflow-y-auto space-y-1">
+        <a
+          class="flex items-center gap-3 bg-secondary-container dark:bg-primary-container text-on-secondary-container dark:text-on-primary-container rounded-full px-4 py-2 font-bold font-label-lg text-label-lg transition-transform duration-200 scale-95 active:scale-100"
+          href="student-dashboard.html"
+        >
+          <span class="material-symbols-outlined fill">dashboard</span>
+          Dashboard
+        </a>
+        <a
+          class="flex items-center gap-3 text-on-surface-variant dark:text-surface-variant px-4 py-2 hover:bg-surface-container-highest dark:hover:bg-surface-variant rounded-full font-label-lg text-label-lg transition-colors duration-200 scale-95 active:scale-100"
+          href="student-browse-modules.html"
+        >
+          <span class="material-symbols-outlined">explore</span>
+          Browse Modules
+        </a>
+        <a
+          class="flex items-center gap-3 text-on-surface-variant dark:text-surface-variant px-4 py-2 hover:bg-surface-container-highest dark:hover:bg-surface-variant rounded-full font-label-lg text-label-lg transition-colors duration-200 scale-95 active:scale-100"
+          href="student-my-learning.html"
+        >
+          <span class="material-symbols-outlined fill">school</span>
+          My Learning
+        </a>
+        <a
+          class="flex items-center gap-3 text-on-surface-variant dark:text-surface-variant px-4 py-2 hover:bg-surface-container-highest dark:hover:bg-surface-variant rounded-full font-label-lg text-label-lg transition-colors duration-200 scale-95 active:scale-100"
+          href="student-my-certificates.html"
+        >
+          <span class="material-symbols-outlined">workspace_premium</span>
+          Certificates
+        </a>
+        <a
+          class="flex items-center gap-3 text-on-surface-variant dark:text-surface-variant px-4 py-2 hover:bg-surface-container-highest dark:hover:bg-surface-variant rounded-full font-label-lg text-label-lg transition-colors duration-200 scale-95 active:scale-100"
+          href="student-settings.html"
+        >
+          <span class="material-symbols-outlined">settings</span>
+          Settings
+        </a>
+      </nav>
+      <div class="space-y-1 pt-4 border-t border-outline-variant/30 mt-auto">
+        <a
+          class="flex items-center gap-3 text-on-surface-variant dark:text-surface-variant px-4 py-2 hover:bg-surface-container-highest dark:hover:bg-surface-variant rounded-full font-label-lg text-label-lg transition-colors duration-200 scale-95 active:scale-100"
+          href="#"
+        >
+          <span class="material-symbols-outlined">help</span>
+          Help Center
+        </a>
+        <a
+          class="flex items-center gap-3 text-on-surface-variant dark:text-surface-variant px-4 py-2 hover:bg-surface-container-highest dark:hover:bg-surface-variant rounded-full font-label-lg text-label-lg transition-colors duration-200 scale-95 active:scale-100"
+          href="student-login.html"
+        >
+          <span class="material-symbols-outlined">logout</span>
+          Log Out
+        </a>
+      </div>
+    </aside>
+    <!-- Main Content Wrapper -->
+    <div class="flex-1 flex flex-col md:ml-64 min-w-0">
+      <!-- TopNavBar -->
+      <header
+        class="docked full-width top-0 sticky bg-surface dark:bg-inverse-surface shadow-sm z-10"
+      >
+        <div
+          class="flex justify-between items-center h-16 px-margin-desktop md:px-gutter"
+        >
+          <!-- Mobile Menu Button -->
+          <button
+            class="md:hidden p-2 text-on-surface hover:bg-surface-container rounded-full transition-colors mr-2"
+          >
+            <span class="material-symbols-outlined">menu</span>
+          </button>
+          <!-- Search -->
+          <div class="flex-1 flex items-center"></div>
+          <!-- Actions & Profile -->
+          <div class="flex items-center gap-2 sm:gap-4">
+            <button
+              class="text-on-surface-variant dark:text-surface-variant hover:bg-surface-container dark:hover:bg-surface-variant rounded-full p-2 cursor-pointer transition-all active:opacity-70 relative group"
+            >
+              <span class="material-symbols-outlined" data-icon="notifications"
+                >notifications</span
+              >
+              <span
+                class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full ring-2 ring-surface"
+              ></span>
+            </button>
+            <button
+              class="text-on-surface-variant dark:text-surface-variant hover:bg-surface-container dark:hover:bg-surface-variant rounded-full p-2 cursor-pointer transition-all active:opacity-70"
+            >
+              <span class="material-symbols-outlined" data-icon="settings"
+                >settings</span
+              >
+            </button>
+            <a
+              class="h-8 w-8 rounded-full overflow-hidden border border-outline-variant cursor-pointer ml-2 block"
+              href="student-profile.html"
+            >
+              <img
+                alt="User avatar"
+                class="w-full h-full object-cover"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoDUabU0O5G9EKfeQNcY7C9SzrIiaqO_4BY_9ft6ZRP2EPZjfw7Od0_KMrRkYuWlllNt71ydaoLF8_svaQoX6C7xZIt78taWQuIhQh_N2hRk-2Rx3R_QWdqECQTx94CosCYYxeTEf4vwT2xE9nV2lJIUtqVY6SbtSx4vy0p0l_OGqRbvhF5QXHw53sQAGS2P4JE2EYfnBYiCIArvxndmVoZvRZuVst6O_h8rmOSBdIe74G2MeMBzpwjQ"
+              />
+            </a>
+          </div>
+        </div>
+      </header>
+      <!-- Canvas -->
+      <main
+        class="flex-1 p-margin-mobile md:p-gutter max-w-[1280px] mx-auto w-full"
+      >
+        <div
+          class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4"
+        >
+          <div>
+            <h2
+              class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface font-bold"
+            >
+              Student Dashboard
+            </h2>
+            <p class="font-body-md text-body-md text-on-surface-variant mt-1">
+              Hello, Alex! Ready to continue your journey?
+            </p>
+          </div>
+        </div>
+        <!-- Bento Grid Summary Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+          <!-- Stat Card 1 -->
+          <div
+            class="bg-surface-container-lowest border border-outline-variant/30 rounded-xl p-6 shadow-sm hover:shadow-md transition-all flex flex-col gap-4"
+          >
+            <div
+              class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0"
+            >
+              <span class="material-symbols-outlined text-primary text-[24px]"
+                >menu_book</span
+              >
+            </div>
+            <div>
+              <p
+                class="font-label-md text-label-md text-on-surface-variant mb-1 uppercase tracking-wider"
+              >
+                Enrolled
+              </p>
+              <h3
+                class="font-headline-lg text-headline-lg font-bold text-on-surface leading-none"
+              >
+                8
+              </h3>
+            </div>
+          </div>
+          <!-- Stat Card 2 -->
+          <div
+            class="bg-surface-container-lowest border border-outline-variant/30 rounded-xl p-6 shadow-sm hover:shadow-md transition-all flex flex-col gap-4"
+          >
+            <div
+              class="w-12 h-12 rounded-full bg-tertiary/10 flex items-center justify-center shrink-0"
+            >
+              <span class="material-symbols-outlined text-tertiary text-[24px]"
+                >pending_actions</span
+              >
+            </div>
+            <div>
+              <p
+                class="font-label-md text-label-md text-on-surface-variant mb-1 uppercase tracking-wider"
+              >
+                In-Progress
+              </p>
+              <h3
+                class="font-headline-lg text-headline-lg font-bold text-on-surface leading-none"
+              >
+                3
+              </h3>
+            </div>
+          </div>
+          <!-- Stat Card 3 -->
+          <div
+            class="bg-surface-container-lowest border border-outline-variant/30 rounded-xl p-6 shadow-sm hover:shadow-md transition-all flex flex-col gap-4"
+          >
+            <div
+              class="w-12 h-12 rounded-full bg-primary-container/10 flex items-center justify-center shrink-0"
+            >
+              <span
+                class="material-symbols-outlined text-on-primary-container text-[24px]"
+                >check_circle</span
+              >
+            </div>
+            <div>
+              <p
+                class="font-label-md text-label-md text-on-surface-variant mb-1 uppercase tracking-wider"
+              >
+                Completed
+              </p>
+              <h3
+                class="font-headline-lg text-headline-lg font-bold text-on-surface leading-none"
+              >
+                5
+              </h3>
+            </div>
+          </div>
+          <!-- Stat Card 4 -->
+          <div
+            class="bg-surface-container-lowest border border-outline-variant/30 rounded-xl p-6 shadow-sm hover:shadow-md transition-all flex flex-col gap-4"
+          >
+            <div
+              class="w-12 h-12 rounded-full bg-secondary/10 flex items-center justify-center shrink-0"
+            >
+              <span class="material-symbols-outlined text-secondary text-[24px]"
+                >workspace_premium</span
+              >
+            </div>
+            <div>
+              <p
+                class="font-label-md text-label-md text-on-surface-variant mb-1 uppercase tracking-wider"
+              >
+                Certificates
+              </p>
+              <h3
+                class="font-headline-lg text-headline-lg font-bold text-on-surface leading-none"
+              >
+                4
+              </h3>
+            </div>
+          </div>
+        </div>
+        <!-- Continue Learning Section -->
+        <div class="mb-10">
+          <div class="flex items-center justify-between mb-6">
+            <h3 class="font-title-lg text-title-lg text-on-surface">
+              Continue Learning
+            </h3>
+            <a
+              class="font-label-lg text-label-lg text-primary hover:underline flex items-center"
+              href="student-my-learning.html"
+            >
+              View All
+              <span class="material-symbols-outlined ml-1 text-sm"
+                >arrow_forward</span
+              >
+            </a>
+          </div>
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Module 1 -->
+            <div
+              class="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/30 overflow-hidden flex flex-col hover:shadow-md hover:border-primary-fixed-dim transition-all group cursor-pointer"
+              onclick="window.location.href = 'student-learning-view.html'"
+            >
+              <div class="h-40 relative overflow-hidden">
+                <img
+                  alt="Climate Change Fundamentals"
+                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  data-alt="High-quality, abstract visualization of global climate patterns. Features glowing topographical lines and temperature gradients over a dark, stylized earth globe. Soft ambient light, modern corporate data-viz aesthetic, utilizing shades of green, deep blue, and subtle warm tones to indicate climate shifts. Clean, uncluttered, professional."
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuD8y8jr_BIYZekEAk2CzkjD7zCJiEcw0wTwIcr5G2GUM0xueJ3NKA91pZjfGwkk6iaaQ0ddKPEmKLOCIslQvXDHvu_YxgyycOnOq8emhn38Dr_iutFKNOilhn03GLHh62phQEQPwQvepXErMgSvonWPYsRyt91rZwv3AHj5fRVO3CUir6w_9M_BF8zTPKzdLSPfOIBcEUxweeSpLUynyVkGBECE_eqzxV6U9Y4mIgQ6bcsmeoGzjhKyWA"
+                />
+                <div
+                  class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"
+                ></div>
+                <div
+                  class="absolute bottom-4 left-4 right-4 flex justify-between items-center text-white"
+                >
+                  <span
+                    class="px-2 py-1 bg-white/20 backdrop-blur-sm rounded text-xs font-medium border border-white/30 inline-flex items-center gap-1"
+                  >
+                    <span class="material-symbols-outlined text-[14px]"
+                      >public</span
+                    >
+                    Core Module
+                  </span>
+                  <span class="text-xs font-medium flex items-center gap-1"
+                    ><span
+                      class="material-symbols-outlined"
+                      style="font-size: 16px"
+                      >schedule</span
+                    >
+                    2h 15m left</span
+                  >
+                </div>
+              </div>
+              <div class="p-6 flex flex-col flex-1">
+                <h4
+                  class="font-title-lg text-title-lg font-bold text-on-surface mb-2 group-hover:text-primary transition-colors line-clamp-2"
+                >
+                  Climate Change Fundamentals
+                </h4>
+                <p
+                  class="font-body-md text-body-md text-on-surface-variant mb-6 line-clamp-2"
+                >
+                  Understand the science, impacts, and mitigation strategies for
+                  global climate change in this foundational course.
+                </p>
+                <div class="mt-auto">
+                  <div class="flex justify-between items-end mb-2">
+                    <span
+                      class="font-label-md text-label-md text-on-surface-variant"
+                      >In Progress</span
+                    >
+                    <span
+                      class="font-label-lg text-label-lg font-bold text-primary"
+                      >65%</span
+                    >
+                  </div>
+                  <div
+                    class="w-full h-2 bg-secondary-fixed rounded-full mb-4 overflow-hidden"
+                  >
+                    <div
+                      class="h-full bg-primary rounded-full transition-all duration-500 ease-out"
+                      style="width: 65%"
+                    ></div>
+                  </div>
+                  <button
+                    class="w-full py-2.5 bg-primary text-on-primary rounded-lg font-label-lg text-label-lg font-medium hover:bg-primary-container hover:text-on-primary-container transition-colors flex justify-center items-center gap-2"
+                    onclick="event.stopPropagation(); window.location.href='student-learning-view.html'"
+                  >
+                    Continue
+                    <span
+                      class="material-symbols-outlined"
+                      style="font-size: 18px"
+                      >arrow_forward</span
+                    >
+                  </button>
+                </div>
+              </div>
+            </div>
+            <!-- Module 2 -->
+            <div
+              class="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/30 overflow-hidden flex flex-col hover:shadow-md hover:border-primary-fixed-dim transition-all group cursor-pointer"
+              onclick="window.location.href = 'student-learning-view.html'"
+            >
+              <div class="h-40 relative overflow-hidden">
+                <img
+                  alt="Solar Energy Systems"
+                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  data-alt="A clean, professional photo of solar panels stretching across a green landscape under a bright, clear sky. The lighting is bright and modern, fitting a high-end corporate environmental training platform."
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuABlIICj534y4u43LW0e1s84hvpTuilt7sizVYPS7g1yoN5q6I2xAqbqt43p84fKXpCWi8uijPEHRMBzVN77h3rroVxzuv9PK0pL4F_Ya0fiVfkGhxxrgsfQxXpUNf8XKcOfz77GnSP9tCihUkW3oX4cCoUXTsZ2H4oOTBSx3ykZ0P1ulTkfG-KneH2LDD2YVjWxfIsu-vjgV0-qRbDvoWzxygdcSSSC2NcxlTfuZbWSNgvQKl1UJaPzw"
+                />
+                <div
+                  class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"
+                ></div>
+                <div
+                  class="absolute bottom-4 left-4 right-4 flex justify-between items-center text-white"
+                >
+                  <span
+                    class="px-2 py-1 bg-white/20 backdrop-blur-sm rounded text-xs font-medium border border-white/30 inline-flex items-center gap-1"
+                  >
+                    <span class="material-symbols-outlined text-[14px]"
+                      >solar_power</span
+                    >
+                    Elective
+                  </span>
+                  <span class="text-xs font-medium flex items-center gap-1"
+                    ><span
+                      class="material-symbols-outlined"
+                      style="font-size: 16px"
+                      >schedule</span
+                    >
+                    4h 30m left</span
+                  >
+                </div>
+              </div>
+              <div class="p-6 flex flex-col flex-1">
+                <h4
+                  class="font-title-lg text-title-lg font-bold text-on-surface mb-2 group-hover:text-primary transition-colors line-clamp-2"
+                >
+                  Solar Energy Systems
+                </h4>
+                <p
+                  class="font-body-md text-body-md text-on-surface-variant mb-6 line-clamp-2"
+                >
+                  Explore the design, deployment, and economic viability of modern
+                  solar photovoltaic energy solutions.
+                </p>
+                <div class="mt-auto">
+                  <div class="flex justify-between items-end mb-2">
+                    <span
+                      class="font-label-md text-label-md text-on-surface-variant"
+                      >In Progress</span
+                    >
+                    <span
+                      class="font-label-lg text-label-lg font-bold text-primary"
+                      >30%</span
+                    >
+                  </div>
+                  <div
+                    class="w-full h-2 bg-secondary-fixed rounded-full mb-4 overflow-hidden"
+                  >
+                    <div
+                      class="h-full bg-primary rounded-full transition-all duration-500 ease-out"
+                      style="width: 30%"
+                    ></div>
+                  </div>
+                  <button
+                    class="w-full py-2.5 bg-primary text-on-primary rounded-lg font-label-lg text-label-lg font-medium hover:bg-primary-container hover:text-on-primary-container transition-colors flex justify-center items-center gap-2"
+                    onclick="event.stopPropagation(); window.location.href='student-learning-view.html'"
+                  >
+                    Continue
+                    <span
+                      class="material-symbols-outlined"
+                      style="font-size: 18px"
+                      >arrow_forward</span
+                    >
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Recommended Section -->
+        <div>
+          <h3 class="font-title-lg text-title-lg text-on-surface mb-6">
+            Recommended for You
+          </h3>
+          <div
+            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8"
+          >
+            <!-- Recommendation 1 -->
+            <div
+              class="bg-surface-container-lowest rounded-xl overflow-hidden border border-outline-variant/30 shadow-sm hover:shadow-md transition-shadow flex flex-col group cursor-pointer"
+              onclick="window.location.href = 'student-module-details.html'"
+            >
+              <div class="h-48 relative overflow-hidden">
+                <img
+                  alt="Waste Management"
+                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  data-alt="A pristine, highly modern waste management and recycling facility bathed in bright, optimistic daylight, featuring clean metallic surfaces, organized sorting lines, and lush green plants strategically placed to communicate a sustainable, eco-friendly industrial aesthetic."
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuAs1wBKyVLJjFYeSPwXIVz82PPryrZYRGUE-fPP0Ht0R5UqckuYdxbCj58whcMSZDra-pp55LIVOPyRZoLCmIVdcMj2cVj1HYAMMpkBkEdTBh0Rca-WNKgOGulrXUEeupWY7Ub7uMdEqF1mcXx8mxSPO2MIRli5tJ5eXtWFjHR86bHQDUMzpFbQfynNfj3lOye2wgKyPEb0eE1A4-z9iDkeCXc_RqlkFw5YVR6dlMzcYxiEZED0I7CQ7A"
+                />
+                <div class="absolute top-3 left-3 flex items-center">
+                  <span
+                    class="absolute inset-0 rounded-full bg-amber-400 opacity-75 animate-ping"
+                  ></span>
+                  <div
+                    class="relative flex items-center gap-1 bg-amber-500 text-white pl-2 pr-2.5 py-1 rounded-full font-label-md text-label-md font-bold uppercase tracking-wide shadow-md ring-2 ring-white"
+                  >
+                    <span class="material-symbols-outlined fill text-[14px]"
+                      >auto_awesome</span
+                    >
+                    New
+                  </div>
+                </div>
+                <div
+                  class="absolute top-3 right-3 bg-surface-container-lowest/90 backdrop-blur-sm px-2.5 py-1 rounded-lg flex items-center space-x-1 shadow-sm"
+                >
+                  <span
+                    class="material-symbols-outlined text-sm text-secondary"
+                    data-icon="schedule"
+                    >schedule</span
+                  >
+                  <span class="font-label-md text-label-md text-on-surface"
+                    >5 Hours</span
+                  >
+                </div>
+              </div>
+              <div class="p-5 flex-1 flex flex-col">
+                <div class="flex gap-2 mb-3">
+                  <span
+                    class="px-2 py-1 rounded bg-[#fff0c2] text-[#5e4b00] font-label-md text-label-md"
+                    >Intermediate</span
+                  >
+                  <span
+                    class="px-2 py-1 rounded border border-outline-variant text-on-surface-variant font-label-md text-label-md"
+                    >Environment</span
+                  >
+                </div>
+                <h3
+                  class="font-title-lg text-title-lg text-on-surface font-semibold mb-2 group-hover:text-primary transition-colors"
+                >
+                  Circular Economy &amp; Waste Management
+                </h3>
+                <p
+                  class="font-body-md text-body-md text-on-surface-variant text-truncate-2 mb-4 flex-1"
+                >
+                  Master the principles of a circular economy and effective
+                  waste reduction strategies.
+                </p>
+                <div
+                  class="flex items-center justify-between mt-auto pt-4 border-t border-outline-variant/30"
+                >
+                  <div class="flex items-center space-x-2">
+                    <div
+                      class="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center"
+                    >
+                      <span
+                        class="material-symbols-outlined text-sm text-on-surface-variant"
+                        data-icon="person"
+                        >person</span
+                      >
+                    </div>
+                    <span
+                      class="font-label-md text-label-md text-on-surface-variant"
+                      >Dr. Amara Osei</span
+                    >
+                  </div>
+                  <button
+                    class="bg-primary text-on-primary px-4 py-2 rounded-full font-label-md text-label-md hover:bg-primary-container hover:text-on-primary-container transition-colors shadow-sm"
+                    onclick="event.stopPropagation(); window.location.href='student-module-details.html'"
+                  >
+                    Enroll
+                  </button>
+                </div>
+              </div>
+            </div>
+            <!-- Recommendation 2 -->
+            <div
+              class="bg-surface-container-lowest rounded-xl overflow-hidden border border-outline-variant/30 shadow-sm hover:shadow-md transition-shadow flex flex-col group cursor-pointer"
+              onclick="window.location.href = 'student-module-details.html'"
+            >
+              <div class="h-48 relative overflow-hidden">
+                <img
+                  alt="Green Financing"
+                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  data-alt="Abstract conceptual art representing green financing and sustainable economy. Glowing green digital nodes and upward trending financial charts overlaid on a subtle, clean white background with a modern, high-tech corporate SaaS visual style."
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuCq0M6mGg87qleSncaV55K-AjVtAgkWiA6T1Tk1Eo74otgQUYHmS939j22DttkfKlBLq_OLOAOC-UsDLidlvdg0SK5_rGEceAaWcztUxhmc846RxKQ3gkjsU9ghpN9VaUXljYqmuiCcAxR4RG74Jm52DsQI34MAabDCKO5h_rk6fimuyLPlMERgxXBJf5H4zGIWswmz0LJ6KAHbjLQ6jIwV8BJ3d-SCgoDLpnMTXoKjFQztFnCjBd1Xcg"
+                />
+                <div
+                  class="absolute top-3 right-3 bg-surface-container-lowest/90 backdrop-blur-sm px-2.5 py-1 rounded-lg flex items-center space-x-1 shadow-sm"
+                >
+                  <span
+                    class="material-symbols-outlined text-sm text-secondary"
+                    data-icon="schedule"
+                    >schedule</span
+                  >
+                  <span class="font-label-md text-label-md text-on-surface"
+                    >6 Hours</span
+                  >
+                </div>
+              </div>
+              <div class="p-5 flex-1 flex flex-col">
+                <div class="flex gap-2 mb-3">
+                  <span
+                    class="px-2 py-1 rounded bg-error-container text-on-error-container font-label-md text-label-md"
+                    >Advanced</span
+                  >
+                  <span
+                    class="px-2 py-1 rounded border border-outline-variant text-on-surface-variant font-label-md text-label-md"
+                    >Finance</span
+                  >
+                </div>
+                <h3
+                  class="font-title-lg text-title-lg text-on-surface font-semibold mb-2 group-hover:text-primary transition-colors"
+                >
+                  Green Financing Instruments
+                </h3>
+                <p
+                  class="font-body-md text-body-md text-on-surface-variant text-truncate-2 mb-4 flex-1"
+                >
+                  Learn about green bonds, sustainable investment portfolios,
+                  and carbon pricing.
+                </p>
+                <div
+                  class="flex items-center justify-between mt-auto pt-4 border-t border-outline-variant/30"
+                >
+                  <div class="flex items-center space-x-2">
+                    <div
+                      class="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center"
+                    >
+                      <span
+                        class="material-symbols-outlined text-sm text-on-surface-variant"
+                        data-icon="person"
+                        >person</span
+                      >
+                    </div>
+                    <span
+                      class="font-label-md text-label-md text-on-surface-variant"
+                      >Prof. David Kim</span
+                    >
+                  </div>
+                  <button
+                    class="bg-primary text-on-primary px-4 py-2 rounded-full font-label-md text-label-md hover:bg-primary-container hover:text-on-primary-container transition-colors shadow-sm"
+                    onclick="event.stopPropagation(); window.location.href='student-module-details.html'"
+                  >
+                    Enroll
+                  </button>
+                </div>
+              </div>
+            </div>
+            <!-- Recommendation 3 -->
+            <div
+              class="bg-surface-container-lowest rounded-xl overflow-hidden border border-outline-variant/30 shadow-sm hover:shadow-md transition-shadow flex flex-col group cursor-pointer sm:col-span-2 lg:col-span-1"
+              onclick="window.location.href = 'student-module-details.html'"
+            >
+              <div class="h-48 relative overflow-hidden">
+                <img
+                  alt="Carbon Footprint"
+                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  data-alt="A serene, minimalist aerial view of a dense, vibrant green forest canopy merging seamlessly into a pristine, white modern cityscape, illustrating the harmony between urban development and carbon footprint reduction."
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuCced_SUptJ73OiJxr2ZwAJCDFO1w4wTVPlw8ektceKzB9AmMvQZCQfBIkLDzkB7ulZjKPuuJCdHNTwKX4zHpkzFL-KgMitErw_IklcsgLT_C2SRPXKBIt4hax9OioB76P4iFUh7WBvmFCwdUoO_EHrQ2FM2UapcvsKVD5MAY-pkxO4t4J9ll5RT-wWXM5ppdbHsM80dqBWhhf713uJmcrYuK6GqzqKQTCyq88_ZhnEb_J2W8QklCABYQ"
+                />
+                <div
+                  class="absolute top-3 right-3 bg-surface-container-lowest/90 backdrop-blur-sm px-2.5 py-1 rounded-lg flex items-center space-x-1 shadow-sm"
+                >
+                  <span
+                    class="material-symbols-outlined text-sm text-secondary"
+                    data-icon="schedule"
+                    >schedule</span
+                  >
+                  <span class="font-label-md text-label-md text-on-surface"
+                    >3 Hours</span
+                  >
+                </div>
+              </div>
+              <div class="p-5 flex-1 flex flex-col">
+                <div class="flex gap-2 mb-3">
+                  <span
+                    class="px-2 py-1 rounded bg-secondary-container text-on-secondary-container font-label-md text-label-md"
+                    >Beginner</span
+                  >
+                  <span
+                    class="px-2 py-1 rounded border border-outline-variant text-on-surface-variant font-label-md text-label-md"
+                    >Environment</span
+                  >
+                </div>
+                <h3
+                  class="font-title-lg text-title-lg text-on-surface font-semibold mb-2 group-hover:text-primary transition-colors"
+                >
+                  Calculating Carbon Footprint
+                </h3>
+                <p
+                  class="font-body-md text-body-md text-on-surface-variant text-truncate-2 mb-4 flex-1"
+                >
+                  Practical methodologies for assessing and reporting
+                  corporate greenhouse gas emissions.
+                </p>
+                <div
+                  class="flex items-center justify-between mt-auto pt-4 border-t border-outline-variant/30"
+                >
+                  <div class="flex items-center space-x-2">
+                    <div
+                      class="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center"
+                    >
+                      <span
+                        class="material-symbols-outlined text-sm text-on-surface-variant"
+                        data-icon="person"
+                        >person</span
+                      >
+                    </div>
+                    <span
+                      class="font-label-md text-label-md text-on-surface-variant"
+                      >Sarah Jenkins, PhD</span
+                    >
+                  </div>
+                  <button
+                    class="bg-primary text-on-primary px-4 py-2 rounded-full font-label-md text-label-md hover:bg-primary-container hover:text-on-primary-container transition-colors shadow-sm"
+                    onclick="event.stopPropagation(); window.location.href='student-module-details.html'"
+                  >
+                    Enroll
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+      <!-- Footer -->
+      <footer
+        class="full-width bottom-0 bg-surface-container-lowest dark:bg-surface-dim border-t border-outline-variant py-4 px-margin-desktop md:px-gutter mt-auto flex flex-col md:flex-row justify-between items-center gap-4 z-10 relative"
+      >
+        <div class="font-label-lg text-label-lg font-bold text-primary">
+          EcoLearn
+        </div>
+        <div
+          class="font-label-md text-label-md text-secondary dark:text-secondary-fixed"
+        >
+          © 2024 GGGI EcoLearn Platform. All rights reserved.
+        </div>
+        <div class="flex gap-4">
+          <a
+            class="font-label-md text-label-md text-on-surface-variant dark:text-surface-variant hover:text-primary transition-colors opacity-100 hover:opacity-80"
+            href="#"
+            >Version 2.4.0-release</a
+          >
+          <a
+            class="font-label-md text-label-md text-on-surface-variant dark:text-surface-variant hover:text-primary transition-colors opacity-100 hover:opacity-80"
+            href="#"
+            >Privacy Policy</a
+          >
+          <a
+            class="font-label-md text-label-md text-on-surface-variant dark:text-surface-variant hover:text-primary transition-colors opacity-100 hover:opacity-80"
+            href="#"
+            >System Status</a
+          >
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>
