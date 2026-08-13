@@ -1,0 +1,1015 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   DESIGN SYSTEM - "Ocean & Amber"
+   --------------------------------------------------------------------------
+   Deep teal carries the page; amber is the highlight. Cool, light surfaces
+   with warm punctuation.
+
+   Token names are ROLES, not colours (`primary`, `accent`, `surface`, `tint`),
+   so changing the palette again means editing only the values in this block -
+   no component, class name or SVG needs to change.
+
+   Deliberately light-only: the page commits to one palette rather than
+   shipping a half-baked dark mode, so every surface is painted explicitly.
+   ========================================================================== */
+
+@theme {
+  /* --- Surfaces --------------------------------------------------------- */
+  --color-paper: #f6fafa;
+  --color-paper-raised: #ffffff;
+  --color-surface: #e9f2f2;
+  --color-surface-deep: #d2e3e3;
+
+  /* --- Ink -------------------------------------------------------------- */
+  --color-ink: #16242a;
+  --color-ink-soft: #41565e;
+  --color-muted: #5f757b;
+  --color-muted-light: #a8bcc0;
+
+  /* --- Primary: teal ----------------------------------------------------
+     950/900/800 are the deep grounds for the dark sections and carry pale
+     text. `primary` itself is the workhorse - headings, buttons, links -
+     and clears AA comfortably on paper. */
+  --color-primary-950: #08262a;
+  --color-primary-900: #0b3237;
+  --color-primary-800: #0e4449;
+  --color-primary: #0e5f63;
+  --color-primary-600: #2f8a88;
+  --color-primary-500: #5aada8;
+
+  /* --- Tint: shallow water, for supporting surfaces and artwork ---------- */
+  --color-tint: #9ccbc6;
+  --color-tint-pale: #c8e2df;
+  --color-tint-mist: #e4f1ef;
+
+  /* --- Accent: amber -----------------------------------------------------
+     `accent` is bright and is used for GRAPHICS ONLY - the seal, bullets,
+     progress bars, journey nodes. It does not have the contrast to sit as
+     small text on a light background.
+     `accent-strong` is the darker bronze for large display text, and
+     `accent-soft` is for accent text on the dark sections. */
+  --color-accent: #e0a03c;
+  --color-accent-strong: #a86f14;
+  --color-accent-600: #c2841f;
+  --color-accent-soft: #f2ce93;
+  --color-accent-pale: #fbf1de;
+
+  /* --- Subject hues ------------------------------------------------------
+     The curriculum is not one subject, so the band under the hero is not one
+     colour. Three extra hues join teal and amber - all held at a similar
+     depth and chroma so they read as one family rather than a paintbox.
+     Each `-pale` is the wash behind its own hue, and every hue clears AA as
+     text on its wash AND carries white as a filled chip. */
+  --color-clay: #b0512c;
+  --color-clay-pale: #fbe7dd;
+  --color-marine: #14648b;
+  --color-marine-pale: #dbedf6;
+  --color-plum: #6d3d7b;
+  --color-plum-pale: #f0e7f4;
+
+  /* --- Highlight: the sun and warm washes in the artwork ----------------- */
+  --color-highlight: #e8b354;
+  --color-highlight-pale: #fdf2dc;
+
+  /* --- Radii ------------------------------------------------------------ */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 22px;
+  --radius-xl: 32px;
+
+  /* --- Motion ----------------------------------------------------------- */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out-quart: cubic-bezier(0.76, 0, 0.24, 1);
+
+  /* --- Layout ----------------------------------------------------------- */
+  --container-editorial: 76rem;
+}
+
+@theme inline {
+  /* Headings and body share one family. `--font-display` is kept as a separate
+     token so the whole page can be re-pointed at a display face later from
+     this one line, without touching a single component. */
+  --font-display: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+}
+
+/* ==========================================================================
+   BASE
+   ========================================================================== */
+
+:root {
+  color-scheme: light;
+  /* Consumed by the pinned journey section so it can offset for the header. */
+  --header-h: 5.25rem;
+}
+
+/**
+ * Default border colour.
+ *
+ * This MUST stay inside `@layer base`. Tailwind v4 emits its utilities into a
+ * cascade layer, and unlayered rules beat layered ones no matter their
+ * specificity - so an unlayered `*` selector here silently overrides every
+ * `border-*` colour utility on the page, including `border-transparent`.
+ */
+@layer base {
+  * {
+    border-color: var(--color-surface-deep);
+  }
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+  /* Anchor links land below the sticky header rather than under it. */
+  scroll-padding-top: calc(var(--header-h) + 1.5rem);
+}
+
+body {
+  background-color: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-synthesis-weight: none;
+  text-rendering: optimizeLegibility;
+  /* Sections use full-bleed art; never let one push a horizontal scrollbar. */
+  overflow-x: clip;
+}
+
+::selection {
+  background-color: var(--color-primary);
+  color: var(--color-paper);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* ==========================================================================
+   TYPOGRAPHY HELPERS
+   ========================================================================== */
+
+/**
+ * Headings are the same sans as body copy, so hierarchy has to come from
+ * weight and spacing rather than from a change of typeface. Inter needs a
+ * heavier weight and gentler negative tracking than a serif did to hold the
+ * same presence at display sizes.
+ */
+.font-display {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.022em;
+}
+
+/* Display sizes. Fluid, so they never need per-breakpoint overrides. */
+.text-display-xl {
+  font-size: clamp(2.35rem, 4.9vw, 4.05rem);
+  line-height: 1.06;
+  letter-spacing: -0.028em;
+}
+
+.text-display-lg {
+  font-size: clamp(2.05rem, 4.4vw, 3.35rem);
+  line-height: 1.1;
+  letter-spacing: -0.026em;
+}
+
+.text-display-md {
+  font-size: clamp(1.65rem, 3.1vw, 2.4rem);
+  line-height: 1.18;
+  letter-spacing: -0.022em;
+}
+
+/* The oversized 01–05 numerals in the programmes list. */
+.text-numeral {
+  font-family: var(--font-display);
+  font-size: clamp(3.25rem, 8vw, 6.5rem);
+  line-height: 0.85;
+  letter-spacing: -0.045em;
+  font-weight: 700;
+}
+
+/* Small caps label used for eyebrows and metadata. */
+.label-eyebrow {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.measure {
+  max-width: 34rem;
+}
+
+.measure-wide {
+  max-width: 46rem;
+}
+
+/* ==========================================================================
+   LAYOUT
+   ========================================================================== */
+
+/**
+ * Gutter for the full-bleed (fluid) sections - currently the header and hero.
+ *
+ * A single `clamp()` rather than a set of breakpoint steps, so the whitespace
+ * grows smoothly with the viewport instead of jumping at 640/768/1024. It
+ * floors at 1.5rem so phones keep a comfortable thumb margin, and ceilings at
+ * 8rem so the content does not drift apart on very wide monitors.
+ *
+ * Both fluid sections MUST use this same utility: the header logo and the hero
+ * headline share a left edge, and any divergence is immediately visible.
+ */
+@utility px-fluid {
+  padding-inline: clamp(1.5rem, 6vw, 8rem);
+}
+
+/* ==========================================================================
+   TEXTURE - paper grain + topographic contours
+   --------------------------------------------------------------------------
+   Both are inline SVG data URIs so the page has zero external asset requests
+   and renders identically offline (it will be demoed on a projector).
+   ========================================================================== */
+
+.grain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.35;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+}
+
+/* Fixed full-page grain veil, sits above everything but ignores input. */
+.grain-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  opacity: 0.22;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ==========================================================================
+   COMPONENT PRIMITIVES
+   ========================================================================== */
+
+.rule {
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    var(--color-surface-deep) 12%,
+    var(--color-surface-deep) 88%,
+    transparent
+  );
+}
+
+/* Underline that wipes in on hover - used on nav and inline links. */
+.link-wipe {
+  position: relative;
+}
+
+.link-wipe::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -3px;
+  height: 1px;
+  width: 100%;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.4s var(--ease-out-expo);
+}
+
+.link-wipe:hover::after,
+.link-wipe:focus-visible::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+/* ==========================================================================
+   KEYFRAMES
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Hero entrance - CSS, not JS.
+   --------------------------------------------------------------------------
+   The hero must never depend on hydration to become visible: it is the one
+   thing every visitor sees, and a blank headline on a slow government machine
+   is a dead page. These run off the stylesheet alone, and `both` fill-mode
+   means the reduced-motion override below (which collapses duration to ~0)
+   still lands on the finished, visible state.
+   ------------------------------------------------------------------------- */
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.animate-rise {
+  animation: rise-in 0.9s var(--ease-out-expo) both;
+}
+
+@keyframes word-in {
+  from {
+    /* Far enough that the accent underline clears the mask's lower edge. */
+    transform: translateY(160%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.animate-word {
+  animation: word-in 1s var(--ease-out-expo) both;
+}
+
+@keyframes arch-in {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.animate-arch {
+  animation: arch-in 1.3s var(--ease-out-expo) both;
+}
+
+/**
+ * Earth rotation. The distance is one tile width of the equirectangular map,
+ * handed in by <Globe> as `--globe-tile`, so the loop is seamless and the CSS
+ * cannot fall out of step with the geometry.
+ */
+@keyframes globe-spin {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(calc(var(--globe-tile) * -1));
+  }
+}
+
+.globe-spin {
+  animation: globe-spin 54s linear infinite;
+}
+
+@keyframes marquee-x {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+/**
+ * Two tracks, running against each other.
+ *
+ * The reverse row is the SAME keyframes played backwards rather than a second
+ * rule, so the two rows can never fall out of step with each other if the
+ * translate distance is ever tuned. The durations are deliberately not equal
+ * and not a round ratio - matched speeds make the two rows read as one moving
+ * block, which is exactly the effect that makes a marquee feel cheap.
+ *
+ * Spacing between chips is padding on each `li`, never `gap` on the track: a
+ * gap sits between the two copies as well, so the -50% translate would land
+ * half a gap off and the loop would visibly jump every cycle.
+ */
+.animate-marquee {
+  animation: marquee-x 52s linear infinite;
+}
+
+.animate-marquee-reverse {
+  animation: marquee-x 41s linear infinite reverse;
+}
+
+/* Fades the rows out at both edges without painting a colour over them, so
+   the band's background can change without the fades needing to follow. */
+@utility marquee-fade {
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 6%,
+    #000 94%,
+    transparent
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 6%,
+    #000 94%,
+    transparent
+  );
+}
+
+/* --- Subject chips -------------------------------------------------------
+   Every chip is the same piece of glass. The hue is carried entirely by the
+   dot, which is why `--tone` is the only thing the tone classes set - one
+   variable, one job. Uniform chips also mean the eye reads the row as a list
+   of subjects rather than as a ranking, which a mix of filled and outlined
+   chips unavoidably implies. */
+.tone-teal {
+  --tone: var(--color-primary-600);
+}
+.tone-amber {
+  --tone: var(--color-accent);
+}
+.tone-clay {
+  --tone: var(--color-clay);
+}
+.tone-marine {
+  --tone: var(--color-marine);
+}
+.tone-plum {
+  --tone: var(--color-plum);
+}
+
+/**
+ * Frosted glass.
+ *
+ * `backdrop-filter` needs something worth blurring, which is why the band
+ * behind it is a field of soft colour rather than a flat surface - on white
+ * this treatment renders as nothing at all. The saturate() is doing as much
+ * work as the blur: it pulls the colour under each chip up so the glass picks
+ * up whichever hue it happens to be passing over.
+ *
+ * Text is near-black on ~70% white, so contrast holds at every position over
+ * the band - the fluid type bottoms out at 16px on a phone, which is normal
+ * text for contrast purposes and needs the full 4.5:1.
+ */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  border-radius: 9999px;
+  white-space: nowrap;
+  padding: 0.7rem 1.4rem;
+  font-weight: 600;
+  letter-spacing: -0.012em;
+  font-size: clamp(1rem, 1.55vw, 1.4rem);
+  color: var(--color-ink);
+  background-color: color-mix(in oklab, #fff 62%, transparent);
+  border: 1px solid color-mix(in oklab, #fff 92%, transparent);
+  -webkit-backdrop-filter: blur(14px) saturate(1.6);
+  backdrop-filter: blur(14px) saturate(1.6);
+  box-shadow:
+    0 1px 2px color-mix(in oklab, var(--color-primary-950) 8%, transparent),
+    0 10px 24px -14px
+      color-mix(in oklab, var(--color-primary-950) 30%, transparent);
+}
+
+.chip-dot {
+  width: 0.6rem;
+  height: 0.6rem;
+  flex-shrink: 0;
+  border-radius: 9999px;
+  background-color: var(--tone);
+  /* A ring of the same hue, so the dot reads as a marker rather than a speck
+     of dirt at the 8px it occupies on a phone. */
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--tone) 22%, transparent);
+}
+
+@keyframes drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(-2.5%, 0, 0);
+  }
+}
+
+@keyframes bob {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -10px, 0);
+  }
+}
+
+@keyframes sun-pulse {
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.85;
+    transform: scale(1.06);
+  }
+}
+
+@keyframes scroll-cue {
+  0% {
+    transform: translateY(-60%);
+    opacity: 0;
+  }
+  35% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(60%);
+    opacity: 0;
+  }
+}
+
+/* ==========================================================================
+   THE SEASONAL YEAR - header + hero only
+   --------------------------------------------------------------------------
+   One clock, owned by CSS. See docs/seasonal-hero.md.
+
+   `@keyframes year` below is the SINGLE SOURCE OF TRUTH for the four seasonal
+   palettes. content/seasons.ts owns the words; it deliberately holds no colour,
+   because a palette living in two places drifts.
+
+   Everything seasonal - header links, the CTA pill, the underline, the sky,
+   the globe's ocean and land, the terminator's tilt - reads one of these
+   registered properties and follows for free. One animated element, not forty.
+   ========================================================================== */
+
+@property --season-ground {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #0b2b24;
+}
+@property --season-ground-2 {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #12463a;
+}
+@property --season-accent {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #5fe0a8;
+}
+@property --season-text {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #eaf7f0;
+}
+@property --season-text-muted {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #9dc4b4;
+}
+@property --season-ocean {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #0e3a31;
+}
+@property --season-land {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #8fe3be;
+}
+@property --sun-tilt {
+  syntax: "<angle>";
+  inherits: true;
+  initial-value: 0deg;
+}
+
+/**
+ * Hold, then blend.
+ *
+ * Each season settles for ~4s and blends over ~2s, so the colours are actually
+ * AT a season rather than permanently mid-morph. The blend finishes exactly on
+ * the season boundary, which is when the text swaps - so the light sweep
+ * appears to deliver the new season just before the words land.
+ */
+@keyframes year {
+  /* Spring - equinox, sun overhead the equator, terminator vertical. */
+  0%,
+  17% {
+    --season-ground: #0b2b24;
+    --season-ground-2: #12463a;
+    --season-accent: #5fe0a8;
+    --season-text: #eaf7f0;
+    --season-text-muted: #9dc4b4;
+    --season-ocean: #0e3a31;
+    --season-land: #8fe3be;
+    --sun-tilt: 0deg;
+  }
+  /* Summer - June solstice, sun north, terminator tilted. */
+  25%,
+  42% {
+    --season-ground: #07243f;
+    --season-ground-2: #0d3e63;
+    --season-accent: #ffc53d;
+    --season-text: #e8f3fb;
+    --season-text-muted: #93b4cc;
+    --season-ocean: #0b3355;
+    --season-land: #7fc9e8;
+    --sun-tilt: 23.4deg;
+  }
+  /* Autumn - equinox again.
+     Dry season reads as dusty umber and sand rather than red-brown. The
+     original was a saturated red (hue ~12deg, ~40% sat) which sat hot next to
+     three cool grounds and was tiring to look at; this drops the chroma and
+     moves the hue towards amber, keeping the season unmistakable without the
+     glare. */
+  50%,
+  67% {
+    --season-ground: #251f18;
+    --season-ground-2: #3e3425;
+    --season-accent: #e3a765;
+    --season-text: #f7f1e8;
+    --season-text-muted: #c1b4a1;
+    --season-ocean: #302a20;
+    --season-land: #d9c49f;
+    --sun-tilt: 0deg;
+  }
+  /* Winter - December solstice, sun south, terminator tilted the other way. */
+  75%,
+  92% {
+    --season-ground: #0e1730;
+    --season-ground-2: #1a2b52;
+    --season-accent: #8fd0ff;
+    --season-text: #e9effa;
+    --season-text-muted: #9fb2ce;
+    --season-ocean: #132244;
+    --season-land: #a9c4e8;
+    --sun-tilt: -23.4deg;
+  }
+  /* Must equal 0% exactly, or the loop jumps. */
+  100% {
+    --season-ground: #0b2b24;
+    --season-ground-2: #12463a;
+    --season-accent: #5fe0a8;
+    --season-text: #eaf7f0;
+    --season-text-muted: #9dc4b4;
+    --season-ocean: #0e3a31;
+    --season-land: #8fe3be;
+    --sun-tilt: 0deg;
+  }
+}
+
+/**
+ * The clock itself. Lives on an ancestor of BOTH the header and the hero, so
+ * the registered properties inherit into each. Sections further down never
+ * reference them, so they are unaffected.
+ */
+.season-root {
+  animation: year 24s linear infinite;
+}
+
+/* --- The underline is the clock ----------------------------------------- */
+
+/**
+ * Not `text-decoration` - a background that fills across the season, so the
+ * accent rule doubles as the progress indicator for what is about to change.
+ * The element is re-keyed on each season change, so its animation restarts
+ * exactly on the boundary.
+ */
+.season-underline {
+  background-image: linear-gradient(var(--season-accent), var(--season-accent));
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 0% 0.07em;
+  padding-bottom: 0.16em;
+  animation: underline-fill 6s linear infinite;
+}
+
+@keyframes underline-fill {
+  0% {
+    background-size: 0% 0.07em;
+  }
+  92%,
+  100% {
+    background-size: 100% 0.07em;
+  }
+}
+
+/* --- Season change arrives as a light sweep ------------------------------ */
+
+/**
+ * A crossfade is what every template does. This travels across the hero on the
+ * terminator's diagonal instead, so the new season reads as being carried in.
+ * Timed to the last ~2s of each season - the same window as the colour blend.
+ */
+.season-sweep {
+  position: absolute;
+  inset: -20% -60%;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  opacity: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 35%,
+    var(--season-accent) 50%,
+    transparent 65%
+  );
+  animation: season-sweep 6s linear infinite;
+}
+
+@keyframes season-sweep {
+  0%,
+  66% {
+    transform: translate3d(-60%, 0, 0);
+    opacity: 0;
+  }
+  74% {
+    opacity: 0.16;
+  }
+  90% {
+    opacity: 0.16;
+  }
+  100% {
+    transform: translate3d(60%, 0, 0);
+    opacity: 0;
+  }
+}
+
+/* --- Buttons: ripple on hover -------------------------------------------- */
+
+.btn-ripple {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 9999px;
+  transition: color 0.35s ease;
+}
+
+/* Above the background, below the label. */
+.btn-wave {
+  position: absolute;
+  z-index: 0;
+  left: var(--ripple-x, 50%);
+  top: var(--ripple-y, 50%);
+  width: 260%;
+  aspect-ratio: 1;
+  border-radius: 9999px;
+  background: var(--btn-wave);
+  /* The centring offset lives inside `transform`, not in the standalone
+     `translate` property - the two do not compose reliably once `transform`
+     is being transitioned, which leaves the circle hanging off the pointer by
+     its top-left corner instead of centred on it. */
+  transform: translate(-50%, -50%) scale(0);
+  transform-origin: center;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    transform 0.55s var(--ease-out-expo),
+    opacity 0.35s ease;
+}
+
+.btn-ripple:hover .btn-wave,
+.btn-ripple:focus-visible .btn-wave {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+}
+
+.btn-label {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+/* Filled: accent ground, floods to the season's white. */
+.btn-filled {
+  background-color: var(--season-accent, #5fe0a8);
+  color: var(--season-ground, #0b2b24);
+  --btn-wave: var(--season-text, #eaf7f0);
+}
+
+/* Outlined: floods to white, so the label flips to the ground colour to stay
+   legible once the wave has covered it. */
+/* A 1px hairline outline reads as faint next to a solid accent pill - the
+   Sign in button was easy to miss. Slightly heavier border plus a barely
+   there fill gives it a surface, so it reads as a button rather than an
+   outline, without competing with the primary action. */
+.btn-outlined {
+  color: var(--season-text, #eaf7f0);
+  /* 2px, not 1.5px: Chrome snaps fractional border widths to whole device
+     pixels, so 1.5px silently rendered as 1px on a 1x display and the bump
+     did nothing there. */
+  border: 2px solid var(--season-text, #eaf7f0);
+  background-color: color-mix(
+    in oklab,
+    var(--season-text, #eaf7f0) 10%,
+    transparent
+  );
+  --btn-wave: var(--season-text, #eaf7f0);
+}
+
+.btn-outlined:hover,
+.btn-outlined:focus-visible {
+  color: var(--season-ground, #0b2b24);
+}
+
+/* --- Globe: terminator and the Sri Lanka marker --------------------------- */
+
+/**
+ * The day/night boundary tilts with the sun's declination. `transform-box:
+ * view-box` is what lets the origin be given in viewBox units.
+ */
+.globe-terminator {
+  transform-box: view-box;
+  transform-origin: 220px 220px;
+  transform: rotate(var(--sun-tilt));
+  transition: transform 0.4s linear;
+}
+
+.sl-pulse {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: sl-pulse 3.4s ease-out infinite;
+}
+
+@keyframes sl-pulse {
+  0% {
+    transform: scale(0.55);
+    opacity: 0.45;
+  }
+  70%,
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+
+/* --- Year ribbon --------------------------------------------------------- */
+
+.ribbon-fill {
+  transform-origin: left center;
+  animation: ribbon-fill 6s linear infinite;
+}
+
+@keyframes ribbon-fill {
+  0% {
+    transform: scaleX(0);
+  }
+  92%,
+  100% {
+    transform: scaleX(1);
+  }
+}
+
+/* --- Seasonal particles -------------------------------------------------- */
+
+/**
+ * Sri Lankan, not imported: no snow. Transforms and opacity only, so these
+ * stay off the main thread's paint path.
+ */
+.particle {
+  position: absolute;
+  top: -8%;
+  left: var(--p-left);
+  width: calc(var(--p-scale) * 10px);
+  height: calc(var(--p-scale) * 10px);
+  opacity: 0;
+  will-change: transform, opacity;
+  animation-duration: var(--p-duration);
+  animation-delay: var(--p-delay);
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+}
+
+/* Phones get a thinner field: less to paint, and less noise over the copy. */
+@media (max-width: 639px) {
+  .particle:nth-child(n + 9) {
+    display: none;
+  }
+}
+
+/* Spring - new leaves, rising and swaying. */
+.particle-spring {
+  border-radius: 60% 10% 60% 10%;
+  background: var(--season-accent);
+  animation-name: particle-rise;
+}
+
+/* Summer - slow sun motes. */
+.particle-summer {
+  border-radius: 9999px;
+  background: var(--season-accent);
+  filter: blur(1px);
+  animation-name: particle-mote;
+}
+
+/* Autumn - dry-season dust on a lateral drift. */
+.particle-autumn {
+  border-radius: 9999px;
+  background: var(--season-accent);
+  animation-name: particle-dust;
+}
+
+/* Winter - monsoon rain, steep and fast. */
+.particle-winter {
+  width: 1.5px;
+  height: calc(var(--p-scale) * 26px);
+  border-radius: 9999px;
+  background: linear-gradient(var(--season-accent), transparent);
+  animation-name: particle-rain;
+  animation-duration: calc(var(--p-duration) * 0.28);
+}
+
+@keyframes particle-rise {
+  0% {
+    transform: translate3d(0, 120vh, 0) rotate(0deg);
+    opacity: 0;
+  }
+  15%,
+  80% {
+    opacity: var(--p-opacity);
+  }
+  100% {
+    transform: translate3d(var(--p-drift), -10vh, 0) rotate(220deg);
+    opacity: 0;
+  }
+}
+
+@keyframes particle-mote {
+  0% {
+    transform: translate3d(0, 100vh, 0);
+    opacity: 0;
+  }
+  20%,
+  75% {
+    opacity: var(--p-opacity);
+  }
+  100% {
+    transform: translate3d(var(--p-drift), 0vh, 0);
+    opacity: 0;
+  }
+}
+
+@keyframes particle-dust {
+  0% {
+    transform: translate3d(-10vw, 30vh, 0);
+    opacity: 0;
+  }
+  20%,
+  80% {
+    opacity: var(--p-opacity);
+  }
+  100% {
+    transform: translate3d(90vw, 55vh, 0);
+    opacity: 0;
+  }
+}
+
+@keyframes particle-rain {
+  0% {
+    transform: translate3d(0, -10vh, 0) rotate(12deg);
+    opacity: 0;
+  }
+  10%,
+  85% {
+    opacity: var(--p-opacity);
+  }
+  100% {
+    transform: translate3d(calc(var(--p-drift) * 0.3), 115vh, 0) rotate(12deg);
+    opacity: 0;
+  }
+}
+
+/* ==========================================================================
+   REDUCED MOTION
+   --------------------------------------------------------------------------
+   `motion` components read prefers-reduced-motion via useReducedMotion, but
+   the CSS-driven ambience (marquee, drift, bob) has to be silenced here.
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+    /* Delays must be zeroed too, not just durations. The staggered entrance
+       animations use `animation-delay` up to 1.35s with `fill-mode: both`,
+       which holds the element at opacity 0 for the whole delay - collapsing
+       only the duration would leave a reduced-motion visitor staring at an
+       invisible hero. */
+    animation-delay: 0ms !important;
+    transition-delay: 0ms !important;
+  }
+}
