@@ -1241,6 +1241,77 @@ body {
   }
 }
 
+/* ==========================================================================
+   FORM CONTROLS
+   --------------------------------------------------------------------------
+   Used by the account pages. They live here rather than as a pile of utilities
+   at the call site for the same reason the buttons do: an input, a select and a
+   textarea have to be the same object, and three call sites writing their own
+   padding is how a form ends up with three heights.
+
+   These only ever sit on `paper` / `paper-raised`. That is what lets them use a
+   single-colour focus ring where the rest of the page needs the two-tone one -
+   see the override below.
+   ========================================================================== */
+
+.field {
+  display: block;
+  width: 100%;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-surface-deep);
+  background-color: var(--color-paper-raised);
+  padding: 0.85rem 1rem;
+  /* The Body step, like every other piece of reading on the page. Anything
+     smaller is also below the 16px at which iOS Safari zooms the viewport on
+     focus, which on a phone reads as the page lurching sideways. */
+  font-size: 1.125rem;
+  line-height: 1.5;
+  color: var(--color-ink);
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.25s ease,
+    background-color 0.25s ease;
+}
+
+.field::placeholder {
+  color: var(--color-muted-light);
+}
+
+.field:hover:not(:focus) {
+  border-color: var(--color-muted-light);
+}
+
+/**
+ * A quieter focus ring, for controls only.
+ *
+ * The global `:focus-visible` carries a 6px near-black halo because it has to
+ * be visible on the dark sections as well as the light ones, and no single
+ * colour clears 3:1 on both. A form control has no such problem - it is always
+ * on paper - and that ring is loud enough on a text field that it reads as an
+ * error state, on the one element a visitor is looking straight at while they
+ * type. Teal on paper measures 6.9:1, well past the 3:1 an indicator needs.
+ *
+ * A text input matches `:focus-visible` on click as well as on Tab, so this is
+ * the ring for every focus, not just keyboard focus.
+ */
+.field:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 0;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 4px color-mix(in oklab, var(--color-primary) 12%, transparent);
+}
+
+/* Native control, tinted. A hand-built checkbox would have to re-implement the
+   indeterminate state, the keyboard behaviour and the label association that
+   this one already has; `accent-color` buys the palette without any of that. */
+.checkbox {
+  accent-color: var(--color-primary);
+  width: 1.15rem;
+  height: 1.15rem;
+  flex-shrink: 0;
+  border-radius: var(--radius-xs);
+}
+
 /**
  * A decorative layer that cannot affect anything outside its own box.
  *

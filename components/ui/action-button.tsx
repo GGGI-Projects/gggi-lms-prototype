@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRef, type ReactNode } from "react";
 
 /**
- * The one button used across the header and hero.
+ * The one button used across the page.
  *
  * Hover is a ripple: a circle of the wave colour grows from wherever the
  * pointer entered and floods the button. It replaces the magnetic pull the
@@ -15,15 +15,25 @@ import { useRef, type ReactNode } from "react";
  * The ripple sits between the button's background and its label, which is why
  * the label is wrapped: a positioned pseudo-element would otherwise paint over
  * the text, and a negative z-index would hide it behind the background.
+ *
+ * Omit `href` and it renders a real `<button>` instead of a link - which is
+ * what the sign-up form's submit needs. That is why the element is chosen here
+ * rather than at the call site: a second ripple implementation living in the
+ * form is how the page's primary action ends up being two slightly different
+ * buttons depending on which one you are looking at.
  */
 export function ActionButton({
   href,
+  type = "button",
   variant = "filled",
   size = "md",
   className = "",
   children,
 }: {
-  href: string;
+  /** Omit to render a `<button>`. */
+  href?: string;
+  /** Ignored when `href` is set. */
+  type?: "button" | "submit";
   /**
    * `filled` / `outlined` read the seasonal palette and belong to the header
    * and hero. `solid` / `line` use the page palette and are for every other
@@ -35,10 +45,13 @@ export function ActionButton({
   className?: string;
   children: ReactNode;
 }) {
-  const ref = useRef<HTMLAnchorElement>(null);
+  // One ref for three possible elements, so the ripple maths below is written
+  // once. Only `getBoundingClientRect` and `style` are read off it, and every
+  // element this can render has both.
+  const ref = useRef<HTMLElement>(null);
 
   /** Anchor the ripple's origin to the pointer, on entry and on exit. */
-  const trackPointer = (event: React.PointerEvent<HTMLAnchorElement>) => {
+  const trackPointer = (event: React.PointerEvent<HTMLElement>) => {
     const element = ref.current;
     if (!element) return;
     const box = element.getBoundingClientRect();
@@ -47,7 +60,6 @@ export function ActionButton({
   };
 
   const shared = {
-    ref,
     onPointerEnter: trackPointer,
     onPointerLeave: trackPointer,
     className: `btn-ripple btn-${variant} btn-${size} ${className}`,
@@ -60,13 +72,21 @@ export function ActionButton({
     </>
   );
 
+  if (href === undefined) {
+    return (
+      <button ref={ref as React.RefObject<HTMLButtonElement>} type={type} {...shared}>
+        {content}
+      </button>
+    );
+  }
+
   // In-page anchors stay plain <a>; the router has nothing to do with them.
   return href.startsWith("#") ? (
-    <a href={href} {...shared}>
+    <a ref={ref as React.RefObject<HTMLAnchorElement>} href={href} {...shared}>
       {content}
     </a>
   ) : (
-    <Link href={href} {...shared}>
+    <Link ref={ref as React.RefObject<HTMLAnchorElement>} href={href} {...shared}>
       {content}
     </Link>
   );
