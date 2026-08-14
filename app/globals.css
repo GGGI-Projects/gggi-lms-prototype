@@ -179,9 +179,59 @@
 
 html {
   -webkit-text-size-adjust: 100%;
+  /* Native anchor easing, for every visitor who is NOT getting Lenis - the low
+     tier, reduced motion, and the moment before hydration. Lenis handles
+     anchors itself when it is running, and the rule below gets this out of its
+     way so the two are never easing the same jump at once. */
   scroll-behavior: smooth;
   /* Anchor links land below the sticky header rather than under it. */
   scroll-padding-top: calc(var(--header-h) + 1.5rem);
+}
+
+/* ==========================================================================
+   SMOOTH SCROLL (Lenis)
+   --------------------------------------------------------------------------
+   Transcribed from `lenis/dist/lenis.css` rather than imported, so the page
+   keeps its single stylesheet and these rules can be read next to everything
+   else that touches scrolling. Re-check against the package on upgrade.
+
+   All of it is scoped to classes Lenis puts on <html> itself, so none of it
+   applies to a visitor who is not getting smooth scroll.
+   ========================================================================== */
+
+/* Lenis drives the scroll position frame by frame with `window.scrollTo`, and
+   that call obeys `scroll-behavior`. Left as `smooth`, the browser would ease
+   every one of those steps as well - two easings fighting over the same
+   pixels, which feels exactly as bad as it sounds. */
+html.lenis {
+  scroll-behavior: auto;
+}
+
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis:not(.lenis-autoToggle).lenis-stopped {
+  overflow: clip;
+}
+
+.lenis [data-lenis-prevent],
+.lenis [data-lenis-prevent-wheel],
+.lenis [data-lenis-prevent-touch],
+.lenis [data-lenis-prevent-vertical],
+.lenis [data-lenis-prevent-horizontal] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}
+
+.lenis.lenis-autoToggle {
+  transition-property: overflow;
+  transition-duration: 1ms;
+  transition-behavior: allow-discrete;
 }
 
 body {

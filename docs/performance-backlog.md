@@ -224,6 +224,49 @@ scroll-driven JavaScript.
 
 ---
 
+## Smooth scroll — added, and the rules it lives under
+
+`components/motion/smooth-scroll.tsx` runs Lenis. It is in this document rather
+than in the "done" pile because it is the one item here that **costs**
+performance rather than saving it, and the constraints around it are what keep
+that cost from reaching the people who cannot afford it.
+
+The trade: native scrolling runs on the **compositor thread** and stays smooth
+even when the main thread is busy. Every scroll-smoothing library moves
+scrolling onto the main thread. That is fine on a capable machine and actively
+harmful on a weak one.
+
+So it runs **only** on the high tier, never under `prefers-reduced-motion`, and
+never on touch. The tier is watched with a `MutationObserver` rather than read
+once, so a demotion by `PerfWatchdog` several seconds in tears the scroller back
+out mid-session.
+
+Things not to change without understanding why they are set:
+
+- **`duration: 0.9`, not Lenis's 1.2 default.** Past about a second the page
+  keeps gliding after the reader has stopped asking, which reads as lag rather
+  than weight.
+- **`syncTouch: false`.** Phones already have momentum. Smoothing on top feels
+  wrong and costs main-thread time on the devices least able to spare it.
+- **Lenis specifically, not Locomotive or GSAP ScrollSmoother.** Those two move
+  the document inside a transformed wrapper, and a transform creates a
+  containing block — the fixed header and the journey section's sticky pinning
+  would both break. Lenis lerps and calls `window.scrollTo`, so real scroll
+  position, real scrollbar, real anchors, and every IntersectionObserver on the
+  page keeps working.
+- **`html.lenis { scroll-behavior: auto }`.** Lenis drives the position frame by
+  frame with `window.scrollTo`, which obeys `scroll-behavior`. Leaving it
+  `smooth` means two easings fighting over the same pixels. The unscoped
+  `scroll-behavior: smooth` stays for everyone not getting Lenis.
+- **The mobile menu locks it.** `setScrollLocked` stops Lenis alongside the
+  `overflow: hidden` on body — the latter alone does not stop Lenis, which
+  keeps its own position and would drive the page under the overlay.
+
+Worth revisiting if it ever feels wrong: `duration`, and whether the expo-out
+easing is right. Everything else is structural.
+
+---
+
 ## Dropped, and why
 
 **Capping the globe's raster size** by rendering small and scaling up with

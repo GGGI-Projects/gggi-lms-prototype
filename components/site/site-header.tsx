@@ -6,6 +6,7 @@ import { AnimatePresence, motion, useScroll, useMotionValueEvent } from "motion/
 import { BRAND } from "@/lib/brand";
 import { LeafMark } from "@/components/art/scenes";
 import { ActionButton } from "@/components/ui/action-button";
+import { setScrollLocked } from "@/components/motion/smooth-scroll";
 
 const NAV = [
   { label: "Programmes", href: "#programmes" },
@@ -24,10 +25,17 @@ export function SiteHeader() {
   });
 
   // Freeze the page behind the mobile menu while it is open.
+  //
+  // Both mechanisms are needed, not one or the other: `overflow: hidden` stops
+  // the browser's own scrolling, and `setScrollLocked` stops Lenis, which keeps
+  // its own scroll position and would otherwise carry on driving the page
+  // underneath the overlay.
   useEffect(() => {
     document.body.style.overflow = menuOpen ? "hidden" : "";
+    setScrollLocked(menuOpen);
     return () => {
       document.body.style.overflow = "";
+      setScrollLocked(false);
     };
   }, [menuOpen]);
 

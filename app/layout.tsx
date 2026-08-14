@@ -3,6 +3,7 @@ import { Hanken_Grotesk, Source_Sans_3 } from "next/font/google";
 import { BRAND } from "@/lib/brand";
 import { PERF_TIER_SCRIPT } from "@/lib/perf-tier";
 import { PerfWatchdog } from "@/components/motion/perf-watchdog";
+import { SmoothScroll } from "@/components/motion/smooth-scroll";
 import "./globals.css";
 
 /**
@@ -69,6 +70,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         */}
         <script dangerouslySetInnerHTML={{ __html: PERF_TIER_SCRIPT }} />
         <PerfWatchdog />
+        <SmoothScroll />
         {children}
         {/* Paper grain veil over the whole page. Purely decorative - and the
             first thing the low tier drops, because a fixed full-viewport layer
