@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Hanken_Grotesk, Source_Sans_3 } from "next/font/google";
 import { BRAND } from "@/lib/brand";
+import { PERF_TIER_SCRIPT } from "@/lib/perf-tier";
+import { PerfWatchdog } from "@/components/motion/perf-watchdog";
 import "./globals.css";
 
 /**
@@ -57,8 +59,20 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${hankenGrotesk.variable} ${sourceSans.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-paper text-ink">
+        {/*
+          Picks the performance tier before anything paints. A plain inline
+          script rather than `next/script`, deliberately: this has to run
+          synchronously while the document is being parsed, so that the very
+          first frame is already the right version of the page. As the first
+          child of <body> it executes before any of the content below it is
+          laid out, and it only sets one attribute on <html>. See lib/perf-tier.ts.
+        */}
+        <script dangerouslySetInnerHTML={{ __html: PERF_TIER_SCRIPT }} />
+        <PerfWatchdog />
         {children}
-        {/* Paper grain veil over the whole page. Purely decorative. */}
+        {/* Paper grain veil over the whole page. Purely decorative - and the
+            first thing the low tier drops, because a fixed full-viewport layer
+            over a scrolling page is paid for on every scrolled frame. */}
         <div className="grain-overlay" aria-hidden="true" />
       </body>
     </html>

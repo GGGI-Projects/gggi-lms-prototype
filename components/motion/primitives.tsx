@@ -25,7 +25,6 @@ import {
   Fragment,
   useEffect,
   useRef,
-  useState,
   useSyncExternalStore,
   type ReactNode,
 } from "react";
@@ -295,6 +294,18 @@ export function Magnetic({
  * Renders the *final* value on the server, not zero - these are the numbers
  * that tell a visitor what they are signing up for, and a page that says "0
  * modules" because JS never ran is worse than one that simply does not count.
+ *
+ * The tween writes to the DOM node rather than to React state. There are four
+ * of these side by side in the hero, so a `setState` per frame meant four
+ * component renders and four reconciliations on every frame of a 1.6s
+ * animation - all of it landing in the first seconds of the page, competing
+ * with hydration and the hero's entrance for the same main thread, to change
+ * at most three characters.
+ *
+ * Writing `textContent` is safe against React here because the element has a
+ * single text child: React sets and updates that child with `textContent` too,
+ * so a later render simply overwrites, and it overwrites with the same final
+ * value this lands on.
  */
 export function Counter({
   value,
@@ -312,23 +323,30 @@ export function Counter({
   const ref = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, { once: true, amount: 0.6 });
   const reduce = useReducedMotion();
-  const [display, setDisplay] = useState(value);
 
   useEffect(() => {
-    if (!inView || reduce) return;
+    const element = ref.current;
+    if (!inView || reduce || !element) return;
+
     const controls = animate(0, value, {
       duration,
       ease: "easeOut",
-      onUpdate: (latest) => setDisplay(Math.round(latest)),
+      onUpdate: (latest) => {
+        element.textContent = `${prefix}${Math.round(latest)}${suffix}`;
+      },
     });
-    return () => controls.stop();
-  }, [inView, reduce, value, duration]);
+
+    return () => {
+      controls.stop();
+      // Stopping mid-tween would otherwise leave a number that is not the one
+      // the section is claiming.
+      element.textContent = `${prefix}${value}${suffix}`;
+    };
+  }, [inView, reduce, value, duration, prefix, suffix]);
 
   return (
     <span ref={ref} className={className}>
-      {prefix}
-      {display}
-      {suffix}
+      {`${prefix}${value}${suffix}`}
     </span>
   );
 }

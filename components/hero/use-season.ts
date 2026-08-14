@@ -45,13 +45,17 @@ function yearAnimation(root: HTMLElement | null) {
 
 /**
  * `running` is the hero's visibility. When it is false the clock is paused, so
- * `currentTime` is a constant and there is nothing to read - polling it would
- * be a `getAnimations()` call and an array allocation per frame to learn the
- * same number over and over.
+ * `currentTime` is a constant and there is nothing to read.
+ *
+ * `syncKey` is bumped by anything that moves the clock by hand - currently
+ * `jumpToSeason`. The schedule below sleeps until the boundary it calculated,
+ * so a jump would otherwise leave it waiting for a moment that has already been
+ * skipped past; changing the key restarts the effect and re-reads.
  */
 export function useSeasonIndex(
   root: RefObject<HTMLElement | null>,
   running = true,
+  syncKey = 0,
 ) {
   const [index, setIndex] = useState(0);
 
@@ -59,30 +63,60 @@ export function useSeasonIndex(
     const element = root.current;
     if (!element || !running) return;
 
-    let frame = 0;
-    let last = -1;
+    let timer = 0;
+    let stopped = false;
 
-    // A rAF read rather than a timeout to the next boundary: it is a single
-    // number comparison per frame, it costs nothing, and it handles pause and
-    // resume without any extra state. rAF also stops when the tab is hidden.
+    // Read once, then sleep until the next season boundary.
+    //
+    // This used to poll on requestAnimationFrame, which was described as
+    // costing nothing - it did not. Each frame called `getAnimations()`, which
+    // forces the animation timeline to be updated and allocates a fresh array
+    // to be searched, sixty times a second, forever, to learn a number that
+    // changes four times a minute.
+    //
+    // The drift argument that made CSS the clock still holds, and is in fact
+    // stronger here: this still reads `currentTime` off the CSS animation and
+    // never keeps a count of its own, so a throttled or suspended timer cannot
+    // desynchronise anything - the next read simply corrects itself.
     const read = () => {
+      if (stopped) return;
+
       const ms = toMilliseconds(yearAnimation(element)?.currentTime);
-      if (ms != null) {
-        const next = Math.min(
-          SEASONS.length - 1,
-          Math.floor((ms % YEAR_MS) / SEASON_MS),
-        );
-        if (next !== last) {
-          last = next;
-          setIndex(next);
-        }
+
+      // The animation may not exist yet on the first pass. Try again shortly
+      // rather than giving up, which would freeze the hero on spring.
+      if (ms == null) {
+        timer = window.setTimeout(read, 100);
+        return;
       }
-      frame = requestAnimationFrame(read);
+
+      const elapsed = ms % YEAR_MS;
+      setIndex(Math.min(SEASONS.length - 1, Math.floor(elapsed / SEASON_MS)));
+
+      // Land just past the boundary, so the read that follows is unambiguously
+      // inside the next season rather than exactly on the edge of it.
+      timer = window.setTimeout(read, SEASON_MS - (elapsed % SEASON_MS) + 16);
     };
 
-    frame = requestAnimationFrame(read);
-    return () => cancelAnimationFrame(frame);
-  }, [root, running]);
+    read();
+
+    // A hidden tab throttles timers, so the wake-up after one can be late by
+    // an arbitrary amount. Re-reading on the way back in costs one call and
+    // means the words are never showing the wrong season on return.
+    const resync = () => {
+      if (document.visibilityState !== "visible") return;
+      window.clearTimeout(timer);
+      read();
+    };
+
+    document.addEventListener("visibilitychange", resync);
+
+    return () => {
+      stopped = true;
+      window.clearTimeout(timer);
+      document.removeEventListener("visibilitychange", resync);
+    };
+  }, [root, running, syncKey]);
 
   return index;
 }

@@ -27,7 +27,7 @@ export function SeasonParticles({ index }: { index: number }) {
   return (
     <div
       aria-hidden="true"
-      className="pointer-events-none absolute inset-0 -z-10 overflow-hidden"
+      className="hero-layer pointer-events-none absolute inset-0 -z-10 overflow-hidden"
     >
       <AnimatePresence mode="wait">
         <motion.div

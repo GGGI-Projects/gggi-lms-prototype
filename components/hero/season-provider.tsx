@@ -45,12 +45,15 @@ export const useSeason = () => useContext(SeasonContext);
 export function SeasonProvider({ children }: { children: ReactNode }) {
   const root = useRef<HTMLDivElement>(null);
   const [running, setRunning] = useState(true);
-  const index = useSeasonIndex(root, running);
+  const [syncKey, setSyncKey] = useState(0);
+  const index = useSeasonIndex(root, running, syncKey);
 
-  const jumpTo = useCallback(
-    (next: number) => jumpToSeason(root.current, next),
-    [],
-  );
+  const jumpTo = useCallback((next: number) => {
+    jumpToSeason(root.current, next);
+    // The index is read off a schedule that sleeps until the boundary it last
+    // calculated, so moving the clock by hand has to tell it to look again.
+    setSyncKey((key) => key + 1);
+  }, []);
 
   // `setRunning` is a setState function, so it is already stable; the value
   // only changes identity when the season does, exactly as before.

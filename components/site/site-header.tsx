@@ -48,9 +48,18 @@ export function SiteHeader() {
     // season tokens too. Both children are `fixed`, so this div has no size and
     // costs the layout nothing. See `.season-clock` in globals.css.
     <div className="season-clock">
+      {/* NO `backdrop-blur`.
+          The scrolled bar was `backdrop-blur-md`, and it was one of the most
+          expensive things on the page for what it showed. Two reasons it had to
+          go. First, it showed almost nothing: the background below is a 92%
+          opaque mix, so only 8% of the backdrop was ever visible to be blurred.
+          Second, that background reads `--season-ground`, which the year
+          animation changes on every frame - so the blur could never be cached
+          and the compositor re-blurred a full-width strip sixty times a second,
+          for the whole time the bar was on screen.
+          `backdrop-filter` is out of the transition list for the same reason. */}
       <header
-        className={`fixed inset-x-0 top-0 z-50 h-(--header-h) border-b transition-[background-color,border-color,backdrop-filter] duration-500 ${scrolled ? "backdrop-blur-md" : ""
-          }`}
+        className="fixed inset-x-0 top-0 z-50 h-(--header-h) border-b transition-[background-color,border-color] duration-500"
         style={{
           // Once past the hero the page is light, so the bar settles rather
           // than continuing to change hue over pale content.

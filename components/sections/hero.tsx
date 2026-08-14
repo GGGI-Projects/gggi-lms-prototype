@@ -67,7 +67,7 @@ export function Hero() {
           in a column. The headline sits over its limb. */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -z-20 bottom-[-34%] left-1/2 h-[78vh] w-[78vh] max-w-none -translate-x-1/2 sm:bottom-[-26%] sm:left-auto sm:right-[-26%] sm:h-[96vh] sm:w-[96vh] sm:translate-x-0 lg:bottom-auto lg:right-[-22%] lg:top-1/2 lg:h-[146vh] lg:w-[146vh] lg:-translate-y-1/2"
+        className="hero-layer pointer-events-none absolute -z-20 bottom-[-34%] left-1/2 h-[78vh] w-[78vh] max-w-none -translate-x-1/2 sm:bottom-[-26%] sm:left-auto sm:right-[-26%] sm:h-[96vh] sm:w-[96vh] sm:translate-x-0 lg:bottom-auto lg:right-[-22%] lg:top-1/2 lg:h-[146vh] lg:w-[146vh] lg:-translate-y-1/2"
       >
         <Globe className="h-full w-full" />
       </div>

@@ -968,11 +968,23 @@ body {
  * terminator's diagonal instead, so the new season reads as being carried in.
  * Timed to the last ~2s of each season - the same window as the colour blend.
  */
+/**
+ * NO `mix-blend-mode: screen`.
+ *
+ * A blend mode makes the compositor read back everything painted underneath
+ * the element before it can draw - and this element is 220% wide by 140% tall,
+ * sitting directly over the globe. That is a full-hero backdrop read on every
+ * frame of every sweep.
+ *
+ * Dropping it is very nearly lossless here, because screen and normal converge
+ * over a dark ground. Measured against the hero's own values - backdrop ~0.05,
+ * accent ~0.8, sweep opacity 0.16 - screen resolves to 0.172 and plain
+ * source-over to 0.170. The blend was buying a difference in the third decimal.
+ */
 .season-sweep {
   position: absolute;
   inset: -20% -60%;
   pointer-events: none;
-  mix-blend-mode: screen;
   opacity: 0;
   background: linear-gradient(
     105deg,
@@ -1179,6 +1191,20 @@ body {
   }
 }
 
+/**
+ * A decorative layer that cannot affect anything outside its own box.
+ *
+ * The hero stacks five full-bleed layers - sky, globe, scrim, weather, sweep -
+ * and each of them is a subtree the browser has to consider when working out
+ * what an invalidation somewhere else in the hero might have disturbed.
+ * `contain` is the promise that it does not have to: nothing in here changes
+ * layout outside it, and nothing in here paints outside it. Both are already
+ * true of every layer this is applied to, which is what makes it safe to say.
+ */
+.hero-layer {
+  contain: layout paint style;
+}
+
 /* --- Globe: terminator and the Sri Lanka marker --------------------------- */
 
 /**
@@ -1361,6 +1387,51 @@ body {
     transform: translate3d(calc(var(--p-drift) * 0.3), 115vh, 0) rotate(12deg);
     opacity: 0;
   }
+}
+
+/* ==========================================================================
+   THE LOW TIER
+   --------------------------------------------------------------------------
+   Everything the page gives up on a machine that cannot afford it. See
+   lib/perf-tier.ts for how a visitor ends up here; `<html>` carries the
+   attribute, set before first paint and revisited once by the watchdog.
+
+   The rule for what belongs in this block: it drops AMBIENCE, never CONTENT or
+   COMPOSITION. Nothing here changes what the page says, what it looks like
+   still, or where anything sits - a visitor on a slow phone gets the same
+   layout, the same palette and the same words, and simply does not get the
+   weather. That is the difference between a second tier and a second design.
+
+   This is also why none of it is a media query. Being on a phone is not the
+   same thing as being slow, and a 2019 laptop is not a phone at all.
+   ========================================================================== */
+
+[data-perf="low"] .particle,
+[data-perf="low"] .season-sweep,
+[data-perf="low"] .cursor-glow,
+[data-perf="low"] .grain-overlay {
+  display: none;
+}
+
+/* The Earth stays, and stops turning. It is the composition; the rotation is
+   the ambience - and it is the single most expensive animation on the page. */
+[data-perf="low"] .globe-spin,
+[data-perf="low"] .sl-pulse {
+  animation: none;
+}
+
+/**
+ * The year steps instead of blending.
+ *
+ * `step-end` holds each keyframe's value until the next one is reached, so the
+ * seven registered colour properties change four times a minute rather than
+ * sixty times a second - and the style recalc, the gradient regeneration and
+ * the globe's re-raster that follow each change go with them. The seasons
+ * arrive as cuts rather than as dissolves, which is a real loss and the right
+ * one to take: the alternative on this hardware is a dissolve that stutters.
+ */
+[data-perf="low"] .season-clock {
+  animation-timing-function: step-end;
 }
 
 /* ==========================================================================
