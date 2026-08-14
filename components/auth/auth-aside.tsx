@@ -1,7 +1,6 @@
-import Link from "next/link";
 import { BRAND } from "@/lib/brand";
 import { TOTALS } from "@/content/site";
-import { LeafMark, RibbonScene } from "@/components/art/scenes";
+import { RibbonScene } from "@/components/art/scenes";
 import { EYEBROW } from "@/lib/theme";
 
 /**
@@ -30,13 +29,19 @@ export function AuthAside({
   const copy = COPY[mode];
 
   return (
-    // `h-svh` and `sticky` from `lg` up only: on a phone this is a band the
+    // Sticky and full-height from `lg` up only: on a phone this is a band the
     // visitor scrolls past on the way to the form, and a full-height panel
     // there would be a screen of preamble in front of the thing they came for.
     // The two blocks that are least load-bearing are dropped below `lg` for the
     // same reason - see the classes on the paragraph and the stat row.
+    //
+    // The height is the viewport MINUS the header, and it sticks below it
+    // rather than at the top of the page: the header is sticky too, so a full
+    // `h-svh` panel would sit partly behind it and the first screen would be
+    // one header taller than the viewport - the page would scroll a little for
+    // no reason on every visit.
     <aside
-      className={`relative isolate flex flex-col overflow-hidden bg-primary-950 px-8 py-10 text-tint sm:px-12 lg:sticky lg:top-0 lg:h-svh lg:justify-between lg:py-14 xl:px-16 ${className}`}
+      className={`relative isolate flex flex-col overflow-hidden bg-primary-950 px-8 py-10 text-tint sm:px-12 lg:sticky lg:top-(--header-h) lg:h-[calc(100svh-var(--header-h))] lg:justify-between lg:py-14 lg:pl-fluid lg:pr-12 xl:pr-16 ${className}`}
     >
       {/* Same ambient bloom as the closing CTA, so the two dark grounds on the
           site read as the same material. */}
@@ -45,23 +50,10 @@ export function AuthAside({
         className="pointer-events-none absolute -top-52 left-1/4 -z-10 size-[36rem] rounded-full bg-primary-600/25 blur-[120px]"
       />
 
-      <Link
-        href="/"
-        className="group inline-flex items-center gap-2.5 self-start"
-        aria-label={`${BRAND.name} ${BRAND.suffix} - home`}
-      >
-        <span className="grid size-9 place-items-center rounded-full bg-accent text-primary-950 transition-transform duration-500 ease-out-expo group-hover:-rotate-12">
-          <LeafMark className="size-5" />
-        </span>
-        <span className="font-display text-lg leading-none tracking-tight text-paper">
-          {BRAND.name}
-          {BRAND.suffix ? (
-            <span className="text-primary-500"> {BRAND.suffix}</span>
-          ) : null}
-        </span>
-      </Link>
-
-      <div className="mt-10 lg:mt-0">
+      {/* No wordmark here - it is in the header now, where the landing page
+          keeps its own. Two marks on one screen at two sizes was the drift
+          this panel was quietly introducing. */}
+      <div>
         <p className={EYEBROW.onDark}>{copy.eyebrow}</p>
         {/* The Title step rather than a display heading. The page's real
             heading is the one above the form, on the other side of the fold -

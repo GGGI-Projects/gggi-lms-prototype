@@ -25,6 +25,7 @@ import { useRef, type ReactNode } from "react";
 export function ActionButton({
   href,
   type = "button",
+  onClick,
   variant = "filled",
   size = "md",
   className = "",
@@ -35,13 +36,20 @@ export function ActionButton({
   /** Ignored when `href` is set. */
   type?: "button" | "submit";
   /**
+   * For the handful of controls that act on the page rather than navigating -
+   * the module page's "Mark as complete", the quiz's "Submit". It lives here
+   * rather than at a call site wrapping this in its own `<button>`, which
+   * would nest a button inside a button.
+   */
+  onClick?: () => void;
+  /**
    * `filled` / `outlined` read the seasonal palette and belong to the header
    * and hero. `solid` / `line` use the page palette and are for every other
    * section - see the note on `.btn-solid` in globals.css for why the season
    * colours cannot simply be reused down the page.
    */
   variant?: "filled" | "outlined" | "solid" | "line";
-  size?: "sm" | "md" | "lg";
+  size?: "xs" | "sm" | "md" | "lg";
   className?: string;
   children: ReactNode;
 }) {
@@ -62,6 +70,7 @@ export function ActionButton({
   const shared = {
     onPointerEnter: trackPointer,
     onPointerLeave: trackPointer,
+    onClick,
     className: `btn-ripple btn-${variant} btn-${size} ${className}`,
   };
 

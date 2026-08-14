@@ -44,9 +44,6 @@ function yearAnimation(root: HTMLElement | null) {
 }
 
 /**
- * `running` is the hero's visibility. When it is false the clock is paused, so
- * `currentTime` is a constant and there is nothing to read.
- *
  * `syncKey` is bumped by anything that moves the clock by hand - currently
  * `jumpToSeason`. The schedule below sleeps until the boundary it calculated,
  * so a jump would otherwise leave it waiting for a moment that has already been
@@ -54,14 +51,13 @@ function yearAnimation(root: HTMLElement | null) {
  */
 export function useSeasonIndex(
   root: RefObject<HTMLElement | null>,
-  running = true,
   syncKey = 0,
 ) {
   const [index, setIndex] = useState(0);
 
   useEffect(() => {
     const element = root.current;
-    if (!element || !running) return;
+    if (!element) return;
 
     let timer = 0;
     let stopped = false;
@@ -116,7 +112,7 @@ export function useSeasonIndex(
       window.clearTimeout(timer);
       document.removeEventListener("visibilitychange", resync);
     };
-  }, [root, running, syncKey]);
+  }, [root, syncKey]);
 
   return index;
 }

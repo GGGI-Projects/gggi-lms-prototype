@@ -39,6 +39,26 @@ export const CONTAINER = "mx-auto max-w-editorial px-5 sm:px-8";
 /** The gutter on its own, for sections that manage their own max width. */
 export const GUTTER = "px-5 sm:px-8";
 
+/**
+ * The signed-in pages.
+ *
+ * A portal is not a landing page and the rhythm has to say so. `SECTION.y` is
+ * 96-128px of air between sections, which is right for a page being read once
+ * on the way to a decision and wrong for a page someone opens every day to
+ * find where they stopped - there, whitespace that size means scrolling past
+ * the thing you came for.
+ *
+ * `container` is the same editorial column the landing page uses, so the
+ * content still lines up with the site it belongs to; only the vertical
+ * measure changes. `stack` is the gap between blocks WITHIN a portal page,
+ * named once for the same reason `SECTION.y` is.
+ */
+export const PORTAL = {
+  container: "mx-auto w-full max-w-editorial px-5 sm:px-8",
+  pageY: "py-10 sm:py-14",
+  stack: "mt-12 sm:mt-14",
+} as const;
+
 /* -------------------------------------------------------------- typography */
 
 /**

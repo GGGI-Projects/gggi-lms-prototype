@@ -395,18 +395,32 @@ body {
    ========================================================================== */
 
 /**
- * Gutter for the full-bleed (fluid) sections - currently the header and hero.
+ * Gutter for the full-bleed (fluid) sections - the header, the hero, the footer
+ * and the account pages' panel.
  *
  * A single `clamp()` rather than a set of breakpoint steps, so the whitespace
  * grows smoothly with the viewport instead of jumping at 640/768/1024. It
  * floors at 1.5rem so phones keep a comfortable thumb margin, and ceilings at
  * 8rem so the content does not drift apart on very wide monitors.
  *
- * Both fluid sections MUST use this same utility: the header logo and the hero
+ * Every fluid section MUST use these utilities: the header logo and the hero
  * headline share a left edge, and any divergence is immediately visible.
+ *
+ * The value is a variable and the utilities read it, rather than each writing
+ * its own `clamp()`. `pl-fluid` exists because the account panel takes the
+ * frame's LEFT edge - so its copy starts under the wordmark - while its right
+ * side is an interior gutter and has no reason to be 128px wide.
  */
+:root {
+  --gutter-fluid: clamp(1.5rem, 6vw, 8rem);
+}
+
 @utility px-fluid {
-  padding-inline: clamp(1.5rem, 6vw, 8rem);
+  padding-inline: var(--gutter-fluid);
+}
+
+@utility pl-fluid {
+  padding-left: var(--gutter-fluid);
 }
 
 /* ==========================================================================
@@ -954,24 +968,22 @@ body {
   animation: year 24s linear infinite;
 }
 
-/* --- Nothing runs while it is off screen ---------------------------------
+/* --- Ambience stops while it is off screen -------------------------------
    The hero's ambience is the most expensive thing on the page and a visitor
    spends most of their session below it. Every animation named here used to
    keep running at full cost while they read the FAQ.
 
-   Two attributes, not one, and that is load-bearing: `data-clock` is on the
-   page wrapper and pauses only `.season-clock`, while `data-active` is on the
-   individual sections that observe themselves. If both used `data-active`, the
-   wrapper's attribute would inherit down the selector chain and the hero
-   leaving the viewport would stop the marquee too - which is still on screen.
+   `.season-clock` is deliberately NOT in this list. Pausing the year as well
+   looked like the same idea and was not: the header is fixed, so it is on
+   screen for the entire page and reads the same tokens, and stopping the clock
+   froze its buttons and wordmark on whatever colour the hero happened to leave
+   behind. What costs here is the painting - the globe's re-raster, the
+   gradients, the particles - and the browser already skips all of that for a
+   section nobody is looking at. The property animation on its own is cheap
+   enough to leave alone.
 
-   `animation-play-state` rather than unmounting: the animations hold their
-   position, so scrolling back up resumes the year where it left off instead of
-   restarting it at spring. */
-.season-root[data-clock="paused"] .season-clock {
-  animation-play-state: paused;
-}
-
+   `animation-play-state` rather than unmounting: these hold their position, so
+   scrolling back up resumes where it left off instead of restarting. */
 [data-active="false"] .globe-spin,
 [data-active="false"] .sl-pulse,
 [data-active="false"] .season-sweep,
@@ -1143,8 +1155,8 @@ body {
    * 0.9rem/semibold, the hero pair 1rem with one semibold and one medium, and
    * the closing CTA 1.125rem/medium at a padding nothing else used.
    *
-   * Three sizes, ONE point size: every button label is the Body step, and
-   * `sm`/`md`/`lg` differ by PADDING alone. A button gets its weight in a
+   * Four sizes, ONE point size: every button label is the Body step, and
+   * `xs`/`sm`/`md`/`lg` differ by PADDING alone. A button gets its weight in a
    * layout from its area, not from its type size.
    *
    * `sm` was the Small step, which is what made the header's Sign in and Get
@@ -1153,6 +1165,17 @@ body {
    * general rule this settles: a control is something you act on, not a
    * caption about something else, so it is never Small.
    */
+
+  /* The shortest pill on the site, for the account pages' header - which is
+     itself shorter than the landing page's. Padding only, like every other
+     step: the label stays on the Body step, so this is a smaller BUTTON and
+     not smaller TYPE. */
+  .btn-xs {
+    padding: 0.5rem 1.25rem;
+    font-size: 1.125rem;
+    font-weight: 600;
+  }
+
   .btn-sm {
     padding: 0.75rem 1.5rem;
     font-size: 1.125rem;
@@ -1556,6 +1579,46 @@ body {
 }
 
 /* ==========================================================================
+   PRINT - the certificate, and nothing else
+   --------------------------------------------------------------------------
+   "Download as PDF" on the certificate page is the browser's own print dialog
+   (see `<PrintButton>`), which is the one route to a real PDF that a front-end
+   prototype has without a server or a rendering library - and it is the route
+   the real build should keep, because the certificate is a document rather
+   than a screenshot.
+
+   `visibility`, not `display`. Hiding the ancestors with `display: none` would
+   take the certificate down with them; `visibility: hidden` on everything and
+   `visible` on the sheet and its descendants leaves one element painted while
+   the layout it sits in is preserved. The sheet is then pulled to the top-left
+   of the page, because it is still sitting wherever the portal's grid put it.
+   ========================================================================== */
+
+@media print {
+  @page {
+    size: landscape;
+    margin: 14mm;
+  }
+
+  body * {
+    visibility: hidden;
+  }
+
+  .print-sheet,
+  .print-sheet * {
+    visibility: visible;
+  }
+
+  .print-sheet {
+    position: absolute;
+    inset: 0 auto auto 0;
+    width: 100%;
+    border: 0;
+    border-radius: 0;
+  }
+}
+
+/* ==========================================================================
    REDUCED MOTION
    --------------------------------------------------------------------------
    `motion` components read prefers-reduced-motion via useReducedMotion, but
@@ -1581,5 +1644,30 @@ body {
        invisible hero. */
     animation-delay: 0ms !important;
     transition-delay: 0ms !important;
+  }
+
+  /**
+   * The year is the exception, because COLOUR IS NOT MOTION.
+   *
+   * The blanket rule above collapses every animation on the page to 0.001ms and
+   * a single iteration. Applied to `year` that does not calm anything down - it
+   * runs the whole cycle instantly, lands on the 100% keyframe and stays there,
+   * so the seasonal palette freezes on spring for the rest of the session. The
+   * buttons, the wordmark, the sky and the globe's ocean all become one colour
+   * permanently, and the page silently loses the thing it is built around.
+   *
+   * What `prefers-reduced-motion` is asking for is an end to movement -
+   * vestibular triggers, things that fly across the screen. A 24-second
+   * crossfade between four dark palettes is neither. Everything that actually
+   * MOVES stays switched off by the rule above: the globe does not turn, the
+   * particles are not rendered at all (SeasonParticles returns null), the
+   * marquee stands still, the sweep does not travel.
+   *
+   * Specificity is what makes this work - `.season-clock` beats `*`, and
+   * between two `!important` declarations the more specific one wins.
+   */
+  .season-clock {
+    animation-duration: 24s !important;
+    animation-iteration-count: infinite !important;
   }
 }

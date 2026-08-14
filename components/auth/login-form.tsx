@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { BRAND } from "@/lib/brand";
 import { ActionButton } from "@/components/ui/action-button";
 import { GoogleButton } from "@/components/auth/google-button";
@@ -22,10 +23,23 @@ import { PasswordField, TextField } from "@/components/auth/fields";
  * Nothing is wired up - see the note on `submitted` below.
  */
 export function LoginForm() {
+  const router = useRouter();
   // The prototype has no backend. Rather than silently doing nothing, the form
-  // says so: a demo where the button appears broken invites the room to spend
-  // the next five minutes on it instead of on the design.
+  // says so - and then carries on into the portal, because the dashboard now
+  // exists and dead-ending on this page in the middle of a demo is worse than
+  // signing in to a sample account.
   const [submitted, setSubmitted] = useState(false);
+
+  // The note is announced first and the navigation follows, so nobody is moved
+  // to another screen before they have been told what just happened.
+  useEffect(() => {
+    if (!submitted) return;
+    const id = window.setTimeout(
+      () => router.push(BRAND.routes.dashboard),
+      900,
+    );
+    return () => window.clearTimeout(id);
+  }, [submitted, router]);
 
   return (
     <form
@@ -83,8 +97,8 @@ export function LoginForm() {
           role="status"
           className="mt-5 rounded-sm border border-accent-600/40 bg-accent-pale px-5 py-4 text-lg leading-relaxed text-accent-strong"
         >
-          This is a design prototype - no account was signed in and nothing was
-          sent anywhere.
+          This is a design prototype - nothing was sent anywhere. Taking you to
+          the dashboard of a sample account.
         </p>
       ) : null}
 

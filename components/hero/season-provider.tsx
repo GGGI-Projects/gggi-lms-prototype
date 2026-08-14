@@ -14,14 +14,11 @@ import { jumpToSeason, useSeasonIndex } from "./use-season";
 type SeasonState = {
   index: number;
   jumpTo: (index: number) => void;
-  /** Called by the hero when it enters or leaves the viewport. */
-  setRunning: (running: boolean) => void;
 };
 
 const SeasonContext = createContext<SeasonState>({
   index: 0,
   jumpTo: () => { },
-  setRunning: () => { },
 });
 
 export const useSeason = () => useContext(SeasonContext);
@@ -32,21 +29,20 @@ export const useSeason = () => useContext(SeasonContext);
  * The `year` animation itself is NOT on this element - it is on the header and
  * on the hero section, the only two subtrees that read the season tokens. See
  * the note on `.season-clock` in globals.css for why that split matters. What
- * lives here is the shared ancestor the two of them need: somewhere to hang
- * the pause flag so both clocks stop and start on the same style update, and a
- * root for `getAnimations({ subtree: true })` to walk.
+ * lives here is the root that `getAnimations({ subtree: true })` walks, so the
+ * index can be read off whichever copy of the clock it finds first.
  *
- * `running` is driven by the hero, because the hero is the thing whose
- * visibility decides whether any of this is worth computing. The header is
- * always on screen, but it is not the reason the clock exists - and its own
- * design note says the bar should settle once the page below it goes light,
- * which is exactly what a paused clock gives it.
+ * The clock is never paused. It was, while the hero was off screen, and the
+ * consequence showed up somewhere else entirely: the header is fixed, so it is
+ * on screen for the whole page and reads the same tokens - stopping the year
+ * left its buttons and wordmark frozen on whatever colour the moment of
+ * scrolling away happened to catch. The hero's ambience still stops; see
+ * `data-active` in globals.css.
  */
 export function SeasonProvider({ children }: { children: ReactNode }) {
   const root = useRef<HTMLDivElement>(null);
-  const [running, setRunning] = useState(true);
   const [syncKey, setSyncKey] = useState(0);
-  const index = useSeasonIndex(root, running, syncKey);
+  const index = useSeasonIndex(root, syncKey);
 
   const jumpTo = useCallback((next: number) => {
     jumpToSeason(root.current, next);
@@ -55,23 +51,10 @@ export function SeasonProvider({ children }: { children: ReactNode }) {
     setSyncKey((key) => key + 1);
   }, []);
 
-  // `setRunning` is a setState function, so it is already stable; the value
-  // only changes identity when the season does, exactly as before.
-  const value = useMemo(
-    () => ({ index, jumpTo, setRunning }),
-    [index, jumpTo],
-  );
+  const value = useMemo(() => ({ index, jumpTo }), [index, jumpTo]);
 
   return (
-    <div
-      ref={root}
-      // Deliberately NOT `data-active`, which is what the self-observing
-      // sections use. This attribute must only ever pause `.season-clock`; if
-      // it shared their name, the hero scrolling away would also stop the
-      // marquee sitting right beneath it. globals.css explains the pair.
-      data-clock={running ? "running" : "paused"}
-      className="season-root flex min-h-full flex-1 flex-col"
-    >
+    <div ref={root} className="season-root flex min-h-full flex-1 flex-col">
       <SeasonContext.Provider value={value}>{children}</SeasonContext.Provider>
     </div>
   );

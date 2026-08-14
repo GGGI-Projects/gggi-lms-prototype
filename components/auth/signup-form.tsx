@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { BRAND } from "@/lib/brand";
 import { ActionButton } from "@/components/ui/action-button";
 import { GoogleButton } from "@/components/auth/google-button";
@@ -24,10 +25,21 @@ import { PasswordField, SelectField, TextField } from "@/components/auth/fields"
  * Nothing is wired up - see the note on `submitted` below.
  */
 export function SignupForm() {
+  const router = useRouter();
   // The prototype has no backend. Rather than silently doing nothing, the form
-  // says so: a demo where the button appears broken invites the room to spend
-  // the next five minutes on it instead of on the design.
+  // says so - and then goes on to the dashboard, which is what a real sign-up
+  // does and what makes the demo one continuous walk rather than three
+  // disconnected screens. See the matching note in `<LoginForm>`.
   const [submitted, setSubmitted] = useState(false);
+
+  useEffect(() => {
+    if (!submitted) return;
+    const id = window.setTimeout(
+      () => router.push(BRAND.routes.dashboard),
+      900,
+    );
+    return () => window.clearTimeout(id);
+  }, [submitted, router]);
 
   return (
     <form
@@ -111,7 +123,7 @@ export function SignupForm() {
           className="mt-5 rounded-sm border border-accent-600/40 bg-accent-pale px-5 py-4 text-lg leading-relaxed text-accent-strong"
         >
           This is a design prototype - no account was created and nothing was
-          sent anywhere.
+          sent anywhere. Taking you to the dashboard of a sample account.
         </p>
       ) : null}
 

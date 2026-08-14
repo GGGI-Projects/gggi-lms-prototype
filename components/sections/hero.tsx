@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { BRAND } from "@/lib/brand";
 import { TOTALS } from "@/content/site";
@@ -27,20 +27,24 @@ import { HEADING } from "@/lib/theme";
  * server HTML, on a slow machine, with JavaScript still loading.
  */
 export function Hero() {
-  const { index, jumpTo, setRunning } = useSeason();
+  const { index, jumpTo } = useSeason();
   const season = SEASONS[index];
 
-  // Everything in here - the clock, the globe's rotation, the light sweep, the
-  // particle field - is ambience for a section that is on screen for a small
-  // fraction of a visit. Off screen it all stops, and the main thread the
-  // visitor is scrolling with gets it back. See globals.css for the rules that
-  // read `data-active`, and season-provider.tsx for what `setRunning` pauses.
+  // The globe's rotation, the light sweep and the particle field are ambience
+  // for a section that is on screen for a small fraction of a visit. Off screen
+  // they stop, and the main thread the visitor is scrolling with gets them back.
+  // globals.css holds the rules that read `data-active`.
+  //
+  // THE CLOCK ITSELF KEEPS RUNNING. It was paused here too, and that was a
+  // mistake with an effect nowhere near the hero: the header is fixed, it is on
+  // screen for the entire page, and it reads the same seasonal tokens - so
+  // stopping the year froze the header's buttons and wordmark on whatever
+  // colour they had reached the moment the hero scrolled away. The year is a
+  // property animation over a subtree of under a hundred elements; the paints
+  // it used to drive are what cost, and the browser already skips those for a
+  // section nobody is looking at.
   const ref = useRef<HTMLElement>(null);
   const visible = useInViewport(ref);
-
-  useEffect(() => {
-    setRunning(visible);
-  }, [visible, setRunning]);
 
   return (
     <section

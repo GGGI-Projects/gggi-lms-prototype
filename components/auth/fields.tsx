@@ -85,6 +85,8 @@ export function TextField({
   autoComplete,
   optional,
   hint,
+  defaultValue,
+  readOnly,
 }: {
   label: string;
   type?: "text" | "email";
@@ -93,6 +95,13 @@ export function TextField({
   autoComplete?: string;
   optional?: boolean;
   hint?: ReactNode;
+  /**
+   * For the profile form, where every field arrives holding what the account
+   * already says. The account pages leave it undefined and get empty fields.
+   */
+  defaultValue?: string;
+  /** A value the learner can see but not change - see the profile form. */
+  readOnly?: boolean;
 }) {
   // `useId` rather than the name: two of these can appear on one page (a form
   // and a modal of the same form) and a duplicated id silently breaks the label
@@ -107,8 +116,13 @@ export function TextField({
         type={type}
         placeholder={placeholder}
         autoComplete={autoComplete}
+        defaultValue={defaultValue}
+        readOnly={readOnly}
         required={!optional}
-        className="field"
+        // A read-only field still has to look like a field - it is showing a
+        // real value - so it keeps the border and loses only the interaction
+        // affordances.
+        className={`field ${readOnly ? "cursor-not-allowed bg-surface text-muted" : ""}`}
       />
     </FieldShell>
   );
@@ -122,12 +136,15 @@ export function SelectField({
   options,
   optional,
   hint,
+  defaultValue = "",
 }: {
   label: string;
   name: string;
   options: readonly string[];
   optional?: boolean;
   hint?: ReactNode;
+  /** Empty shows the "Choose one" placeholder - see `TextField`. */
+  defaultValue?: string;
 }) {
   const id = useId();
 
@@ -139,7 +156,7 @@ export function SelectField({
       <select
         id={id}
         name={name}
-        defaultValue=""
+        defaultValue={defaultValue}
         required={!optional}
         className="field appearance-none pr-12"
       >

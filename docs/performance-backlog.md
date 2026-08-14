@@ -44,6 +44,17 @@ while the hero sits idle**, and dropped frames during scroll.
   Run it with the hero on screen, then again from the FAQ. The second number
   should be near zero — everything in the hero pauses off-screen now.
 
+### Forcing a tier
+
+`?perf=high` or `?perf=low` pins the tier for the session and stops the
+watchdog from overriding it. `document.documentElement.dataset.perf` says which
+one you are on. Use it to see the low tier without hunting for a slow machine,
+and to rule the tiering in or out when something looks wrong — a still globe and
+missing particles is what the low tier is *supposed* to look like, so the first
+question when either goes missing is always which tier you are actually on.
+
+Clear it with `sessionStorage.removeItem('perf')` and reload.
+
 ---
 
 ## Hero

@@ -18,7 +18,7 @@ export default function LoginPage() {
       intro="Your progress, your enrolments and your certificates are all held against your account."
       alt={{
         prompt: "No account yet?",
-        label: "Create one free",
+        label: "Create free account",
         href: BRAND.routes.signup,
       }}
     >
