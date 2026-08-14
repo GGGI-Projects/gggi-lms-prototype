@@ -43,7 +43,7 @@ export function Globe({ className }: { className?: string }) {
       fill="none"
     >
       <defs>
-        {/* Emitted once, referenced twice - the land path is ~33KB. */}
+        {/* Emitted once, referenced once per tile copy. */}
         <path id="globe-land" d={GLOBE_LAND} />
         <path id="globe-graticule" d={GLOBE_GRATICULE} />
 
@@ -113,13 +113,22 @@ export function Globe({ className }: { className?: string }) {
                 strokeWidth={0.45}
                 opacity={0.16}
               />
-              <use href="#globe-land" fill="var(--season-land)" opacity={0.9} />
+
+              {/* ONE draw of the coastline, not two.
+                  The fill and the outline used to be separate <use> elements,
+                  each carrying an element-level `opacity` - which meant the
+                  1,397-command land path was walked twice per tile, so four
+                  times per frame with both tiles on screen. `fill-opacity` and
+                  `stroke-opacity` set the same two values per paint operation
+                  instead, so one element does both. Default `paint-order` is
+                  fill then stroke, which is the order they were stacked in. */}
               <use
                 href="#globe-land"
-                fill="none"
+                fill="var(--season-land)"
+                fillOpacity={0.9}
                 stroke="var(--season-land)"
+                strokeOpacity={0.55}
                 strokeWidth={0.25}
-                opacity={0.55}
               />
 
               {/* Sri Lanka, at its real coordinates. It scrolls with the map,

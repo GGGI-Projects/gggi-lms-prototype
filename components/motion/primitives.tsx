@@ -358,6 +358,16 @@ export function ScrollProgress() {
 /**
  * A soft sage halo that trails the cursor. Ambient only; it sits under the
  * content and never intercepts pointer events.
+ *
+ * The paint - size, colour, blend, and the gradient that replaced a `blur(90px)`
+ * filter - is `.cursor-glow` in globals.css, where there is room to explain it.
+ * What matters here is the property being animated.
+ *
+ * `x`/`y`, NOT `left`/`top`. Those two motion values used to be handed to the
+ * inset properties, which meant every frame of every mouse movement went
+ * through layout before it could paint - on a 704px element with a full-page
+ * blend mode, on the main thread, at pointer frequency. As a transform it is
+ * a compositor translate of an already-rasterised layer.
  */
 export function CursorGlow() {
   const reduce = useReducedMotion();
@@ -379,16 +389,7 @@ export function CursorGlow() {
 
   if (!fine || reduce) return null;
 
-  return (
-    <motion.div
-      aria-hidden="true"
-      style={{ left: sx, top: sy }}
-      /* Sits above the section backgrounds (which are `relative`, so a z-0
-         layer would be painted over and never seen) but below the header, and
-         multiplies rather than covers so it tints instead of washing out text. */
-      className="pointer-events-none fixed z-30 -ml-88 -mt-88 h-176 w-176 rounded-full opacity-30 blur-[90px] mix-blend-multiply [background:radial-gradient(circle,var(--color-tint),transparent_65%)]"
-    />
-  );
+  return <motion.div aria-hidden="true" style={{ x: sx, y: sy }} className="cursor-glow" />;
 }
 
 /* ------------------------------------------------------------------- hooks */

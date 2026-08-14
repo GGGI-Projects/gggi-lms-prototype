@@ -1,4 +1,5 @@
 import { SUBJECT_MARQUEE } from "@/content/site";
+import { PauseOffscreen } from "@/components/motion/viewport";
 
 /**
  * Two bands of subject areas travelling in opposite directions, sitting
@@ -48,36 +49,33 @@ function Track({
 
 export function SubjectMarquee() {
   return (
+    // `bg-paper`, not `bg-paper-raised`. A white pill on a white band has
+    // nothing to be white AGAINST - fill and ground were the same colour, and
+    // only the shadow said a pill was there at all. Paper is one step down,
+    // which is all the separation a glass edge needs, and the pills keep the
+    // pure white. It cannot go further and take `surface`: Mission sits
+    // immediately below on exactly that, and the band would stop being a band.
     <section
       aria-label="Subject areas covered"
-      className="relative isolate overflow-hidden border-y border-surface-deep bg-paper-raised py-9 sm:py-12"
+      className="relative isolate overflow-hidden border-y border-surface-deep bg-paper py-9 sm:py-12"
     >
-      {/* A field of soft colour in the five subject hues.
-          This is not decoration the chips sit on top of - it is what makes
-          them glass. `backdrop-filter` has nothing to blur or saturate over a
-          flat surface, so on plain white the whole treatment renders as a
-          plain white pill. The blobs are what the chips pick up as they pass. */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 -z-10"
-        style={{
-          background: [
-            "radial-gradient(58% 130% at 4% 20%, color-mix(in oklab, var(--color-tint) 85%, transparent), transparent 70%)",
-            "radial-gradient(46% 120% at 27% 88%, color-mix(in oklab, var(--color-marine) 40%, transparent), transparent 70%)",
-            "radial-gradient(44% 120% at 50% 6%, color-mix(in oklab, var(--color-plum) 34%, transparent), transparent 70%)",
-            "radial-gradient(48% 125% at 73% 92%, color-mix(in oklab, var(--color-clay) 38%, transparent), transparent 70%)",
-            "radial-gradient(62% 135% at 98% 22%, color-mix(in oklab, var(--color-accent) 72%, transparent), transparent 70%)",
-            "linear-gradient(90deg, var(--color-tint-pale), var(--color-accent-soft))",
-          ].join(","),
-        }}
-      />
-
-      <div className="flex flex-col gap-3.5">
+      {/* Nothing behind the pills. The contour lines that were here read as
+          waves rather than as texture, so the band is plain again.
+          The pills still read as glass without them - the lit top edge, the
+          shaded underside and the drop in `.chip` carry that on their own.
+          That flat band is also why `.chip` no longer carries a
+          `backdrop-filter`: with nothing left to refract it was twenty
+          per-frame backdrop blurs buying nothing. */}
+      {/* Both tracks stop while the band is off screen. Two rows of chips
+          translating continuously is cheap to look at and not cheap to run,
+          and it was running for the entire time a visitor spent on the seven
+          sections below it. */}
+      <PauseOffscreen className="flex flex-col gap-3.5">
         <Track subjects={SUBJECT_MARQUEE} />
         {/* Reversed order as well as reversed direction, so the two rows never
             sit hue-against-hue in a column as they pass. */}
         <Track reverse subjects={[...SUBJECT_MARQUEE].reverse()} />
-      </div>
+      </PauseOffscreen>
     </section>
   );
 }

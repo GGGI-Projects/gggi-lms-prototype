@@ -42,7 +42,12 @@ export function SiteHeader() {
   }, [menuOpen]);
 
   return (
-    <>
+    // One of the two elements that carry the seasonal clock - the hero section
+    // is the other. It is a wrapper rather than the `<header>` itself because
+    // the mobile menu is a sibling of the header, not a child, and it reads the
+    // season tokens too. Both children are `fixed`, so this div has no size and
+    // costs the layout nothing. See `.season-clock` in globals.css.
+    <div className="season-clock">
       <header
         className={`fixed inset-x-0 top-0 z-50 h-(--header-h) border-b transition-[background-color,border-color,backdrop-filter] duration-500 ${scrolled ? "backdrop-blur-md" : ""
           }`}
@@ -57,7 +62,7 @@ export function SiteHeader() {
             : "transparent",
         }}
       >
-        <div className="px-fluid grid h-full w-full grid-cols-[auto_1fr_auto] items-center gap-6">
+        <div className="px-fluid grid h-full w-full grid-cols-[auto_1fr_auto] items-center gap-4 xl:gap-6">
           <Link
             href="/"
             className="group flex items-center gap-2.5"
@@ -73,7 +78,13 @@ export function SiteHeader() {
             >
               <LeafMark className="size-5" />
             </span>
-            <span className="font-display whitespace-nowrap text-[1.15rem] leading-none tracking-tight sm:text-[1.4rem]">
+            {/* Exactly the footer's wordmark - `font-display text-lg
+                leading-none tracking-tight`. It was 18.4px stepping up to
+                22.4px, so the same mark was three sizes on one page depending
+                on where you saw it, and the top of the page and the bottom of
+                it disagreed about how big the brand is. The `sm:` step went
+                with it: the footer does not grow at that breakpoint either. */}
+            <span className="font-display whitespace-nowrap text-lg leading-none tracking-tight">
               {BRAND.name}
               {BRAND.suffix ? (
                 <span style={{ color: "var(--season-text-muted, #9dc4b4)" }}>
@@ -86,8 +97,16 @@ export function SiteHeader() {
 
           {/* Colour is set once, here, and inherited by every link. Setting it
               per-link invites exactly one of them to drift out of step. */}
+          {/* `gap-4` until xl, not a flat `gap-9`.
+              Everything in this bar is now the Body step - wordmark, links and
+              both button labels - and at 1024, the width where the nav first
+              appears, that is 31px more than the 901px of available width can
+              hold. The gap is where the room comes from: three gaps at 16px
+              instead of 24 frees 24px, and the header grid's own gap frees
+              another 16, which covers the type with a little to spare. Only
+              the band that is tight is narrowed; 1280 up is untouched. */}
           <nav
-            className="hidden items-center gap-9 justify-self-center lg:flex"
+            className="hidden items-center gap-4 justify-self-center lg:flex xl:gap-9"
             aria-label="Primary"
             style={{ color: "var(--season-text, #eaf7f0)" }}
           >
@@ -95,7 +114,12 @@ export function SiteHeader() {
               <a
                 key={item.href}
                 href={item.href}
-                className="link-wipe text-[0.95rem] font-medium text-current"
+                /* Body step, the size the footer's links use. `font-medium`
+                   stays where the footer's are plain: these sit over a moving,
+                   photographic hero rather than a flat dark ground, and the
+                   extra weight is what keeps them legible as the sky changes
+                   underneath them. Weight, not size. */
+                className="link-wipe whitespace-nowrap text-lg font-medium text-current"
               >
                 {item.label}
               </a>
@@ -106,14 +130,16 @@ export function SiteHeader() {
             <ActionButton
               href={BRAND.routes.login}
               variant="outlined"
-              className="hidden px-6 py-3 text-[0.9rem] font-semibold lg:inline-flex"
+              size="sm"
+              className="hidden lg:inline-flex"
             >
               Sign in
             </ActionButton>
             <ActionButton
               href={BRAND.routes.signup}
               variant="filled"
-              className="hidden px-6 py-3 text-[0.9rem] font-semibold sm:inline-flex"
+              size="sm"
+              className="hidden sm:inline-flex"
             >
               Get started
             </ActionButton>
@@ -123,7 +149,7 @@ export function SiteHeader() {
               onClick={() => setMenuOpen((open) => !open)}
               aria-expanded={menuOpen}
               aria-controls="mobile-menu"
-              className="grid size-10 place-items-center rounded-full lg:hidden"
+              className="grid size-11 place-items-center rounded-full lg:hidden"
               style={{
                 border:
                   "1px solid color-mix(in oklab, var(--season-text, #eaf7f0) 20%, transparent)",
@@ -179,7 +205,10 @@ export function SiteHeader() {
                     duration: 0.6,
                     ease: [0.16, 1, 0.3, 1],
                   }}
-                  className="border-b py-5 font-display text-3xl tracking-tight"
+                  /* Title step. This was 30px - a size nothing else on the
+                     page used. The py-5 is what makes these a comfortable tap
+                     target, not the point size. */
+                  className="border-b py-5 font-display text-2xl tracking-tight"
                   style={{
                     color: "var(--season-text, #eaf7f0)",
                     borderColor:
@@ -200,14 +229,16 @@ export function SiteHeader() {
               <ActionButton
                 href={BRAND.routes.signup}
                 variant="filled"
-                className="w-full px-6 py-4 font-semibold"
+                size="md"
+                className="w-full"
               >
                 Create a free account
               </ActionButton>
               <ActionButton
                 href={BRAND.routes.login}
                 variant="outlined"
-                className="w-full px-6 py-4 font-medium"
+                size="md"
+                className="w-full"
               >
                 Sign in
               </ActionButton>
@@ -215,6 +246,6 @@ export function SiteHeader() {
           </motion.div>
         ) : null}
       </AnimatePresence>
-    </>
+    </div>
   );
 }

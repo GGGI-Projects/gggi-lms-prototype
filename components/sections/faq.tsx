@@ -4,6 +4,7 @@ import { useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { FAQ } from "@/content/site";
 import { Reveal } from "@/components/motion/primitives";
+import { BODY, EYEBROW, HEADING, SECTION } from "@/lib/theme";
 
 /**
  * Questions people actually ask before signing up - cost, prerequisites, time,
@@ -15,19 +16,19 @@ export function Faq() {
   const reduce = useReducedMotion();
 
   return (
-    <section id="faq" className="scroll-mt-28 bg-surface py-24 sm:py-32">
+    <section id="faq" className={`bg-surface ${SECTION.y}`}>
       <div className="mx-auto grid max-w-editorial gap-14 px-5 sm:px-8 lg:grid-cols-12 lg:gap-16">
         <div className="lg:col-span-4">
           <Reveal>
-            <p className="label-eyebrow text-primary">Questions</p>
+            <p className={EYEBROW.onLight}>Questions</p>
           </Reveal>
           <Reveal delay={0.08}>
-            <h2 className="font-display text-display-md mt-5 text-balance text-ink">
+            <h2 className={HEADING.section}>
               Before you sign up.
             </h2>
           </Reveal>
           <Reveal delay={0.16}>
-            <p className="measure mt-5 text-[0.95rem] leading-relaxed text-ink-soft">
+            <p className={`measure mt-5 ${BODY.base}`}>
               Anything else, write to us and a person will answer.
             </p>
           </Reveal>
@@ -51,7 +52,7 @@ export function Faq() {
                         className="group flex w-full items-start justify-between gap-6 py-6 text-left"
                       >
                         <span
-                          className={`font-display text-xl tracking-tight transition-colors duration-300 sm:text-[1.35rem] ${isOpen
+                          className={`${HEADING.card} transition-colors duration-300 ${isOpen
                               ? "text-accent-strong"
                               : "text-ink group-hover:text-primary"
                             }`}
@@ -89,7 +90,7 @@ export function Faq() {
                           transition={{ duration: 0.45, ease: [0.76, 0, 0.24, 1] }}
                           className="overflow-hidden"
                         >
-                          <p className="measure-wide pb-7 pr-10 text-[0.95rem] leading-relaxed text-ink-soft">
+                          <p className={`measure-wide pb-7 pr-10 ${BODY.base}`}>
                             {item.answer}
                           </p>
                         </motion.dd>

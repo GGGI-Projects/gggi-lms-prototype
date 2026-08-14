@@ -12,6 +12,19 @@ import {
 } from "motion/react";
 import { JOURNEY, type JourneyStep } from "@/content/site";
 import { useHydrated } from "@/components/motion/primitives";
+import { BODY, EYEBROW, HEADING } from "@/lib/theme";
+
+/**
+ * This section is the one dark block that is NOT teal.
+ *
+ * The journey, the closing CTA and the footer were all `primary-950`, so the
+ * page's three dark grounds were the same colour and the scroll read as one
+ * long block interrupted twice. Marine is not a new hue - it is already in the
+ * palette, it is already on screen in the marquee band, and it is the same
+ * blue the hero's summer sky settles on, so the page below the fold finally
+ * picks something up from the page above it. Amber, the accent that carries
+ * the path and the nodes, is unchanged.
+ */
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
@@ -31,7 +44,7 @@ export function Journey() {
   return (
     <section
       id="how-it-works"
-      className="scroll-mt-0 bg-primary-950 text-tint-pale"
+      className="scroll-mt-0 bg-marine-950 text-marine-pale"
     >
       <PinnedJourney />
       <StackedJourney />
@@ -74,7 +87,13 @@ function PinnedJourney() {
     <div
       ref={ref}
       className="relative hidden lg:block"
-      style={{ height: `${JOURNEY.length * 105}vh` }}
+      // 78vh per step, not 105. At 105 this one section was 5.3 screens of
+      // scrolling to read five short paragraphs, and a pinned section that
+      // outstays its welcome reads as broken rather than considered - people
+      // scroll harder, nothing moves on, and they assume the page is stuck.
+      // 78 keeps every step comfortably readable and returns a screen and a
+      // half of the page.
+      style={{ height: `${JOURNEY.length * 78}vh` }}
     >
       <div className="sticky top-0 flex h-screen items-center overflow-hidden">
         {/* Ambient glow that follows the active step down the section. */}
@@ -82,17 +101,17 @@ function PinnedJourney() {
           aria-hidden="true"
           animate={{ top: `${12 + active * 17}%` }}
           transition={{ duration: 1.1, ease: EASE }}
-          className="pointer-events-none absolute right-[18%] size-136 -translate-y-1/2 rounded-full bg-primary-600/25 blur-[110px]"
+          className="pointer-events-none absolute right-[18%] size-136 -translate-y-1/2 rounded-full bg-marine-600/25 blur-[110px]"
         />
 
         <div className="mx-auto grid w-full max-w-editorial grid-cols-12 items-center gap-12 px-8">
           {/* ------------------------------------------------ copy column */}
           <div className="col-span-7 pr-10">
-            <p className="label-eyebrow text-accent-soft">How it works</p>
-            <h2 className="font-display text-display-lg mt-5 text-balance text-paper">
+            <p className={EYEBROW.onDark}>How it works</p>
+            <h2 className={HEADING.sectionOnDark}>
               From sign-up to certificate.
             </h2>
-            <p className="measure mt-5 text-base leading-relaxed text-tint">
+            <p className={`measure mt-5 ${BODY.onMarine}`}>
               Five steps, no gatekeeping at any of them. Most people finish
               their first programme inside a month.
             </p>
@@ -116,15 +135,17 @@ function PinnedJourney() {
 
             {/* Step counter + segmented progress. */}
             <div className="mt-10 flex items-center gap-5">
-              <span className="font-display text-sm tabular-nums text-tint">
+              <span className="font-display text-sm tabular-nums text-marine-pale">
                 {step.number}
-                <span className="text-primary-600"> / 0{JOURNEY.length}</span>
+                {/* The -600 step measured 3.87:1 on this ground - the only real
+                    contrast failure on the page. -500 is ~6. */}
+                <span className="text-marine-500"> / 0{JOURNEY.length}</span>
               </span>
               <div className="flex flex-1 gap-1.5">
                 {JOURNEY.map((item, i) => (
                   <span
                     key={item.number}
-                    className={`h-0.5 flex-1 rounded-full transition-colors duration-500 ${i <= active ? "bg-accent" : "bg-primary-800"
+                    className={`h-0.5 flex-1 rounded-full transition-colors duration-500 ${i <= active ? "bg-accent" : "bg-marine-800"
                       }`}
                   />
                 ))}
@@ -143,7 +164,7 @@ function PinnedJourney() {
               {/* Unwalked path */}
               <path
                 d={SERPENTINE}
-                stroke="var(--color-primary-800)"
+                stroke="var(--color-marine-800)"
                 strokeWidth="2"
                 strokeLinecap="round"
               />
@@ -186,10 +207,10 @@ function PinnedJourney() {
                       animate={{
                         fill: reached
                           ? "var(--color-accent)"
-                          : "var(--color-primary-950)",
+                          : "var(--color-marine-950)",
                         stroke: reached
                           ? "var(--color-accent)"
-                          : "var(--color-primary-800)",
+                          : "var(--color-marine-800)",
                         scale: i === active ? 1.25 : 1,
                       }}
                       transition={{ duration: 0.5, ease: EASE }}
@@ -203,8 +224,8 @@ function PinnedJourney() {
                       className="font-display text-[11px]"
                       animate={{
                         fill: reached
-                          ? "var(--color-primary-950)"
-                          : "var(--color-primary-600)",
+                          ? "var(--color-marine-950)"
+                          : "var(--color-marine-600)",
                       }}
                       transition={{ duration: 0.4 }}
                     >
@@ -229,11 +250,11 @@ function StackedJourney() {
 
   return (
     <div className="px-5 py-24 sm:px-8 lg:hidden">
-      <p className="label-eyebrow text-accent-soft">How it works</p>
-      <h2 className="font-display text-display-lg mt-4 text-balance text-paper">
+      <p className={EYEBROW.onDark}>How it works</p>
+      <h2 className={HEADING.sectionOnDark}>
         From sign-up to certificate.
       </h2>
-      <p className="mt-4 text-base leading-relaxed text-tint">
+      <p className={`mt-4 ${BODY.onMarine}`}>
         Five steps, no gatekeeping at any of them.
       </p>
 
@@ -247,11 +268,11 @@ function StackedJourney() {
             transition={{ duration: 0.7, ease: EASE }}
             className="relative pl-12"
           >
-            <span className="absolute left-0 top-0 grid size-8 place-items-center rounded-full border border-accent bg-accent font-display text-sm text-primary-950">
+            <span className="absolute left-0 top-0 grid size-8 place-items-center rounded-full border border-accent bg-accent font-display text-sm text-marine-950">
               {i + 1}
             </span>
             {i < JOURNEY.length - 1 ? (
-              <span className="absolute -bottom-10 left-4 top-10 w-px bg-primary-800" />
+              <span className="absolute -bottom-10 left-4 top-10 w-px bg-marine-800" />
             ) : null}
             <StepBody step={step} compact />
           </motion.li>
@@ -273,18 +294,16 @@ function StepBody({
   return (
     <>
       <h3
-        className={`font-display tracking-tight text-paper ${compact ? "text-2xl" : "text-[2.4rem] leading-tight"
-          }`}
+        className={compact ? HEADING.cardOnDark : `${HEADING.cardOnDark} leading-tight`}
       >
         {step.title}
       </h3>
       <p
-        className={`measure mt-3 leading-relaxed text-tint ${compact ? "text-[0.95rem]" : "text-lg"
-          }`}
+        className={`measure mt-3 ${compact ? BODY.onMarine : BODY.leadOnMarine}`}
       >
         {step.body}
       </p>
-      <span className="mt-5 inline-flex items-center gap-2 rounded-full border border-primary-800 px-3.5 py-1.5 text-[0.75rem] font-medium text-accent-soft">
+      <span className="mt-5 inline-flex items-center gap-2 rounded-full border border-marine-800 px-3.5 py-1.5 text-sm font-medium text-accent-soft">
         <span className="size-1.5 rounded-full bg-accent" />
         {step.detail}
       </span>

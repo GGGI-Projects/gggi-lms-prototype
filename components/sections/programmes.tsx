@@ -1,12 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { BRAND } from "@/lib/brand";
+import { ActionButton } from "@/components/ui/action-button";
 import { PROGRAMMES, type Programme } from "@/content/site";
 import { ProgrammeScene } from "@/components/art/scenes";
 import { Reveal, useHydrated } from "@/components/motion/primitives";
+import { BODY, CONTAINER, EYEBROW, HEADING, META, SECTION } from "@/lib/theme";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
@@ -23,22 +24,22 @@ export function Programmes() {
   const [openId, setOpenId] = useState<string | null>(PROGRAMMES[0].id);
 
   return (
-    <section id="programmes" className="scroll-mt-28 bg-paper py-24 sm:py-32">
-      <div className="mx-auto max-w-editorial px-5 sm:px-8">
+    <section id="programmes" className={`bg-paper ${SECTION.y}`}>
+      <div className={CONTAINER}>
         <header className="grid gap-8 lg:grid-cols-12 lg:items-end">
           <div className="lg:col-span-7">
             <Reveal>
-              <p className="label-eyebrow text-primary">The programmes</p>
+              <p className={EYEBROW.accent}>The programmes</p>
             </Reveal>
             <Reveal delay={0.08}>
-              <h2 className="font-display text-display-lg mt-5 text-balance text-ink">
+              <h2 className={HEADING.section}>
                 Five foundations. Start where your work does.
               </h2>
             </Reveal>
           </div>
           <div className="lg:col-span-5 lg:pb-2">
             <Reveal delay={0.16}>
-              <p className="measure text-base leading-relaxed text-ink-soft lg:ml-auto">
+              <p className={`measure ${BODY.base} lg:ml-auto`}>
                 Each one is self-contained, so there is no order to follow and
                 nothing to complete first. Enrol in as many as you like - they
                 are all free, and your progress is kept separately for each.
@@ -90,10 +91,12 @@ function ProgrammeRow({
       transition={{ duration: 0.8, delay: index * 0.07, ease: EASE }}
       className="group relative border-t border-surface-deep"
     >
-      {/* Hover wash, wiping up from the baseline. */}
+      {/* Hover wash, wiping up from the baseline. Warm, not mint: this section
+          is pitched bronze, and a teal wash under a bronze numeral was the one
+          place two hues met on the same element. */}
       <span
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 origin-bottom scale-y-0 bg-tint-mist/60 transition-transform duration-500 ease-out-expo group-hover:scale-y-100"
+        className="pointer-events-none absolute inset-0 origin-bottom scale-y-0 bg-accent-pale/70 transition-transform duration-500 ease-out-expo group-hover:scale-y-100"
       />
 
       <button
@@ -103,12 +106,15 @@ function ProgrammeRow({
         aria-controls={panelId}
         className="relative flex w-full flex-col gap-5 py-8 text-left sm:flex-row sm:items-center sm:gap-8 sm:py-9"
       >
-        {/* Outlined numeral, filling in on hover or when open. */}
+        {/* Outlined numeral, filling in on hover or when open.
+            The resting outline is neutral rather than teal, so bronze on the
+            open row is the only colour in the list and the eye goes straight
+            to it. A teal outline on every closed row competed with it. */}
         <span
           aria-hidden="true"
           className={`text-numeral shrink-0 select-none transition-colors duration-500 sm:w-[4.5ch] ${open
-              ? "text-accent-strong [-webkit-text-stroke:0px_transparent]"
-              : "text-transparent [-webkit-text-stroke:1.2px_var(--color-primary-600)] group-hover:text-primary-600"
+            ? "text-accent-strong [-webkit-text-stroke:0px_transparent]"
+            : "text-transparent [-webkit-text-stroke:1.2px_var(--color-muted-light)] group-hover:text-accent-600"
             }`}
         >
           {programme.number}
@@ -116,28 +122,28 @@ function ProgrammeRow({
 
         <span className="min-w-0 flex-1">
           <span className="flex flex-wrap items-center gap-x-3 gap-y-2">
-            <span className="font-display text-2xl tracking-tight text-ink sm:text-[1.7rem]">
+            <span className={HEADING.card}>
               {programme.title}
             </span>
-            <span className="rounded-full border border-surface-deep bg-paper px-2.5 py-0.5 text-[0.7rem] font-medium text-muted">
+            <span className={`rounded-full border border-surface-deep bg-paper px-2.5 py-0.5 font-medium ${META.base}`}>
               {programme.level}
             </span>
           </span>
-          <span className="measure-wide mt-3 block text-[0.95rem] leading-relaxed text-ink-soft">
+          <span className={`measure-wide mt-3 block ${BODY.base}`}>
             {programme.summary}
           </span>
         </span>
 
         <span className="flex shrink-0 items-center gap-6 sm:gap-8">
           <span className="hidden text-right leading-tight md:block">
-            <span className="block font-display text-xl text-primary">
+            <span className="block font-display text-lg text-ink">
               {programme.modules}
             </span>
-            <span className="block text-[0.72rem] text-muted">modules</span>
-            <span className="mt-2 block font-display text-xl text-primary">
+            <span className={`block ${META.base}`}>modules</span>
+            <span className="mt-2 block font-display text-lg text-ink">
               {programme.hours}h
             </span>
-            <span className="block text-[0.72rem] text-muted">of material</span>
+            <span className={`block ${META.base}`}>of material</span>
           </span>
 
           <ProgrammeScene
@@ -147,7 +153,9 @@ function ProgrammeRow({
 
           <span
             aria-hidden="true"
-            className={`grid size-10 shrink-0 place-items-center rounded-full border border-primary/25 text-primary transition-all duration-500 ease-out-expo group-hover:border-primary/50 group-hover:bg-paper ${open ? "rotate-45" : ""
+            className={`grid size-10 shrink-0 place-items-center rounded-full border transition-all duration-500 ease-out-expo group-hover:bg-paper ${open
+              ? "rotate-45 border-accent-strong/50 text-accent-strong"
+              : "border-surface-deep text-muted group-hover:border-accent-strong/40 group-hover:text-accent-strong"
               }`}
           >
             <PlusIcon className="size-4" />
@@ -168,7 +176,7 @@ function ProgrammeRow({
           >
             <div className="grid gap-8 pb-10 sm:grid-cols-12 sm:gap-10 sm:pl-[calc(4.5ch+2rem)]">
               <div className="sm:col-span-7">
-                <p className="label-eyebrow text-muted">What you will cover</p>
+                <p className={EYEBROW.muted}>What you will cover</p>
                 <ul className="mt-4 grid gap-x-8 gap-y-3 sm:grid-cols-2">
                   {programme.topics.map((topic, i) => (
                     <motion.li
@@ -176,7 +184,7 @@ function ProgrammeRow({
                       initial={hydrated && !reduce ? { opacity: 0, x: -12 } : false}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: 0.12 + i * 0.06, duration: 0.5 }}
-                      className="flex items-start gap-3 text-[0.92rem] text-ink-soft"
+                      className={`flex items-start gap-3 ${BODY.base}`}
                     >
                       <span className="mt-[0.45rem] size-1.5 shrink-0 rounded-full bg-accent" />
                       {topic}
@@ -186,8 +194,8 @@ function ProgrammeRow({
               </div>
 
               <div className="sm:col-span-5">
-                <div className="rounded-lg border border-surface-deep bg-paper-raised p-5">
-                  <p className="text-[0.9rem] leading-relaxed text-ink-soft">
+                <div className="rounded-lg border border-surface-deep bg-paper-raised py-10 px-8">
+                  <p className={BODY.base}>
                     Complete all {programme.modules} modules and their quizzes to
                     earn the{" "}
                     <span className="font-medium text-ink">
@@ -195,15 +203,19 @@ function ProgrammeRow({
                     </span>{" "}
                     certificate.
                   </p>
-                  <Link
-                    href={BRAND.routes.signup}
-                    className="group/cta mt-4 inline-flex items-center gap-2 text-[0.9rem] font-medium text-primary"
-                  >
-                    Enrol for free
-                    <span className="transition-transform duration-500 ease-out-expo group-hover/cta:translate-x-1">
-                      →
-                    </span>
-                  </Link>
+                  <div className="mt-4">
+                    <ActionButton
+                      href={BRAND.routes.signup}
+                      variant="solid"
+                      size="sm"
+                      className="group/cta"
+                    >
+                      Enrol for free
+                      <span className="transition-transform duration-500 ease-out-expo group-hover/cta:translate-x-1">
+                        →
+                      </span>
+                    </ActionButton>
+                  </div>
                 </div>
               </div>
             </div>

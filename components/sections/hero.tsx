@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { BRAND } from "@/lib/brand";
 import { TOTALS } from "@/content/site";
@@ -10,6 +11,8 @@ import { ActionButton } from "@/components/ui/action-button";
 import { SeasonParticles } from "@/components/hero/season-particles";
 import { YearRibbon } from "@/components/hero/year-ribbon";
 import { useSeason } from "@/components/hero/season-provider";
+import { useInViewport } from "@/components/motion/viewport";
+import { HEADING } from "@/lib/theme";
 
 /**
  * The hero is not a page. It is a view of the Earth, and time is passing.
@@ -24,12 +27,30 @@ import { useSeason } from "@/components/hero/season-provider";
  * server HTML, on a slow machine, with JavaScript still loading.
  */
 export function Hero() {
-  const { index, jumpTo } = useSeason();
+  const { index, jumpTo, setRunning } = useSeason();
   const season = SEASONS[index];
+
+  // Everything in here - the clock, the globe's rotation, the light sweep, the
+  // particle field - is ambience for a section that is on screen for a small
+  // fraction of a visit. Off screen it all stops, and the main thread the
+  // visitor is scrolling with gets it back. See globals.css for the rules that
+  // read `data-active`, and season-provider.tsx for what `setRunning` pauses.
+  const ref = useRef<HTMLElement>(null);
+  const visible = useInViewport(ref);
+
+  useEffect(() => {
+    setRunning(visible);
+  }, [visible, setRunning]);
 
   return (
     <section
-      className="relative isolate overflow-hidden pt-(--header-h)"
+      ref={ref}
+      data-active={visible}
+      // `season-clock` is one of the page's two copies of the year animation;
+      // the header carries the other. It sits on the section rather than on an
+      // ancestor so the seasonal tokens are re-resolved for this subtree alone
+      // instead of for the whole document, sixty times a second.
+      className="season-clock relative isolate overflow-hidden pt-(--header-h)"
       style={{ backgroundColor: "var(--season-ground, #0b2b24)" }}
     >
       {/* Sky. Not a flat colour - a gradient lit from where the sun is. */}
@@ -94,7 +115,7 @@ export function Hero() {
           </p>
 
           <h1
-            className="font-display text-display-xl mt-5 text-balance"
+            className={HEADING.page}
             style={{ color: "var(--season-text, #eaf7f0)" }}
           >
             <span className="block">
@@ -132,7 +153,11 @@ export function Hero() {
           </h1>
 
           {/* The one line that changes, plus a real number. */}
-          <div className="mt-5 min-h-[3.25rem]">
+          {/* The min-height reserves the block so the paragraph below it does
+              not jump when a season changes. It went 3.25 -> 3.5rem because
+              the fact line under it is now 14px rather than 12.8, and a floor
+              the content already exceeds is not reserving anything. */}
+          <div className="mt-5 min-h-14">
             <span className="sr-only">{SEASONS[0].line}</span>
             <AnimatePresence mode="wait" initial={false}>
               <motion.div
@@ -149,8 +174,12 @@ export function Hero() {
                 >
                   {season.line}
                 </p>
+                {/* Small - the page's caption size. It was 12.8px, a size
+                    nothing else uses, and it is the same tier of information
+                    as the figure labels below and the captions in every
+                    section under the fold. */}
                 <p
-                  className="mt-1.5 text-[0.8rem] tracking-wide"
+                  className="mt-1.5 text-sm tracking-wide"
                   style={{ color: "var(--season-text-muted, #9dc4b4)" }}
                 >
                   {season.fact}
@@ -160,8 +189,13 @@ export function Hero() {
           </div>
 
           {/* Fixed. The core message never moves. */}
+          {/* `text-lg` is the page's Body step. This paragraph carried no size
+              class at all, so it inherited the 16px root and was the only
+              piece of prose on the page not set at 18 - including the season
+              line directly above it, which made the permanent message quieter
+              than the rotating one. */}
           <p
-            className="animate-rise measure mt-6 leading-relaxed"
+            className="animate-rise measure mt-6 text-lg leading-relaxed"
             style={{
               animationDelay: "0.95s",
               color: "var(--season-text-muted, #9dc4b4)",
@@ -178,7 +212,8 @@ export function Hero() {
             <ActionButton
               href={BRAND.routes.signup}
               variant="filled"
-              className="group w-full px-8 py-4 text-base font-semibold sm:w-auto"
+              size="md"
+              className="group w-full sm:w-auto"
             >
               Start learning - it&rsquo;s free
               <ArrowRight className="size-4 transition-transform duration-500 ease-out-expo group-hover:translate-x-1" />
@@ -187,7 +222,8 @@ export function Hero() {
             <ActionButton
               href="#programmes"
               variant="outlined"
-              className="group w-full px-8 py-4 text-base font-medium sm:w-auto"
+              size="md"
+              className="group w-full sm:w-auto"
             >
               Browse the programmes
               <span className="transition-transform duration-500 ease-out-expo group-hover:translate-y-0.5">
@@ -241,14 +277,20 @@ function Stat({
   return (
     <div>
       <dt className="sr-only">{label}</dt>
+      {/* `.text-figure` - the page's one size for a number set as a graphic,
+          shared with the 01/02/03 on the mission and audience cards. It was
+          `text-3xl sm:text-[2.1rem]`: two sizes, 30 and 33.6px, neither of
+          which anything else used, and the smaller of the two was quieter
+          than a card numeral three screens further down. Used alone, without
+          `font-display` - the class sets the family itself. */}
       <dd
-        className="font-display text-3xl leading-none sm:text-[2.1rem]"
+        className="text-figure"
         style={{ color: "var(--season-text, #eaf7f0)" }}
       >
         {children}
       </dd>
       <p
-        className="mt-2 text-[0.78rem] leading-snug"
+        className="mt-2 text-sm leading-snug"
         style={{ color: "var(--season-text-muted, #9dc4b4)" }}
       >
         {label}

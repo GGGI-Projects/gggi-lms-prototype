@@ -15,17 +15,25 @@
    ========================================================================== */
 
 @theme {
-  /* --- Surfaces --------------------------------------------------------- */
-  --color-paper: #f6fafa;
+  /* --- Surfaces ----------------------------------------------------------
+     Warm neutrals, deliberately NOT teal-tinted.
+     These were `#f6fafa` and `#e9f2f2` - both green - and between them they
+     ground five of the seven sections below the hero. With teal in the
+     surface as well as in every heading, icon, border and dot, the page had
+     only one hue in it and read as a single wash of green. Neutral ground is
+     what lets teal go back to being an accent rather than the atmosphere. */
+  --color-paper: #faf9f6;
   --color-paper-raised: #ffffff;
-  --color-surface: #e9f2f2;
-  --color-surface-deep: #d2e3e3;
+  --color-surface: #efede8;
+  --color-surface-deep: #ddd9d0;
 
-  /* --- Ink -------------------------------------------------------------- */
-  --color-ink: #16242a;
-  --color-ink-soft: #41565e;
-  --color-muted: #5f757b;
-  --color-muted-light: #a8bcc0;
+  /* --- Ink ---------------------------------------------------------------
+     Neutral-warm, for the same reason: `#16242a` is a green-black, so every
+     paragraph on the page carried a faint teal cast. */
+  --color-ink: #1b1a18;
+  --color-ink-soft: #4a463e;
+  --color-muted: #6d6759;
+  --color-muted-light: #b3ada0;
 
   /* --- Primary: teal ----------------------------------------------------
      950/900/800 are the deep grounds for the dark sections and carry pale
@@ -48,12 +56,36 @@
      progress bars, journey nodes. It does not have the contrast to sit as
      small text on a light background.
      `accent-strong` is the darker bronze for large display text, and
-     `accent-soft` is for accent text on the dark sections. */
-  --color-accent: #e0a03c;
-  --color-accent-strong: #a86f14;
-  --color-accent-600: #c2841f;
-  --color-accent-soft: #f2ce93;
-  --color-accent-pale: #fbf1de;
+     `accent-soft` is for accent text on the dark sections.
+
+     PITCHED TO THE HERO'S SUMMER GOLD, `#ffc53d`.
+     The page had two golds and you could see the seam: summer's season accent
+     is OKLCH 0.85 / 0.16 / 84, and this family sat at hue 72-80 with a third
+     less chroma - close enough to read as the same intent, far enough to read
+     as a mistake when the two met. `accent` and `highlight` now sit on 84 with
+     the chroma to match, so the gold below the fold is the gold in the hero.
+
+     `accent` stops a little short of `#ffc53d` itself (L 0.82 against 0.85):
+     the bright steps live mostly on the dark sections, but `accent` also draws
+     6px bullets on white, and at the hero's exact lightness those all but
+     disappear. Same colour, one step of headroom.
+
+     The two DARK steps are held at hue 78, not 84. That is not drift - it is
+     the correction that keeps them looking like this colour. A yellow driven
+     down in lightness turns olive unless it is warmed as it darkens, so the
+     ramp shifts towards orange at the bottom in order to stay bronze.
+
+     Their lightness is set by contrast, not by eye. `accent-strong` is the
+     largest L that still clears 4.5:1 on `surface` - the DARKER of the two
+     light grounds it appears on, so the certificate section governs and the
+     programmes section gets margin. It measures 5.04 on paper and 4.54 on
+     surface, against 4.03 and 3.63 before: the 14px `EYEBROW.accent` was
+     failing AA on both, and now clears on both. */
+  --color-accent: #f3ba32;
+  --color-accent-strong: #8f630a;
+  --color-accent-600: #b47e10;
+  --color-accent-soft: #f9d28a;
+  --color-accent-pale: #fef0d6;
 
   /* --- Subject hues ------------------------------------------------------
      The curriculum is not one subject, so the band under the hero is not one
@@ -68,9 +100,34 @@
   --color-plum: #6d3d7b;
   --color-plum-pale: #f0e7f4;
 
-  /* --- Highlight: the sun and warm washes in the artwork ----------------- */
-  --color-highlight: #e8b354;
-  --color-highlight-pale: #fdf2dc;
+  /* Mid steps, for the programme illustrations only. A `-pale` is a wash and
+     a full hue is a mark; a small SVG needs the step between them to model a
+     ridge or a bar without going flat. */
+  --color-clay-soft: #dfa285;
+  --color-marine-soft: #7fb2cf;
+  --color-plum-soft: #ab8ab7;
+
+  /* Deep marine, for the journey section's ground ------------------------
+     The journey, the closing CTA and the footer were all `primary-950`, so
+     three dark blocks separated by two light ones read as the same block
+     three times. Only the journey moves; the page still ENDS on teal, which
+     is what makes the closing pair look chosen rather than default.
+     The steps mirror the teal ramp's roles exactly - 950 ground, 800 for the
+     unwalked path and hairlines, 600 for the ambient glow, 500 for the muted
+     text that has to clear 4.5:1 on the ground (this measures 5.8:1, the same
+     job `primary-500` does over `primary-950`). */
+  --color-marine-950: #08293b;
+  --color-marine-800: #10506f;
+  --color-marine-600: #2d84ac;
+  --color-marine-500: #63a9c7;
+
+  /* --- Highlight: the sun and warm washes in the artwork -----------------
+     This one IS the hero's gold, to the eye. It only ever fills artwork - the
+     sun in the programme thumbnails, warm gradient stops - never text and
+     never a control, so nothing constrains it and it can sit at the season
+     accent's own lightness and chroma. */
+  --color-highlight: #fec43a;
+  --color-highlight-pale: #fdf0d8;
 
   /* --- Radii ------------------------------------------------------------ */
   --radius-xs: 4px;
@@ -88,11 +145,12 @@
 }
 
 @theme inline {
-  /* Headings and body share one family. `--font-display` is kept as a separate
-     token so the whole page can be re-pointed at a display face later from
-     this one line, without touching a single component. */
-  --font-display: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  /* Two families, two roles. Every component asks for one of these two tokens
+     and never for a font by name, so re-pointing either role at a different
+     face is a one-line edit here. See the note in `app/layout.tsx` for why
+     these two. */
+  --font-display: var(--font-hanken), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-source-sans), ui-sans-serif, system-ui, sans-serif;
 }
 
 /* ==========================================================================
@@ -141,9 +199,20 @@ body {
   color: var(--color-paper);
 }
 
+/**
+ * Two-tone focus ring.
+ *
+ * A single `--color-primary` outline measured 2.14:1 against the dark
+ * sections - below the 3:1 a focus indicator needs, so a keyboard user
+ * tabbing through the journey, the closing CTA or the footer could not see
+ * where they were. No one colour clears 3:1 against both `paper` and
+ * `primary-950`, so the ring carries both: amber reads on the dark grounds,
+ * and the near-black halo just outside it reads on the light ones.
+ */
 :focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 3px;
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 6px color-mix(in oklab, var(--color-primary-950) 85%, transparent);
   border-radius: 2px;
 }
 
@@ -152,10 +221,10 @@ body {
    ========================================================================== */
 
 /**
- * Headings are the same sans as body copy, so hierarchy has to come from
- * weight and spacing rather than from a change of typeface. Inter needs a
- * heavier weight and gentler negative tracking than a serif did to hold the
- * same presence at display sizes.
+ * The display face. Hanken Grotesk already sets tightly, so it needs less
+ * negative tracking than the single-sans version of this page did - the value
+ * below is tuned for it and should be re-checked if `--font-display` is ever
+ * re-pointed.
  */
 .font-display {
   font-family: var(--font-display);
@@ -163,9 +232,53 @@ body {
   letter-spacing: -0.022em;
 }
 
-/* Display sizes. Fluid, so they never need per-breakpoint overrides. */
+/**
+ * THE TYPE SCALE - four steps, below the hero.
+ *
+ * There were sixteen distinct sizes on the page below the hero: 28, 24, 21.6,
+ * 21, 20, 18.4, 18, 16, 15.2, 15, 14, 13, 12.8, 11.52 and two fluid display
+ * steps. None of them was chosen against the others - they arrived one section
+ * at a time, which is how a page ends up with three sizes doing the same job.
+ *
+ *   Display  clamp(2.05rem, 4.4vw, 3.35rem)  32.8 -> 53.6px  Hanken 700
+ *   Title    text-2xl                        24px            Hanken 700
+ *   Body     text-lg                         18px            Source Sans 3
+ *   Small    text-sm                         14px            Source Sans 3
+ *
+ * Title, Body and Small are deliberately Tailwind's own `text-2xl`/`lg`/`sm`
+ * rather than bracket values: the scale lands exactly on three defaults, so a
+ * call site can use the plain utility and still be on the scale. A bracket
+ * value in a component is now a signal that something is off it.
+ *
+ * With four sizes, hierarchy has to come from WEIGHT, COLOUR and SPACE -
+ * Hanken against Source Sans, ink against ink-soft, the section rhythm - not
+ * from another point size. `.text-numeral` and the two SVG labels (the journey
+ * nodes, the certificate seal) sit outside this: the first is a graphic, and
+ * the other two are viewBox user units that scale with their drawing.
+ */
+
+/* Display. Fluid, so it never needs per-breakpoint overrides. `-xl` is the
+   HERO'S alone - the one thing on the page allowed to be louder than a section
+   heading. Everything below the hero uses `-lg`.
+ *
+ * The CEILING moved, 4.05rem -> 4.75rem (64.8 -> 76px), and only the ceiling.
+ * The floor and the 4.9vw slope are untouched on purpose, because what limits
+ * this headline is not taste, it is the width of the column it sits in: the
+ * hero text is 7 of 12 columns with the globe holding the rest, so the line
+ * "Build the foundations of Sri Lanka's" has 469px at 1024 and 600px at 1280.
+ * Measured, it breaks to a THIRD line once the ratio of column width to font
+ * size drops below about 9.2 - which at 1280 is 65px, barely above the 62.7px
+ * it already renders. Every size in the mid range is therefore already at the
+ * column's limit, and raising the slope buys 3px of type at the cost of a
+ * fourth headline line. Raising the ceiling instead gives the growth to the
+ * widths that have the room for it: unchanged below ~1322px, +17% at 1600 and
+ * up. Verified 2 lines at 360/390/768/1024/1180/1280/1366/1440/1600/1920.
+ *
+ * If this needs to be louder at 1280 too, the change is the COLUMN, not the
+ * clamp - `lg:col-span-7` -> `lg:col-span-8` in the hero - and that has to be
+ * checked against the scrim, which is transparent past 66% of the viewport. */
 .text-display-xl {
-  font-size: clamp(2.35rem, 4.9vw, 4.05rem);
+  font-size: clamp(2.35rem, 4.9vw, 4.75rem);
   line-height: 1.06;
   letter-spacing: -0.028em;
 }
@@ -176,10 +289,29 @@ body {
   letter-spacing: -0.026em;
 }
 
-.text-display-md {
-  font-size: clamp(1.65rem, 3.1vw, 2.4rem);
-  line-height: 1.18;
-  letter-spacing: -0.022em;
+/**
+ * A FIGURE: a number set as a graphic rather than as text.
+ *
+ * Three places on the page show a number this way - the hero's four totals,
+ * and the 01/02/03 on the mission and audience cards - and until now they were
+ * three different measurements: `text-3xl sm:text-[2.1rem]` in the hero and a
+ * bracketed `text-[2.5rem]` in the two card rows. Same job, same tier, so one
+ * number.
+ *
+ * It sits outside the four-step scale for the same reason `.text-numeral`
+ * does: it is not being read as prose, it is being read as a mark, and it is
+ * paired with a Small label that says what it counts.
+ *
+ * Self-contained - family, weight and tracking included - so a call site uses
+ * it ALONE. Adding `font-display` alongside would set letter-spacing twice and
+ * leave the winner to stylesheet order rather than to the class attribute.
+ */
+.text-figure {
+  font-family: var(--font-display);
+  font-size: 2.5rem;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  font-weight: 700;
 }
 
 /* The oversized 01–05 numerals in the programmes list. */
@@ -191,9 +323,10 @@ body {
   font-weight: 700;
 }
 
-/* Small caps label used for eyebrows and metadata. */
+/* Small caps label used for eyebrows and metadata. On the Small step, like
+   every other label on the page - it was 11.52px, a size nothing else used. */
 .label-eyebrow {
-  font-size: 0.72rem;
+  font-size: 0.875rem;
   font-weight: 600;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -291,6 +424,50 @@ body {
 .link-wipe:focus-visible::after {
   transform: scaleX(1);
   transform-origin: left;
+}
+
+/**
+ * The halo that trails the cursor.
+ *
+ * It lives here rather than in a class attribute because two of its details
+ * are performance decisions that need the room to be explained.
+ *
+ * NO `filter: blur(90px)`. That was a 90px gaussian over a 704px box, re-run
+ * every frame the pointer moved, and it was the most expensive per-frame job
+ * on a desktop machine. The softness is drawn into the gradient instead - the
+ * extra stops below are a hand-rolled falloff standing in for the blur - so
+ * the layer is rasterised once and then only translated.
+ *
+ * The element is also MOVED by transform, not by `left`/`top` (see CursorGlow
+ * in motion/primitives.tsx). Animating the inset properties put layout on the
+ * critical path of every mousemove; a transform stays on the compositor.
+ *
+ * `mix-blend-mode: multiply` stays for now. It is what lets one colour work
+ * over both the dark hero and the pale sections - over the hero it disappears,
+ * over paper it tints - and losing it would mean a visible pale blob crossing
+ * the globe. It is still a backdrop read per frame, so this whole element is
+ * on the list to be switched off entirely on low-end devices.
+ */
+.cursor-glow {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 30;
+  width: 44rem;
+  height: 44rem;
+  margin: -22rem 0 0 -22rem;
+  border-radius: 9999px;
+  pointer-events: none;
+  opacity: 0.3;
+  mix-blend-mode: multiply;
+  background: radial-gradient(
+    circle closest-side,
+    var(--color-tint) 0%,
+    color-mix(in oklab, var(--color-tint) 72%, transparent) 26%,
+    color-mix(in oklab, var(--color-tint) 34%, transparent) 46%,
+    color-mix(in oklab, var(--color-tint) 11%, transparent) 66%,
+    transparent 82%
+  );
 }
 
 /* ==========================================================================
@@ -441,17 +618,15 @@ body {
 }
 
 /**
- * Frosted glass.
+ * Glass, drawn rather than filtered.
  *
- * `backdrop-filter` needs something worth blurring, which is why the band
- * behind it is a field of soft colour rather than a flat surface - on white
- * this treatment renders as nothing at all. The saturate() is doing as much
- * work as the blur: it pulls the colour under each chip up so the glass picks
- * up whichever hue it happens to be passing over.
+ * There is no `backdrop-filter` on this any more and there should not be one
+ * again - the note in the block below says why, and it is a performance
+ * argument rather than a visual one.
  *
- * Text is near-black on ~70% white, so contrast holds at every position over
- * the band - the fluid type bottoms out at 16px on a phone, which is normal
- * text for contrast purposes and needs the full 4.5:1.
+ * Text is near-black on ~82% white, so contrast holds at every position over
+ * the band - the type bottoms out at 16px on a phone, which is normal text for
+ * contrast purposes and needs the full 4.5:1.
  */
 .chip {
   display: inline-flex;
@@ -462,16 +637,51 @@ body {
   padding: 0.7rem 1.4rem;
   font-weight: 600;
   letter-spacing: -0.012em;
-  font-size: clamp(1rem, 1.55vw, 1.4rem);
+  /* Body step. This was the page's only other fluid size (16 -> 22.4px); the
+     band reads quieter now, which is the trade for the chips being on the same
+     scale as everything they introduce. */
+  font-size: 1.125rem;
   color: var(--color-ink);
-  background-color: color-mix(in oklab, #fff 62%, transparent);
-  border: 1px solid color-mix(in oklab, #fff 92%, transparent);
-  -webkit-backdrop-filter: blur(14px) saturate(1.6);
-  backdrop-filter: blur(14px) saturate(1.6);
+
+  /* GLASS, DRAWN RATHER THAN BORROWED.
+   *
+   * This used to be a 62% white fill leaning entirely on `backdrop-filter`,
+   * which only works if there is something behind it worth blurring. The band
+   * lost its field of colour, so there was nothing left to pick up and every
+   * pill rendered as flat white on flat white - a shadow with no object.
+   *
+   * What actually reads as glass is the EDGE, not the fill: light catching
+   * along the top of a pane and the thickness of it shading along the bottom.
+   * Both are inset shadows here, so they hold on any ground, coloured or not,
+   * and the pill stays white either way.
+   *
+   * The fill is pushed to 82% - close enough to solid to read as white on the
+   * band, translucent enough that whatever is behind it goes soft rather than
+   * disappearing at the edge.
+   *
+   * NO `backdrop-filter`. There used to be a `blur(10px) saturate(1.25)` here,
+   * and it was the single most expensive thing on the page. A backdrop-filter
+   * makes the compositor re-sample and re-blur the region under the element,
+   * and there are twenty of these chips, all translating continuously - so
+   * that is twenty backdrop re-blurs every frame, for as long as the marquee
+   * is on screen. On a weak GPU it is enough on its own to drop the whole page
+   * below 60fps.
+   *
+   * It was also buying nothing: the band behind the chips is a flat colour now
+   * (see the note in subject-marquee.tsx), so there was no texture left to
+   * soften and the filter rendered as a no-op. The glass reads entirely from
+   * the edges below - the lit top, the shaded underside and the drop. */
+  background-color: color-mix(in oklab, #fff 82%, transparent);
+  border: 1px solid color-mix(in oklab, #fff 55%, var(--color-surface-deep));
   box-shadow:
-    0 1px 2px color-mix(in oklab, var(--color-primary-950) 8%, transparent),
-    0 10px 24px -14px
-      color-mix(in oklab, var(--color-primary-950) 30%, transparent);
+    /* the lit top edge of the pane */
+    inset 0 1px 0 #fff,
+    /* its thickness, shaded underneath */
+    inset 0 -1px 0 color-mix(in oklab, var(--color-ink) 7%, transparent),
+    /* contact with the band */
+    0 1px 1px color-mix(in oklab, var(--color-ink) 5%, transparent),
+    /* and the drop that lifts it off */
+    0 10px 22px -14px color-mix(in oklab, var(--color-ink) 32%, transparent);
 }
 
 .chip-dot {
@@ -662,12 +872,66 @@ body {
 }
 
 /**
- * The clock itself. Lives on an ancestor of BOTH the header and the hero, so
- * the registered properties inherit into each. Sections further down never
- * reference them, so they are unaffected.
+ * The clock itself.
+ *
+ * TWO elements carry it, not one: the header's wrapper and the hero's section.
+ * It used to sit on `.season-root`, the div that wraps the WHOLE page, and
+ * that was the most expensive line in this file.
+ *
+ * Every property in `@keyframes year` is a registered custom property with
+ * `inherits: true`. When an inherited custom property changes, the style engine
+ * has to re-resolve computed style for the entire subtree beneath it - so with
+ * the clock on the page wrapper, every one of the ~1,200 elements on this page
+ * was re-resolved sixty times a second, forever, including the eight sections
+ * and the footer that never read a season token at all. Scoped to the header
+ * and the hero, the same work touches under a hundred.
+ *
+ * Two animations rather than one is safe here, and phase-lock is structural
+ * rather than maintained: both are declared in CSS on elements that are in the
+ * first HTML, so they are started by the same style update with the same
+ * document timeline, the same 24s duration and the same linear timing. They
+ * are also paused and resumed together, by one class toggle on a shared
+ * ancestor (see the pause rule below), so a resume cannot stagger them either.
+ *
+ * `use-season.ts` reads whichever one it finds first - they are identical -
+ * and `jumpToSeason` already walks the subtree, so it sets both.
+ *
+ * Sections further down never reference the season tokens; they fall back to
+ * the `@property` initial values, which is why `.btn-solid` and `.btn-line`
+ * exist. Do not add `.season-clock` to anything below the hero.
  */
-.season-root {
+.season-clock {
   animation: year 24s linear infinite;
+}
+
+/* --- Nothing runs while it is off screen ---------------------------------
+   The hero's ambience is the most expensive thing on the page and a visitor
+   spends most of their session below it. Every animation named here used to
+   keep running at full cost while they read the FAQ.
+
+   Two attributes, not one, and that is load-bearing: `data-clock` is on the
+   page wrapper and pauses only `.season-clock`, while `data-active` is on the
+   individual sections that observe themselves. If both used `data-active`, the
+   wrapper's attribute would inherit down the selector chain and the hero
+   leaving the viewport would stop the marquee too - which is still on screen.
+
+   `animation-play-state` rather than unmounting: the animations hold their
+   position, so scrolling back up resumes the year where it left off instead of
+   restarting it at spring. */
+.season-root[data-clock="paused"] .season-clock {
+  animation-play-state: paused;
+}
+
+[data-active="false"] .globe-spin,
+[data-active="false"] .sl-pulse,
+[data-active="false"] .season-sweep,
+[data-active="false"] .season-underline,
+[data-active="false"] .ribbon-fill,
+[data-active="false"] .particle,
+[data-active="false"] .animate-ping,
+[data-active="false"] .animate-marquee,
+[data-active="false"] .animate-marquee-reverse {
+  animation-play-state: paused;
 }
 
 /* --- The underline is the clock ----------------------------------------- */
@@ -737,85 +1001,182 @@ body {
   }
 }
 
-/* --- Buttons: ripple on hover -------------------------------------------- */
+/* --- Buttons: ripple on hover --------------------------------------------
+   Inside `@layer components`, and that is load-bearing rather than tidy.
+   `.btn-ripple` sets `display: inline-flex`, and Tailwind v4 emits `hidden`
+   and `lg:inline-flex` into the utilities layer - an unlayered rule beats a
+   layered one whatever its specificity, so `hidden` did nothing to a button
+   and the header's Sign in / Get started pills stayed on screen at 390px,
+   overflowing the viewport and pushing the menu toggle out of reach. Layered
+   as components, the utilities win again. Same trap as the `border-color`
+   rule near the top of this file. */
+@layer components {
 
-.btn-ripple {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  border-radius: 9999px;
-  transition: color 0.35s ease;
-}
+  .btn-ripple {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border-radius: 9999px;
+    transition: color 0.35s ease;
+  }
 
-/* Above the background, below the label. */
-.btn-wave {
-  position: absolute;
-  z-index: 0;
-  left: var(--ripple-x, 50%);
-  top: var(--ripple-y, 50%);
-  width: 260%;
-  aspect-ratio: 1;
-  border-radius: 9999px;
-  background: var(--btn-wave);
-  /* The centring offset lives inside `transform`, not in the standalone
-     `translate` property - the two do not compose reliably once `transform`
-     is being transitioned, which leaves the circle hanging off the pointer by
-     its top-left corner instead of centred on it. */
-  transform: translate(-50%, -50%) scale(0);
-  transform-origin: center;
-  opacity: 0;
-  pointer-events: none;
-  transition:
-    transform 0.55s var(--ease-out-expo),
-    opacity 0.35s ease;
-}
+  /* Above the background, below the label. */
+  .btn-wave {
+    position: absolute;
+    z-index: 0;
+    left: var(--ripple-x, 50%);
+    top: var(--ripple-y, 50%);
+    width: 260%;
+    aspect-ratio: 1;
+    border-radius: 9999px;
+    background: var(--btn-wave);
+    /* The centring offset lives inside `transform`, not in the standalone
+       `translate` property - the two do not compose reliably once `transform`
+       is being transitioned, which leaves the circle hanging off the pointer by
+       its top-left corner instead of centred on it. */
+    transform: translate(-50%, -50%) scale(0);
+    transform-origin: center;
+    opacity: 0;
+    pointer-events: none;
+    transition:
+      transform 0.55s var(--ease-out-expo),
+      opacity 0.35s ease;
+  }
 
-.btn-ripple:hover .btn-wave,
-.btn-ripple:focus-visible .btn-wave {
-  transform: translate(-50%, -50%) scale(1);
-  opacity: 1;
-}
+  .btn-ripple:hover .btn-wave,
+  .btn-ripple:focus-visible .btn-wave {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
 
-.btn-label {
-  position: relative;
-  z-index: 1;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.625rem;
-}
+  /**
+   * `nowrap` is load-bearing, not cosmetic.
+   *
+   * A pill button that wraps its label stops looking like a button - the
+   * radius is drawn for one line, so two lines make it read as a lozenge with
+   * text spilling through it. Nothing constrained one enough to show this
+   * until the header's labels went up to the Body step and "Sign in" broke
+   * across two lines at 1024. It belongs here rather than at a call site: it
+   * is true of every button on the page, and the next one to be squeezed
+   * would otherwise break the same way.
+   */
+  .btn-label {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.625rem;
+    white-space: nowrap;
+  }
 
-/* Filled: accent ground, floods to the season's white. */
-.btn-filled {
-  background-color: var(--season-accent, #5fe0a8);
-  color: var(--season-ground, #0b2b24);
-  --btn-wave: var(--season-text, #eaf7f0);
-}
+  /* Filled: accent ground, floods to the season's white. */
+  /**
+   * Sizes.
+   *
+   * Padding and type live here, not on the call site. Every button on the page
+   * used to bring its own `px-… py-… text-… font-…`, which is exactly how five
+   * buttons end up as five slightly different shapes - the header pair were
+   * 0.9rem/semibold, the hero pair 1rem with one semibold and one medium, and
+   * the closing CTA 1.125rem/medium at a padding nothing else used.
+   *
+   * Three sizes, ONE point size: every button label is the Body step, and
+   * `sm`/`md`/`lg` differ by PADDING alone. A button gets its weight in a
+   * layout from its area, not from its type size.
+   *
+   * `sm` was the Small step, which is what made the header's Sign in and Get
+   * started read as leftovers once the nav links beside them went to Body -
+   * two controls and four links, all doing the same job, at two sizes. The
+   * general rule this settles: a control is something you act on, not a
+   * caption about something else, so it is never Small.
+   */
+  .btn-sm {
+    padding: 0.75rem 1.5rem;
+    font-size: 1.125rem;
+    font-weight: 600;
+  }
 
-/* Outlined: floods to white, so the label flips to the ground colour to stay
-   legible once the wave has covered it. */
-/* A 1px hairline outline reads as faint next to a solid accent pill - the
-   Sign in button was easy to miss. Slightly heavier border plus a barely
-   there fill gives it a surface, so it reads as a button rather than an
-   outline, without competing with the primary action. */
-.btn-outlined {
-  color: var(--season-text, #eaf7f0);
-  /* 2px, not 1.5px: Chrome snaps fractional border widths to whole device
-     pixels, so 1.5px silently rendered as 1px on a 1x display and the bump
-     did nothing there. */
-  border: 2px solid var(--season-text, #eaf7f0);
-  background-color: color-mix(
-    in oklab,
-    var(--season-text, #eaf7f0) 10%,
-    transparent
-  );
-  --btn-wave: var(--season-text, #eaf7f0);
-}
+  .btn-md {
+    padding: 1rem 2rem;
+    font-size: 1.125rem;
+    font-weight: 600;
+  }
 
-.btn-outlined:hover,
-.btn-outlined:focus-visible {
-  color: var(--season-ground, #0b2b24);
+  .btn-lg {
+    padding: 1.25rem 2.25rem;
+    font-size: 1.125rem;
+    font-weight: 600;
+  }
+
+  /**
+   * The transparent border on every filled variant is load-bearing.
+   *
+   * The outlined variants carry a real 2px border, and `box-sizing: border-box`
+   * with auto height still adds it to the box - so a filled button with no
+   * border sat 4px shorter than the outlined one beside it. Matching borders
+   * makes a filled/outlined pair the same height without hard-coding one.
+   */
+  .btn-filled {
+    background-color: var(--season-accent, #5fe0a8);
+    color: var(--season-ground, #0b2b24);
+    border: 2px solid transparent;
+    --btn-wave: var(--season-text, #eaf7f0);
+  }
+
+  /**
+   * Page-palette variants, for every section below the hero.
+   *
+   * These cannot just reuse `.btn-filled`. `--season-accent` is inherited all
+   * the way down the page from the season root, so a `.btn-filled` in the
+   * footer would be mint green, then yellow, then sand, then ice blue on a six
+   * second cycle - off-palette against the light sections, and restless
+   * wherever nothing else is changing. Same geometry, same ripple, same
+   * typography; the colour comes from the page instead of from the sky.
+   */
+  .btn-solid {
+    background-color: var(--color-accent);
+    color: var(--color-primary-950);
+    border: 2px solid transparent;
+    --btn-wave: var(--color-paper);
+  }
+
+  .btn-line {
+    color: var(--color-primary);
+    border: 2px solid var(--color-primary);
+    background-color: color-mix(in oklab, var(--color-primary) 8%, transparent);
+    --btn-wave: var(--color-primary);
+  }
+
+  .btn-line:hover,
+  .btn-line:focus-visible {
+    color: var(--color-paper);
+  }
+
+  /* Outlined: floods to white, so the label flips to the ground colour to stay
+     legible once the wave has covered it. */
+  /* A 1px hairline outline reads as faint next to a solid accent pill - the
+     Sign in button was easy to miss. Slightly heavier border plus a barely
+     there fill gives it a surface, so it reads as a button rather than an
+     outline, without competing with the primary action. */
+  .btn-outlined {
+    color: var(--season-text, #eaf7f0);
+    /* 2px, not 1.5px: Chrome snaps fractional border widths to whole device
+       pixels, so 1.5px silently rendered as 1px on a 1x display and the bump
+       did nothing there. */
+    border: 2px solid var(--season-text, #eaf7f0);
+    background-color: color-mix(
+      in oklab,
+      var(--season-text, #eaf7f0) 10%,
+      transparent
+    );
+    --btn-wave: var(--season-text, #eaf7f0);
+  }
+
+  .btn-outlined:hover,
+  .btn-outlined:focus-visible {
+    color: var(--season-ground, #0b2b24);
+  }
 }
 
 /* --- Globe: terminator and the Sri Lanka marker --------------------------- */
@@ -823,12 +1184,19 @@ body {
 /**
  * The day/night boundary tilts with the sun's declination. `transform-box:
  * view-box` is what lets the origin be given in viewBox units.
+ *
+ * NO `transition`. There was a `transform 0.4s linear` here, and a transition
+ * is the wrong tool for a value that is itself being animated: `--sun-tilt` is
+ * a registered `<angle>` driven by `@keyframes year`, so it already arrives
+ * smoothly interpolated on every frame. Transitioning it meant the browser
+ * cancelled and restarted a transition sixty times a second, chasing a target
+ * that had already moved, and paid a style recalc and an SVG re-raster each
+ * time - to end up 0.4s behind the light it is supposed to be describing.
  */
 .globe-terminator {
   transform-box: view-box;
   transform-origin: 220px 220px;
   transform: rotate(var(--sun-tilt));
-  transition: transform 0.4s linear;
 }
 
 .sl-pulse {
@@ -869,8 +1237,19 @@ body {
 /* --- Seasonal particles -------------------------------------------------- */
 
 /**
- * Sri Lankan, not imported: no snow. Transforms and opacity only, so these
- * stay off the main thread's paint path.
+ * Sri Lankan, not imported: no snow.
+ *
+ * NO `will-change`. It was `transform, opacity` here, which promoted all
+ * twenty-two of these to their own compositor layers - and that was a net
+ * loss, not a win. A layer only pays for itself if its contents can be
+ * rasterised once and then moved; these carry `background: var(--season-accent)`,
+ * which the year animation changes on every frame, so every one of those
+ * layers had to be re-rastered every frame as well. Twenty-two per-frame
+ * raster jobs plus the layer bookkeeping, to avoid one repaint.
+ *
+ * Nothing is lost by dropping it: a running transform/opacity animation is
+ * promoted automatically for exactly as long as it runs, and the browser makes
+ * that call with information a blanket hint does not have.
  */
 .particle {
   position: absolute;
@@ -879,7 +1258,6 @@ body {
   width: calc(var(--p-scale) * 10px);
   height: calc(var(--p-scale) * 10px);
   opacity: 0;
-  will-change: transform, opacity;
   animation-duration: var(--p-duration);
   animation-delay: var(--p-delay);
   animation-iteration-count: infinite;

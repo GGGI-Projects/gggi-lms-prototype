@@ -205,6 +205,16 @@ function PalmTree({ x, y, scale }: { x: number; y: number; scale: number }) {
 
 /* ------------------------------------------------- programme thumbnail art */
 
+/**
+ * One hue per programme, drawn from the five subject hues in `@theme`.
+ *
+ * All five of these were teal, which meant the row of thumbnails read as one
+ * repeated image and the list looked like five versions of the same course.
+ * The hues are the SAME five the marquee already puts on screen directly above
+ * (teal, clay, amber, marine, plum), held at one depth and chroma, so this is a
+ * callback to that band rather than a new palette - and the hue lives only in
+ * a 112x80 illustration, never in a heading, a border or a ground.
+ */
 const SCENES: Record<Programme["scene"], React.ReactNode> = {
   hills: (
     <>
@@ -214,35 +224,41 @@ const SCENES: Record<Programme["scene"], React.ReactNode> = {
       <path d="M0 112c28-10 52 0 78-10s40 6 62-2v20H0v-8Z" fill="var(--color-primary-600)" />
     </>
   ),
+  /* Circular economy - clay. */
   waste: (
     <>
       {/* Circular-economy loop */}
       <path
         d="M70 34a36 36 0 1 1-32 52"
-        stroke="var(--color-primary-600)"
+        stroke="var(--color-clay)"
         strokeWidth="6"
         strokeLinecap="round"
         fill="none"
       />
-      <path d="M30 74l8 16 16-8-24-8Z" fill="var(--color-primary-600)" />
+      <path d="M30 74l8 16 16-8-24-8Z" fill="var(--color-clay)" />
       <path
         d="M70 52a18 18 0 1 0 16 26"
-        stroke="var(--color-accent)"
+        stroke="var(--color-clay-soft)"
         strokeWidth="5"
         strokeLinecap="round"
         fill="none"
       />
-      <path d="M92 70l-8 12 12 6-4-18Z" fill="var(--color-accent)" />
-      <path d="M0 118c30-8 60 4 90-4s40 2 70-4v18H0v-10Z" fill="var(--color-tint)" />
+      <path d="M92 70l-8 12 12 6-4-18Z" fill="var(--color-clay-soft)" />
+      <path
+        d="M0 118c30-8 60 4 90-4s40 2 70-4v18H0v-10Z"
+        fill="var(--color-clay-pale)"
+      />
     </>
   ),
+  /* Sustainable energy - amber. The one scene where the hue and the subject
+     are the same thing, so the sun is the ground rather than a detail. */
   energy: (
     <>
-      <circle cx="34" cy="38" r="18" fill="var(--color-highlight)" opacity="0.7" />
+      <circle cx="34" cy="38" r="18" fill="var(--color-highlight)" opacity="0.85" />
       {/* Turbine */}
-      <path d="M112 108V52" stroke="var(--color-primary-600)" strokeWidth="4" />
+      <path d="M112 108V52" stroke="var(--color-accent-600)" strokeWidth="4" />
       <g
-        stroke="var(--color-primary-600)"
+        stroke="var(--color-accent-600)"
         strokeWidth="4"
         strokeLinecap="round"
         fill="none"
@@ -250,18 +266,21 @@ const SCENES: Record<Programme["scene"], React.ReactNode> = {
         <path d="M112 50 92 30M112 50l24-14M112 50l4 26" />
       </g>
       {/* Solar array */}
-      <path d="M22 108l14-30h44l-14 30H22Z" fill="var(--color-primary)" />
-      <g stroke="var(--color-tint-pale)" strokeWidth="2" opacity="0.7">
+      <path d="M22 108l14-30h44l-14 30H22Z" fill="var(--color-accent-strong)" />
+      <g stroke="var(--color-accent-pale)" strokeWidth="2" opacity="0.8">
         <path d="M38 78 30 108M54 78l-8 30M70 78l-8 30M30 92h44" />
       </g>
-      <path d="M0 116h160v14H0z" fill="var(--color-tint)" />
+      <path d="M0 116h160v14H0z" fill="var(--color-accent-soft)" />
     </>
   ),
+  /* Green finance - marine. The sprout stays amber: it is the same mark as
+     the seal and the journey's nodes, and it is what makes the bar chart read
+     as *green* finance rather than as any other chart. */
   finance: (
     <>
-      <rect x="24" y="76" width="22" height="42" rx="4" fill="var(--color-tint)" />
-      <rect x="56" y="56" width="22" height="62" rx="4" fill="var(--color-tint-pale)" />
-      <rect x="88" y="34" width="22" height="84" rx="4" fill="var(--color-primary-600)" />
+      <rect x="24" y="76" width="22" height="42" rx="4" fill="var(--color-marine-pale)" />
+      <rect x="56" y="56" width="22" height="62" rx="4" fill="var(--color-marine-soft)" />
+      <rect x="88" y="34" width="22" height="84" rx="4" fill="var(--color-marine)" />
       {/* Leaf sprouting from the tallest bar */}
       <path
         d="M99 34c0-12 8-20 22-22 0 12-8 20-22 22Z"
@@ -269,25 +288,31 @@ const SCENES: Record<Programme["scene"], React.ReactNode> = {
       />
       <path
         d="M20 122h120"
-        stroke="var(--color-primary)"
+        stroke="var(--color-marine)"
         strokeWidth="3"
         strokeLinecap="round"
       />
     </>
   ),
+  /* Mobility & landscapes - plum. */
   coast: (
     <>
       <circle cx="126" cy="36" r="16" fill="var(--color-highlight)" opacity="0.6" />
       {/* Mangrove canopy + stilt roots */}
       <path
         d="M44 66c0-16 14-28 30-28s30 12 30 28c0 6-4 10-10 10H54c-6 0-10-4-10-10Z"
-        fill="var(--color-primary-600)"
+        fill="var(--color-plum-soft)"
       />
-      <g stroke="var(--color-primary)" strokeWidth="3" strokeLinecap="round">
+      <g stroke="var(--color-plum)" strokeWidth="3" strokeLinecap="round">
         <path d="M74 76v18M74 94l-16 14M74 94l16 14M62 88 48 108M86 88l14 20" />
       </g>
       {/* Water */}
-      <g stroke="var(--color-tint)" strokeWidth="3" strokeLinecap="round" fill="none">
+      <g
+        stroke="var(--color-plum-soft)"
+        strokeWidth="3"
+        strokeLinecap="round"
+        fill="none"
+      >
         <path d="M8 116c10-6 20-6 30 0s20 6 30 0 20-6 30 0 20 6 30 0" />
         <path d="M0 128c10-6 20-6 30 0s20 6 30 0 20-6 30 0 20 6 30 0" opacity="0.6" />
       </g>

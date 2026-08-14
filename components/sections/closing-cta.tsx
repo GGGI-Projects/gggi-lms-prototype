@@ -1,8 +1,9 @@
-import Link from "next/link";
 import { BRAND } from "@/lib/brand";
+import { ActionButton } from "@/components/ui/action-button";
 import { TOTALS } from "@/content/site";
 import { RibbonScene } from "@/components/art/scenes";
 import { Reveal } from "@/components/motion/primitives";
+import { BODY, EYEBROW, HEADING, META } from "@/lib/theme";
 
 /**
  * Closing call to action. Everything above has been argument; this is the ask,
@@ -18,16 +19,16 @@ export function ClosingCta() {
 
       <div className="mx-auto max-w-3xl px-5 pb-32 text-center sm:px-8 sm:pb-40">
         <Reveal>
-          <p className="label-eyebrow text-accent-soft">Start today</p>
+          <p className={EYEBROW.onDark}>Start today</p>
         </Reveal>
         <Reveal delay={0.08}>
-          <h2 className="font-display text-display-lg mt-6 text-balance text-paper">
+          <h2 className={HEADING.sectionOnDark}>
             {TOTALS.modules} modules. No cost. One certificate at the end of
             each.
           </h2>
         </Reveal>
         <Reveal delay={0.16}>
-          <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-tint">
+          <p className={`mx-auto mt-6 max-w-xl ${BODY.leadOnDark}`}>
             Creating an account takes about a minute, and you can be part-way
             through your first module before the kettle boils.
           </p>
@@ -35,20 +36,25 @@ export function ClosingCta() {
 
         <Reveal delay={0.24}>
           <div className="mt-11 flex justify-center">
-            <Link
-                href={BRAND.routes.signup}
-                className="group inline-flex items-center gap-3 rounded-full bg-accent px-9 py-5 text-lg font-medium text-primary-950 shadow-[0_18px_50px_-16px_var(--color-accent)] transition-colors duration-300 hover:bg-accent-600"
-              >
-                Create your free account
-                <span className="transition-transform duration-500 ease-out-expo group-hover:translate-x-1.5">
-                  →
-                </span>
-              </Link>
+            {/* The one solid button on the page below the hero. Everything
+                between here and the header is outlined, so the final ask is
+                the only thing that looks like the primary action. */}
+            <ActionButton
+              href={BRAND.routes.signup}
+              variant="solid"
+              size="lg"
+              className="group shadow-[0_18px_50px_-16px_var(--color-accent)]"
+            >
+              Create your free account
+              <span className="transition-transform duration-500 ease-out-expo group-hover:translate-x-1.5">
+                →
+              </span>
+            </ActionButton>
           </div>
         </Reveal>
 
         <Reveal delay={0.32}>
-          <p className="mt-6 text-[0.85rem] text-primary-500">
+          <p className={`mt-6 ${META.base} text-primary-500`}>
             Free forever · No card required · Open to anyone in {BRAND.country}
           </p>
         </Reveal>

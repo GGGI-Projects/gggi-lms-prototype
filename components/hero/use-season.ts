@@ -31,19 +31,33 @@ function toMilliseconds(time: CSSNumberish | null | undefined): number | null {
   return typeof value === "number" ? value : null;
 }
 
+/**
+ * `subtree: true` because the clock is no longer on this element. It runs on
+ * the header and on the hero section - see `.season-clock` in globals.css -
+ * and the two are identical, so the first one found is as good as either.
+ */
 function yearAnimation(root: HTMLElement | null) {
   if (!root) return undefined;
   return root
-    .getAnimations()
+    .getAnimations({ subtree: true })
     .find((a) => (a as CSSAnimation).animationName === "year");
 }
 
-export function useSeasonIndex(root: RefObject<HTMLElement | null>) {
+/**
+ * `running` is the hero's visibility. When it is false the clock is paused, so
+ * `currentTime` is a constant and there is nothing to read - polling it would
+ * be a `getAnimations()` call and an array allocation per frame to learn the
+ * same number over and over.
+ */
+export function useSeasonIndex(
+  root: RefObject<HTMLElement | null>,
+  running = true,
+) {
   const [index, setIndex] = useState(0);
 
   useEffect(() => {
     const element = root.current;
-    if (!element) return;
+    if (!element || !running) return;
 
     let frame = 0;
     let last = -1;
@@ -68,7 +82,7 @@ export function useSeasonIndex(root: RefObject<HTMLElement | null>) {
 
     frame = requestAnimationFrame(read);
     return () => cancelAnimationFrame(frame);
-  }, [root]);
+  }, [root, running]);
 
   return index;
 }

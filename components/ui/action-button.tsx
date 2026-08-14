@@ -19,11 +19,19 @@ import { useRef, type ReactNode } from "react";
 export function ActionButton({
   href,
   variant = "filled",
+  size = "md",
   className = "",
   children,
 }: {
   href: string;
-  variant?: "filled" | "outlined";
+  /**
+   * `filled` / `outlined` read the seasonal palette and belong to the header
+   * and hero. `solid` / `line` use the page palette and are for every other
+   * section - see the note on `.btn-solid` in globals.css for why the season
+   * colours cannot simply be reused down the page.
+   */
+  variant?: "filled" | "outlined" | "solid" | "line";
+  size?: "sm" | "md" | "lg";
   className?: string;
   children: ReactNode;
 }) {
@@ -42,7 +50,7 @@ export function ActionButton({
     ref,
     onPointerEnter: trackPointer,
     onPointerLeave: trackPointer,
-    className: `btn-ripple btn-${variant} ${className}`,
+    className: `btn-ripple btn-${variant} btn-${size} ${className}`,
   };
 
   const content = (
