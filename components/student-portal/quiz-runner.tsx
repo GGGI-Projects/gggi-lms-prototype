@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Question } from "@/content/portal";
 import { ActionButton } from "@/components/ui/action-button";
 import { ProgressBar, ProgressRing } from "@/components/student-portal/ui";
@@ -31,6 +31,12 @@ import { BODY, EYEBROW, HEADING, META } from "@/lib/theme";
  *
  * Nothing is saved. The score is real for as long as the page is open, which
  * the review screen says plainly rather than implying a record was written.
+ *
+ * Submitting opens a RESULT DIALOG over the review rather than replacing it.
+ * The score is the one thing the learner is waiting for and it should not have
+ * to be looked for at the top of a long scroll; the dialog answers it, offers
+ * the two things anyone does next - take it again, or move on - and dismisses
+ * onto the explanations, which are already there underneath.
  */
 export function QuizRunner({
   questions,
@@ -50,6 +56,10 @@ export function QuizRunner({
   );
   const [index, setIndex] = useState(0);
   const [submitted, setSubmitted] = useState(false);
+  // Separate from `submitted` because the review outlives the dialog: closing
+  // the dialog must leave the marked answers on the page, not send the learner
+  // back to question one.
+  const [resultOpen, setResultOpen] = useState(false);
 
   const correct = answers.filter(
     (answer, i) => answer === questions[i].answer,
@@ -57,23 +67,41 @@ export function QuizRunner({
   const score = Math.round((correct / questions.length) * 100);
   const passed = score >= passMark;
 
+  const retake = () => {
+    setAnswers(questions.map(() => null));
+    setIndex(0);
+    setSubmitted(false);
+    setResultOpen(false);
+  };
+
   if (submitted) {
     return (
-      <Review
-        questions={questions}
-        answers={answers}
-        score={score}
-        correct={correct}
-        passed={passed}
-        passMark={passMark}
-        moduleHref={moduleHref}
-        nextHref={nextHref}
-        onRetake={() => {
-          setAnswers(questions.map(() => null));
-          setIndex(0);
-          setSubmitted(false);
-        }}
-      />
+      <>
+        <Review
+          questions={questions}
+          answers={answers}
+          score={score}
+          correct={correct}
+          passed={passed}
+          passMark={passMark}
+          moduleHref={moduleHref}
+          nextHref={nextHref}
+          onRetake={retake}
+        />
+
+        <ResultDialog
+          open={resultOpen}
+          score={score}
+          correct={correct}
+          total={questions.length}
+          passed={passed}
+          passMark={passMark}
+          moduleHref={moduleHref}
+          nextHref={nextHref}
+          onRetake={retake}
+          onClose={() => setResultOpen(false)}
+        />
+      </>
     );
   }
 
@@ -163,7 +191,11 @@ export function QuizRunner({
             variant="solid"
             size="sm"
             className="group"
-            onClick={() => answeredAll && setSubmitted(true)}
+            onClick={() => {
+              if (!answeredAll) return;
+              setSubmitted(true);
+              setResultOpen(true);
+            }}
           >
             Submit answers
             <ArrowRightIcon className="size-4 transition-transform duration-500 ease-out-expo group-hover:translate-x-1" />
@@ -187,6 +219,177 @@ export function QuizRunner({
         </p>
       ) : null}
     </div>
+  );
+}
+
+/* ------------------------------------------------------------------ result */
+
+/**
+ * The score, the moment it is known.
+ *
+ * A NATIVE `<dialog>` opened with `showModal()`, not a positioned div with
+ * `role="dialog"`. The browser then owns the top layer, the focus trap, the
+ * Escape key and the inertness of the page behind - four things that a
+ * hand-rolled overlay gets wrong in a different way each time it is written.
+ * The two pieces the platform cannot style from a class attribute, the veil
+ * and the page's scroll lock, are `.modal-panel` in globals.css.
+ *
+ * COLOUR CARRIES THE RESULT, and it is teal or clay - never amber. Amber is
+ * the graphics accent everywhere else on this site and it is also the colour
+ * every other product uses for "careful"; a 40px amber percentage is a warning
+ * the learner has to read twice to find out it was good news.
+ *
+ * Dismissing does not undo anything. The review, with every answer marked and
+ * explained, is already rendered underneath - the dialog is the headline over
+ * a page that is finished, not a step in front of it.
+ */
+function ResultDialog({
+  open,
+  score,
+  correct,
+  total,
+  passed,
+  passMark,
+  moduleHref,
+  nextHref,
+  onRetake,
+  onClose,
+}: {
+  open: boolean;
+  score: number;
+  correct: number;
+  total: number;
+  passed: boolean;
+  passMark: number;
+  moduleHref: string;
+  nextHref?: string;
+  onRetake: () => void;
+  onClose: () => void;
+}) {
+  const ref = useRef<HTMLDialogElement>(null);
+
+  // `showModal()` is imperative and has no declarative equivalent, so this is
+  // one of the few effects in the portal that earns its place: it mirrors a
+  // prop onto a DOM method, and the guards keep it from calling either method
+  // on a dialog already in that state.
+  useEffect(() => {
+    const dialog = ref.current;
+    if (!dialog) return;
+    if (open && !dialog.open) dialog.showModal();
+    if (!open && dialog.open) dialog.close();
+  }, [open]);
+
+  return (
+    <dialog
+      ref={ref}
+      aria-labelledby="quiz-result-heading"
+      // Escape and the close button both end up here, so the React state
+      // cannot drift out of step with the element's own `open` property.
+      onClose={onClose}
+      // A click on the backdrop of a native dialog targets the dialog element
+      // itself. The panel below is a child, so this fires for the veil only.
+      onClick={(event) => {
+        if (event.target === ref.current) onClose();
+      }}
+      className="modal-panel w-[min(30rem,calc(100vw-2rem))] overflow-y-auto rounded-sm border border-surface-deep bg-paper"
+    >
+      <div
+        className={`px-7 py-8 text-center sm:px-9 ${passed ? "bg-tint-mist" : "bg-clay-pale"
+          }`}
+      >
+        <span
+          aria-hidden="true"
+          className={`mx-auto grid size-12 place-items-center rounded-full ${passed ? "bg-primary text-paper" : "bg-clay text-paper"
+            }`}
+        >
+          {passed ? (
+            <CheckIcon className="size-6" />
+          ) : (
+            <CloseIcon className="size-6" />
+          )}
+        </span>
+
+        {/* `.text-figure` is the page's single size for a number read as a
+            mark rather than as prose - the dashboard's totals use the same
+            one. Colour is the only thing added to it here. */}
+        <p
+          className={`mt-5 text-figure ${passed ? "text-primary" : "text-clay"}`}
+        >
+          {score}%
+        </p>
+
+        <h2 id="quiz-result-heading" className={`mt-3 ${HEADING.card}`}>
+          {passed ? "Passed" : "Not passed this time"}
+        </h2>
+
+        <p className={`mt-2 ${META.base}`}>
+          {correct} of {total} correct · pass mark {passMark}%
+        </p>
+      </div>
+
+      <div className="px-7 py-7 sm:px-9">
+        <p className={BODY.base}>
+          {passed
+            ? "That counts towards the programme's certificate. The answers are explained below if you want to read them."
+            : `There is no limit on attempts and nothing is held against you. Every answer is explained below, which is the fastest way to ${passMark}%.`}
+        </p>
+
+        {/* ONE BUTTON, and everything else is a text action.
+            An outlined button next to a solid one in a 30rem panel gives two
+            controls the same footprint and leaves the eye to work out which
+            is which from the fill; the second action is not equal to the
+            first on either result, so it is not drawn as though it were. */}
+        <div className="mt-7">
+          {passed ? (
+            <ActionButton
+              href={nextHref ?? moduleHref}
+              variant="solid"
+              size="sm"
+              className="group w-full"
+            >
+              {nextHref ? "Go to next module" : "Back to the module"}
+              <ArrowRightIcon className="size-4 transition-transform duration-500 ease-out-expo group-hover:translate-x-1" />
+            </ActionButton>
+          ) : (
+            <ActionButton
+              variant="solid"
+              size="sm"
+              className="w-full"
+              onClick={onRetake}
+            >
+              Try again
+            </ActionButton>
+          )}
+
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-lg font-semibold text-primary">
+            {passed ? (
+              <button type="button" onClick={onRetake}>
+                <span className="link-wipe">Try again</span>
+              </button>
+            ) : nextHref ? (
+              // Offered after a failure too, because nothing in this
+              // programme is locked - see `<ModuleRow>`. Quietly: moving on
+              // is allowed, it is just not the advice.
+              <Link href={nextHref}>
+                <span className="link-wipe">Go to next module</span>
+              </Link>
+            ) : null}
+
+            {passed || nextHref ? (
+              <span aria-hidden="true" className="h-4 w-px bg-surface-deep" />
+            ) : null}
+
+            <button type="button" onClick={onClose}>
+              <span className="link-wipe">See the answers</span>
+            </button>
+          </div>
+        </div>
+
+        <p className={`mt-6 text-center ${META.base}`}>
+          Design prototype - this result is not recorded against your account.
+        </p>
+      </div>
+    </dialog>
   );
 }
 
@@ -304,12 +507,24 @@ function Review({
       </div>
 
       <div className="mt-10 flex flex-wrap items-center gap-4 border-t border-surface-deep pt-8">
-        <ActionButton variant="line" size="sm" onClick={onRetake}>
+        {/* Same two actions as the result dialog, in the same order and with
+            the same one solid, so dismissing the dialog does not change what
+            is on offer or where it is. */}
+        <ActionButton
+          variant={passed ? "line" : "solid"}
+          size="sm"
+          onClick={onRetake}
+        >
           Take it again
         </ActionButton>
 
-        {passed && nextHref ? (
-          <ActionButton href={nextHref} variant="solid" size="sm" className="group">
+        {nextHref ? (
+          <ActionButton
+            href={nextHref}
+            variant={passed ? "solid" : "line"}
+            size="sm"
+            className="group"
+          >
             Next module
             <ArrowRightIcon className="size-4 transition-transform duration-500 ease-out-expo group-hover:translate-x-1" />
           </ActionButton>

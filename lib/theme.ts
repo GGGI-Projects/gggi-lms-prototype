@@ -59,6 +59,25 @@ export const PORTAL = {
   stack: "mt-12 sm:mt-14",
 } as const;
 
+/**
+ * The staff console.
+ *
+ * Everything matches the portal except the column, and that one difference is
+ * the whole reason this exists. The portal's 76rem is an EDITORIAL measure -
+ * it is set that width because prose stops being readable past it. A console
+ * page is a register: eight columns of a learner table, or four charts across.
+ * Holding those to a reading measure does not make them readable, it makes
+ * them scroll sideways inside a page that has empty gutters on both sides.
+ *
+ * The vertical rhythm and the gutters are the portal's, unchanged, so moving
+ * between the two products does not feel like a change of typeface.
+ */
+export const CONSOLE = {
+  container: "mx-auto w-full max-w-[96rem] px-5 sm:px-8",
+  pageY: "py-10 sm:py-12",
+  stack: "mt-10 sm:mt-12",
+} as const;
+
 /* -------------------------------------------------------------- typography */
 
 /**

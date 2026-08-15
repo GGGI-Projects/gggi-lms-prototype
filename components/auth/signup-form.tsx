@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { BRAND } from "@/lib/brand";
+import { SIGNUP_EMAIL_KEY } from "@/lib/auth";
 import { ActionButton } from "@/components/ui/action-button";
 import { GoogleButton } from "@/components/auth/google-button";
 import { PasswordField, SelectField, TextField } from "@/components/auth/fields";
@@ -27,17 +28,25 @@ import { PasswordField, SelectField, TextField } from "@/components/auth/fields"
 export function SignupForm() {
   const router = useRouter();
   // The prototype has no backend. Rather than silently doing nothing, the form
-  // says so - and then goes on to the dashboard, which is what a real sign-up
-  // does and what makes the demo one continuous walk rather than three
-  // disconnected screens. See the matching note in `<LoginForm>`.
+  // says so - and then goes on to the verify-email page, which is what a real
+  // sign-up does: the account exists but isn't usable until the address is
+  // confirmed. See the matching note in `<LoginForm>`.
   const [submitted, setSubmitted] = useState(false);
+  // The address the visitor typed, kept only long enough to hand to the
+  // verify-email page - see `SIGNUP_EMAIL_KEY`.
+  const emailRef = useRef("");
 
   useEffect(() => {
     if (!submitted) return;
-    const id = window.setTimeout(
-      () => router.push(BRAND.routes.dashboard),
-      900,
-    );
+    const id = window.setTimeout(() => {
+      try {
+        window.sessionStorage.setItem(SIGNUP_EMAIL_KEY, emailRef.current);
+      } catch {
+        // Storage can be unavailable (private browsing, locked-down
+        // browsers) - the verify-email page falls back to generic copy.
+      }
+      router.push(BRAND.routes.verifyEmail);
+    }, 900);
     return () => window.clearTimeout(id);
   }, [submitted, router]);
 
@@ -45,6 +54,9 @@ export function SignupForm() {
     <form
       onSubmit={(event) => {
         event.preventDefault();
+        emailRef.current = String(
+          new FormData(event.currentTarget).get("email") ?? "",
+        );
         setSubmitted(true);
       }}
       className="mt-10"
@@ -123,7 +135,8 @@ export function SignupForm() {
           className="mt-5 rounded-sm border border-accent-600/40 bg-accent-pale px-5 py-4 text-lg leading-relaxed text-accent-strong"
         >
           This is a design prototype - no account was created and nothing was
-          sent anywhere. Taking you to the dashboard of a sample account.
+          sent anywhere. Taking you to the verify-email page next, the way a
+          real sign-up would.
         </p>
       ) : null}
 

@@ -270,3 +270,26 @@ export function LinkIcon({ className }: IconProps) {
     </svg>
   );
 }
+
+/** A rating out of five. */
+export function StarIcon({ className }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <path d="m12 3.8 2.5 5.1 5.6.8-4 3.9 1 5.6-5-2.6-5 2.6 1-5.6-4-3.9 5.6-.8Z" />
+    </svg>
+  );
+}
+
+/** The same star, solid - for a star already given, or already earned. */
+export function StarFilledIcon({ className }: IconProps) {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      className={className}
+    >
+      <path d="m12 3.8 2.5 5.1 5.6.8-4 3.9 1 5.6-5-2.6-5 2.6 1-5.6-4-3.9 5.6-.8Z" />
+    </svg>
+  );
+}

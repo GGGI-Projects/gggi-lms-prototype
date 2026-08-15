@@ -31,6 +31,8 @@ export const BRAND = {
   routes: {
     signup: "/signup",
     login: "/login",
+    verifyEmail: "/verify-email",
+    consoleLogin: "/console/login",
     programs: "#programmes",
     dashboard: "/dashboard",
   },

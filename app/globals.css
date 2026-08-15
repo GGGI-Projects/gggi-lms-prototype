@@ -175,6 +175,29 @@
   * {
     border-color: var(--color-surface-deep);
   }
+
+  /**
+   * The hand cursor, everywhere something is clickable - a `<button>` with
+   * the browser's own arrow cursor reads as inert until somebody tries it.
+   * Scoped to `@layer base` for the same reason the border rule above is:
+   * Tailwind's own utilities - `disabled:cursor-not-allowed` on the filter
+   * chips, the manual `cursor-not-allowed` on a read-only field - land in a
+   * later layer and keep overriding this regardless of selector specificity,
+   * so a control that deliberately opts out of the hand cursor still can.
+   * `:not(:disabled)` covers the rest: a disabled control with no cursor
+   * utility of its own falls back to the browser's default arrow rather than
+   * inheriting a hand cursor it has no business showing.
+   */
+  button:not(:disabled),
+  a[href],
+  [role="button"],
+  select,
+  summary,
+  label:has(input:not(:disabled)),
+  input[type="checkbox"]:not(:disabled),
+  input[type="radio"]:not(:disabled) {
+    cursor: pointer;
+  }
 }
 
 html {
@@ -491,6 +514,37 @@ body {
 }
 
 /**
+ * A modal panel - currently the quiz result.
+ *
+ * The dialog itself is a native `<dialog>` opened with `showModal()`, so the
+ * browser handles the top layer, Escape, and the focus trap, and none of that
+ * has to be re-implemented in React. What CANNOT be reached from a class
+ * attribute is exactly what is here: the `::backdrop` pseudo-element, and
+ * stopping the page underneath from scrolling while the dialog is up. Ground,
+ * border and spacing stay in the component with the rest of the portal.
+ *
+ * `margin: auto` is not decoration. The UA stylesheet centres a modal dialog
+ * with it and Tailwind's preflight zeroes margin on every element, so without
+ * this line the panel is pinned to the top-left corner of the viewport.
+ */
+.modal-panel {
+  margin: auto;
+  max-height: calc(100dvh - 2rem);
+  animation: modal-in 0.4s var(--ease-out-expo) both;
+}
+
+.modal-panel::backdrop {
+  /* The same veil as the portal's mobile drawer, so the two dim the page by
+     the same amount in the same colour. */
+  background: color-mix(in oklab, var(--color-primary-950) 62%, transparent);
+  animation: modal-veil 0.4s var(--ease-out-expo) both;
+}
+
+html:has(dialog[open]) {
+  overflow: hidden;
+}
+
+/**
  * The halo that trails the cursor.
  *
  * It lives here rather than in a class attribute because two of its details
@@ -590,6 +644,29 @@ body {
 
 .animate-arch {
   animation: arch-in 1.3s var(--ease-out-expo) both;
+}
+
+/* The quiz result dialog and its veil - see `.modal-panel` above. Shorter than
+   the page entrances: an entrance sets a scene, a dialog answers a question
+   that was just asked, and 0.9s of it is a delay. */
+@keyframes modal-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes modal-veil {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 /**
@@ -1166,6 +1243,20 @@ body {
    * caption about something else, so it is never Small.
    */
 
+  /**
+   * The one deliberate exception to "never Small" above: a row in a table is
+   * not a page a visitor arrived at to press a button, it is a line of data
+   * with an action attached, and a Body-step pill on every row is the thing
+   * that made the administrators table read as oversized. `xs` through `lg`
+   * stay exactly as documented above - this step is scoped to table rows and
+   * nothing else reaches for it.
+   */
+  .btn-table {
+    padding: 0.375rem 1rem;
+    font-size: 0.9375rem;
+    font-weight: 600;
+  }
+
   /* The shortest pill on the site, for the account pages' header - which is
      itself shorter than the landing page's. Padding only, like every other
      step: the label stays on the Body step, so this is a smaller BUTTON and
@@ -1238,6 +1329,62 @@ body {
     color: var(--color-paper);
   }
 
+  /**
+   * `.btn-solid`'s clay counterpart, for the one family of buttons where
+   * amber is the wrong signal: suspend, delete, withdraw, archive, clear.
+   * Amber is this page's "go" colour - every encouraged action from "Resume
+   * module" to "Save changes" wears it - so a destructive action in the same
+   * amber reads as an invitation rather than a warning, and the console's own
+   * `warn` badge/callout tone (clay) is what a learner or an administrator has
+   * already been trained to read as caution.
+   *
+   * The wave darkens rather than lightens on hover, unlike `.btn-solid`'s
+   * paper wave: a warning that gets BRIGHTER as you approach it is the wrong
+   * physical metaphor. Text stays paper throughout, so - like `.btn-solid` -
+   * there is no hover colour flip to write.
+   */
+  .btn-warn {
+    background-color: var(--color-clay);
+    color: var(--color-paper);
+    border: 2px solid transparent;
+    --btn-wave: color-mix(in oklab, var(--color-clay) 65%, black);
+  }
+
+  /**
+   * `.btn-solid`'s marine counterpart, for a filled action that is neither the
+   * page's "go" colour nor a warning - exporting a record, generating a file,
+   * anything that HANDLES data rather than encouraging or endangering
+   * something. Marine is already this console's `info` role everywhere else
+   * (`<Callout tone="info">`, the draft-programme notice), so a marine button
+   * reads as "here is information" without having to be read twice.
+   */
+  .btn-info {
+    background-color: var(--color-marine);
+    color: var(--color-paper);
+    border: 2px solid transparent;
+    --btn-wave: color-mix(in oklab, var(--color-marine) 65%, black);
+  }
+
+  /**
+   * The one button with no role at all - ink outline on paper, flooding to
+   * ink. Every other page-palette variant reads as an instruction (`solid`
+   * is "go", `warn` is "stop", `info` is "here is data"); `.btn-mono` reads as
+   * nothing but itself, which is exactly right for "close this" - dismissing
+   * a drawer is not encouraged, warned against, or informative, it is simply
+   * available.
+   */
+  .btn-mono {
+    color: var(--color-ink);
+    border: 2px solid var(--color-ink);
+    background-color: var(--color-paper);
+    --btn-wave: var(--color-ink);
+  }
+
+  .btn-mono:hover,
+  .btn-mono:focus-visible {
+    color: var(--color-paper);
+  }
+
   /* Outlined: floods to white, so the label flips to the ground colour to stay
      legible once the wave has covered it. */
   /* A 1px hairline outline reads as faint next to a solid accent pill - the
@@ -1275,64 +1422,103 @@ body {
    These only ever sit on `paper` / `paper-raised`. That is what lets them use a
    single-colour focus ring where the rest of the page needs the two-tone one -
    see the override below.
+
+   INSIDE `@layer components`, and that is load-bearing rather than tidy - same
+   trap as the `.btn-ripple` note above. Every search box on the platform adds
+   `pl-12` to `.field` so the icon does not sit under the first letters typed;
+   left unlayered, `.field`'s own `padding: 0.85rem 1rem` shorthand beat that
+   utility outright (unlayered CSS always wins over an `@layer`, regardless of
+   source order), and the icon sat on top of the placeholder text everywhere
+   `.field` paired with a leading icon.
    ========================================================================== */
 
-.field {
-  display: block;
-  width: 100%;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--color-surface-deep);
-  background-color: var(--color-paper-raised);
-  padding: 0.85rem 1rem;
-  /* The Body step, like every other piece of reading on the page. Anything
-     smaller is also below the 16px at which iOS Safari zooms the viewport on
-     focus, which on a phone reads as the page lurching sideways. */
-  font-size: 1.125rem;
-  line-height: 1.5;
-  color: var(--color-ink);
-  transition:
-    border-color 0.25s ease,
-    box-shadow 0.25s ease,
-    background-color 0.25s ease;
-}
+@layer components {
+  .field {
+    display: block;
+    width: 100%;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--color-surface-deep);
+    background-color: var(--color-paper-raised);
+    padding: 0.85rem 1rem;
+    /* The Body step, like every other piece of reading on the page. Anything
+       smaller is also below the 16px at which iOS Safari zooms the viewport on
+       focus, which on a phone reads as the page lurching sideways. */
+    font-size: 1.125rem;
+    line-height: 1.5;
+    color: var(--color-ink);
+    transition:
+      border-color 0.25s ease,
+      box-shadow 0.25s ease,
+      background-color 0.25s ease;
+  }
 
-.field::placeholder {
-  color: var(--color-muted-light);
-}
+  .field::placeholder {
+    color: var(--color-muted-light);
+  }
 
-.field:hover:not(:focus) {
-  border-color: var(--color-muted-light);
-}
+  .field:hover:not(:focus) {
+    border-color: var(--color-muted-light);
+  }
 
-/**
- * A quieter focus ring, for controls only.
- *
- * The global `:focus-visible` carries a 6px near-black halo because it has to
- * be visible on the dark sections as well as the light ones, and no single
- * colour clears 3:1 on both. A form control has no such problem - it is always
- * on paper - and that ring is loud enough on a text field that it reads as an
- * error state, on the one element a visitor is looking straight at while they
- * type. Teal on paper measures 6.9:1, well past the 3:1 an indicator needs.
- *
- * A text input matches `:focus-visible` on click as well as on Tab, so this is
- * the ring for every focus, not just keyboard focus.
- */
-.field:focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 0;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 4px color-mix(in oklab, var(--color-primary) 12%, transparent);
-}
+  /**
+   * A quieter focus ring, for controls only.
+   *
+   * The global `:focus-visible` carries a 6px near-black halo because it has to
+   * be visible on the dark sections as well as the light ones, and no single
+   * colour clears 3:1 on both. A form control has no such problem - it is always
+   * on paper - and that ring is loud enough on a text field that it reads as an
+   * error state, on the one element a visitor is looking straight at while they
+   * type. Teal on paper measures 6.9:1, well past the 3:1 an indicator needs.
+   *
+   * A text input matches `:focus-visible` on click as well as on Tab, so this is
+   * the ring for every focus, not just keyboard focus.
+   */
+  .field:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 0;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 4px color-mix(in oklab, var(--color-primary) 12%, transparent);
+  }
 
-/* Native control, tinted. A hand-built checkbox would have to re-implement the
-   indeterminate state, the keyboard behaviour and the label association that
-   this one already has; `accent-color` buys the palette without any of that. */
-.checkbox {
-  accent-color: var(--color-primary);
-  width: 1.15rem;
-  height: 1.15rem;
-  flex-shrink: 0;
-  border-radius: var(--radius-xs);
+  /* Native control, tinted. A hand-built checkbox would have to re-implement the
+     indeterminate state, the keyboard behaviour and the label association that
+     this one already has; `accent-color` buys the palette without any of that. */
+  .checkbox {
+    accent-color: var(--color-primary);
+    width: 1.15rem;
+    height: 1.15rem;
+    flex-shrink: 0;
+    border-radius: var(--radius-xs);
+  }
+
+  /**
+   * The arrow on every plain `<select class="field">` that never got the
+   * signup form's treatment - see the note on `<SelectField>` in
+   * `components/auth/fields.tsx`. Padding cannot fix this one: the native
+   * arrow is control chrome the OS draws in its own reserved strip, not
+   * content inside the padding box, so no `pr-*` moves it - it just sits
+   * jammed against the border. `appearance: none` turns that chrome off, and
+   * the chevron is drawn back in as a background image instead - the same
+   * device `<SelectField>` reaches for with a positioned icon, done once in
+   * CSS here instead of at every call site that draws a plain select.
+   *
+   * `:not(.appearance-none)` is what keeps this from doubling up on
+   * `<SelectField>`'s own select, which already sets `appearance-none` and
+   * draws its own icon - without it, that field would get two arrows.
+   *
+   * The colour is `--color-muted` (`#6d6759`) written out by hex: a `url()`
+   * data URI is not CSS, so it cannot read a custom property. If the palette
+   * ever moves, this hex and that variable have to move together.
+   */
+  select.field:not(.appearance-none) {
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 2.75rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236d6759' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9.5 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 1.1rem;
+  }
 }
 
 /**

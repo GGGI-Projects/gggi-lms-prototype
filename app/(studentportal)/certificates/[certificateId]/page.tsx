@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { CertificateActions } from "@/components/student-portal/certificate-actions";
 import { CertificateSheet } from "@/components/student-portal/certificate-sheet";
+import { ReviewForm } from "@/components/student-portal/review-form";
 import {
   DefinitionList,
   PageBody,
@@ -83,6 +84,12 @@ export default async function CertificatePage({ params }: Params) {
 
           <div className="mt-8">
             <CertificateActions reference={certificate.reference} />
+          </div>
+
+          <div className="mt-8">
+            <Panel>
+              <ReviewForm programmeTitle={programme.title} />
+            </Panel>
           </div>
         </div>
 

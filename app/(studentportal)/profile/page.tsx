@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ProfileForm } from "@/components/student-portal/account-forms";
-import { Avatar } from "@/components/student-portal/portal-shell";
 import {
   DefinitionList,
+  InitialsAvatar,
   PageBody,
   PageHeader,
   Panel,
@@ -44,7 +44,7 @@ export default function ProfilePage() {
       <div className="mt-10 grid gap-10 lg:grid-cols-12">
         <div className="min-w-0 lg:col-span-7">
           <div className="flex items-center gap-5 border-b border-surface-deep pb-8">
-            <Avatar className="size-16 text-2xl" />
+            <InitialsAvatar initials={LEARNER.initials} className="size-16 text-2xl" />
             <div className="min-w-0">
               <p className="font-display text-2xl leading-snug tracking-tight text-ink">
                 {LEARNER.name}

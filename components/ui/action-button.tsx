@@ -25,6 +25,7 @@ import { useRef, type ReactNode } from "react";
 export function ActionButton({
   href,
   type = "button",
+  form,
   onClick,
   variant = "filled",
   size = "md",
@@ -36,6 +37,14 @@ export function ActionButton({
   /** Ignored when `href` is set. */
   type?: "button" | "submit";
   /**
+   * Wires a `type="submit"` button to a `<form>` elsewhere in the tree by id -
+   * the native HTML mechanism for a submit control that does not live inside
+   * the form it submits, which is what a drawer's footer needs: the fields
+   * scroll in the body, the button stays put below them. Ignored when `href`
+   * is set, same as `type`.
+   */
+  form?: string;
+  /**
    * For the handful of controls that act on the page rather than navigating -
    * the module page's "Mark as complete", the quiz's "Submit". It lives here
    * rather than at a call site wrapping this in its own `<button>`, which
@@ -46,10 +55,23 @@ export function ActionButton({
    * `filled` / `outlined` read the seasonal palette and belong to the header
    * and hero. `solid` / `line` use the page palette and are for every other
    * section - see the note on `.btn-solid` in globals.css for why the season
-   * colours cannot simply be reused down the page.
+   * colours cannot simply be reused down the page. `warn` and `info` are
+   * `solid`'s clay and marine counterparts - a button that suspends, deletes,
+   * withdraws or archives something is not the same colour as one that
+   * exports or generates data, and neither is the same colour as an
+   * everyday "go" action. `mono` carries no role at all - ink on paper,
+   * for a control like "Close" that is neither an instruction nor a warning.
+   * See the notes on `.btn-warn`, `.btn-info` and `.btn-mono`.
    */
-  variant?: "filled" | "outlined" | "solid" | "line";
-  size?: "xs" | "sm" | "md" | "lg";
+  variant?: "filled" | "outlined" | "solid" | "line" | "warn" | "info" | "mono";
+  /**
+   * `xs` through `lg` are one Body-step type size at four paddings - see the
+   * note on `.btn-sm` in globals.css for why the label never shrinks below
+   * it. `table` is the one exception: a compact pill, type included, for an
+   * action that lives inside a table row rather than on the page - see the
+   * note on `.btn-table`.
+   */
+  size?: "xs" | "sm" | "md" | "lg" | "table";
   className?: string;
   children: ReactNode;
 }) {
@@ -83,7 +105,12 @@ export function ActionButton({
 
   if (href === undefined) {
     return (
-      <button ref={ref as React.RefObject<HTMLButtonElement>} type={type} {...shared}>
+      <button
+        ref={ref as React.RefObject<HTMLButtonElement>}
+        type={type}
+        form={form}
+        {...shared}
+      >
         {content}
       </button>
     );

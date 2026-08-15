@@ -22,10 +22,12 @@ import { ChevronLeftIcon } from "@/components/student-portal/icons";
 /**
  * The top of every portal screen.
  *
- * The heading is the Display step - the same one the account pages give
- * "Pick up where you left off." Repeating it here is what makes the portal
- * read as the same publication rather than as an admin panel bolted onto it,
- * and the page rhythm above keeps it from crowding the content underneath.
+ * The heading is ONE STEP DOWN FROM `HEADING.section` on purpose - big enough
+ * to read as a page's own title against the eyebrow above it, small enough
+ * not to out-shout everything under it on a page a learner opens ten times a
+ * week. `HEADING.section` stays the account pages' size ("Pick up where you
+ * left off" and the like) and the marketing site's section headings, both of
+ * which are read once per visit rather than every day.
  */
 export function PageHeader({
   eyebrow,
@@ -57,7 +59,9 @@ export function PageHeader({
       <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
         <div className="min-w-0">
           <p className={EYEBROW.onLight}>{eyebrow}</p>
-          <h1 className={HEADING.section}>{title}</h1>
+          <h1 className="font-display text-3xl tracking-tight text-balance text-ink sm:text-4xl">
+            {title}
+          </h1>
           {lead ? <p className={`measure-wide mt-5 ${BODY.base}`}>{lead}</p> : null}
         </div>
         {actions ? <div className="flex shrink-0 gap-3">{actions}</div> : null}
@@ -116,6 +120,41 @@ export function Panel({
   children: ReactNode;
 }) {
   return <div className={`${CARD} p-6 sm:p-8 ${className}`}>{children}</div>;
+}
+
+/* ------------------------------------------------------------------ avatar */
+
+const AVATAR_TONE = {
+  /** On the dark rail and the header: amber on ink. */
+  dark: "bg-accent leading-none text-primary-950",
+  /** On a light table row: a quiet tint, sized for a name cell. */
+  light: "bg-tint-mist text-sm text-primary",
+} as const;
+
+/**
+ * Someone's initials, drawn rather than uploaded - the rail, the topbar and
+ * every register's first column all want the same circle and were building
+ * it three separate times before this existed. `tone` is the one thing that
+ * actually differs between a dark rail and a light table row; size and text
+ * scale still come from `className`, the same as before.
+ */
+export function InitialsAvatar({
+  initials,
+  tone = "dark",
+  className = "",
+}: {
+  initials: string;
+  tone?: keyof typeof AVATAR_TONE;
+  className?: string;
+}) {
+  return (
+    <span
+      aria-hidden="true"
+      className={`grid shrink-0 place-items-center rounded-full font-display font-bold tracking-tight ${AVATAR_TONE[tone]} ${className}`}
+    >
+      {initials}
+    </span>
+  );
 }
 
 /* ---------------------------------------------------------------- progress */

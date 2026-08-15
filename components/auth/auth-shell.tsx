@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { BRAND } from "@/lib/brand";
 import { AuthAside, type AuthMode } from "@/components/auth/auth-aside";
 import { AuthHeader } from "@/components/auth/auth-header";
 import { BODY, EYEBROW, HEADING } from "@/lib/theme";
@@ -89,6 +90,29 @@ export function AuthShell({
                 {alt.label}
               </Link>
             </p>
+
+            {/* The way into the staff console.
+                Quiet, and on the sign-in page only: a learner has no use for
+                it, but somebody being shown this prototype has no other way to
+                find it, and a demo where three quarters of the work is
+                unreachable is a demo of a quarter of the work. It points at a
+                SEPARATE staff sign-in rather than reusing this form: a staff
+                account is provisioned by an administrator rather than
+                self-served, so that page has no Google button and no "create
+                an account" link, and folding the two forms into one would
+                mean explaining why half the fields disappear depending on who
+                is typing. See `<ConsoleLoginForm>`. */}
+            {mode === "login" ? (
+              <p className="mt-8 text-center text-sm text-muted">
+                Staff and instructors:{" "}
+                <Link
+                  href={BRAND.routes.consoleLogin}
+                  className="link-wipe font-semibold text-primary"
+                >
+                  open the console
+                </Link>
+              </p>
+            ) : null}
           </div>
         </div>
       </main>
