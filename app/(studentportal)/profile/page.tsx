@@ -38,7 +38,7 @@ export default function ProfilePage() {
       <PageHeader
         eyebrow="Profile"
         title="Your details"
-        lead="Only three of these are used by the platform at all - your name, your email address and the name that goes on a certificate. The rest is optional and only tells us which programmes to build next."
+        lead="Only three of these are used by the platform at all - your name, your email address and the name that goes on a certificate. The rest is optional and only tells us which modules to build next."
       />
 
       <div className="mt-10 grid gap-10 lg:grid-cols-12">
@@ -68,8 +68,8 @@ export default function ProfilePage() {
                 className="mt-4"
                 items={[
                   { term: "Member since", value: formatDate(LEARNER.joined) },
-                  { term: "Programmes enrolled", value: totals.programmes },
-                  { term: "Modules completed", value: totals.modulesCompleted },
+                  { term: "Modules enrolled", value: totals.modules },
+                  { term: "Lectures completed", value: totals.lecturesCompleted },
                   { term: "Time studied", value: `${totals.hours}h` },
                   { term: "Certificates", value: totals.certificates },
                 ]}
@@ -81,9 +81,9 @@ export default function ProfilePage() {
                 <p className={EYEBROW.muted}>Certificates</p>
                 <ul className="mt-4 space-y-3">
                   {CERTIFICATES.map((certificate) => {
-                    const programme = progressFor(
-                      certificate.programmeId,
-                    )?.programme;
+                    const mdl = progressFor(
+                      certificate.moduleId,
+                    )?.module;
 
                     return (
                       <li key={certificate.id}>
@@ -96,7 +96,7 @@ export default function ProfilePage() {
                           </span>
                           <span className="min-w-0 flex-1">
                             <span className="block font-semibold leading-snug text-ink">
-                              {programme?.title}
+                              {mdl?.title}
                             </span>
                             <span className={`mt-0.5 block ${META.base}`}>
                               {certificate.reference}
@@ -116,7 +116,7 @@ export default function ProfilePage() {
               <p className={`mt-4 ${BODY.base}`}>
                 An email address, a name, and what you have completed. No
                 identity number, no phone number, and nothing about you is
-                shared with the organisations behind the programmes.
+                shared with the organisations behind the modules.
               </p>
               <Link
                 href="/settings"

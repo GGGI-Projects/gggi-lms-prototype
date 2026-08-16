@@ -99,15 +99,15 @@ export default function SettingsPage() {
             />
             <Toggle
               name="self-unenrol"
-              label="Learners may leave a programme"
+              label="Learners may leave a module"
               description="Leaving keeps their progress, so re-enrolling later starts where they stopped."
               defaultChecked={enrolment.allowSelfUnenrol}
             />
             <label className="block">
               <span className="mb-2 block text-lg font-semibold text-ink">
-                Programmes per learner
+                Modules per learner
               </span>
-              <select defaultValue={enrolment.maxProgrammesPerLearner} className="field">
+              <select defaultValue={enrolment.maxModulesPerLearner} className="field">
                 <option>No limit</option>
                 <option>Three at a time</option>
                 <option>One at a time</option>
@@ -158,7 +158,7 @@ export default function SettingsPage() {
                 className="field max-w-32"
               />
               <span className={`mt-2 block ${META.base}`}>
-                References look like {certificates.referencePrefix}-2026-CE-04817.
+                References look like {certificates.referencePrefix}-2026-PA-04817.
                 Changing this does not renumber anything already issued.
               </span>
             </label>
@@ -173,7 +173,7 @@ export default function SettingsPage() {
             <Toggle
               name="hold-reviews"
               label="Hold reviews for approval"
-              description="Nothing appears on a programme page until an administrator has read it. Switching this off publishes reviews immediately and turns moderation into removal after the fact."
+              description="Nothing appears on a module page until an administrator has read it. Switching this off publishes reviews immediately and turns moderation into removal after the fact."
               defaultChecked={moderation.holdReviewsForApproval}
             />
             <Toggle
@@ -199,14 +199,14 @@ export default function SettingsPage() {
             <Toggle
               name="digest"
               label="Weekly progress digest"
-              description="Where they are, and the next module. Learners can switch this off for themselves."
+              description="Where they are, and the next lecture. Learners can switch this off for themselves."
               defaultChecked={email.weeklyProgressDigest}
             />
             <Toggle
               name="announcements"
-              label="Announce new programmes"
-              description="One email when a programme is published."
-              defaultChecked={email.newProgrammeAnnouncements}
+              label="Announce new modules"
+              description="One email when a module is published."
+              defaultChecked={email.newModuleAnnouncements}
             />
             <label className="block">
               <span className="mb-2 block text-lg font-semibold text-ink">

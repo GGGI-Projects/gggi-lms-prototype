@@ -32,7 +32,7 @@ export const metadata: Metadata = { title: "Certificates" };
 const COLUMNS: Column[] = [
   { key: "reference", head: "Reference" },
   { key: "learner", head: "Learner" },
-  { key: "programme", head: "Programme", hideBelow: "lg" },
+  { key: "module", head: "Module", hideBelow: "lg" },
   { key: "score", head: "Score", numeric: true, hideBelow: "sm" },
   { key: "issued", head: "Issued", numeric: true, hideBelow: "md" },
   { key: "status", head: "Status" },
@@ -44,7 +44,7 @@ const COLUMNS: Column[] = [
  * Certificates are NOT CREATED HERE, and the page says so rather than offering
  * an "Issue certificate" button that would quietly undermine the whole thing.
  * A certificate on this platform means one thing: somebody finished every
- * module and passed every quiz. The moment an administrator can grant one by
+ * lecture and passed every quiz. The moment an administrator can grant one by
  * hand, it means "somebody finished, or somebody was owed a favour", and every
  * certificate already issued is worth less.
  *
@@ -57,7 +57,7 @@ export default function CertificatesPage() {
 
   const items: RegisterItem[] = register.map((record) => ({
     id: record.reference,
-    text: [record.reference, record.studentName, record.programmeTitle]
+    text: [record.reference, record.studentName, record.moduleTitle]
       .join(" ")
       .toLowerCase(),
     tags: [record.status],
@@ -70,7 +70,7 @@ export default function CertificatesPage() {
           href={`/admin/students/${record.studentId}`}
           title={record.studentName}
         />
-        <Cell hideBelow="lg">{record.programmeTitle}</Cell>
+        <Cell hideBelow="lg">{record.moduleTitle}</Cell>
         <Cell numeric hideBelow="sm">
           {record.score === null ? "-" : `${record.score}%`}
         </Cell>
@@ -91,7 +91,7 @@ export default function CertificatesPage() {
       <PageHeader
         eyebrow="Learning"
         title="Certificates"
-        lead={`Issued automatically the moment a learner finishes every module and passes every quiz at ${PLATFORM_SETTINGS.certificates.passMark}%. Each carries a reference anybody can check.`}
+        lead={`Issued automatically the moment a learner finishes every lecture and passes every quiz at ${PLATFORM_SETTINGS.certificates.passMark}%. Each carries a reference anybody can check.`}
       />
 
       <div className={`${CONSOLE.stack} grid gap-4 sm:grid-cols-2 xl:grid-cols-4`}>
@@ -123,7 +123,7 @@ export default function CertificatesPage() {
           columns={COLUMNS}
           caption="Certificates issued"
           items={items}
-          searchPlaceholder="Search by reference, learner or programme"
+          searchPlaceholder="Search by reference, learner or module"
           total={PLATFORM.certificates}
           footNote="the rest of the register is not in this prototype"
           filters={[
@@ -167,7 +167,7 @@ export default function CertificatesPage() {
             Why there is no &ldquo;issue a certificate&rdquo; button
           </h2>
           <p className={`mt-3 ${BODY.base}`}>
-            A certificate here means one thing: every module finished and every
+            A certificate here means one thing: every lecture finished and every
             quiz passed. The moment it can also mean &ldquo;an administrator
             decided so&rdquo;, it stops being checkable, and every certificate
             already issued is worth a little less. Completion issues it;

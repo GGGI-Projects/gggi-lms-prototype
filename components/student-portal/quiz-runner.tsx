@@ -16,7 +16,7 @@ import { BODY, EYEBROW, HEADING, META } from "@/lib/theme";
 /**
  * Taking a quiz.
  *
- * ONE QUESTION AT A TIME, not a page of four. The quiz closes a module and
+ * ONE QUESTION AT A TIME, not a page of four. The quiz closes a lecture and
  * confirms the ideas landed; a single list of questions with one submit turns
  * that into a form, and people fill in forms by scanning for the shortest
  * answer. One question on screen with a progress bar above it is the shape
@@ -41,14 +41,14 @@ import { BODY, EYEBROW, HEADING, META } from "@/lib/theme";
 export function QuizRunner({
   questions,
   passMark,
-  moduleHref,
+  lectureHref,
   nextHref,
 }: {
   questions: Question[];
   passMark: number;
-  /** Back to the module the quiz belongs to. */
-  moduleHref: string;
-  /** The next module, when there is one. Offered only after a pass. */
+  /** Back to the lecture the quiz belongs to. */
+  lectureHref: string;
+  /** The next lecture, when there is one. Offered only after a pass. */
   nextHref?: string;
 }) {
   const [answers, setAnswers] = useState<(number | null)[]>(
@@ -84,7 +84,7 @@ export function QuizRunner({
           correct={correct}
           passed={passed}
           passMark={passMark}
-          moduleHref={moduleHref}
+          lectureHref={lectureHref}
           nextHref={nextHref}
           onRetake={retake}
         />
@@ -96,7 +96,7 @@ export function QuizRunner({
           total={questions.length}
           passed={passed}
           passMark={passMark}
-          moduleHref={moduleHref}
+          lectureHref={lectureHref}
           nextHref={nextHref}
           onRetake={retake}
           onClose={() => setResultOpen(false)}
@@ -250,7 +250,7 @@ function ResultDialog({
   total,
   passed,
   passMark,
-  moduleHref,
+  lectureHref,
   nextHref,
   onRetake,
   onClose,
@@ -261,7 +261,7 @@ function ResultDialog({
   total: number;
   passed: boolean;
   passMark: number;
-  moduleHref: string;
+  lectureHref: string;
   nextHref?: string;
   onRetake: () => void;
   onClose: () => void;
@@ -330,7 +330,7 @@ function ResultDialog({
       <div className="px-7 py-7 sm:px-9">
         <p className={BODY.base}>
           {passed
-            ? "That counts towards the programme's certificate. The answers are explained below if you want to read them."
+            ? "That counts towards the module's certificate. The answers are explained below if you want to read them."
             : `There is no limit on attempts and nothing is held against you. Every answer is explained below, which is the fastest way to ${passMark}%.`}
         </p>
 
@@ -342,12 +342,12 @@ function ResultDialog({
         <div className="mt-7">
           {passed ? (
             <ActionButton
-              href={nextHref ?? moduleHref}
+              href={nextHref ?? lectureHref}
               variant="solid"
               size="sm"
               className="group w-full"
             >
-              {nextHref ? "Go to next module" : "Back to the module"}
+              {nextHref ? "Go to next lecture" : "Back to the lecture"}
               <ArrowRightIcon className="size-4 transition-transform duration-500 ease-out-expo group-hover:translate-x-1" />
             </ActionButton>
           ) : (
@@ -368,10 +368,10 @@ function ResultDialog({
               </button>
             ) : nextHref ? (
               // Offered after a failure too, because nothing in this
-              // programme is locked - see `<ModuleRow>`. Quietly: moving on
+              // module is locked - see `<LectureRow>`. Quietly: moving on
               // is allowed, it is just not the advice.
               <Link href={nextHref}>
-                <span className="link-wipe">Go to next module</span>
+                <span className="link-wipe">Go to next lecture</span>
               </Link>
             ) : null}
 
@@ -402,7 +402,7 @@ function Review({
   correct,
   passed,
   passMark,
-  moduleHref,
+  lectureHref,
   nextHref,
   onRetake,
 }: {
@@ -412,7 +412,7 @@ function Review({
   correct: number;
   passed: boolean;
   passMark: number;
-  moduleHref: string;
+  lectureHref: string;
   nextHref?: string;
   onRetake: () => void;
 }) {
@@ -433,7 +433,7 @@ function Review({
           <p className={`mt-2 ${BODY.base}`}>
             {correct} of {questions.length} correct.{" "}
             {passed
-              ? `That is above the ${passMark}% needed, and it counts towards the programme's certificate.`
+              ? `That is above the ${passMark}% needed, and it counts towards the module's certificate.`
               : `${passMark}% is the pass mark. There is no limit on attempts, and the explanations below are the whole point of taking it.`}
           </p>
         </div>
@@ -525,16 +525,16 @@ function Review({
             size="sm"
             className="group"
           >
-            Next module
+            Next lecture
             <ArrowRightIcon className="size-4 transition-transform duration-500 ease-out-expo group-hover:translate-x-1" />
           </ActionButton>
         ) : null}
 
         <Link
-          href={moduleHref}
+          href={lectureHref}
           className="link-wipe text-lg font-semibold text-primary"
         >
-          Back to the module
+          Back to the lecture
         </Link>
       </div>
 

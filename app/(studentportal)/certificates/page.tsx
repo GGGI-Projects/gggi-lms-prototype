@@ -35,16 +35,16 @@ export const metadata: Metadata = {
  * The credential shelf.
  *
  * Two sections, and the second one is the point. A certificates page that only
- * lists what you already hold is a trophy cabinet; the programmes you are part
+ * lists what you already hold is a trophy cabinet; the modules you are part
  * way through, with what is left to do spelled out, are what makes it a page
  * worth opening twice. So "On the way" carries the same weight as "Earned" and
- * says exactly what stands between the learner and each one - so many modules,
+ * says exactly what stands between the learner and each one - so many lectures,
  * so many quizzes - rather than a percentage.
  */
 export default function CertificatesPage() {
   const earned = CERTIFICATES.map((certificate) => ({
     certificate,
-    progress: progressFor(certificate.programmeId)!,
+    progress: progressFor(certificate.moduleId)!,
   })).filter((entry) => entry.progress);
 
   const onTheWay = enrolledProgress().filter(
@@ -56,7 +56,7 @@ export default function CertificatesPage() {
       <PageHeader
         eyebrow="Certificates"
         title="Proof you can put in front of someone."
-        lead="Complete every module and pass every quiz in a programme and the certificate issues straight away - carrying your name, the programme, the date, and a reference number that can be checked against the register."
+        lead="Complete every lecture and pass every quiz in a module and the certificate issues straight away - carrying your name, the module, the date, and a reference number that can be checked against the register."
       />
 
       <Section
@@ -89,7 +89,7 @@ export default function CertificatesPage() {
                     href={`/certificates/${certificate.id}`}
                     className="after:absolute after:inset-0"
                   >
-                    {progress.programme.title}
+                    {progress.module.title}
                   </Link>
                 </h3>
 
@@ -126,11 +126,11 @@ export default function CertificatesPage() {
           </div>
         ) : (
           <EmptyState
-            title="Your first certificate is a programme away"
-            body="Finish every module and quiz in any programme and it issues immediately - there is no application, no fee and no waiting period."
+            title="Your first certificate is a module away"
+            body="Finish every lecture and quiz in any module and it issues immediately - there is no application, no fee and no waiting period."
             action={
-              <ActionButton href="/programmes" variant="solid" size="sm">
-                Browse programmes
+              <ActionButton href="/modules" variant="solid" size="sm">
+                Browse modules
               </ActionButton>
             }
           />
@@ -145,37 +145,37 @@ export default function CertificatesPage() {
         >
           <div className="grid gap-5 sm:grid-cols-2">
             {onTheWay.map((progress) => {
-              const modulesLeft = progress.moduleCount - progress.completedCount;
-              const quizzesLeft = progress.moduleCount - progress.quizzesPassed;
+              const lecturesLeft = progress.lectureCount - progress.completedCount;
+              const quizzesLeft = progress.lectureCount - progress.quizzesPassed;
 
               return (
-                <Panel key={progress.programme.id}>
+                <Panel key={progress.module.id}>
                   <h3 className="font-display text-xl leading-snug tracking-tight text-ink">
                     <Link
-                      href={`/programmes/${progress.programme.id}`}
+                      href={`/modules/${progress.module.id}`}
                       className="link-wipe"
                     >
-                      {progress.programme.title}
+                      {progress.module.title}
                     </Link>
                   </h3>
 
                   <ProgressBar
                     percent={progress.percent}
-                    label={`${progress.programme.title} progress`}
+                    label={`${progress.module.title} progress`}
                     className="mt-5"
                   />
 
                   <p className={`mt-4 ${BODY.base}`}>
-                    {modulesLeft} {modulesLeft === 1 ? "module" : "modules"} and{" "}
+                    {lecturesLeft} {lecturesLeft === 1 ? "lecture" : "lectures"} and{" "}
                     {quizzesLeft} {quizzesLeft === 1 ? "quiz" : "quizzes"} left.
                   </p>
 
-                  {progress.nextModule ? (
+                  {progress.nextLecture ? (
                     <Link
-                      href={`/programmes/${progress.programme.id}/modules/${progress.nextModule.id}`}
+                      href={`/modules/${progress.module.id}/lectures/${progress.nextLecture.id}`}
                       className="mt-4 inline-flex items-center gap-2 text-lg font-semibold text-primary"
                     >
-                      <span className="link-wipe">Carry on with module {progress.nextModule.number}</span>
+                      <span className="link-wipe">Carry on with lecture {progress.nextLecture.number}</span>
                       <ArrowRightIcon className="size-4" />
                     </Link>
                   ) : null}

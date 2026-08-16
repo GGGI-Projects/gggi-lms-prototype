@@ -9,7 +9,7 @@
  * product - the things a learner came here to do. The last two are the
  * account, which is where everything that is about them rather than about the
  * material goes. A single flat list of six puts "Settings" at the same weight
- * as "Programmes".
+ * as "Modules".
  */
 
 import type { ComponentType } from "react";
@@ -17,7 +17,7 @@ import {
   CertificateIcon,
   DashboardIcon,
   ProfileIcon,
-  ProgrammesIcon,
+  ModulesIcon,
   QuizIcon,
   SettingsIcon,
 } from "@/components/student-portal/icons";
@@ -39,7 +39,7 @@ export const PORTAL_NAV: { label: string; items: NavItem[] }[] = [
     label: "Learning",
     items: [
       { href: "/dashboard", label: "Dashboard", icon: DashboardIcon, exact: true },
-      { href: "/programmes", label: "Programmes", icon: ProgrammesIcon },
+      { href: "/modules", label: "Modules", icon: ModulesIcon },
       { href: "/quizzes", label: "Quizzes", icon: QuizIcon },
       { href: "/certificates", label: "Certificates", icon: CertificateIcon },
     ],
@@ -55,9 +55,9 @@ export const PORTAL_NAV: { label: string; items: NavItem[] }[] = [
 
 /**
  * A nav entry is active for its own route AND everything under it, so
- * "Programmes" stays lit while the learner is four segments deep inside a
- * module. The `/` is load-bearing: without it `/programmes` would also match a
- * hypothetical `/programmes-archive`.
+ * "Modules" stays lit while the learner is four segments deep inside a
+ * lecture. The `/` is load-bearing: without it `/modules` would also match a
+ * hypothetical `/modules-archive`.
  */
 export function isActive(pathname: string, item: NavItem): boolean {
   if (item.exact) return pathname === item.href;

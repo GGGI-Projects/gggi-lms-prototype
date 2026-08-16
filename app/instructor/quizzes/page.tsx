@@ -3,7 +3,7 @@ import Link from "next/link";
 import { BODY, CONSOLE, META } from "@/lib/theme";
 import { SESSION } from "@/content/staff";
 import {
-  moduleLoad,
+  lectureLoad,
   PASS_RATE_FLOOR,
   quizNeedsAttention,
   quizStatsFor,
@@ -42,9 +42,9 @@ const COLUMNS: Column[] = [
 /**
  * Every quiz this instructor is responsible for, ranked by how it is doing.
  *
- * THE WORST ONE IS AT THE TOP OF ITS PROGRAMME. A list in module order is a
+ * THE WORST ONE IS AT THE TOP OF ITS MODULE. A list in lecture order is a
  * list somebody reads once; a list where the quiz that 32% of learners fail is
- * the first thing on the screen is a list that gets acted on. Module order is
+ * the first thing on the screen is a list that gets acted on. Lecture order is
  * still visible in the numbers, so nothing is lost.
  *
  * The pass rate is drawn as a bar because the comparison between quizzes is
@@ -55,8 +55,8 @@ export default function InstructorQuizzesPage() {
   const member = staffById(SESSION.instructor);
   if (!member) throw new Error("[instructor] no session account");
 
-  const load = moduleLoad(member);
-  const quizzes = load.modules
+  const load = lectureLoad(member);
+  const quizzes = load.lectures
     .filter((mod) => mod.hasContent)
     .map((mod) => ({ mod, stats: quizStatsFor(mod.id) }));
 
@@ -71,11 +71,11 @@ export default function InstructorQuizzesPage() {
     0,
   );
 
-  // By programme, and inside each one the weakest quiz first.
-  const byProgramme = load.programmes.map((programme) => ({
-    programme,
+  // By module, and inside each one the weakest quiz first.
+  const byModule = load.modules.map((mdl) => ({
+    module: mdl,
     quizzes: quizzes
-      .filter((quiz) => quiz.mod.programme.id === programme.id)
+      .filter((quiz) => quiz.mod.module.id === mdl.id)
       // Weakest by pass rate, because that is what the flag is drawn from.
       .sort((a, b) => (a.stats?.passRate ?? 999) - (b.stats?.passRate ?? 999)),
   }));
@@ -85,13 +85,13 @@ export default function InstructorQuizzesPage() {
       <PageHeader
         eyebrow="Teaching"
         title="Quizzes"
-        lead={`One quiz closes each module: ${QUIZ_LENGTH} questions, ${PASS_MARK}% to pass, unlimited attempts. This is where you find out which of them is working.`}
+        lead={`One quiz closes each lecture: ${QUIZ_LENGTH} questions, ${PASS_MARK}% to pass, unlimited attempts. This is where you find out which of them is working.`}
       />
 
       {quizzes.length ? (
         <>
           <div className={`${CONSOLE.stack} grid gap-4 sm:grid-cols-2 xl:grid-cols-4`}>
-            <MetricCard label="Quizzes" value={quizzes.length} hint="on your modules" />
+            <MetricCard label="Quizzes" value={quizzes.length} hint="on your lectures" />
             <MetricCard
               label="Attempts"
               value={attempts ? attempts.toLocaleString("en-GB") : "-"}
@@ -120,7 +120,7 @@ export default function InstructorQuizzesPage() {
                     .map((quiz) => `${quiz.mod.number}. ${quiz.mod.title}`)
                     .join(" · ")}
                   . Fewer than {PASS_RATE_FLOOR}% pass these at the first
-                  attempt, or the mean is under the pass mark. When the modules
+                  attempt, or the mean is under the pass mark. When the lectures
                   either side of one are fine, it is usually a question that is
                   ambiguous rather than material that is hard.
                 </p>
@@ -129,31 +129,31 @@ export default function InstructorQuizzesPage() {
           ) : null}
 
           <div className={`${CONSOLE.stack} space-y-12`}>
-            {byProgramme.map(({ programme, quizzes: rows }) => (
+            {byModule.map(({ module: mdl, quizzes: rows }) => (
               <Section
-                key={programme.id}
-                title={programme.title}
+                key={mdl.id}
+                title={mdl.title}
                 description={
                   rows.length
-                    ? "Weakest first. Module order is in the numbers."
-                    : "No modules with content yet, so no quizzes."
+                    ? "Weakest first. Lecture order is in the numbers."
+                    : "No lectures with content yet, so no quizzes."
                 }
                 action={
                   <Link
-                    href={`/instructor/programmes/${programme.id}`}
+                    href={`/instructor/modules/${mdl.id}`}
                     className="link-wipe text-lg font-semibold text-primary"
                   >
-                    The programme
+                    The module
                   </Link>
                 }
               >
                 {rows.length ? (
                   <TableFrame
                     columns={COLUMNS}
-                    caption={`Quizzes in ${programme.title}`}
+                    caption={`Quizzes in ${mdl.title}`}
                   >
                     {rows.map(({ mod, stats }) => {
-                      const href = `/instructor/programmes/${programme.id}/modules/${mod.id}/quiz`;
+                      const href = `/instructor/modules/${mdl.id}/lectures/${mod.id}/quiz`;
                       const weak = quizNeedsAttention(stats);
 
                       return (
@@ -208,8 +208,8 @@ export default function InstructorQuizzesPage() {
                 ) : (
                   <Panel>
                     <p className={BODY.base}>
-                      This programme&rsquo;s modules are still a plan. A quiz is
-                      written once a module has content.
+                      This module&rsquo;s lectures are still a plan. A quiz is
+                      written once a lecture has content.
                     </p>
                   </Panel>
                 )}
@@ -225,7 +225,7 @@ export default function InstructorQuizzesPage() {
               <p className={`mt-3 ${BODY.base}`}>
                 A quiz where most people fail one particular question is a
                 question that is ambiguous. A quiz where scores are low across
-                all four is usually a module that moved too fast. The first is a
+                all four is usually a lecture that moved too fast. The first is a
                 twenty-minute fix; the second is a rewrite.
               </p>
               <p className={`mt-3 ${META.base}`}>
@@ -246,7 +246,7 @@ export default function InstructorQuizzesPage() {
                 change them.
               </p>
               <PrototypeNote className="mt-5">
-                Figures are carried for one programme in this prototype;
+                Figures are carried for one module in this prototype;
                 anywhere else the console says it does not know rather than
                 showing a zero.
               </PrototypeNote>
@@ -257,7 +257,7 @@ export default function InstructorQuizzesPage() {
         <div className={CONSOLE.stack}>
           <EmptyState
             title="No quizzes yet"
-            body="A quiz belongs to a module and is written once that module has content. Start with a module."
+            body="A quiz belongs to a lecture and is written once that lecture has content. Start with a lecture."
           />
         </div>
       )}

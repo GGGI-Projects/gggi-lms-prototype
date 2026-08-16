@@ -93,26 +93,26 @@ export default function InstructorSettingsPage() {
           >
             <Toggle
               name="notify-review"
-              label="A learner reviews one of your programmes"
+              label="A learner reviews one of your modules"
               description="Once the review has been moderated and published. Rejected ones never reach you - that is the moderator's business, not yours."
               defaultChecked
             />
             <Toggle
               name="notify-assignment"
-              label="You are assigned or unassigned a programme"
+              label="You are assigned or unassigned a module"
               description="Sent when an administrator changes what you may write for."
               defaultChecked
             />
             <Toggle
               name="notify-scores"
               label="A quiz falls below the pass mark"
-              description={`One email if the average on any of your modules stays under ${PASS_MARK}% for a fortnight. Usually a question that is wrong rather than a cohort that is weak.`}
+              description={`One email if the average on any of your lectures stays under ${PASS_MARK}% for a fortnight. Usually a question that is wrong rather than a cohort that is weak.`}
               defaultChecked
             />
             <Toggle
               name="notify-library"
               label="Somebody attaches your material"
-              description="When a file you uploaded is picked up by another instructor's module."
+              description="When a file you uploaded is picked up by another instructor's lecture."
               defaultChecked={false}
             />
             <Toggle
@@ -143,7 +143,7 @@ export default function InstructorSettingsPage() {
             </label>
             <Toggle
               name="draft-warnings"
-              label="Warn me before publishing a module"
+              label="Warn me before publishing a lecture"
               description="A confirmation step on the publish control. Worth leaving on for anything that makes a claim about policy or money."
               defaultChecked
             />
@@ -158,7 +158,7 @@ export default function InstructorSettingsPage() {
             <p className={`mt-2 ${BODY.base}`}>
               These are set once for the whole platform by the super
               administrator, so that a certificate means the same thing whatever
-              module it came through.
+              lecture it came through.
             </p>
             <DefinitionList
               className="mt-5"
@@ -204,7 +204,7 @@ export default function InstructorSettingsPage() {
             </h2>
             <p className={`mt-3 ${BODY.base}`}>
               An instructor account is closed by an administrator, not from
-              here. Modules you wrote stay published and keep your name - the
+              here. Lectures you wrote stay published and keep your name - the
               material is the platform&rsquo;s, the credit is yours.
             </p>
             <PrototypeNote className="mt-5" />

@@ -83,7 +83,7 @@ export function PortalShell({ children }: { children: ReactNode }) {
       <div className="flex flex-1 flex-col lg:pl-(--rail)">
         <Topbar onMenu={() => setMenu({ open: true, path: pathname })} />
 
-        {/* `min-w-0` is load-bearing: without it a wide child - the module
+        {/* `min-w-0` is load-bearing: without it a wide child - the lecture
             page's materials table, a long reference number - stretches the
             flex column instead of scrolling inside its own box, and the whole
             page gains a horizontal scrollbar. */}
@@ -170,7 +170,7 @@ function Topbar({ onMenu }: { onMenu: () => void }) {
   return (
     <TopbarShell
       onMenu={onMenu}
-      searchPlaceholder="Search programmes and modules"
+      searchPlaceholder="Search modules and lectures"
       searchMaxWidth="max-w-md"
       mobileLogo={
         // The mark only appears below `lg`, where the rail is not on screen.

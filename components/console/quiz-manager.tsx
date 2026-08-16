@@ -2,7 +2,7 @@ import Link from "next/link";
 import { BODY, CONSOLE, META } from "@/lib/theme";
 import type { Question } from "@/content/portal";
 import type { QuizStats } from "@/content/operations";
-import { PASS_RATE_FLOOR, quizNeedsAttention, type ConsoleModule } from "@/lib/admin";
+import { PASS_RATE_FLOOR, quizNeedsAttention, type ConsoleLecture } from "@/lib/admin";
 import {
   Badge,
   Callout,
@@ -21,9 +21,9 @@ import { IfCan, LockedNote } from "@/components/console/permission";
 import { ExternalIcon } from "@/components/console/icons";
 
 /**
- * One module's quiz, as the person responsible for it sees it.
+ * One lecture's quiz, as the person responsible for it sees it.
  *
- * ITS OWN SCREEN rather than a section of the module page, because a quiz is
+ * ITS OWN SCREEN rather than a section of the lecture page, because a quiz is
  * four questions with four options and an explanation each - twenty-four
  * pieces of writing - and material that has to be scrolled past to reach the
  * publish button is material that goes unrevised for a year.
@@ -37,10 +37,10 @@ import { ExternalIcon } from "@/components/console/icons";
  * The pass mark is deliberately not editable here. It is one number for the
  * whole platform, set in platform settings by the super administrator; a quiz
  * that could set its own would make a certificate mean something different per
- * module.
+ * lecture.
  */
 export function QuizManager({
-  programme,
+  module: mdl,
   mod,
   questions,
   stats,
@@ -48,20 +48,20 @@ export function QuizManager({
   hrefs,
   capability,
 }: {
-  programme: { id: string; title: string; status: string };
-  mod: ConsoleModule;
+  module: { id: string; title: string; status: string };
+  mod: ConsoleLecture;
   questions: Question[];
   stats: QuizStats | null;
   passMark: number;
   hrefs: {
+    lecture: string;
     module: string;
-    programme: string;
-    /** Where a learner takes it. Absent when the module is not published. */
+    /** Where a learner takes it. Absent when the lecture is not published. */
     learner?: string;
     /** Platform settings, where the pass mark lives. */
     settings?: string;
   };
-  capability: "manageProgrammes" | "authorModules";
+  capability: "manageModules" | "authorLectures";
 }) {
   const struggling = quizNeedsAttention(stats);
 
@@ -96,8 +96,8 @@ export function QuizManager({
           <Callout title="This quiz is sending people back">
             {stats.passRate}% pass it - under the {PASS_RATE_FLOOR}% this
             console treats as healthy - averaging {stats.averageScore}% across{" "}
-            {stats.attempts} attempts. Before rewriting the module, read the
-            four questions below: when the modules either side of one are fine,
+            {stats.attempts} attempts. Before rewriting the lecture, read the
+            four questions below: when the lectures either side of one are fine,
             the problem is usually a question that is ambiguous rather than
             material that is hard.
           </Callout>
@@ -157,7 +157,7 @@ export function QuizManager({
                     </p>
 
                     {/* A row of its own, not tucked beside the prompt - see the
-                        note on `<RemoveContentBlockAction>` in `module-editor.tsx`:
+                        note on `<RemoveContentBlockAction>` in `lecture-editor.tsx`:
                         `<RemoveQuestionAction>` can expand into a full
                         confirmation panel, which needs somewhere safe to grow. */}
                     <IfCan capability={capability}>
@@ -178,8 +178,8 @@ export function QuizManager({
               </ol>
             ) : (
               <p className={`rounded-sm border border-dashed border-muted-light bg-paper-raised px-6 py-12 text-center ${BODY.base}`}>
-                No quiz has been written for this module yet. A quiz is written
-                once the module has content.
+                No quiz has been written for this lecture yet. A quiz is written
+                once the lecture has content.
               </p>
             )}
 
@@ -201,18 +201,18 @@ export function QuizManager({
               className="mt-5"
               items={[
                 {
-                  term: "Module",
+                  term: "Lecture",
                   value: (
-                    <Link href={hrefs.module} className="link-wipe text-primary">
+                    <Link href={hrefs.lecture} className="link-wipe text-primary">
                       {mod.number}. {mod.title}
                     </Link>
                   ),
                 },
                 {
-                  term: "Programme",
+                  term: "Module",
                   value: (
-                    <Link href={hrefs.programme} className="link-wipe text-primary">
-                      {programme.title}
+                    <Link href={hrefs.module} className="link-wipe text-primary">
+                      {mdl.title}
                     </Link>
                   ),
                 },
@@ -242,7 +242,7 @@ export function QuizManager({
               Pass mark, attempt limit and time limit are one set of rules for
               every quiz on the platform. A quiz that could set its own would
               make a certificate mean something different depending on which
-              module it came through.
+              lecture it came through.
             </p>
             {hrefs.settings ? (
               <Link
@@ -274,10 +274,10 @@ export function QuizManager({
               >
                 <ConfirmAction
                   label="Clear past attempts"
-                  question={`Clear every attempt at the module ${mod.number} quiz?`}
+                  question={`Clear every attempt at the lecture ${mod.number} quiz?`}
                   detail={
                     stats
-                      ? `${stats.attempts} attempts would be removed. Learners who had passed keep their module completion and any certificate already issued.`
+                      ? `${stats.attempts} attempts would be removed. Learners who had passed keep their lecture completion and any certificate already issued.`
                       : "There are no recorded attempts in this prototype."
                   }
                   confirmLabel="Clear the attempts"

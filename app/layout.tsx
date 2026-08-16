@@ -18,7 +18,7 @@ import "./globals.css";
  *
  * Hanken Grotesk sets every heading, numeral and the wordmark. It is a
  * grotesque with tight, even spacing and a large x-height, which is what makes
- * the 65px hero headline and the oversized 01-05 programme numerals hold
+ * the 65px hero headline and the oversized 01-05 module numerals hold
  * together as shapes rather than as rows of letters.
  *
  * Source Sans 3 carries body copy, labels and metadata. It is a text face

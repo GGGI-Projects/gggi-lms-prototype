@@ -375,8 +375,8 @@ function Topbar({
       onMenu={onMenu}
       searchPlaceholder={
         area === "admin"
-          ? "Search learners, programmes, references"
-          : "Search your modules"
+          ? "Search learners, modules, references"
+          : "Search your lectures"
       }
       searchAriaLabel="Search the console"
       mobileLogo={

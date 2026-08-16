@@ -2,29 +2,29 @@
  * The materials library.
  *
  * ONE SHELF FOR THE WHOLE PLATFORM. Before this existed, a handout lived
- * inside the module it was attached to, which meant the same unit-cost table
+ * inside the lecture it was attached to, which meant the same unit-cost table
  * was uploaded four times by three people, each copy aged separately, and
- * nobody could answer "which modules use the 2025 tariff sheet" without
- * opening forty-two modules. A library turns that into one file with a date on
+ * nobody could answer "which lectures use the 2025 tariff sheet" without
+ * opening forty-two lectures. A library turns that into one file with a date on
  * it and a list of where it is used.
  *
  * WHAT IS AUTHORED HERE: the file, its group, who put it there and when.
  * WHAT IS DERIVED: where it is used - `lib/materials.ts` finds that by looking
  * for the asset's title in the curriculum's own materials blocks, so usage
- * cannot claim a module that does not attach it. See the note on `usageOf`.
+ * cannot claim a lecture that does not attach it. See the note on `usageOf`.
  *
  * GROUPS ARE SUBJECT SHELVES, not owners. Anybody on staff can use anything -
  * an energy instructor attaching the Sinhala glossary from the teaching kit is
  * the whole point of the shelf being shared. What a group does is make the
- * library findable at 200 files, and let a module pick up a whole set at once.
+ * library findable at 200 files, and let a lecture pick up a whole set at once.
  */
 
 import type { MaterialKind } from "@/content/curriculum";
 
 /**
  * The library carries one kind the curriculum's own blocks do not: a recording
- * that is not the module's lecture - a webinar, a field video, a recorded
- * briefing.
+ * that is not the lecture's own video block - a webinar, a field video, a
+ * recorded briefing.
  */
 export type LibraryKind = MaterialKind | "video";
 
@@ -33,7 +33,7 @@ export type LibraryKind = MaterialKind | "video";
 export type MaterialGroup = {
   id: string;
   name: string;
-  /** One line. Shown on the group card and when picking a group for a module. */
+  /** One line. Shown on the group card and when picking a group for a lecture. */
   description: string;
   createdOn: string;
   /** Staff id of whoever opened the shelf. */
@@ -100,7 +100,7 @@ export const MATERIAL_GROUPS: MaterialGroup[] = [
     id: "teaching-kit",
     name: "Teaching kit",
     description:
-      "Slide templates and the Sinhala and Tamil glossaries. Used across every programme.",
+      "Slide templates and the Sinhala and Tamil glossaries. Used across every module.",
     createdOn: "2025-09-01",
     createdBy: "staff-admin-1",
   },
@@ -111,7 +111,7 @@ export const MATERIAL_GROUPS: MaterialGroup[] = [
 export type MaterialAsset = {
   id: string;
   /**
-   * The title as it appears to a learner. It is also the JOIN: a module
+   * The title as it appears to a learner. It is also the JOIN: a lecture
    * attaches a material by this title, so two library entries must never share
    * one - `lib/materials.ts` warns in development if they do.
    */
@@ -132,9 +132,9 @@ export type MaterialAsset = {
 /**
  * Thirty files, deliberately mixed.
  *
- * Most are attached to modules already - open one and it says where. Six are
+ * Most are attached to lectures already - open one and it says where. Six are
  * not attached to anything, which is the state the library exists to make
- * visible: something uploaded and then forgotten is either the next module's
+ * visible: something uploaded and then forgotten is either the next lecture's
  * handout or dead weight, and you cannot tell which without a screen that
  * shows it.
  */
@@ -456,7 +456,7 @@ export const MATERIALS: MaterialAsset[] = [
     id: "mat-801",
     title: "Lecture slide template",
     description:
-      "The platform's own slide template. Using it is what keeps forty-two modules looking like one course.",
+      "The platform's own slide template. Using it is what keeps forty-two lectures looking like one course.",
     kind: "slides",
     size: "1.4 MB",
     groupId: "teaching-kit",
@@ -467,7 +467,7 @@ export const MATERIALS: MaterialAsset[] = [
     id: "mat-802",
     title: "Glossary of climate terms - සිංහල",
     description:
-      "The platform's vocabulary in Sinhala. Attach it to any module whose learners asked for it.",
+      "The platform's vocabulary in Sinhala. Attach it to any lecture whose learners asked for it.",
     kind: "pdf",
     size: "520 KB",
     groupId: "teaching-kit",
@@ -490,7 +490,7 @@ export const MATERIALS: MaterialAsset[] = [
     id: "mat-804",
     title: "Cooling load calculator",
     description:
-      "Room by room, for a public building. Written for the buildings programme that is still in draft.",
+      "Room by room, for a public building. Written for the buildings module that is still in draft.",
     kind: "sheet",
     size: "195 KB",
     groupId: "teaching-kit",

@@ -45,7 +45,7 @@ export default function SettingsPage() {
               <p className={EYEBROW.muted}>Still free</p>
               <p className={`mt-4 ${BODY.base}`}>
                 There is no paid tier, no billing section and nothing on this
-                page that unlocks anything. Every programme, quiz and
+                page that unlocks anything. Every module, quiz and
                 certificate is free, and there is nothing here to upgrade.
               </p>
             </Panel>
@@ -68,8 +68,8 @@ export default function SettingsPage() {
             <Panel>
               <p className={EYEBROW.muted}>Something not working</p>
               <p className={`mt-4 ${BODY.base}`}>
-                Write to us and a person reads it. Include the programme and
-                module if it is about the material itself.
+                Write to us and a person reads it. Include the module and
+                lecture if it is about the material itself.
               </p>
               <a
                 href={`mailto:${BRAND.email}`}

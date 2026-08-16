@@ -305,16 +305,19 @@ The headline's opening is **fixed** - `Build the foundations of Sri Lanka's` -
 so the core message never moves. Only the underlined phrase and one short line
 change.
 
-Each season maps to a real programme, so the rotation quietly previews the
+Each season maps to a real module, so the rotation quietly previews the
 curriculum instead of just decorating. A visitor who watches two cycles has
-learned four of the five subject areas without scrolling.
+learned four of the five subject areas without scrolling. Spring is
+`SEASONS[0]` - the canonical phrase server HTML and screen readers get, and
+what the rotation opens on - so it carries the phrase that should be seen
+first.
 
-| Season | Phrase             | Short line                                          | Fact                    |
-| ------ | ------------------ | --------------------------------------------------- | ----------------------- |
-| Spring | green transition   | New growth - where every adaptation plan begins.    | Inter-monsoon · Mar–Apr |
-| Summer | energy transition  | Peak sun - the months that make solar viable.       | ~5.5 kWh/m²/day         |
-| Autumn | circular economy   | Dry season - when water and waste decisions bite.   | Second inter-monsoon    |
-| Winter | climate resilience | Monsoon - when resilience is tested, not theorised. | ~1,800 mm rainfall      |
+| Season | Phrase             | Short line                                                | Fact                    |
+| ------ | ------------------ | ---------------------------------------------------------- | ----------------------- |
+| Spring | climate financing  | New growth - where a bankable case gets built.              | Inter-monsoon · Mar–Apr |
+| Summer | social inclusion   | Consultation season - when a plan asks who was left out.    | Mid-year · Jun–Aug      |
+| Autumn | adaptation planning | Dry season - when a provincial plan gets costed.             | Second inter-monsoon    |
+| Winter | climate resilience | Monsoon - when resilience is tested, not theorised.          | ~1,800 mm rainfall      |
 
 Phrase lengths are 16–18 characters, so the headline will not reflow as they
 swap. Reserve `min-height` on both the headline block and the short line
@@ -419,6 +422,6 @@ Each step is independently checkable. Stop and look at the page after each.
 
 - The header logo - unchanged until a real one exists.
 - Everything below the hero.
-- The five-programme set: only four have seasonal slots. Sustainable mobility &
-  landscapes is covered in the programmes section, not forced into a fifth
+- The five-module set: only four have seasonal slots. Gender-Responsive
+  Budgeting is covered in the modules section, not forced into a fifth
   state that would break the four-season metaphor.

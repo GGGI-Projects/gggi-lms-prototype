@@ -6,142 +6,141 @@
  * changes without anyone touching a component, and the real build can swap
  * these arrays for fetched data with the same shape.
  *
- * Programme subjects are drawn from the green-growth priorities that actually
- * apply to Sri Lankan ministries: adaptation, circular economy and waste,
- * renewable energy, green finance, and sustainable mobility and landscapes.
+ * Module subjects are the client's real first curriculum: climate
+ * vulnerability assessment, provincial adaptation planning, climate finance
+ * proposal writing, and gender equality & social inclusion (GSI), including
+ * gender-responsive budgeting.
  */
 
-export type Programme = {
+export type Module = {
   id: string;
   /** Rendered as the oversized editorial numeral. */
   number: string;
   title: string;
   summary: string;
   topics: string[];
-  modules: number;
+  lectures: number;
   hours: number;
   level: "Foundation" | "Intermediate";
   /** Picks which illustrated scene renders alongside the row. */
   scene: "hills" | "waste" | "energy" | "finance" | "coast";
 };
 
-export const PROGRAMMES: Programme[] = [
+export const MODULES: Module[] = [
   {
-    id: "climate-resilience",
+    id: "climate-vulnerability-assessment",
     number: "01",
-    title: "Climate Resilience & Adaptation",
+    title: "Climate Vulnerability Assessment",
     summary:
-      "How a warming climate reaches your desk - and what an adaptation plan actually asks a department to do. Built around Sri Lanka's own adaptation priorities.",
+      "Who and what is actually exposed to a changing climate, and how well they can cope with it - the groundwork every adaptation decision depends on.",
     topics: [
+      "Hazard, exposure & sensitivity",
       "Reading climate risk data",
-      "National Adaptation Plan",
-      "Vulnerability assessment",
-      "Adaptation budgeting",
+      "Vulnerability indicators",
+      "Ground-truthing an assessment",
     ],
-    modules: 9,
-    hours: 6,
+    lectures: 8,
+    hours: 5,
     level: "Foundation",
     scene: "hills",
   },
   {
-    id: "circular-economy",
+    id: "provincial-adaptation-plan",
     number: "02",
-    title: "Circular Economy & Sustainable Waste",
+    title: "Localising the Provincial Adaptation Plan",
     summary:
-      "Moving a district from collect-and-dump to recover-and-reuse. Waste streams, segregation systems, and the economics that decide whether a scheme survives its first year.",
+      "Turning a national adaptation plan into action a province can actually deliver - reading it for local relevance, costing it, and sequencing it against a real budget cycle.",
     topics: [
-      "Waste characterisation",
-      "Segregation at source",
-      "Recovery & composting",
-      "Municipal cost models",
+      "National Adaptation Plan",
+      "Provincial-level translation",
+      "Local government consultation",
+      "Costing & sequencing",
     ],
-    modules: 8,
+    lectures: 7,
     hours: 5,
-    level: "Foundation",
-    scene: "waste",
+    level: "Intermediate",
+    scene: "coast",
   },
   {
-    id: "sustainable-energy",
+    id: "bankable-climate-finance-proposals",
     number: "03",
-    title: "Sustainable Energy Transition",
+    title: "Developing Bankable Climate Finance Proposals",
     summary:
-      "Where the grid is going and how projects get built. Solar, wind and efficiency measures explained for the people who have to evaluate, approve and maintain them.",
-    topics: [
-      "Renewable technologies",
-      "Grid integration basics",
-      "Energy efficiency audits",
-      "Procurement & tariffs",
-    ],
-    modules: 10,
-    hours: 7,
-    level: "Foundation",
-    scene: "energy",
-  },
-  {
-    id: "green-finance",
-    number: "04",
-    title: "Green & Climate Finance",
-    summary:
-      "Where the money comes from and what it demands in return. Concessional finance, green bonds and climate funds - and how to write a proposal that survives review.",
+      "The difference between a good idea and a financeable one. Matching a project to the right source of finance, and writing a proposal that survives review.",
     topics: [
       "Climate funds & access",
-      "Green bond frameworks",
       "Bankable project design",
+      "Financial modelling",
       "Reporting obligations",
     ],
-    modules: 8,
+    lectures: 8,
     hours: 6,
     level: "Intermediate",
     scene: "finance",
   },
   {
-    id: "mobility-landscapes",
-    number: "05",
-    title: "Sustainable Mobility & Landscapes",
+    id: "gender-social-inclusion",
+    number: "04",
+    title: "Maintaining Gender Equality and Social Inclusion (GSI)",
     summary:
-      "Low-carbon transport and living ecosystems as one system. Public transport planning, restoration of forests and mangroves, and the coastal buffers that protect both.",
+      "Reading a plan or a project through a GSI lens - from designing an inclusive consultation to indicators that actually measure whether anyone was left out.",
     topics: [
-      "Low-carbon transport",
-      "Forest & mangrove restoration",
-      "Coastal resilience",
-      "Land-use planning",
+      "GSI as a planning discipline",
+      "Inclusive consultation design",
+      "GSI indicators",
+      "Mainstreaming into sector plans",
     ],
-    modules: 7,
+    lectures: 7,
     hours: 5,
     level: "Foundation",
-    scene: "coast",
+    scene: "waste",
+  },
+  {
+    id: "gender-responsive-budgeting",
+    number: "05",
+    title: "Gender-Responsive Budgeting",
+    summary:
+      "Reading a budget for who it actually reaches, and building the gender budget statement, the data and the case that changes it.",
+    topics: [
+      "Gender budget statements",
+      "Sex-disaggregated data",
+      "Costing an intervention",
+      "Auditing a budget circular",
+    ],
+    lectures: 7,
+    hours: 5,
+    level: "Intermediate",
+    scene: "energy",
   },
 ];
 
 /** Derived so the hero stats can never drift out of sync with the list above. */
 export const TOTALS = {
-  programmes: PROGRAMMES.length,
-  modules: PROGRAMMES.reduce((sum, p) => sum + p.modules, 0),
-  hours: PROGRAMMES.reduce((sum, p) => sum + p.hours, 0),
+  modules: MODULES.length,
+  lectures: MODULES.reduce((sum, p) => sum + p.lectures, 0),
+  hours: MODULES.reduce((sum, p) => sum + p.hours, 0),
 };
 
 /**
  * Scrolling subject strip under the hero.
  *
  * `tone` is a colour ROLE, not a colour - the five hues themselves live in the
- * `@theme` block in globals.css, same as everywhere else. The assignment is by
- * subject rather than by position: water and coasts are marine, waste and
- * materials are clay, energy is amber, money is plum. So the band reads as a
- * curriculum with range, not a decorated list.
+ * `@theme` block in globals.css, same as everywhere else. So the band reads as
+ * a curriculum with range, not a decorated list.
  */
 export type SubjectTone = "teal" | "amber" | "clay" | "marine" | "plum";
 
 export const SUBJECT_MARQUEE: { label: string; tone: SubjectTone }[] = [
-  { label: "Climate Adaptation", tone: "teal" },
-  { label: "Circular Economy", tone: "clay" },
-  { label: "Sustainable Energy", tone: "amber" },
-  { label: "Green Finance", tone: "plum" },
-  { label: "Waste Management", tone: "clay" },
-  { label: "Coastal Resilience", tone: "marine" },
-  { label: "Low-Carbon Transport", tone: "plum" },
-  { label: "Sustainable Landscapes", tone: "teal" },
-  { label: "Green Buildings", tone: "marine" },
-  { label: "Climate-Smart Agriculture", tone: "amber" },
+  { label: "Climate Vulnerability", tone: "teal" },
+  { label: "Adaptation Planning", tone: "clay" },
+  { label: "Climate Finance", tone: "marine" },
+  { label: "Gender & Social Inclusion", tone: "plum" },
+  { label: "Gender-Responsive Budgeting", tone: "amber" },
+  { label: "Provincial Planning", tone: "teal" },
+  { label: "Climate Risk", tone: "clay" },
+  { label: "Inclusive Development", tone: "marine" },
+  { label: "Bankable Proposals", tone: "plum" },
+  { label: "Public Finance", tone: "amber" },
 ];
 
 export type JourneyStep = {
@@ -160,26 +159,26 @@ export const JOURNEY: JourneyStep[] = [
   },
   {
     number: "02",
-    title: "Enrol in a programme",
+    title: "Enrol in a module",
     body: "Choose the subject closest to your work. You can enrol in more than one, and you can leave and come back - your place is held.",
     detail: "Enrol in as many as you like",
   },
   {
     number: "03",
-    title: "Work through the modules",
+    title: "Work through the lectures",
     body: "Short lectures you can take at your own pace, between meetings or after hours. Progress saves as you go, on any device.",
-    detail: "5–7 hours per programme",
+    detail: "5–6 hours per module",
   },
   {
     number: "04",
     title: "Pass the quizzes",
-    body: "A short quiz closes each module and confirms the ideas landed. Retake any of them as many times as you need - this is a foundation, not a filter.",
+    body: "A short quiz closes each lecture and confirms the ideas landed. Retake any of them as many times as you need - this is a foundation, not a filter.",
     detail: "Unlimited attempts",
   },
   {
     number: "05",
     title: "Earn your certificate",
-    body: "Finish every module and quiz and the certificate issues immediately, carrying a unique reference anyone can check.",
+    body: "Finish every lecture and quiz and the certificate issues immediately, carrying a unique reference anyone can check.",
     detail: "Issued the moment you finish",
   },
 ];
@@ -193,7 +192,7 @@ export type Audience = {
 export const AUDIENCES: Audience[] = [
   {
     title: "Public sector officers",
-    body: "You are being asked to deliver on climate commitments your training never covered. Start where the policy starts.",
+    body: "You are being asked to deliver on climate and inclusion commitments your training never covered. Start where the policy starts.",
     points: [
       "Ministry & departmental staff",
       "Provincial and local authority officers",
@@ -202,10 +201,10 @@ export const AUDIENCES: Audience[] = [
   },
   {
     title: "Practitioners & consultants",
-    body: "Working alongside government on green projects, and needing shared vocabulary with the people signing off.",
+    body: "Working alongside government on climate and social-inclusion work, and needing shared vocabulary with the people signing off.",
     points: [
       "Project and programme staff",
-      "Engineers and technical advisors",
+      "Technical advisors and consultants",
       "NGO and development teams",
     ],
   },
@@ -226,22 +225,22 @@ export const FAQ: FaqItem[] = [
   {
     question: "Is it really free?",
     answer:
-      "Yes - every programme, module, quiz and certificate, at no cost. There is no paid tier and nothing is held back behind an upgrade. The platform exists to raise the baseline of green-growth knowledge in the country, not to earn revenue.",
+      "Yes - every module, lecture, quiz and certificate, at no cost. There is no paid tier and nothing is held back behind an upgrade. The platform exists to raise the baseline of climate and inclusion knowledge in the country, not to earn revenue.",
   },
   {
-    question: "Do I need a background in environmental science?",
+    question: "Do I need a background in climate science or gender policy?",
     answer:
-      "No. The programmes are written as foundations, assuming no prior technical training. If you can read a policy document, you can follow the material. Each programme starts from first principles and builds up.",
+      "No. The modules are written as foundations, assuming no prior technical training. If you can read a policy document, you can follow the material. Each module starts from first principles and builds up.",
   },
   {
-    question: "How long does a programme take?",
+    question: "How long does a module take?",
     answer:
-      "Between five and seven hours of material, which most learners spread across two to four weeks. It is entirely self-paced - there are no live sessions, no fixed start dates and no deadline to finish by.",
+      "Between five and six hours of material, which most learners spread across two to four weeks. It is entirely self-paced - there are no live sessions, no fixed start dates and no deadline to finish by.",
   },
   {
     question: "What is the certificate actually worth?",
     answer:
-      "It certifies that you completed every module and passed every quiz in a programme. Each one carries a unique reference number that can be checked, so you can attach it to a performance review, a job application or a project proposal as evidence of foundational knowledge in the subject.",
+      "It certifies that you completed every lecture and passed every quiz in a module. Each one carries a unique reference number that can be checked, so you can attach it to a performance review, a job application or a project proposal as evidence of foundational knowledge in the subject.",
   },
   {
     question: "Can my department enrol as a group?",
@@ -251,6 +250,6 @@ export const FAQ: FaqItem[] = [
   {
     question: "Which language is the material in?",
     answer:
-      "The first programmes are published in English. Sinhala and Tamil versions are on the roadmap, and the platform is built to carry all three side by side.",
+      "The first modules are published in English. Sinhala and Tamil versions are on the roadmap, and the platform is built to carry all three side by side.",
   },
 ];

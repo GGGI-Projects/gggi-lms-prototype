@@ -9,7 +9,7 @@ import { ActionButton } from "@/components/ui/action-button";
 import { setScrollLocked } from "@/components/motion/smooth-scroll";
 
 const NAV = [
-  { label: "Programmes", href: "#programmes" },
+  { label: "Modules", href: "#modules" },
   { label: "How it works", href: "#how-it-works" },
   { label: "Certificate", href: "#certificate" },
   { label: "Questions", href: "#faq" },

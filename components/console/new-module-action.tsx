@@ -8,19 +8,21 @@ import { IfCan, LockedNote } from "@/components/console/permission";
 import { PlusIcon } from "@/components/console/icons";
 
 /**
- * "Add a module" and the drawer it opens. Same recipe as
- * `<NewProgrammeAction>` and `<NewInstructorAction>` - see the notes there
- * for the shape.
+ * "New module" and the drawer it opens. Same recipe as
+ * `<NewInstructorAction>` - see the notes there for the shape.
  *
- * GATED ON `authorModules`, NOT `manageProgrammes` - the one place in the
- * console this distinction is load-bearing rather than decorative. An
- * administrator creates the programme; the instructors assigned to it create
- * everything inside it. This control only ever renders on an instructor's own
- * programme page, but it is gated the same way every other "add" control in
- * the console is - shown, not hidden, with the reason underneath for a
- * viewpoint that reaches it without the capability.
+ * Unlike the administrators page, `/admin/modules` is not itself behind a
+ * `<Restricted>` gate - an instructor viewpoint can open it (there is
+ * nothing on the page it should not see), just not create from it. So both
+ * halves are gated independently here: the drawer's body falls back to
+ * `<LockedNote>` in place of the form, and the footer's submit button is
+ * withheld entirely rather than left pointing at a form that is not there.
  */
-export function NewModuleAction({ nextNumber }: { nextNumber: string }) {
+export function NewModuleAction({
+  instructors,
+}: {
+  instructors: { id: string; name: string; initials: string }[];
+}) {
   const [open, setOpen] = useState(false);
   const formId = useId();
 
@@ -33,28 +35,28 @@ export function NewModuleAction({ nextNumber }: { nextNumber: string }) {
         onClick={() => setOpen(true)}
       >
         <PlusIcon className="size-4" />
-        Add a module
+        New module
       </ActionButton>
 
       <Drawer
         open={open}
         onClose={() => setOpen(false)}
-        title="Add a module"
-        description="Lands as a draft, at the end of the programme. Nobody outside this console sees it until it is written and published."
-        size="sm"
+        title="Start a module"
+        description="Both administrators and the super administrator can create one. Instructors cannot - they write lectures inside modules that already exist. It opens as a draft, invisible to learners until somebody publishes it."
+        size="md"
         footer={
-          <IfCan capability="authorModules">
+          <IfCan capability="manageModules">
             <ActionButton type="submit" form={formId} variant="solid" size="sm">
-              Add the module
+              Create as a draft
             </ActionButton>
           </IfCan>
         }
       >
         <IfCan
-          capability="authorModules"
-          fallback={<LockedNote capability="authorModules" />}
+          capability="manageModules"
+          fallback={<LockedNote capability="manageModules" />}
         >
-          <NewModuleForm nextNumber={nextNumber} formId={formId} />
+          <NewModuleForm instructors={instructors} formId={formId} />
         </IfCan>
       </Drawer>
     </>

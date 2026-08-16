@@ -15,8 +15,8 @@ import { FilterIcon } from "@/components/console/icons";
  * A register you can search and narrow.
  *
  * THE ROWS ARE RENDERED ON THE SERVER and handed here as `ReactNode`s, the
- * same arrangement the portal's programme filter uses. The page does the
- * joining - a learner's programmes, an instructor's module counts - and this
+ * same arrangement the portal's module filter uses. The page does the
+ * joining - a learner's modules, an instructor's lecture counts - and this
  * component only decides which of the finished rows to show. Nothing about the
  * register's data crosses into the browser bundle except the two strings each
  * row is matched against.

@@ -3,7 +3,7 @@
  *
  * The line this file draws: anything that appears on THREE OR MORE portal
  * screens lives here. A progress bar is on the dashboard, the catalogue, the
- * programme page and the certificate; a page heading is on all ten. Written at
+ * module page and the certificate; a page heading is on all ten. Written at
  * each call site, those drift into four bar heights and three heading
  * treatments, and the portal stops looking like one product.
  *
@@ -76,7 +76,7 @@ export function PageBody({ children }: { children: ReactNode }) {
 }
 
 /**
- * A titled block inside a page - "Your programmes", "Recent activity".
+ * A titled block inside a page - "Your modules", "Recent activity".
  *
  * Title step, not Display: the page already has one Display heading and a
  * second would leave the reader unsure which of the two is the page.
@@ -352,7 +352,7 @@ export function EmptyState({
 /* ------------------------------------------------------------- definitions */
 
 /**
- * A label-and-value pair, used by the programme facts panel, the profile and
+ * A label-and-value pair, used by the module facts panel, the profile and
  * the certificate. A real `<dl>`, so the pairing survives without the layout.
  */
 export function DefinitionList({

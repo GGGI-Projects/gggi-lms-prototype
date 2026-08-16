@@ -19,10 +19,10 @@ export const BRAND = {
   /** Used where space is tight (mobile nav, favicon-adjacent contexts). */
   shortName: "GreenPath",
   /** One line. Shows in metadata and the footer. */
-  tagline: "Foundations for Sri Lanka's green transition",
+  tagline: "Foundations for Sri Lanka's climate and inclusion agenda",
   /** Longer description for <meta name="description">. */
   description:
-    "Free, self-paced programmes in climate resilience, circular economy, sustainable energy and green finance - built for Sri Lanka's public sector, open to everyone. Earn a verifiable certificate of completion.",
+    "Free, self-paced modules in climate vulnerability, adaptation planning, climate finance and gender-responsive governance - built for Sri Lanka's public sector, open to everyone. Earn a verifiable certificate of completion.",
   /** Country the first cohort runs in. */
   country: "Sri Lanka",
   /** Placeholder contact details for the prototype. */
@@ -33,7 +33,7 @@ export const BRAND = {
     login: "/login",
     verifyEmail: "/verify-email",
     consoleLogin: "/console/login",
-    programs: "#programmes",
+    modules: "#modules",
     dashboard: "/dashboard",
   },
 } as const;

@@ -52,8 +52,8 @@ export default function AuditPage() {
 const ACTION_TONE: Record<string, BadgeTone> = {
   account: "info",
   role: "warn",
-  programme: "done",
   module: "done",
+  lecture: "done",
   assignment: "info",
   review: "neutral",
   certificate: "warn",
@@ -149,9 +149,9 @@ function AuditLog() {
                 .length,
             },
             {
-              value: "programme",
-              label: "Programmes",
-              count: entries.filter((entry) => entry.action.startsWith("programme"))
+              value: "module",
+              label: "Modules",
+              count: entries.filter((entry) => entry.action.startsWith("module"))
                 .length,
             },
             {

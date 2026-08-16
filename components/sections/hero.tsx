@@ -226,7 +226,7 @@ export function Hero() {
               color: "var(--season-text-muted, #9dc4b4)",
             }}
           >
-            Free, self-paced programmes for the people who put climate policy
+            Free, self-paced modules for the people who put climate policy
             into practice - with a certificate at the end of each.
           </p>
 
@@ -245,12 +245,12 @@ export function Hero() {
             </ActionButton>
 
             <ActionButton
-              href="#programmes"
+              href="#modules"
               variant="outlined"
               size="md"
               className="group w-full sm:w-auto"
             >
-              Browse the programmes
+              Browse the modules
               <span className="transition-transform duration-500 ease-out-expo group-hover:translate-y-0.5">
                 ↓
               </span>
@@ -273,11 +273,11 @@ export function Hero() {
                 "1px solid color-mix(in oklab, var(--season-text, #eaf7f0) 15%, transparent)",
             }}
           >
-            <Stat label="Programmes">
-              <Counter value={TOTALS.programmes} />
-            </Stat>
             <Stat label="Modules">
               <Counter value={TOTALS.modules} />
+            </Stat>
+            <Stat label="Lectures">
+              <Counter value={TOTALS.lectures} />
             </Stat>
             <Stat label="Hours of material">
               <Counter value={TOTALS.hours} />

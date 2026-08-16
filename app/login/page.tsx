@@ -5,7 +5,7 @@ import { LoginForm } from "@/components/auth/login-form";
 
 export const metadata: Metadata = {
   title: "Sign in",
-  description: `Sign in to ${BRAND.name} ${BRAND.suffix} to pick your programmes up where you left them and download your certificates.`,
+  description: `Sign in to ${BRAND.name} ${BRAND.suffix} to pick your modules up where you left them and download your certificates.`,
 };
 
 /** Sign-in. The frame is `<AuthShell>`; this route owns only its own words. */

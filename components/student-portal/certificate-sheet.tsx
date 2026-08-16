@@ -27,17 +27,17 @@ import { formatDateLong } from "@/lib/portal";
  */
 export function CertificateSheet({
   name,
-  programmeTitle,
+  moduleTitle,
   reference,
   issuedOn,
-  modules,
+  lectures,
   hours,
 }: {
   name: string;
-  programmeTitle: string;
+  moduleTitle: string;
   reference: string;
   issuedOn: string;
-  modules: number;
+  lectures: number;
   hours: number;
 }) {
   return (
@@ -80,10 +80,10 @@ export function CertificateSheet({
           </p>
 
           <p className="mx-auto mt-5 max-w-md text-lg leading-relaxed text-ink-soft">
-            has completed all {modules} modules and passed every quiz of
+            has completed all {lectures} lectures and passed every quiz of
           </p>
           <p className="font-display mt-2 text-xl leading-snug tracking-tight text-primary text-balance sm:text-2xl">
-            {programmeTitle}
+            {moduleTitle}
           </p>
           <p className="mt-3 text-sm text-muted">
             {hours} hours of material · Issued {formatDateLong(issuedOn)}

@@ -11,7 +11,7 @@
  *
  * The demo learner is NOT in this file. `lib/admin.ts` derives her record from
  * `content/portal.ts`, so the row an administrator opens and the dashboard she
- * signs into cannot disagree about how many modules she has finished.
+ * signs into cannot disagree about how many lectures she has finished.
  *
  * Names, emails and districts are invented. Nothing here is a real person.
  */
@@ -19,13 +19,13 @@
 export type StudentStatus = "active" | "dormant" | "suspended";
 
 export type StudentEnrolment = {
-  programmeId: string;
+  moduleId: string;
   enrolledOn: string;
-  /** Modules finished, out of the programme's own count. */
-  modulesDone: number;
+  /** Lectures finished, out of the module's own count. */
+  lecturesDone: number;
   /** Mean quiz score so far, or null if no quiz has been attempted. */
   averageScore: number | null;
-  /** Set once the programme is finished and the certificate has issued. */
+  /** Set once the module is finished and the certificate has issued. */
   certificateRef?: string;
 };
 
@@ -71,9 +71,9 @@ export const STUDENTS: StudentRecord[] = [
     status: "active",
     enrolments: [
       {
-        programmeId: "climate-resilience",
+        moduleId: "climate-vulnerability-assessment",
         enrolledOn: "2026-08-14",
-        modulesDone: 1,
+        lecturesDone: 1,
         averageScore: 100,
       },
     ],
@@ -91,15 +91,15 @@ export const STUDENTS: StudentRecord[] = [
     status: "active",
     enrolments: [
       {
-        programmeId: "circular-economy",
+        moduleId: "provincial-adaptation-plan",
         enrolledOn: "2026-08-13",
-        modulesDone: 3,
+        lecturesDone: 3,
         averageScore: 83,
       },
       {
-        programmeId: "climate-resilience",
+        moduleId: "climate-vulnerability-assessment",
         enrolledOn: "2026-08-14",
-        modulesDone: 0,
+        lecturesDone: 0,
         averageScore: null,
       },
     ],
@@ -117,9 +117,9 @@ export const STUDENTS: StudentRecord[] = [
     status: "active",
     enrolments: [
       {
-        programmeId: "mobility-landscapes",
+        moduleId: "gender-responsive-budgeting",
         enrolledOn: "2026-08-12",
-        modulesDone: 2,
+        lecturesDone: 2,
         averageScore: 75,
       },
     ],
@@ -137,9 +137,9 @@ export const STUDENTS: StudentRecord[] = [
     status: "active",
     enrolments: [
       {
-        programmeId: "sustainable-energy",
+        moduleId: "bankable-climate-finance-proposals",
         enrolledOn: "2026-08-11",
-        modulesDone: 4,
+        lecturesDone: 4,
         averageScore: 88,
       },
     ],
@@ -157,15 +157,15 @@ export const STUDENTS: StudentRecord[] = [
     status: "active",
     enrolments: [
       {
-        programmeId: "green-finance",
+        moduleId: "gender-social-inclusion",
         enrolledOn: "2026-08-10",
-        modulesDone: 6,
+        lecturesDone: 6,
         averageScore: 92,
       },
       {
-        programmeId: "sustainable-energy",
+        moduleId: "bankable-climate-finance-proposals",
         enrolledOn: "2026-08-11",
-        modulesDone: 2,
+        lecturesDone: 2,
         averageScore: 75,
       },
     ],
@@ -183,9 +183,9 @@ export const STUDENTS: StudentRecord[] = [
     status: "active",
     enrolments: [
       {
-        programmeId: "circular-economy",
+        moduleId: "provincial-adaptation-plan",
         enrolledOn: "2026-08-08",
-        modulesDone: 5,
+        lecturesDone: 5,
         averageScore: 80,
       },
     ],
@@ -203,16 +203,16 @@ export const STUDENTS: StudentRecord[] = [
     status: "active",
     enrolments: [
       {
-        programmeId: "climate-resilience",
+        moduleId: "climate-vulnerability-assessment",
         enrolledOn: "2026-08-06",
-        modulesDone: 9,
+        lecturesDone: 8,
         averageScore: 89,
-        certificateRef: "GP-2026-CR-05902",
+        certificateRef: "GP-2026-CV-05902",
       },
       {
-        programmeId: "mobility-landscapes",
+        moduleId: "gender-responsive-budgeting",
         enrolledOn: "2026-08-13",
-        modulesDone: 1,
+        lecturesDone: 1,
         averageScore: 100,
       },
     ],
@@ -230,9 +230,9 @@ export const STUDENTS: StudentRecord[] = [
     status: "active",
     enrolments: [
       {
-        programmeId: "climate-resilience",
+        moduleId: "climate-vulnerability-assessment",
         enrolledOn: "2026-08-04",
-        modulesDone: 2,
+        lecturesDone: 2,
         averageScore: 63,
       },
     ],
@@ -250,11 +250,11 @@ export const STUDENTS: StudentRecord[] = [
     status: "active",
     enrolments: [
       {
-        programmeId: "green-finance",
+        moduleId: "gender-social-inclusion",
         enrolledOn: "2026-08-02",
-        modulesDone: 8,
+        lecturesDone: 7,
         averageScore: 94,
-        certificateRef: "GP-2026-GF-05877",
+        certificateRef: "GP-2026-GS-05877",
       },
     ],
   },
@@ -271,9 +271,9 @@ export const STUDENTS: StudentRecord[] = [
     status: "active",
     enrolments: [
       {
-        programmeId: "circular-economy",
+        moduleId: "provincial-adaptation-plan",
         enrolledOn: "2026-07-31",
-        modulesDone: 1,
+        lecturesDone: 1,
         averageScore: null,
       },
     ],
@@ -291,15 +291,15 @@ export const STUDENTS: StudentRecord[] = [
     status: "active",
     enrolments: [
       {
-        programmeId: "green-finance",
+        moduleId: "gender-social-inclusion",
         enrolledOn: "2026-07-29",
-        modulesDone: 5,
+        lecturesDone: 5,
         averageScore: 85,
       },
       {
-        programmeId: "climate-resilience",
+        moduleId: "climate-vulnerability-assessment",
         enrolledOn: "2026-08-02",
-        modulesDone: 3,
+        lecturesDone: 3,
         averageScore: 92,
       },
     ],
@@ -317,9 +317,9 @@ export const STUDENTS: StudentRecord[] = [
     status: "dormant",
     enrolments: [
       {
-        programmeId: "climate-resilience",
+        moduleId: "climate-vulnerability-assessment",
         enrolledOn: "2026-07-27",
-        modulesDone: 0,
+        lecturesDone: 0,
         averageScore: null,
       },
     ],
@@ -337,9 +337,9 @@ export const STUDENTS: StudentRecord[] = [
     status: "active",
     enrolments: [
       {
-        programmeId: "sustainable-energy",
+        moduleId: "bankable-climate-finance-proposals",
         enrolledOn: "2026-07-24",
-        modulesDone: 7,
+        lecturesDone: 7,
         averageScore: 79,
       },
     ],
@@ -357,16 +357,16 @@ export const STUDENTS: StudentRecord[] = [
     status: "active",
     enrolments: [
       {
-        programmeId: "mobility-landscapes",
+        moduleId: "gender-responsive-budgeting",
         enrolledOn: "2026-07-21",
-        modulesDone: 7,
+        lecturesDone: 7,
         averageScore: 82,
-        certificateRef: "GP-2026-ML-05771",
+        certificateRef: "GP-2026-GB-05771",
       },
       {
-        programmeId: "circular-economy",
+        moduleId: "provincial-adaptation-plan",
         enrolledOn: "2026-08-04",
-        modulesDone: 2,
+        lecturesDone: 2,
         averageScore: 75,
       },
     ],
@@ -397,15 +397,15 @@ export const STUDENTS: StudentRecord[] = [
     status: "active",
     enrolments: [
       {
-        programmeId: "climate-resilience",
+        moduleId: "climate-vulnerability-assessment",
         enrolledOn: "2026-07-15",
-        modulesDone: 6,
+        lecturesDone: 6,
         averageScore: 91,
       },
       {
-        programmeId: "green-finance",
+        moduleId: "gender-social-inclusion",
         enrolledOn: "2026-07-30",
-        modulesDone: 2,
+        lecturesDone: 2,
         averageScore: 75,
       },
     ],
@@ -423,9 +423,9 @@ export const STUDENTS: StudentRecord[] = [
     status: "active",
     enrolments: [
       {
-        programmeId: "mobility-landscapes",
+        moduleId: "gender-responsive-budgeting",
         enrolledOn: "2026-07-12",
-        modulesDone: 4,
+        lecturesDone: 4,
         averageScore: 81,
       },
     ],
@@ -443,16 +443,16 @@ export const STUDENTS: StudentRecord[] = [
     status: "active",
     enrolments: [
       {
-        programmeId: "circular-economy",
+        moduleId: "provincial-adaptation-plan",
         enrolledOn: "2026-07-09",
-        modulesDone: 8,
+        lecturesDone: 7,
         averageScore: 88,
-        certificateRef: "GP-2026-CE-05604",
+        certificateRef: "GP-2026-PA-05604",
       },
       {
-        programmeId: "sustainable-energy",
+        moduleId: "bankable-climate-finance-proposals",
         enrolledOn: "2026-07-25",
-        modulesDone: 5,
+        lecturesDone: 5,
         averageScore: 85,
       },
     ],
@@ -470,9 +470,9 @@ export const STUDENTS: StudentRecord[] = [
     status: "suspended",
     enrolments: [
       {
-        programmeId: "green-finance",
+        moduleId: "gender-social-inclusion",
         enrolledOn: "2026-07-05",
-        modulesDone: 1,
+        lecturesDone: 1,
         averageScore: 25,
       },
     ],
@@ -490,16 +490,16 @@ export const STUDENTS: StudentRecord[] = [
     status: "active",
     enrolments: [
       {
-        programmeId: "climate-resilience",
+        moduleId: "climate-vulnerability-assessment",
         enrolledOn: "2026-07-02",
-        modulesDone: 9,
+        lecturesDone: 8,
         averageScore: 86,
-        certificateRef: "GP-2026-CR-05512",
+        certificateRef: "GP-2026-CV-05512",
       },
       {
-        programmeId: "circular-economy",
+        moduleId: "provincial-adaptation-plan",
         enrolledOn: "2026-07-20",
-        modulesDone: 6,
+        lecturesDone: 6,
         averageScore: 83,
       },
     ],
@@ -517,9 +517,9 @@ export const STUDENTS: StudentRecord[] = [
     status: "dormant",
     enrolments: [
       {
-        programmeId: "climate-resilience",
+        moduleId: "climate-vulnerability-assessment",
         enrolledOn: "2026-06-28",
-        modulesDone: 3,
+        lecturesDone: 3,
         averageScore: 67,
       },
     ],
@@ -537,16 +537,16 @@ export const STUDENTS: StudentRecord[] = [
     status: "active",
     enrolments: [
       {
-        programmeId: "green-finance",
+        moduleId: "gender-social-inclusion",
         enrolledOn: "2026-06-24",
-        modulesDone: 8,
+        lecturesDone: 7,
         averageScore: 96,
-        certificateRef: "GP-2026-GF-05398",
+        certificateRef: "GP-2026-GS-05398",
       },
       {
-        programmeId: "sustainable-energy",
+        moduleId: "bankable-climate-finance-proposals",
         enrolledOn: "2026-07-18",
-        modulesDone: 9,
+        lecturesDone: 7,
         averageScore: 90,
       },
     ],
@@ -564,9 +564,9 @@ export const STUDENTS: StudentRecord[] = [
     status: "active",
     enrolments: [
       {
-        programmeId: "circular-economy",
+        moduleId: "provincial-adaptation-plan",
         enrolledOn: "2026-06-20",
-        modulesDone: 4,
+        lecturesDone: 4,
         averageScore: 75,
       },
     ],
@@ -584,11 +584,11 @@ export const STUDENTS: StudentRecord[] = [
     status: "active",
     enrolments: [
       {
-        programmeId: "sustainable-energy",
+        moduleId: "bankable-climate-finance-proposals",
         enrolledOn: "2026-06-16",
-        modulesDone: 10,
+        lecturesDone: 8,
         averageScore: 87,
-        certificateRef: "GP-2026-SE-05244",
+        certificateRef: "GP-2026-CF-05244",
       },
     ],
   },
@@ -605,9 +605,9 @@ export const STUDENTS: StudentRecord[] = [
     status: "dormant",
     enrolments: [
       {
-        programmeId: "mobility-landscapes",
+        moduleId: "gender-responsive-budgeting",
         enrolledOn: "2026-06-11",
-        modulesDone: 2,
+        lecturesDone: 2,
         averageScore: 50,
       },
     ],
@@ -625,17 +625,17 @@ export const STUDENTS: StudentRecord[] = [
     status: "active",
     enrolments: [
       {
-        programmeId: "climate-resilience",
+        moduleId: "climate-vulnerability-assessment",
         enrolledOn: "2026-06-07",
-        modulesDone: 7,
+        lecturesDone: 7,
         averageScore: 84,
       },
       {
-        programmeId: "circular-economy",
+        moduleId: "provincial-adaptation-plan",
         enrolledOn: "2026-07-11",
-        modulesDone: 8,
+        lecturesDone: 7,
         averageScore: 91,
-        certificateRef: "GP-2026-CE-05455",
+        certificateRef: "GP-2026-PA-05455",
       },
     ],
   },

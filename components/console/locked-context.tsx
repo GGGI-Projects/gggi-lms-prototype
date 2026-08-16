@@ -6,7 +6,7 @@ import { RESTRICTION } from "@/lib/permissions";
 /**
  * "Everything in here is read-only, and this is why."
  *
- * Its own module because both halves of the arrangement are client components
+ * Its own lecture because both halves of the arrangement are client components
  * that must share one context object - `<SettingsGate>` provides it and
  * `<SettingsGroup>` reads it - and two files each calling `createContext`
  * would produce two contexts that never meet.

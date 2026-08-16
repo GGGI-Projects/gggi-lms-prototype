@@ -39,7 +39,7 @@ import { PERF_ATTRIBUTE } from "@/lib/perf-tier";
  */
 
 /**
- * The live instance, module-level because there is only ever one scroller on a
+ * The live instance, lecture-level because there is only ever one scroller on a
  * page and the header needs to reach it to freeze the page behind the menu.
  */
 let instance: Lenis | null = null;

@@ -6,13 +6,13 @@ import { StarFilledIcon } from "@/components/student-portal/icons";
 import { BODY, EYEBROW, META } from "@/lib/theme";
 
 /**
- * Rating a programme, from the certificate that proves it was finished.
+ * Rating a module, from the certificate that proves it was finished.
  *
- * THE CERTIFICATE PAGE, NOT THE PROGRAMME PAGE. A review is worth reading
+ * THE CERTIFICATE PAGE, NOT THE MODULE PAGE. A review is worth reading
  * because the person writing it actually did the thing - the same reason
  * this platform issues a certificate at all - and the moment somebody has
  * just confirmed that is the moment they are holding this document, not
- * three clicks back into a programme they may not open again.
+ * three clicks back into a module they may not open again.
  *
  * ONE FORM, NOT A DIALOG. Rating something is not a workflow with steps to
  * step out of; it is one decision (how many stars) and one optional
@@ -25,7 +25,7 @@ import { BODY, EYEBROW, META } from "@/lib/theme";
  * carries `holdReviewsForApproval`, and every review in the sample data
  * either waited in that queue or was sent back from it.
  */
-export function ReviewForm({ programmeTitle }: { programmeTitle: string }) {
+export function ReviewForm({ moduleTitle }: { moduleTitle: string }) {
   const [rating, setRating] = useState(0);
   const [hovered, setHovered] = useState(0);
   const [body, setBody] = useState("");
@@ -49,9 +49,9 @@ export function ReviewForm({ programmeTitle }: { programmeTitle: string }) {
 
   return (
     <div>
-      <p className={EYEBROW.muted}>Rate this programme</p>
+      <p className={EYEBROW.muted}>Rate this module</p>
       <p className={`mt-4 ${BODY.base}`}>
-        Worth five minutes if {programmeTitle} changed how you do the work -
+        Worth five minutes if {moduleTitle} changed how you do the work -
         the next person deciding whether to enrol reads this before they read
         the syllabus.
       </p>
@@ -105,7 +105,7 @@ export function ReviewForm({ programmeTitle }: { programmeTitle: string }) {
             value={body}
             onChange={(event) => setBody(event.target.value)}
             rows={4}
-            placeholder="What changed because of this programme, in the words you would use with a colleague deciding whether to take it."
+            placeholder="What changed because of this module, in the words you would use with a colleague deciding whether to take it."
             className="field mt-2"
           />
         </label>

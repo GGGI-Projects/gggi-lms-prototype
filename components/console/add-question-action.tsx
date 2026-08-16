@@ -143,7 +143,7 @@ function QuestionForm({
 /* -------------------------------------------------------------------- add */
 
 /** The control that opens `<QuestionForm>` for a new question - styled the
- *  same as a module's "Add a video block", opening the drawer a question is
+ *  same as a lecture's "Add a video block", opening the drawer a question is
  *  written in. */
 export function AddQuestionAction({
   capability,

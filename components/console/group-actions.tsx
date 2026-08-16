@@ -24,11 +24,11 @@ import type { MaterialGroup } from "@/content/materials";
  *
  * The capability is derived from `area` rather than passed in, same as
  * `<NewMaterialAction>` beside this on the library page: an administrator
- * opens a shelf under `manageProgrammes`, an instructor under
- * `authorModules` - the same split the rest of this screen already makes.
+ * opens a shelf under `manageModules`, an instructor under
+ * `authorLectures` - the same split the rest of this screen already makes.
  */
 function capabilityFor(area: ConsoleArea): Capability {
-  return area === "admin" ? "manageProgrammes" : "authorModules";
+  return area === "admin" ? "manageModules" : "authorLectures";
 }
 
 function GroupForm({
@@ -71,7 +71,7 @@ function GroupForm({
             required
             rows={3}
             defaultValue={initial?.description}
-            placeholder="One line - shown on the group card and when picking a shelf for a module."
+            placeholder="One line - shown on the group card and when picking a shelf for a lecture."
             className="field"
           />
         </label>

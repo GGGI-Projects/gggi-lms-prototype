@@ -3,7 +3,7 @@ import Link from "next/link";
 import { BODY, CONSOLE, META } from "@/lib/theme";
 import { REVIEWS } from "@/content/operations";
 import {
-  managedProgramme,
+  managedModule,
   reviewsByStatus,
   staffName,
   studentById,
@@ -57,7 +57,7 @@ export default function ReviewsPage() {
       <PageHeader
         eyebrow="Learning"
         title="Reviews"
-        lead="Learners can review a programme once they have finished a module of it. Nothing appears on a public page until somebody here has read it."
+        lead="Learners can review a module once they have finished a lecture of it. Nothing appears on a public page until somebody here has read it."
       />
 
       <div className={`${CONSOLE.stack} grid gap-4 sm:grid-cols-2 xl:grid-cols-4`}>
@@ -74,7 +74,7 @@ export default function ReviewsPage() {
         <MetricCard
           label="Published"
           value={published.length}
-          hint="on programme pages"
+          hint="on module pages"
         />
         <MetricCard label="Rejected" value={rejected.length} hint="with a reason recorded" />
         <MetricCard
@@ -92,7 +92,7 @@ export default function ReviewsPage() {
         {pending.length ? (
           <ul className="space-y-4">
             {pending.map((review) => {
-              const programme = managedProgramme(review.programmeId);
+              const mdl = managedModule(review.moduleId);
               const student = studentById(review.studentId);
 
               return (
@@ -117,7 +117,7 @@ export default function ReviewsPage() {
                         )}
                       </p>
                       <p className={`mt-0.5 ${META.base}`}>
-                        {programme?.title} · submitted{" "}
+                        {mdl?.title} · submitted{" "}
                         {formatDateLong(review.submittedOn)}
                       </p>
                     </div>
@@ -188,7 +188,7 @@ export default function ReviewsPage() {
                     <p className="text-lg font-semibold text-ink">
                       {review.studentName}
                       <span className={`ml-2 font-normal ${META.base}`}>
-                        {managedProgramme(review.programmeId)?.title}
+                        {managedModule(review.moduleId)?.title}
                       </span>
                     </p>
                     <p className={`mt-2 ${BODY.base}`}>{review.body}</p>

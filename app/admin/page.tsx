@@ -10,11 +10,11 @@ import {
 } from "@/content/operations";
 import {
   completionSplit,
-  enrolmentsByProgramme,
+  enrolmentsByModule,
   formatNumber,
   monthOverMonth,
   queues,
-  recentModules,
+  recentLectures,
   students,
 } from "@/lib/admin";
 import { formatDate } from "@/lib/portal";
@@ -61,13 +61,13 @@ export default function AdminDashboard() {
       <PageHeader
         eyebrow="Console"
         title="Platform overview"
-        lead={`Everything on ${BRAND.name} ${BRAND.suffix} since it opened on ${formatDate(PLATFORM.launchedOn)} - ${formatNumber(PLATFORM.learners)} learners across five published programmes.`}
+        lead={`Everything on ${BRAND.name} ${BRAND.suffix} since it opened on ${formatDate(PLATFORM.launchedOn)} - ${formatNumber(PLATFORM.learners)} learners across five published modules.`}
         actions={
           <Link
-            href="/admin/programmes"
+            href="/admin/modules"
             className="link-wipe self-end text-lg font-semibold text-primary"
           >
-            Manage programmes
+            Manage modules
           </Link>
         }
       />
@@ -89,13 +89,13 @@ export default function AdminDashboard() {
             urgent={waiting.flaggedReviews > 0}
           />
           <QueueCard
-            count={waiting.modulesInReview}
-            label="Modules awaiting review"
-            href="/admin/programmes"
+            count={waiting.lecturesInReview}
+            label="Lectures awaiting review"
+            href="/admin/modules"
           />
           <QueueCard
             count={waiting.unassignedInstructors}
-            label="Instructors with no programme"
+            label="Instructors with no module"
             href="/admin/instructors"
           />
           <QueueCard
@@ -201,18 +201,18 @@ export default function AdminDashboard() {
       <div className={CONSOLE.stack}>
         <Panel>
           <h2 className="font-display text-2xl tracking-tight text-ink">
-            Enrolments by programme
+            Enrolments by module
           </h2>
           <p className={`mt-1 ${META.base}`}>
-            Published programmes only. The inner bar is how many of those
+            Published modules only. The inner bar is how many of those
             enrolments finished.
           </p>
 
           <div className="mt-7">
             <BarChart
-              caption="Enrolments and completions by programme"
+              caption="Enrolments and completions by module"
               innerLabel="Completed"
-              data={enrolmentsByProgramme().map((entry) => ({
+              data={enrolmentsByModule().map((entry) => ({
                 label: entry.label,
                 value: entry.value,
                 inner: entry.completions,
@@ -268,13 +268,13 @@ export default function AdminDashboard() {
 
         <Section title="Recently updated material">
           <ul className="divide-y divide-surface-deep rounded-sm border border-surface-deep bg-paper-raised">
-            {recentModules(5).map((mod) => (
-              <li key={`${mod.programme.id}-${mod.id}`} className="px-5 py-4">
+            {recentLectures(5).map((mod) => (
+              <li key={`${mod.module.id}-${mod.id}`} className="px-5 py-4">
                 <p className="truncate text-lg font-semibold text-ink">
                   {mod.number}. {mod.title}
                 </p>
                 <p className={`mt-0.5 truncate ${META.base}`}>
-                  {mod.programme.title}
+                  {mod.module.title}
                 </p>
                 <p className={`mt-2 flex flex-wrap items-center gap-2 ${META.base}`}>
                   <Badge tone={mod.state === "published" ? "done" : "warn"}>
@@ -315,7 +315,7 @@ export default function AdminDashboard() {
           </h2>
           <p className={`mt-1 ${META.base}`}>
             Certificates issued. The first two months have none, which is what
-            a five-hour programme taking a few weeks looks like from the start.
+            a five-hour module taking a few weeks looks like from the start.
           </p>
           <div className="mt-7">
             <AreaChart

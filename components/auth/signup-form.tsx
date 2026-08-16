@@ -99,7 +99,7 @@ export function SignupForm() {
           name="sector"
           options={SECTORS}
           optional
-          hint="Helps us see which programmes to build next. It never affects what you can enrol in."
+          hint="Helps us see which modules to build next. It never affects what you can enrol in."
         />
       </div>
 

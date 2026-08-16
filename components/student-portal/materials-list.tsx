@@ -10,7 +10,7 @@ import {
 import { META } from "@/lib/theme";
 
 /**
- * The files attached to a module.
+ * The files attached to a lecture.
  *
  * The third of the three content shapes, and the one most easily got wrong: a
  * bare list of filenames tells a learner nothing about whether the thing is

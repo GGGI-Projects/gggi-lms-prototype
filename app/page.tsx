@@ -3,7 +3,7 @@ import { SiteFooter } from "@/components/site/site-footer";
 import { Hero } from "@/components/sections/hero";
 import { SubjectMarquee } from "@/components/sections/subject-marquee";
 import { Mission } from "@/components/sections/mission";
-import { Programmes } from "@/components/sections/programmes";
+import { Modules } from "@/components/sections/modules";
 import { Journey } from "@/components/sections/journey";
 import { Certificate } from "@/components/sections/certificate";
 import { Audience } from "@/components/sections/audience";
@@ -16,7 +16,7 @@ import { SeasonProvider } from "@/components/hero/season-provider";
  * Landing page.
  *
  * Section order is a deliberate argument: what this is (hero) → what it covers
- * (marquee) → why it exists (mission) → what you get (programmes) → how it
+ * (marquee) → why it exists (mission) → what you get (modules) → how it
  * works (journey) → what you walk away with (certificate) → whether it is for
  * you (audience) → what is still worrying you (FAQ) → the ask (CTA).
  */
@@ -33,7 +33,7 @@ export default function Home() {
         <Hero />
         <SubjectMarquee />
         <Mission />
-        <Programmes />
+        <Modules />
         <Journey />
         <Certificate />
         <Audience />

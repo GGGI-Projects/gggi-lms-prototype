@@ -162,7 +162,7 @@ export function ProfileForm() {
 
       <FieldGroup
         title="Where you work"
-        description="Optional throughout, and it never affects what you can enrol in. It tells us which programmes to build next."
+        description="Optional throughout, and it never affects what you can enrol in. It tells us which modules to build next."
       >
         <TextField
           label="Role"
@@ -228,10 +228,10 @@ export function SettingsForm() {
           defaultChecked={LEARNER.preferences.emailProgress}
         />
         <Toggle
-          name="emailNewProgrammes"
-          label="New programmes"
-          description="When a programme is published, including the Sinhala and Tamil editions."
-          defaultChecked={LEARNER.preferences.emailNewProgrammes}
+          name="emailNewModules"
+          label="New modules"
+          description="When a module is published, including the Sinhala and Tamil editions."
+          defaultChecked={LEARNER.preferences.emailNewModules}
         />
         <Toggle
           name="emailProduct"
@@ -256,7 +256,7 @@ export function SettingsForm() {
 
       <FieldGroup
         title="Language"
-        description="The first programmes are published in English. Sinhala and Tamil are on the roadmap and the platform is built to carry all three side by side."
+        description="The first modules are published in English. Sinhala and Tamil are on the roadmap and the platform is built to carry all three side by side."
       >
         <SelectField
           label="Interface language"

@@ -1,25 +1,25 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type { Programme } from "@/content/site";
-import { ProgrammeScene } from "@/components/art/scenes";
+import type { Module } from "@/content/site";
+import { ModuleScene } from "@/components/art/scenes";
 import { PauseIcon, PlayIcon } from "@/components/student-portal/icons";
 
 /**
- * The lecture player.
+ * The video player.
  *
  * There is no video file. The prototype ships zero external assets on purpose
  * - it will be demoed on a projector on conference wifi - so this is a working
  * MOCK of a player rather than a `<video>` element with nothing behind it: the
  * transport runs, the scrubber advances, the elapsed time counts and the track
- * can be scrubbed. What it is playing is the programme's own illustration.
+ * can be scrubbed. What it is playing is the module's own illustration.
  *
  * It says so, quietly, under the frame. A demo where the play button appears
  * broken costs the room five minutes of the wrong conversation; a demo where
  * the play button plays a fake and does not admit it costs more than that
  * later.
  *
- * REAL TIME, not accelerated. A scrubber that crosses an eight-minute lecture
+ * REAL TIME, not accelerated. A scrubber that crosses an eight-minute video
  * in twenty seconds is a more obvious lie than a still frame, and the clock is
  * the one part of a player people read closely.
  *
@@ -34,7 +34,7 @@ export function VideoStage({
 }: {
   title: string;
   minutes: number;
-  scene: Programme["scene"];
+  scene: Module["scene"];
 }) {
   const total = minutes * 60;
   const [elapsed, setElapsed] = useState(0);
@@ -74,12 +74,12 @@ export function VideoStage({
   return (
     <figure>
       <div className="relative isolate aspect-video overflow-hidden rounded-md bg-primary-950">
-        <ProgrammeScene
+        <ModuleScene
           scene={scene}
           className="absolute inset-0 -z-10 size-full object-cover opacity-45"
         />
         {/* A scrim under the controls, so the white transport is legible over
-            whichever illustration this programme happens to use. */}
+            whichever illustration this module happens to use. */}
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-2/5 bg-linear-to-t from-primary-950/95 to-transparent"
@@ -137,7 +137,7 @@ export function VideoStage({
   );
 }
 
-/** `485` -> `8:05`. Two fields only; no lecture here runs past an hour. */
+/** `485` -> `8:05`. Two fields only; no video here runs past an hour. */
 function clock(seconds: number): string {
   const minutes = Math.floor(seconds / 60);
   const rest = Math.floor(seconds % 60);

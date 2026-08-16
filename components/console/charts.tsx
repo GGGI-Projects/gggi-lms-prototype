@@ -201,9 +201,9 @@ export type BarDatum = {
 };
 
 /**
- * Horizontal bars, because the labels are programme titles.
+ * Horizontal bars, because the labels are module titles.
  *
- * Vertical bars with "Climate Resilience & Adaptation" underneath them means
+ * Vertical bars with "Climate Vulnerability Assessment" underneath them means
  * rotated type or truncation, and both are worse than turning the chart on its
  * side. Every bar carries its number at the end - the length is the
  * comparison, the figure is the fact.

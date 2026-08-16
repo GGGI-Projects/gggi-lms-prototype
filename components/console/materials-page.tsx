@@ -47,12 +47,12 @@ import { AddGroupAction, EditGroupAction } from "@/components/console/group-acti
 import { DownloadIcon } from "@/components/student-portal/icons";
 import { ExternalIcon } from "@/components/console/icons";
 
-/** Where a module lives, per console. The one thing the two areas disagree on. */
-function moduleHrefFor(area: ConsoleArea) {
-  return (programmeId: string, moduleId: string) =>
+/** Where a lecture lives, per console. The one thing the two areas disagree on. */
+function lectureHrefFor(area: ConsoleArea) {
+  return (moduleId: string, lectureId: string) =>
     area === "admin"
-      ? `/admin/programmes/${programmeId}/modules/${moduleId}`
-      : `/instructor/programmes/${programmeId}/modules/${moduleId}`;
+      ? `/admin/modules/${moduleId}/lectures/${lectureId}`
+      : `/instructor/modules/${moduleId}/lectures/${lectureId}`;
 }
 
 /* ----------------------------------------------------------------- library */
@@ -67,7 +67,7 @@ export function MaterialsLibrary({ area }: { area: ConsoleArea }) {
       <PageHeader
         eyebrow={area === "admin" ? "Learning" : "Teaching"}
         title="Materials"
-        lead="One shelf for the whole platform. Anything here can be attached to any module by anybody who writes one - which is the point: the unit cost table should exist once, with one date on it, not four times in four modules."
+        lead="One shelf for the whole platform. Anything here can be attached to any lecture by anybody who writes one - which is the point: the unit cost table should exist once, with one date on it, not four times in four lectures."
       />
 
       <div className={`${CONSOLE.stack} grid gap-4 sm:grid-cols-2 xl:grid-cols-4`}>
@@ -76,7 +76,7 @@ export function MaterialsLibrary({ area }: { area: ConsoleArea }) {
         <MetricCard
           label="Attachments"
           value={totals.attachments}
-          hint="times a module uses one"
+          hint="times a lecture uses one"
         />
         <MetricCard
           label="Never used"
@@ -88,7 +88,7 @@ export function MaterialsLibrary({ area }: { area: ConsoleArea }) {
 
       <Section
         title="Groups"
-        description="A group is a subject shelf, not an owner. Anybody may use anything on any of them, and a module can take a whole shelf in one go."
+        description="A group is a subject shelf, not an owner. Anybody may use anything on any of them, and a lecture can take a whole shelf in one go."
         action={<AddGroupAction area={area} />}
         className={CONSOLE.stack}
       >
@@ -101,7 +101,7 @@ export function MaterialsLibrary({ area }: { area: ConsoleArea }) {
               description={shelf.group.description}
               count={shelf.count}
               attached={shelf.attached}
-              modules={shelf.modules}
+              lectures={shelf.lectures}
               newest={shelf.newest}
             />
           ))}
@@ -170,8 +170,8 @@ export function MaterialGroupPage({
 
   const entries = library().filter((entry) => entry.asset.groupId === groupId);
   const attached = entries.filter((entry) => entry.usage.length > 0).length;
-  const modules = new Set(
-    entries.flatMap((entry) => entry.usage.map((use) => use.moduleId)),
+  const lectures = new Set(
+    entries.flatMap((entry) => entry.usage.map((use) => use.lectureId)),
   ).size;
 
   return (
@@ -224,14 +224,14 @@ export function MaterialGroupPage({
               className="mt-5"
               items={[
                 { term: "Files", value: entries.length },
-                { term: "Used by modules", value: modules },
+                { term: "Used by lectures", value: lectures },
                 { term: "Opened", value: formatDateLong(group.createdOn) },
               ]}
             />
             <p className={`mt-5 ${BODY.base}`}>
-              A module can attach this whole shelf in one action from its own
+              A lecture can attach this whole shelf in one action from its own
               management screen. That copies the files across as they are now -
-              anything added here afterwards does not appear in that module by
+              anything added here afterwards does not appear in that lecture by
               itself.
             </p>
           </Panel>
@@ -241,7 +241,7 @@ export function MaterialGroupPage({
               Add to this shelf
             </h2>
             <p className={`mt-2 ${BODY.base}`}>
-              Uploads go to the library first and are picked up by modules
+              Uploads go to the library first and are picked up by lectures
               afterwards.
             </p>
             <Link
@@ -290,7 +290,7 @@ export function MaterialDetail({
             ) : null}
             <Badge tone={entry.usage.length ? "done" : "warn"}>
               {entry.usage.length
-                ? `Used by ${entry.usage.length} ${entry.usage.length === 1 ? "module" : "modules"}`
+                ? `Used by ${entry.usage.length} ${entry.usage.length === 1 ? "lecture" : "lectures"}`
                 : "Not used"}
             </Badge>
           </>
@@ -310,7 +310,7 @@ export function MaterialDetail({
         <div className={CONSOLE.stack}>
           <Callout tone="info" title="Nothing attaches this yet">
             Uploaded {formatDateLong(asset.uploadedOn)} and never used. Attach
-            it from a module&rsquo;s management screen, or remove it - a shelf
+            it from a lecture&rsquo;s management screen, or remove it - a shelf
             of files nobody uses is how a library stops being searched.
           </Callout>
         </div>
@@ -320,10 +320,10 @@ export function MaterialDetail({
         <div className="min-w-0 space-y-10 lg:col-span-2">
           <Section
             title="Where it is used"
-            description="Found in the modules themselves, not recorded here - so this list cannot claim a module that does not attach it."
+            description="Found in the lectures themselves, not recorded here - so this list cannot claim a lecture that does not attach it."
           >
             <Panel>
-              <UsageList entry={entry} moduleHref={moduleHrefFor(area)} />
+              <UsageList entry={entry} lectureHref={lectureHrefFor(area)} />
             </Panel>
           </Section>
 
@@ -427,7 +427,7 @@ export function MaterialDetail({
               Replacing it
             </h2>
             <p className={`mt-3 ${BODY.base}`}>
-              Upload a new version rather than a new file, and every module
+              Upload a new version rather than a new file, and every lecture
               using it gets the update. A second file with a year in the title
               is how two versions end up in circulation.
             </p>

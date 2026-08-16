@@ -5,9 +5,9 @@
  * `app/globals.css`, because CSS is the clock - see docs/seasonal-hero.md. If
  * the palette lived in both places it would drift. This file owns the words.
  *
- * Each season maps to one of the real programmes, so the rotation previews the
- * curriculum rather than just decorating. The fifth programme (sustainable
- * mobility & landscapes) has no seasonal slot by design.
+ * Each season maps to one of the real modules, so the rotation previews the
+ * curriculum rather than just decorating. The fifth module (gender-responsive
+ * budgeting) has no seasonal slot by design.
  */
 
 export type SeasonKey = "spring" | "summer" | "autumn" | "winter";
@@ -28,24 +28,27 @@ export type Season = {
 
 export const SEASONS: readonly Season[] = [
   {
+    // SEASONS[0] is the canonical phrase: what server HTML and screen readers
+    // show, and what the rotation starts on - see the note in
+    // `components/sections/hero.tsx`. It goes first on purpose.
     key: "spring",
     name: "Spring",
-    phrase: "green transition",
-    line: "New growth - where every adaptation plan begins.",
+    phrase: "climate financing",
+    line: "New growth - where a bankable case gets built.",
     fact: "Inter-monsoon · March–April",
   },
   {
     key: "summer",
     name: "Summer",
-    phrase: "energy transition",
-    line: "Peak sun - the months that make solar viable.",
-    fact: "≈5.5 kWh/m² per day",
+    phrase: "social inclusion",
+    line: "Consultation season - when a plan asks who was left out.",
+    fact: "Mid-year · June–August",
   },
   {
     key: "autumn",
     name: "Autumn",
-    phrase: "circular economy",
-    line: "Dry season - when water and waste decisions bite.",
+    phrase: "adaptation planning",
+    line: "Dry season - when a provincial plan gets costed.",
     fact: "Second inter-monsoon · Oct–Nov",
   },
   {

@@ -16,7 +16,7 @@ import type { ConsoleArea } from "@/components/console/nav";
  * registers - because a material row is four fields and a link, and passing
  * thirty finished `ReactNode`s to filter client-side would send more markup
  * than the data it was made from. The rule the console follows is: hand the
- * server's rendering across when a row is a join (a learner's programmes, an
+ * server's rendering across when a row is a join (a learner's modules, an
  * instructor's workload), build it here when a row is a record.
  *
  * FILTERS BY GROUP AND BY KIND, because those are the two questions asked of a
@@ -169,7 +169,7 @@ export function MaterialShelf({
                 <div className="flex shrink-0 flex-col items-end gap-2">
                   <Badge tone={entry.uses ? "done" : "warn"}>
                     {entry.uses
-                      ? `${entry.uses} ${entry.uses === 1 ? "module" : "modules"}`
+                      ? `${entry.uses} ${entry.uses === 1 ? "lecture" : "lectures"}`
                       : "Never used"}
                   </Badge>
                   {entry.language && entry.language !== "English" ? (

@@ -5,10 +5,10 @@ import { SESSION } from "@/content/staff";
 import {
   formatNumber,
   learnersFor,
-  moduleLoad,
+  lectureLoad,
   quizNeedsAttention,
   quizStatsFor,
-  reviewsForProgramme,
+  reviewsForModule,
   staffById,
 } from "@/lib/admin";
 import { uploadsBy } from "@/lib/materials";
@@ -25,7 +25,7 @@ import {
   QueueCard,
   Section,
 } from "@/components/console/ui";
-import { MODULE_STATE_LABEL } from "@/components/console/status";
+import { LECTURE_STATE_LABEL } from "@/components/console/status";
 import { StarFilledIcon } from "@/components/console/icons";
 
 export const metadata: Metadata = { title: "Dashboard" };
@@ -36,7 +36,7 @@ export const metadata: Metadata = { title: "Dashboard" };
  * IT ASKS TWO QUESTIONS AND REFUSES A THIRD. What do I still have to write,
  * and is what I wrote landing - that is the job. The third question, who
  * exactly is behind those numbers, is not an instructor's to browse: they see
- * progress in aggregate and named learners only through their own programmes.
+ * progress in aggregate and named learners only through their own modules.
  *
  * The order is unfinished work first, then how the finished work is doing.
  * Charts describe; a queue asks - and an author opening this at nine in the
@@ -46,26 +46,26 @@ export default function InstructorDashboard() {
   const member = staffById(SESSION.instructor);
   if (!member) throw new Error("[instructor] no session account");
 
-  const load = moduleLoad(member);
+  const load = lectureLoad(member);
   const learners = learnersFor(member);
   const uploads = uploadsBy(member.id);
   const unusedUploads = uploads.filter((entry) => entry.usage.length === 0);
 
-  const reviews = load.programmes.flatMap((programme) =>
-    reviewsForProgramme(programme.id).filter(
+  const reviews = load.modules.flatMap((mdl) =>
+    reviewsForModule(mdl.id).filter(
       (review) => review.status === "published",
     ),
   );
-  const outstanding = load.modules.filter((mod) => mod.state !== "published");
+  const outstanding = load.lectures.filter((mod) => mod.state !== "published");
 
-  const quizzes = load.modules
+  const quizzes = load.lectures
     .filter((mod) => mod.hasContent)
     .map((mod) => ({ mod, stats: quizStatsFor(mod.id) }));
   const weakQuizzes = quizzes.filter((quiz) => quizNeedsAttention(quiz.stats));
 
-  const rated = load.programmes.filter((programme) => programme.rating > 0);
+  const rated = load.modules.filter((mdl) => mdl.rating > 0);
   const rating = rated.length
-    ? rated.reduce((sum, programme) => sum + programme.rating, 0) / rated.length
+    ? rated.reduce((sum, mdl) => sum + mdl.rating, 0) / rated.length
     : 0;
 
   return (
@@ -74,22 +74,22 @@ export default function InstructorDashboard() {
         eyebrow="Instructor"
         title={`Good to see you, ${member.name.split(" ")[0]}.`}
         lead={
-          load.programmes.length
-            ? `You write for ${load.programmes.length === 1 ? "one programme" : `${load.programmes.length} programmes`}, reaching ${formatNumber(load.learners)} learners.`
+          load.modules.length
+            ? `You write for ${load.modules.length === 1 ? "one module" : `${load.modules.length} modules`}, reaching ${formatNumber(load.learners)} learners.`
             : "Nothing has been assigned to you yet."
         }
         actions={
-          <Link href="/instructor/modules" className="btn-ripple btn-solid btn-sm">
+          <Link href="/instructor/lectures" className="btn-ripple btn-solid btn-sm">
             <span aria-hidden="true" className="btn-wave" />
-            <span className="btn-label">Your modules</span>
+            <span className="btn-label">Your lectures</span>
           </Link>
         }
       />
 
-      {!load.programmes.length ? (
+      {!load.modules.length ? (
         <div className={CONSOLE.stack}>
           <Callout tone="info" title="Waiting for an assignment">
-            An administrator has to assign you a programme before you can write
+            An administrator has to assign you a module before you can write
             anything. Until then this console is empty, and that is the platform
             working correctly rather than a fault.
           </Callout>
@@ -104,14 +104,14 @@ export default function InstructorDashboard() {
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <QueueCard
             count={load.unwritten}
-            label="Modules still to write"
-            href="/instructor/modules"
+            label="Lectures still to write"
+            href="/instructor/lectures"
             urgent={load.unwritten > 0}
           />
           <QueueCard
             count={load.inReview}
-            label="Modules in review"
-            href="/instructor/modules"
+            label="Lectures in review"
+            href="/instructor/lectures"
           />
           <QueueCard
             count={weakQuizzes.length}
@@ -134,14 +134,14 @@ export default function InstructorDashboard() {
         </h2>
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <MetricCard
-            label="Modules published"
+            label="Lectures published"
             value={load.published}
             hint="live for learners"
           />
           <MetricCard
             label="Learners"
             value={load.learners ? formatNumber(load.learners) : "-"}
-            hint="enrolled on your programmes"
+            hint="enrolled on your modules"
           />
           <MetricCard
             label="Quizzes"
@@ -155,7 +155,7 @@ export default function InstructorDashboard() {
           <MetricCard
             label="Average rating"
             value={rating ? rating.toFixed(1) : "-"}
-            hint="across your programmes"
+            hint="across your modules"
           />
         </div>
       </section>
@@ -167,18 +167,18 @@ export default function InstructorDashboard() {
           className={CONSOLE.stack}
           action={
             <Link
-              href="/instructor/modules"
+              href="/instructor/lectures"
               className="link-wipe text-lg font-semibold text-primary"
             >
-              All modules
+              All lectures
             </Link>
           }
         >
           <ul className="divide-y divide-surface-deep rounded-sm border border-surface-deep bg-paper-raised">
             {outstanding.map((mod) => (
-              <li key={`${mod.programme.id}-${mod.id}`}>
+              <li key={`${mod.module.id}-${mod.id}`}>
                 <Link
-                  href={`/instructor/programmes/${mod.programme.id}/modules/${mod.id}`}
+                  href={`/instructor/modules/${mod.module.id}/lectures/${mod.id}`}
                   className="flex flex-wrap items-center gap-4 px-5 py-4 transition-colors duration-200 hover:bg-surface/70"
                 >
                   <span className="min-w-0 flex-1">
@@ -188,14 +188,14 @@ export default function InstructorDashboard() {
                       </span>
                     </span>
                     <span className={`block truncate ${META.base}`}>
-                      {mod.programme.title}
+                      {mod.module.title}
                       {mod.updatedOn
                         ? ` · last edited ${formatDate(mod.updatedOn)}`
                         : " · never edited"}
                     </span>
                   </span>
                   <Badge tone={mod.state === "in-review" ? "active" : "neutral"}>
-                    {MODULE_STATE_LABEL[mod.state]}
+                    {LECTURE_STATE_LABEL[mod.state]}
                   </Badge>
                 </Link>
               </li>
@@ -204,58 +204,58 @@ export default function InstructorDashboard() {
         </Section>
       ) : null}
 
-      {/* ------------------------------------------------------- programmes */}
+      {/* ------------------------------------------------------- modules */}
       <div className={`${CONSOLE.stack} grid gap-4 lg:grid-cols-3`}>
         <Section
-          title="Your programmes"
+          title="Your modules"
           className="lg:col-span-2"
           action={
             <Link
-              href="/instructor/programmes"
+              href="/instructor/modules"
               className="link-wipe text-lg font-semibold text-primary"
             >
-              All programmes
+              All modules
             </Link>
           }
         >
           <ul className="space-y-4">
-            {load.programmes.map((programme) => {
+            {load.modules.map((mdl) => {
               const written = Math.round(
-                (programme.publishedModules / programme.moduleCount) * 100,
+                (mdl.publishedLectures / mdl.lectureCount) * 100,
               );
 
               return (
                 <li
-                  key={programme.id}
+                  key={mdl.id}
                   className="rounded-sm border border-surface-deep bg-paper-raised p-6"
                 >
                   <div className="flex flex-wrap items-start justify-between gap-4">
                     <div className="min-w-0">
                       <Link
-                        href={`/instructor/programmes/${programme.id}`}
+                        href={`/instructor/modules/${mdl.id}`}
                         className="block text-lg font-semibold text-ink"
                       >
-                        <span className="link-wipe">{programme.title}</span>
+                        <span className="link-wipe">{mdl.title}</span>
                       </Link>
                       <p className={`mt-1 ${META.base}`}>
-                        {programme.enrolments
-                          ? `${formatNumber(programme.enrolments)} learners enrolled`
+                        {mdl.enrolments
+                          ? `${formatNumber(mdl.enrolments)} learners enrolled`
                           : "Not open to learners yet"}
                       </p>
                     </div>
-                    <Badge tone={programme.status === "draft" ? "neutral" : "done"}>
-                      {programme.status === "draft" ? "Draft" : "Published"}
+                    <Badge tone={mdl.status === "draft" ? "neutral" : "done"}>
+                      {mdl.status === "draft" ? "Draft" : "Published"}
                     </Badge>
                   </div>
 
                   <div className="mt-5 flex items-center gap-4">
                     <ProgressBar
                       percent={written}
-                      label={`${programme.title}: ${written}% of modules published`}
+                      label={`${mdl.title}: ${written}% of lectures published`}
                       className="flex-1"
                     />
                     <span className="shrink-0 tabular-nums text-sm text-muted">
-                      {programme.publishedModules}/{programme.moduleCount} written
+                      {mdl.publishedLectures}/{mdl.lectureCount} written
                     </span>
                   </div>
                 </li>
@@ -268,10 +268,10 @@ export default function InstructorDashboard() {
           title="What learners said"
           action={
             <Link
-              href="/instructor/programmes"
+              href="/instructor/modules"
               className="link-wipe text-sm font-semibold text-primary"
             >
-              By programme
+              By module
             </Link>
           }
         >
@@ -334,7 +334,7 @@ export default function InstructorDashboard() {
                 .map(({ mod, stats }) => (
                   <li key={mod.id} className="px-5 py-4">
                     <Link
-                      href={`/instructor/programmes/${mod.programme.id}/modules/${mod.id}/quiz`}
+                      href={`/instructor/modules/${mod.module.id}/lectures/${mod.id}/quiz`}
                       className="block truncate text-lg font-semibold text-ink"
                     >
                       <span className="link-wipe">
@@ -360,7 +360,7 @@ export default function InstructorDashboard() {
           ) : (
             <Panel>
               <p className={BODY.base}>
-                No quiz results are recorded for your programmes in this
+                No quiz results are recorded for your modules in this
                 prototype.
               </p>
             </Panel>
@@ -381,13 +381,13 @@ export default function InstructorDashboard() {
           <Panel>
             <p className={BODY.base}>
               {learners.length} of the learners in this prototype&rsquo;s sample
-              are enrolled on your programmes, and{" "}
-              {load.published} published modules stand between them and a
+              are enrolled on your modules, and{" "}
+              {load.published} published lectures stand between them and a
               certificate.
             </p>
             <p className={`mt-3 ${META.base}`}>
-              One person stopping at module four is a person. Eleven stopping at
-              module four is the module.
+              One person stopping at lecture four is a person. Eleven stopping at
+              lecture four is the lecture.
             </p>
           </Panel>
         </Section>

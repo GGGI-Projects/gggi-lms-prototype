@@ -3,7 +3,7 @@ import Link from "next/link";
 import { BODY, CONSOLE, META } from "@/lib/theme";
 import { SESSION } from "@/content/staff";
 import { ROLE_LABEL } from "@/lib/permissions";
-import { moduleLoad, programmesFor, staffById, staffName } from "@/lib/admin";
+import { lectureLoad, modulesFor, staffById, staffName } from "@/lib/admin";
 import { uploadsBy } from "@/lib/materials";
 import { formatDate, formatDateLong } from "@/lib/portal";
 import {
@@ -26,8 +26,8 @@ export const metadata: Metadata = { title: "Your profile" };
  * Who this instructor is, on the platform.
  *
  * SPLIT FROM SETTINGS, deliberately. This page is the part of an account that
- * other people see - the name against every module, the field under it, the
- * programmes they are trusted with, what they have put on the shared shelf.
+ * other people see - the name against every lecture, the field under it, the
+ * modules they are trusted with, what they have put on the shared shelf.
  * `/instructor/settings` is the part only they see: password, notifications,
  * language. Merging the two produced one long page where "change your
  * password" sat under "what learners read about you", and nobody could find
@@ -42,8 +42,8 @@ export default function InstructorProfilePage() {
   const member = staffById(SESSION.instructor);
   if (!member) throw new Error("[instructor] no session account");
 
-  const load = moduleLoad(member);
-  const assigned = programmesFor(member);
+  const load = lectureLoad(member);
+  const assigned = modulesFor(member);
   const uploads = uploadsBy(member.id);
 
   return (
@@ -61,9 +61,9 @@ export default function InstructorProfilePage() {
       />
 
       <div className={`${CONSOLE.stack} grid gap-4 sm:grid-cols-2 xl:grid-cols-4`}>
-        <MetricCard label="Programmes" value={assigned.length} hint="assigned to you" />
+        <MetricCard label="Modules" value={assigned.length} hint="assigned to you" />
         <MetricCard
-          label="Modules published"
+          label="Lectures published"
           value={load.published}
           hint="live for learners"
         />
@@ -86,7 +86,7 @@ export default function InstructorProfilePage() {
 
           <SettingsGroup
             title="What learners see"
-            description="Your name appears against every module you publish, and beside the programme on the page a learner reads."
+            description="Your name appears against every lecture you publish, and beside the module on the page a learner reads."
           >
             <label className="block">
               <span className="mb-2 block text-lg font-semibold text-ink">
@@ -114,7 +114,7 @@ export default function InstructorProfilePage() {
                 className="field"
               />
               <span className={`mt-2 block ${META.base}`}>
-                Optional. Shown on the programme page beneath the contents list.
+                Optional. Shown on the module page beneath the contents list.
               </span>
             </label>
           </SettingsGroup>
@@ -141,7 +141,7 @@ export default function InstructorProfilePage() {
                     </Link>
                     <Badge tone={entry.usage.length ? "done" : "warn"}>
                       {entry.usage.length
-                        ? `${entry.usage.length} ${entry.usage.length === 1 ? "module" : "modules"}`
+                        ? `${entry.usage.length} ${entry.usage.length === 1 ? "lecture" : "lectures"}`
                         : "Never used"}
                     </Badge>
                   </li>
@@ -171,22 +171,22 @@ export default function InstructorProfilePage() {
 
             <ul className="mt-5 space-y-3">
               {assigned.length ? (
-                assigned.map((programme) => (
-                  <li key={programme.id}>
+                assigned.map((mdl) => (
+                  <li key={mdl.id}>
                     <Link
-                      href={`/instructor/programmes/${programme.id}`}
+                      href={`/instructor/modules/${mdl.id}`}
                       className="flex items-start justify-between gap-3 rounded-sm border border-surface-deep bg-paper px-4 py-3"
                     >
                       <span className="min-w-0">
                         <span className="block truncate text-lg font-semibold text-ink">
-                          <span className="link-wipe">{programme.title}</span>
+                          <span className="link-wipe">{mdl.title}</span>
                         </span>
                         <span className={`block ${META.base}`}>
-                          {programme.moduleCount} modules
+                          {mdl.lectureCount} lectures
                         </span>
                       </span>
-                      <Badge tone={programme.status === "draft" ? "neutral" : "done"}>
-                        {programme.status === "draft" ? "Draft" : "Published"}
+                      <Badge tone={mdl.status === "draft" ? "neutral" : "done"}>
+                        {mdl.status === "draft" ? "Draft" : "Published"}
                       </Badge>
                     </Link>
                   </li>

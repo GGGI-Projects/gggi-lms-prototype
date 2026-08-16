@@ -35,7 +35,7 @@ import { PERF_ATTRIBUTE, PERF_FORCED_ATTRIBUTE } from "@/lib/perf-tier";
  * client-side navigation - so a naive "watch once from mount" runs its entire
  * 2.5s-settle-then-6s-window cycle exactly once, at whatever moment the tab
  * first loaded, and never again. That window is easy to still be inside when
- * someone reads the hero and clicks through to Login or a programme: the jank
+ * someone reads the hero and clicks through to Login or a module: the jank
  * from THAT page's transition and hydration got attributed to the globe, and
  * because `data-perf="low"` sits on `<html>`, which persists for the rest of
  * the tab, the globe stayed off forever afterwards - including on every later

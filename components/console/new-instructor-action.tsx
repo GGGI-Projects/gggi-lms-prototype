@@ -32,9 +32,9 @@ import { PlusIcon } from "@/components/console/icons";
  * renders twice on one page.
  */
 export function NewInstructorAction({
-  programmes,
+  modules,
 }: {
-  programmes: { id: string; title: string }[];
+  modules: { id: string; title: string }[];
 }) {
   const [open, setOpen] = useState(false);
   const formId = useId();
@@ -55,8 +55,8 @@ export function NewInstructorAction({
         open={open}
         onClose={() => setOpen(false)}
         title="Add an instructor"
-        description="Either an administrator or the super administrator can appoint one. Assigning programmes now is optional - it can be done later from their page, and an instructor with nothing assigned simply has an empty console until it is."
-        // Name, email, a field, and a wrapping fieldset of programme
+        description="Either an administrator or the super administrator can appoint one. Assigning modules now is optional - it can be done later from their page, and an instructor with nothing assigned simply has an empty console until it is."
+        // Name, email, a field, and a wrapping fieldset of module
         // checkboxes - `md` gives that fieldset room to wrap several across
         // rather than stack one per line, without the drawer overreaching a
         // form this short.
@@ -73,7 +73,7 @@ export function NewInstructorAction({
           capability="manageInstructors"
           fallback={<LockedNote capability="manageInstructors" />}
         >
-          <InviteForm kind="instructor" programmes={programmes} formId={formId} />
+          <InviteForm kind="instructor" modules={modules} formId={formId} />
         </IfCan>
       </Drawer>
     </>

@@ -293,7 +293,7 @@ export function Magnetic({
  *
  * Renders the *final* value on the server, not zero - these are the numbers
  * that tell a visitor what they are signing up for, and a page that says "0
- * modules" because JS never ran is worse than one that simply does not count.
+ * lectures" because JS never ran is worse than one that simply does not count.
  *
  * The tween writes to the DOM node rather than to React state. There are four
  * of these side by side in the hero, so a `setState` per frame meant four

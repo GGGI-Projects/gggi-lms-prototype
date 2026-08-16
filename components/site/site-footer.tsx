@@ -6,7 +6,7 @@ const COLUMNS = [
   {
     heading: "Platform",
     links: [
-      { label: "Programmes", href: "#programmes" },
+      { label: "Modules", href: "#modules" },
       { label: "How it works", href: "#how-it-works" },
       { label: "The certificate", href: "#certificate" },
     ],

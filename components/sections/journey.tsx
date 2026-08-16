@@ -113,7 +113,7 @@ function PinnedJourney() {
             </h2>
             <p className={`measure mt-5 ${BODY.onMarine}`}>
               Five steps, no gatekeeping at any of them. Most people finish
-              their first programme inside a month.
+              their first module inside a month.
             </p>
 
             <div className="mt-14 min-h-60">

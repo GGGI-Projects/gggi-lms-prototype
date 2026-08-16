@@ -8,11 +8,11 @@ const GUARANTEES = [
   "A unique reference number on every certificate",
   "Checkable by anyone you show it to",
   "Download as PDF, or share a link",
-  "Yours permanently - one per programme completed",
+  "Yours permanently - one per module completed",
 ];
 
 /**
- * The credential is the actual product here: people finish a programme in
+ * The credential is the actual product here: people finish a module in
  * order to hold up proof. So the certificate gets its own section and its own
  * hero treatment rather than being a bullet point further down.
  *
@@ -38,9 +38,9 @@ export function Certificate() {
           </Reveal>
           <Reveal delay={0.14}>
             <p className={`measure mt-6 ${BODY.base}`}>
-              Complete every module and pass every quiz in a programme, and the
+              Complete every lecture and pass every quiz in a module, and the
               certificate issues straight away - carrying your name, the
-              programme, the date, and a reference number that can be checked
+              module, the date, and a reference number that can be checked
               against the register.
             </p>
           </Reveal>
@@ -66,7 +66,7 @@ export function Certificate() {
                 size="md"
                 className="group"
               >
-                Start your first programme
+                Start your first module
                 <span className="transition-transform duration-500 ease-out-expo group-hover:translate-x-1">
                   →
                 </span>

@@ -30,9 +30,9 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const certificate = getCertificate(certificateId);
   if (!certificate) return { title: "Certificate not found" };
 
-  const programme = progressFor(certificate.programmeId)?.programme;
+  const mdl = progressFor(certificate.moduleId)?.module;
   return {
-    title: `Certificate - ${programme?.title ?? certificate.reference}`,
+    title: `Certificate - ${mdl?.title ?? certificate.reference}`,
     description: `Certificate ${certificate.reference}, issued to ${LEARNER.certificateName}.`,
   };
 }
@@ -54,12 +54,12 @@ export default async function CertificatePage({ params }: Params) {
   const { certificateId } = await params;
   const certificate = getCertificate(certificateId);
   const progress = certificate
-    ? progressFor(certificate.programmeId)
+    ? progressFor(certificate.moduleId)
     : undefined;
 
   if (!certificate || !progress) notFound();
 
-  const { programme, modules } = progress;
+  const { module: mdl, lectures } = progress;
   const hours = Math.round((progress.minutesTotal / 60) * 10) / 10;
 
   return (
@@ -67,7 +67,7 @@ export default async function CertificatePage({ params }: Params) {
       <PageHeader
         back={{ href: "/certificates", label: "All certificates" }}
         eyebrow="Certificate of completion"
-        title={programme.title}
+        title={mdl.title}
         lead={`Issued to ${LEARNER.certificateName} on ${formatDate(certificate.issuedOn)}, carrying a reference anyone can check.`}
       />
 
@@ -75,10 +75,10 @@ export default async function CertificatePage({ params }: Params) {
         <div className="min-w-0 lg:col-span-8">
           <CertificateSheet
             name={LEARNER.certificateName}
-            programmeTitle={programme.title}
+            moduleTitle={mdl.title}
             reference={certificate.reference}
             issuedOn={certificate.issuedOn}
-            modules={modules.length}
+            lectures={lectures.length}
             hours={hours}
           />
 
@@ -88,7 +88,7 @@ export default async function CertificatePage({ params }: Params) {
 
           <div className="mt-8">
             <Panel>
-              <ReviewForm programmeTitle={programme.title} />
+              <ReviewForm moduleTitle={mdl.title} />
             </Panel>
           </div>
         </div>
@@ -101,9 +101,9 @@ export default async function CertificatePage({ params }: Params) {
                 className="mt-4"
                 items={[
                   { term: "Awarded to", value: LEARNER.certificateName },
-                  { term: "Programme", value: programme.title },
-                  { term: "Level", value: programme.level },
-                  { term: "Modules completed", value: `${modules.length} of ${modules.length}` },
+                  { term: "Module", value: mdl.title },
+                  { term: "Level", value: mdl.level },
+                  { term: "Lectures completed", value: `${lectures.length} of ${lectures.length}` },
                   {
                     term: "Material",
                     value: formatDuration(progress.minutesTotal),
@@ -121,7 +121,7 @@ export default async function CertificatePage({ params }: Params) {
               <p className={EYEBROW.muted}>Verification</p>
               <p className={`mt-4 ${BODY.base}`}>
                 Anyone you show this to can check the reference against the
-                register. It confirms the programme, the date and the holder -
+                register. It confirms the module, the date and the holder -
                 and nothing else about you.
               </p>
 
@@ -134,7 +134,7 @@ export default async function CertificatePage({ params }: Params) {
               <ul className="mt-5 space-y-2.5">
                 {[
                   "Valid permanently - it does not expire",
-                  "One per programme completed",
+                  "One per module completed",
                   "Re-downloadable whenever you need it",
                 ].map((line) => (
                   <li key={line} className={`flex items-start gap-3 ${META.base}`}>

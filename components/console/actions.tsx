@@ -66,7 +66,7 @@ export function ModerationActions({
         <p className="flex items-center gap-2 text-lg font-semibold text-primary">
           <CheckIcon className="size-5" />
           {decision === "published"
-            ? "Published to the programme page"
+            ? "Published to the module page"
             : "Rejected and hidden"}
         </p>
         <p className={`mt-2 ${META.base}`}>
@@ -256,22 +256,22 @@ export function ConfirmAction({
 /* -------------------------------------------------------------- assignment */
 
 /**
- * Which programmes an instructor may author.
+ * Which modules an instructor may author.
  *
  * Checkboxes and one save, not a drag-and-drop board: the list is five items
  * long and the question is "which of these", which is what a checkbox group
- * is. It shows the CONSEQUENCE of unticking a programme the instructor has
- * already written modules for, because that is the mistake this screen exists
+ * is. It shows the CONSEQUENCE of unticking a module the instructor has
+ * already written lectures for, because that is the mistake this screen exists
  * to prevent.
  */
-export function AssignProgrammes({
+export function AssignModules({
   instructor,
-  programmes,
+  modules,
   assigned,
   disabled = false,
 }: {
   instructor: string;
-  programmes: { id: string; title: string; status: string; modules: number }[];
+  modules: { id: string; title: string; status: string; lectures: number }[];
   assigned: string[];
   disabled?: boolean;
 }) {
@@ -292,10 +292,10 @@ export function AssignProgrammes({
   return (
     <div>
       <ul className="space-y-3">
-        {programmes.map((programme) => {
-          const checked = selected.includes(programme.id);
+        {modules.map((mdl) => {
+          const checked = selected.includes(mdl.id);
           return (
-            <li key={programme.id}>
+            <li key={mdl.id}>
               <label
                 className={`flex cursor-pointer items-start gap-4 rounded-sm border px-5 py-4 transition-colors duration-300 ${
                   checked
@@ -307,15 +307,15 @@ export function AssignProgrammes({
                   type="checkbox"
                   checked={checked}
                   disabled={disabled}
-                  onChange={() => toggle(programme.id)}
+                  onChange={() => toggle(mdl.id)}
                   className="checkbox mt-1"
                 />
                 <span className="min-w-0 flex-1">
                   <span className="block text-lg font-semibold text-ink">
-                    {programme.title}
+                    {mdl.title}
                   </span>
                   <span className={`mt-0.5 block ${META.base}`}>
-                    {programme.status} · {programme.modules} modules
+                    {mdl.status} · {mdl.lectures} lectures
                   </span>
                 </span>
               </label>
@@ -328,9 +328,9 @@ export function AssignProgrammes({
         <p className="mt-4 flex items-start gap-2 rounded-sm border border-clay/25 bg-clay-pale px-5 py-4 text-lg leading-relaxed text-ink">
           <AlertIcon className="mt-1 size-5 shrink-0 text-clay" />
           <span>
-            Removing {removed.length === 1 ? "a programme" : "programmes"} does
+            Removing {removed.length === 1 ? "a module" : "modules"} does
             not delete anything {instructor} has written. They lose the ability
-            to edit it, and the modules stay published.
+            to edit it, and the lectures stay published.
           </span>
         </p>
       ) : null}
@@ -361,17 +361,17 @@ export function AssignProgrammes({
  * Create an account for somebody.
  *
  * The same form for an administrator and an instructor, because it is the same
- * act - name, email, role, and for an instructor the programmes they start
+ * act - name, email, role, and for an instructor the modules they start
  * with. What differs is who is allowed to press it, and that is decided by the
  * page, not here.
  */
 export function InviteForm({
   kind,
-  programmes = [],
+  modules = [],
   formId,
 }: {
   kind: "administrator" | "instructor";
-  programmes?: { id: string; title: string }[];
+  modules?: { id: string; title: string }[];
   /**
    * Set when the submit button lives OUTSIDE this form - a drawer's footer,
    * say. Passing an id both names the `<form>` for a `<button form={formId}>`
@@ -425,7 +425,7 @@ export function InviteForm({
           <input
             placeholder={
               kind === "administrator"
-                ? "Programme operations, learner support…"
+                ? "Module operations, learner support…"
                 : "Climate adaptation, waste engineering…"
             }
             className="field"
@@ -433,19 +433,19 @@ export function InviteForm({
         </label>
       </div>
 
-      {kind === "instructor" && programmes.length ? (
+      {kind === "instructor" && modules.length ? (
         <fieldset className="mt-7">
           <legend className="mb-3 text-lg font-semibold text-ink">
-            Programmes they may author
+            Modules they may author
           </legend>
           <div className="flex flex-wrap gap-2">
-            {programmes.map((programme) => (
+            {modules.map((mdl) => (
               <label
-                key={programme.id}
+                key={mdl.id}
                 className="flex cursor-pointer items-center gap-2.5 rounded-full border border-surface-deep bg-paper px-4 py-2 text-lg text-ink-soft transition-colors hover:border-muted-light"
               >
                 <input type="checkbox" className="checkbox" />
-                {programme.title}
+                {mdl.title}
               </label>
             ))}
           </div>
@@ -474,17 +474,17 @@ export function InviteForm({
   );
 }
 
-/* -------------------------------------------------------------- programmes */
+/* -------------------------------------------------------------- modules */
 
 /**
- * Start a programme.
+ * Start a module.
  *
- * It creates a DRAFT and says so on the button, because a programme that
+ * It creates a DRAFT and says so on the button, because a module that
  * appears in the public catalogue the moment someone types a title is a
- * programme that will appear there half-written. Publishing is a separate,
- * deliberate act on the programme's own page, once it has modules in it.
+ * module that will appear there half-written. Publishing is a separate,
+ * deliberate act on the module's own page, once it has lectures in it.
  */
-export function NewProgrammeForm({
+export function NewModuleForm({
   instructors,
   formId,
 }: {
@@ -502,7 +502,7 @@ export function NewProgrammeForm({
       id={formId}
       onSubmit={(event) => {
         event.preventDefault();
-        setCreated(title.trim() || "the new programme");
+        setCreated(title.trim() || "the new module");
       }}
     >
       <div className="grid gap-5 sm:grid-cols-2">
@@ -559,9 +559,9 @@ export function NewProgrammeForm({
             ))}
           </div>
           <p className={`mt-3 ${META.base}`}>
-            Optional, and not exclusive - a programme can have more than one
-            instructor, and every one of them writes any module in it. Can be
-            changed at any time from the programme&rsquo;s own page.
+            Optional, and not exclusive - a module can have more than one
+            instructor, and every one of them writes any lecture in it. Can be
+            changed at any time from the module&rsquo;s own page.
           </p>
         </fieldset>
       ) : null}
@@ -584,27 +584,27 @@ export function NewProgrammeForm({
   );
 }
 
-/* ------------------------------------------------------------------ modules */
+/* ------------------------------------------------------------------ lectures */
 
 /**
- * Start a module.
+ * Start a lecture.
  *
  * ONLY WHAT A PLAN NEEDS: a title and roughly how long it runs. NOT A KIND -
- * a module is not "a video" or "a reading", it is whatever mix of video
+ * a lecture is not "a video" or "a reading", it is whatever mix of video
  * blocks, written sections and attached materials its instructor builds it
- * from, one at a time, on the module's own page. Asking here which one this
- * module "is" would describe a shape the finished platform does not have.
+ * from, one at a time, on the lecture's own page. Asking here which one this
+ * lecture "is" would describe a shape the finished platform does not have.
  *
- * It creates a DRAFT at the next open position, never a specific one: modules
+ * It creates a DRAFT at the next open position, never a specific one: lectures
  * are read in order, and a form that let somebody choose "position 3" would
- * also have to explain what happens to the module already there.
+ * also have to explain what happens to the lecture already there.
  */
-export function NewModuleForm({
+export function NewLectureForm({
   nextNumber,
   formId,
 }: {
-  /** Where this module lands, e.g. "05" - decided by what already exists in
-   *  the programme, not chosen here. */
+  /** Where this lecture lands, e.g. "05" - decided by what already exists in
+   *  the module, not chosen here. */
   nextNumber: string;
   /** See the note on `InviteForm`'s `formId` - same device, same reason. */
   formId?: string;
@@ -617,7 +617,7 @@ export function NewModuleForm({
       id={formId}
       onSubmit={(event) => {
         event.preventDefault();
-        setCreated(title.trim() || "the new module");
+        setCreated(title.trim() || "the new lecture");
       }}
     >
       <div className="grid gap-5">
@@ -648,16 +648,16 @@ export function NewModuleForm({
       </div>
 
       <p className={`mt-5 ${META.base}`}>
-        Lands as module {nextNumber}, in draft and empty - visible only in
+        Lands as lecture {nextNumber}, in draft and empty - visible only in
         this console until it is published. Video, writing, and any number of
         attached materials are then added block by block from the
-        module&rsquo;s own page, and its quiz after that.
+        lecture&rsquo;s own page, and its quiz after that.
       </p>
 
       {!formId ? (
         <div className="mt-7">
           <ActionButton type="submit" variant="solid" size="sm">
-            Add the module
+            Add the lecture
           </ActionButton>
         </div>
       ) : null}
@@ -665,7 +665,7 @@ export function NewModuleForm({
       {created ? (
         <DoneNote>
           Prototype - {created} was not created. A real one would open as
-          module {nextNumber}, empty and in draft until its content is
+          lecture {nextNumber}, empty and in draft until its content is
           written.
         </DoneNote>
       ) : null}
@@ -674,7 +674,7 @@ export function NewModuleForm({
 }
 
 /**
- * Move a module or a programme between states.
+ * Move a lecture or a module between states.
  *
  * One control for the whole lifecycle rather than a Publish button here and an
  * Unpublish there: the states are exclusive and seeing the others is how
@@ -689,7 +689,7 @@ export function StateControl({
 }: {
   states: { value: string; label: string; description: string }[];
   current: string;
-  /** Named in the confirmation - "module 03", "this programme". */
+  /** Named in the confirmation - "lecture 03", "this module". */
   subject: string;
   disabled?: boolean;
   disabledNote?: string;

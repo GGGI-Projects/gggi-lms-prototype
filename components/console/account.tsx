@@ -61,14 +61,14 @@ const CAPABILITY_LABEL: Record<Capability, string> = {
   manageAdmins: "Create and suspend administrator accounts",
   readAuditLog: "Read the audit log",
   managePlatformSettings: "Change platform settings",
-  manageProgrammes: "Create, publish and archive programmes",
+  manageModules: "Create, publish and archive modules",
   manageInstructors: "Appoint and suspend instructors",
-  assignProgrammes: "Assign programmes to instructors",
+  assignModules: "Assign modules to instructors",
   viewAllLearners: "Open the learner register",
   manageLearners: "Suspend, reset and export learner accounts",
   moderateReviews: "Publish and reject reviews",
   manageCertificates: "Withdraw certificates",
-  authorModules: "Write and publish modules",
+  authorLectures: "Write and publish lectures",
   viewAssignedLearners: "See how learners are doing",
 };
 

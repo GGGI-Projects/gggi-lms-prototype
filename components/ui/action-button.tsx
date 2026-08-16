@@ -46,7 +46,7 @@ export function ActionButton({
   form?: string;
   /**
    * For the handful of controls that act on the page rather than navigating -
-   * the module page's "Mark as complete", the quiz's "Submit". It lives here
+   * the lecture page's "Mark as complete", the quiz's "Submit". It lives here
    * rather than at a call site wrapping this in its own `<button>`, which
    * would nest a button inside a button.
    */

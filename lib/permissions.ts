@@ -28,7 +28,7 @@ export type StaffRole = "super-admin" | "admin" | "instructor";
 export const ROLE_LABEL: Record<StaffRole, string> = {
   "super-admin": "Super administrator",
   admin: "Administrator",
-  instructor: "Module instructor",
+  instructor: "Lecture instructor",
 };
 
 /** One line each, for the role switcher and the administrators page. */
@@ -36,9 +36,9 @@ export const ROLE_SUMMARY: Record<StaffRole, string> = {
   "super-admin":
     "Full access, including administrator accounts, the audit log and platform settings.",
   admin:
-    "Programmes, learners, instructors, moderation and certificates. Cannot create administrators.",
+    "Modules, learners, instructors, moderation and certificates. Cannot create administrators.",
   instructor:
-    "Writes and edits modules for assigned programmes, and sees how learners are doing on them.",
+    "Writes and edits lectures for assigned modules, and sees how learners are doing on them.",
 };
 
 /**
@@ -55,14 +55,14 @@ export type Capability =
   | "manageAdmins"
   | "readAuditLog"
   | "managePlatformSettings"
-  | "manageProgrammes"
+  | "manageModules"
   | "manageInstructors"
-  | "assignProgrammes"
+  | "assignModules"
   | "viewAllLearners"
   | "manageLearners"
   | "moderateReviews"
   | "manageCertificates"
-  | "authorModules"
+  | "authorLectures"
   | "viewAssignedLearners";
 
 const CAPABILITIES: Record<StaffRole, Capability[]> = {
@@ -71,28 +71,28 @@ const CAPABILITIES: Record<StaffRole, Capability[]> = {
     "manageAdmins",
     "readAuditLog",
     "managePlatformSettings",
-    "manageProgrammes",
+    "manageModules",
     "manageInstructors",
-    "assignProgrammes",
+    "assignModules",
     "viewAllLearners",
     "manageLearners",
     "moderateReviews",
     "manageCertificates",
-    "authorModules",
+    "authorLectures",
     "viewAssignedLearners",
   ],
   admin: [
     "viewConsole",
-    "manageProgrammes",
+    "manageModules",
     "manageInstructors",
-    "assignProgrammes",
+    "assignModules",
     "viewAllLearners",
     "manageLearners",
     "moderateReviews",
     "manageCertificates",
     "viewAssignedLearners",
   ],
-  instructor: ["viewConsole", "authorModules", "viewAssignedLearners"],
+  instructor: ["viewConsole", "authorLectures", "viewAssignedLearners"],
 };
 
 export function can(role: StaffRole, capability: Capability): boolean {
@@ -112,16 +112,16 @@ export const RESTRICTION: Partial<Record<Capability, string>> = {
     "The audit log is restricted to the super administrator, so that the people it records cannot edit their own trail.",
   managePlatformSettings:
     "Platform settings are set by the super administrator. Administrators can read them.",
-  manageProgrammes:
-    "Programmes are created and published by administrators. Instructors write the modules inside them.",
+  manageModules:
+    "Modules are created and published by administrators. Instructors write the lectures inside them.",
   manageInstructors:
     "Only an administrator can appoint or suspend an instructor.",
-  assignProgrammes:
-    "Only an administrator can change which programmes an instructor may write for.",
+  assignModules:
+    "Only an administrator can change which modules an instructor may write for.",
   manageLearners:
     "Learner accounts are managed by administrators.",
   moderateReviews: "Reviews are moderated by administrators.",
   manageCertificates: "Certificates are managed by administrators.",
-  authorModules:
-    "Modules are written by the instructors assigned to the programme.",
+  authorLectures:
+    "Lectures are written by the instructors assigned to the module.",
 };

@@ -3,11 +3,11 @@
  *
  * The one that matters is `usageOf`. Where a material is used is NOT authored
  * anywhere - it is found by looking through the curriculum for a materials
- * block that attaches that title. That direction is deliberate: the module is
- * the thing a learner opens, so the module's own content is the truth about
+ * block that attaches that title. That direction is deliberate: the lecture is
+ * the thing a learner opens, so the lecture's own content is the truth about
  * what it attaches, and a `usedIn` list kept by hand beside it would be a
  * second answer to the same question that starts drifting the day somebody
- * removes a handout from a module.
+ * removes a handout from a lecture.
  *
  * The join is by TITLE, which is only sound because a title is what a learner
  * reads - two files called the same thing are already a problem for them, not
@@ -15,8 +15,8 @@
  * two library entries ever share one.
  */
 
-import { MODULES } from "@/content/curriculum";
-import { MANAGED_PROGRAMMES } from "@/content/staff";
+import { LECTURES } from "@/content/curriculum";
+import { MANAGED_MODULES } from "@/content/staff";
 import {
   MATERIALS,
   MATERIAL_GROUPS,
@@ -47,21 +47,21 @@ export function uploader(asset: MaterialAsset): StaffMember | undefined {
 /* ------------------------------------------------------------------- usage */
 
 export type MaterialUsage = {
-  programmeId: string;
-  programmeTitle: string;
   moduleId: string;
-  moduleNumber: string;
   moduleTitle: string;
+  lectureId: string;
+  lectureNumber: string;
+  lectureTitle: string;
 };
 
-/** Every module that attaches this material, found in the curriculum itself. */
+/** Every lecture that attaches this material, found in the curriculum itself. */
 export function usageOf(title: string): MaterialUsage[] {
-  return Object.entries(MODULES).flatMap(([programmeId, modules]) => {
-    const programme = MANAGED_PROGRAMMES.find(
-      (entry) => entry.id === programmeId,
+  return Object.entries(LECTURES).flatMap(([moduleId, lectures]) => {
+    const mdl = MANAGED_MODULES.find(
+      (entry) => entry.id === moduleId,
     );
 
-    return modules
+    return lectures
       .filter((mod) =>
         mod.content.some(
           (block) =>
@@ -70,11 +70,11 @@ export function usageOf(title: string): MaterialUsage[] {
         ),
       )
       .map((mod) => ({
-        programmeId,
-        programmeTitle: programme?.title ?? programmeId,
-        moduleId: mod.id,
-        moduleNumber: mod.number,
-        moduleTitle: mod.title,
+        moduleId,
+        moduleTitle: mdl?.title ?? moduleId,
+        lectureId: mod.id,
+        lectureNumber: mod.number,
+        lectureTitle: mod.title,
       }));
   });
 }
@@ -110,8 +110,8 @@ export function groupsWithCounts() {
       group,
       count: inGroup.length,
       attached: inGroup.filter((entry) => entry.usage.length > 0).length,
-      modules: new Set(
-        inGroup.flatMap((entry) => entry.usage.map((use) => use.moduleId)),
+      lectures: new Set(
+        inGroup.flatMap((entry) => entry.usage.map((use) => use.lectureId)),
       ).size,
       newest: inGroup
         .map((entry) => entry.asset.uploadedOn)
@@ -142,14 +142,14 @@ export function uploadsBy(staffId: string): LibraryEntry[] {
 }
 
 /**
- * The materials one module attaches, as library entries where the library
+ * The materials one lecture attaches, as library entries where the library
  * knows them.
  *
- * A module can attach something that is not in the library - the first
- * forty-two modules were written before the library existed, and their
- * handouts were uploaded straight onto the module. Those come back with
+ * A lecture can attach something that is not in the library - the first
+ * forty-two lectures were written before the library existed, and their
+ * handouts were uploaded straight onto the lecture. Those come back with
  * `asset: null`, which is not an error state: it is the backlog, and the
- * module management screen shows it as exactly that.
+ * lecture management screen shows it as exactly that.
  */
 export type AttachedMaterial = {
   title: string;
@@ -159,10 +159,10 @@ export type AttachedMaterial = {
 };
 
 export function attachmentsFor(
-  programmeId: string,
   moduleId: string,
+  lectureId: string,
 ): AttachedMaterial[] {
-  const mod = MODULES[programmeId]?.find((entry) => entry.id === moduleId);
+  const mod = LECTURES[moduleId]?.find((entry) => entry.id === lectureId);
   if (!mod) return [];
 
   const shelf = library();
@@ -182,9 +182,9 @@ export function attachmentsFor(
 /**
  * The library flattened for the browser.
  *
- * The picker on a module management screen is a client component, so it cannot
+ * The picker on a lecture management screen is a client component, so it cannot
  * import any of this. It gets the shelf as plain objects instead - title,
- * group, size, how many modules use it - which is a few kilobytes, against the
+ * group, size, how many lectures use it - which is a few kilobytes, against the
  * whole curriculum if it imported the library itself.
  */
 export function pickerData() {

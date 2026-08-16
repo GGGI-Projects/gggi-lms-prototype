@@ -15,7 +15,7 @@
  */
 
 import Image from "next/image";
-import type { Programme } from "@/content/site";
+import type { Module } from "@/content/site";
 
 /* ------------------------------------------------------- shared decoration */
 
@@ -203,10 +203,10 @@ function PalmTree({ x, y, scale }: { x: number; y: number; scale: number }) {
   );
 }
 
-/* ------------------------------------------------- programme thumbnail art */
+/* ------------------------------------------------- module thumbnail art */
 
 /**
- * One hue per programme, drawn from the five subject hues in `@theme`.
+ * One hue per module, drawn from the five subject hues in `@theme`.
  *
  * All five of these were teal, which meant the row of thumbnails read as one
  * repeated image and the list looked like five versions of the same course.
@@ -214,8 +214,17 @@ function PalmTree({ x, y, scale }: { x: number; y: number; scale: number }) {
  * (teal, clay, amber, marine, plum), held at one depth and chroma, so this is a
  * callback to that band rather than a new palette - and the hue lives only in
  * a 112x80 illustration, never in a heading, a border or a ground.
+ *
+ * The five illustrations below were drawn for the prototype's original five
+ * subjects (adaptation, waste, energy, finance, mobility). The 2026-08-16
+ * curriculum swap kept the hue assignment but inherited the drawings as-is -
+ * `waste`'s recycling loop and `energy`'s turbine now sit beside modules that
+ * are not literally about either. They still work as pure colour/texture
+ * accents; replacing them with artwork drawn for the real five subjects is a
+ * follow-up, not a blocker.
  */
-const SCENES: Record<Programme["scene"], React.ReactNode> = {
+const SCENES: Record<Module["scene"], React.ReactNode> = {
+  /* Now Climate Vulnerability Assessment - teal. */
   hills: (
     <>
       <circle cx="118" cy="42" r="20" fill="var(--color-highlight)" opacity="0.65" />
@@ -224,7 +233,7 @@ const SCENES: Record<Programme["scene"], React.ReactNode> = {
       <path d="M0 112c28-10 52 0 78-10s40 6 62-2v20H0v-8Z" fill="var(--color-primary-600)" />
     </>
   ),
-  /* Circular economy - clay. */
+  /* Originally circular economy; now Maintaining GSI - clay, inherited. */
   waste: (
     <>
       {/* Circular-economy loop */}
@@ -250,8 +259,8 @@ const SCENES: Record<Programme["scene"], React.ReactNode> = {
       />
     </>
   ),
-  /* Sustainable energy - amber. The one scene where the hue and the subject
-     are the same thing, so the sun is the ground rather than a detail. */
+  /* Originally sustainable energy; now Gender-Responsive Budgeting - amber,
+     inherited. */
   energy: (
     <>
       <circle cx="34" cy="38" r="18" fill="var(--color-highlight)" opacity="0.85" />
@@ -273,9 +282,10 @@ const SCENES: Record<Programme["scene"], React.ReactNode> = {
       <path d="M0 116h160v14H0z" fill="var(--color-accent-soft)" />
     </>
   ),
-  /* Green finance - marine. The sprout stays amber: it is the same mark as
-     the seal and the journey's nodes, and it is what makes the bar chart read
-     as *green* finance rather than as any other chart. */
+  /* Now Developing Bankable Climate Finance Proposals - marine, and still a
+     good fit. The sprout stays amber: it is the same mark as the seal and
+     the journey's nodes, and it is what makes the bar chart read as
+     *climate* finance rather than as any other chart. */
   finance: (
     <>
       <rect x="24" y="76" width="22" height="42" rx="4" fill="var(--color-marine-pale)" />
@@ -294,7 +304,8 @@ const SCENES: Record<Programme["scene"], React.ReactNode> = {
       />
     </>
   ),
-  /* Mobility & landscapes - plum. */
+  /* Originally mobility & landscapes; now Localising the Provincial
+     Adaptation Plan - plum, inherited. */
   coast: (
     <>
       <circle cx="126" cy="36" r="16" fill="var(--color-highlight)" opacity="0.6" />
@@ -320,12 +331,12 @@ const SCENES: Record<Programme["scene"], React.ReactNode> = {
   ),
 };
 
-/** Small square illustration shown beside each programme row. */
-export function ProgrammeScene({
+/** Small square illustration shown beside each module row. */
+export function ModuleScene({
   scene,
   className,
 }: {
-  scene: Programme["scene"];
+  scene: Module["scene"];
   className?: string;
 }) {
   return (

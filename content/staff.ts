@@ -6,11 +6,11 @@
  *
  *   super-admin  Owns the platform. The only role that can create or remove an
  *                administrator, and the only one that reads the audit log.
- *   admin        Runs the day to day - programmes, learners, instructors,
+ *   admin        Runs the day to day - modules, learners, instructors,
  *                moderation, certificates. Cannot make another admin.
- *   instructor   Writes the material, and only for the programmes they have
+ *   instructor   Writes the material, and only for the modules they have
  *                been assigned. Sees learners as progress on their own
- *                programmes, never as a directory to browse.
+ *                modules, never as a directory to browse.
  *
  * The rule that shapes the console is that ADMINS ARE APPOINTED, NOT
  * SELF-SERVED: an admin account exists because one specific person created it,
@@ -23,7 +23,7 @@
  * gets it slightly different the second time.
  */
 
-import { PROGRAMMES } from "@/content/site";
+import { MODULES } from "@/content/site";
 import type { StaffRole } from "@/lib/permissions";
 
 /* -------------------------------------------------------------------- roles */
@@ -59,12 +59,12 @@ export type StaffMember = {
   /** ISO date. "Never" is expressed as the account still being `invited`. */
   lastActive: string | null;
   /**
-   * Instructors only: the programmes they may author modules for. An empty
+   * Instructors only: the modules they may author lectures for. An empty
    * array is a real and visible state - an instructor with nothing assigned
    * can sign in and has nothing to open, which is what the assignment screen
    * exists to fix.
    */
-  programmeIds?: string[];
+  moduleIds?: string[];
 };
 
 export const STAFF: StaffMember[] = [
@@ -86,7 +86,7 @@ export const STAFF: StaffMember[] = [
     initials: "CW",
     email: "chathuri.wijesinghe@example.lk",
     role: "admin",
-    title: "Programme operations lead",
+    title: "Module operations lead",
     status: "active",
     createdOn: "2025-08-19",
     createdBy: "staff-super",
@@ -130,7 +130,7 @@ export const STAFF: StaffMember[] = [
     createdOn: "2025-09-01",
     createdBy: "staff-super",
     lastActive: "2026-08-15",
-    programmeIds: ["climate-resilience"],
+    moduleIds: ["climate-vulnerability-assessment"],
   },
   {
     id: "staff-inst-2",
@@ -138,28 +138,28 @@ export const STAFF: StaffMember[] = [
     initials: "SK",
     email: "suresh.kumaraswamy@example.lk",
     role: "instructor",
-    title: "Solid waste engineer",
+    title: "Provincial planning officer",
     status: "active",
     createdOn: "2025-09-01",
     createdBy: "staff-super",
     lastActive: "2026-08-13",
-    programmeIds: ["circular-economy"],
+    moduleIds: ["provincial-adaptation-plan"],
   },
   {
-    // Two programmes, one of them the unpublished draft. The instructors list
-    // needs a row where the workload is not one programme, and the draft is
+    // Two modules, one of them the unpublished draft. The instructors list
+    // needs a row where the workload is not one module, and the draft is
     // how the console shows work that is not public yet.
     id: "staff-inst-3",
     name: "Anoma Herath",
     initials: "AH",
     email: "anoma.herath@example.lk",
     role: "instructor",
-    title: "Energy systems analyst",
+    title: "Gender and social inclusion adviser",
     status: "active",
     createdOn: "2025-09-14",
     createdBy: "staff-admin-1",
     lastActive: "2026-08-15",
-    programmeIds: ["sustainable-energy", "green-buildings"],
+    moduleIds: ["gender-social-inclusion", "green-buildings"],
   },
   {
     id: "staff-inst-4",
@@ -172,7 +172,7 @@ export const STAFF: StaffMember[] = [
     createdOn: "2025-10-02",
     createdBy: "staff-admin-1",
     lastActive: "2026-08-09",
-    programmeIds: ["green-finance"],
+    moduleIds: ["bankable-climate-finance-proposals"],
   },
   {
     id: "staff-inst-5",
@@ -180,12 +180,12 @@ export const STAFF: StaffMember[] = [
     initials: "TB",
     email: "tharindu.bandara@example.lk",
     role: "instructor",
-    title: "Transport planner",
+    title: "Public finance specialist",
     status: "active",
     createdOn: "2026-01-19",
     createdBy: "staff-admin-1",
     lastActive: "2026-07-30",
-    programmeIds: ["mobility-landscapes"],
+    moduleIds: ["gender-responsive-budgeting"],
   },
   {
     // Appointed, never assigned. The instructor console has to have something
@@ -195,12 +195,12 @@ export const STAFF: StaffMember[] = [
     initials: "FR",
     email: "fathima.rizwan@example.lk",
     role: "instructor",
-    title: "Coastal ecosystems researcher",
+    title: "Social development researcher",
     status: "invited",
     createdOn: "2026-08-12",
     createdBy: "staff-admin-1",
     lastActive: null,
-    programmeIds: [],
+    moduleIds: [],
   },
 ];
 
@@ -215,32 +215,32 @@ export const STAFF: StaffMember[] = [
 export const SESSION: Record<StaffRole, string> = {
   "super-admin": "staff-super",
   admin: "staff-admin-1",
-  // Anoma Herath rather than one of the single-programme instructors, because
-  // this account exercises the console: two programmes, one published and one
-  // still a draft, a module in review, and material on the shelf that nothing
-  // uses yet. An instructor with one finished programme shows a console where
+  // Anoma Herath rather than one of the single-module instructors, because
+  // this account exercises the console: two modules, one published and one
+  // still a draft, a lecture in review, and material on the shelf that nothing
+  // uses yet. An instructor with one finished module shows a console where
   // every screen is already green.
   instructor: "staff-inst-3",
 };
 
-/* ------------------------------------------------------------- programmes */
+/* ------------------------------------------------------------- modules */
 
-export type ProgrammeStatus = "published" | "draft";
+export type ModuleStatus = "published" | "draft";
 
-export type ManagedProgramme = {
+export type ManagedModule = {
   id: string;
   title: string;
-  status: ProgrammeStatus;
+  status: ModuleStatus;
   level: string;
   hours: number;
-  /** Modules that exist, whether or not they are finished. */
-  moduleCount: number;
+  /** Lectures that exist, whether or not they are finished. */
+  lectureCount: number;
   /** Of those, how many are published to learners. */
-  publishedModules: number;
+  publishedLectures: number;
   instructorIds: string[];
   enrolments: number;
   completions: number;
-  /** Mean quiz score across the programme, as a percentage. */
+  /** Mean quiz score across the module, as a percentage. */
   averageScore: number;
   /** Out of 5, from published reviews only. */
   rating: number;
@@ -250,37 +250,37 @@ export type ManagedProgramme = {
 };
 
 /**
- * The five public programmes plus one that is not public yet.
+ * The five public modules plus one that is not public yet.
  *
  * The five are BUILT FROM `content/site.ts` rather than retyped, so a title or
- * a module count cannot say one thing on the marketing page and another in the
+ * a lecture count cannot say one thing on the marketing page and another in the
  * console. Only the operational numbers - enrolments, ratings, who teaches it -
  * are authored here, because nothing on the public site knows about them.
  */
 const catalogue = (
   id: string,
   operational: Omit<
-    ManagedProgramme,
-    "id" | "title" | "level" | "hours" | "moduleCount" | "status"
+    ManagedModule,
+    "id" | "title" | "level" | "hours" | "lectureCount" | "status"
   >,
-): ManagedProgramme => {
-  const programme = PROGRAMMES.find((entry) => entry.id === id);
-  if (!programme) throw new Error(`[staff] unknown programme: ${id}`);
+): ManagedModule => {
+  const mdl = MODULES.find((entry) => entry.id === id);
+  if (!mdl) throw new Error(`[staff] unknown module: ${id}`);
 
   return {
     id,
-    title: programme.title,
+    title: mdl.title,
     status: "published",
-    level: programme.level,
-    hours: programme.hours,
-    moduleCount: programme.modules,
+    level: mdl.level,
+    hours: mdl.hours,
+    lectureCount: mdl.lectures,
     ...operational,
   };
 };
 
-export const MANAGED_PROGRAMMES: ManagedProgramme[] = [
-  catalogue("climate-resilience", {
-    publishedModules: 9,
+export const MANAGED_MODULES: ManagedModule[] = [
+  catalogue("climate-vulnerability-assessment", {
+    publishedLectures: 8,
     instructorIds: ["staff-inst-1"],
     enrolments: 612,
     completions: 104,
@@ -290,8 +290,8 @@ export const MANAGED_PROGRAMMES: ManagedProgramme[] = [
     createdOn: "2025-09-08",
     updatedOn: "2026-08-04",
   }),
-  catalogue("circular-economy", {
-    publishedModules: 8,
+  catalogue("provincial-adaptation-plan", {
+    publishedLectures: 7,
     instructorIds: ["staff-inst-2"],
     enrolments: 468,
     completions: 87,
@@ -301,30 +301,32 @@ export const MANAGED_PROGRAMMES: ManagedProgramme[] = [
     createdOn: "2025-09-08",
     updatedOn: "2026-07-22",
   }),
-  catalogue("sustainable-energy", {
-    publishedModules: 10,
-    instructorIds: ["staff-inst-3"],
+  catalogue("bankable-climate-finance-proposals", {
+    publishedLectures: 8,
+    instructorIds: ["staff-inst-4"],
     enrolments: 431,
     completions: 63,
-    averageScore: 81,
+    averageScore: 82,
     rating: 4.5,
     reviewCount: 58,
     createdOn: "2025-10-13",
     updatedOn: "2026-08-11",
   }),
-  catalogue("green-finance", {
-    publishedModules: 8,
-    instructorIds: ["staff-inst-4"],
+  catalogue("gender-social-inclusion", {
+    publishedLectures: 7,
+    instructorIds: ["staff-inst-3"],
     enrolments: 342,
+    // The attempt-weighted mean of `QUIZ_STATS` below rounds to 81 - this
+    // field has to match it exactly, or the development console warns.
+    averageScore: 81,
     completions: 41,
-    averageScore: 78,
     rating: 4.4,
     reviewCount: 39,
     createdOn: "2025-11-24",
     updatedOn: "2026-06-30",
   }),
-  catalogue("mobility-landscapes", {
-    publishedModules: 7,
+  catalogue("gender-responsive-budgeting", {
+    publishedLectures: 7,
     instructorIds: ["staff-inst-5"],
     enrolments: 260,
     completions: 19,
@@ -335,15 +337,15 @@ export const MANAGED_PROGRAMMES: ManagedProgramme[] = [
     updatedOn: "2026-08-13",
   }),
   {
-    // Not on the public site, and that is the point: the programmes screen has
-    // to be able to show work in progress. Two of its six modules are written.
+    // Not on the public site, and that is the point: the modules screen has
+    // to be able to show work in progress. Two of its six lectures are written.
     id: "green-buildings",
     title: "Green Buildings & Efficient Cooling",
     status: "draft",
     level: "Foundation",
     hours: 5,
-    moduleCount: 6,
-    publishedModules: 0,
+    lectureCount: 6,
+    publishedLectures: 0,
     instructorIds: ["staff-inst-3"],
     enrolments: 0,
     completions: 0,
@@ -356,14 +358,14 @@ export const MANAGED_PROGRAMMES: ManagedProgramme[] = [
 ];
 
 /**
- * The draft programme's module list.
+ * The draft module's lecture list.
  *
- * The five published programmes get their modules from `content/curriculum.ts`
- * - the same 42 the learner reads. A draft has no learner-facing content yet,
- * so its modules exist only as a plan, which is exactly what an authoring
+ * The five published modules get their lectures from `content/curriculum.ts`
+ * - the same 37 the learner reads. A draft has no learner-facing content yet,
+ * so its lectures exist only as a plan, which is exactly what an authoring
  * screen needs to show: two written, one in review, three not started.
  */
-export type DraftModule = {
+export type DraftLecture = {
   id: string;
   number: string;
   title: string;
@@ -371,7 +373,7 @@ export type DraftModule = {
   updatedOn: string | null;
 };
 
-export const DRAFT_MODULES: Record<string, DraftModule[]> = {
+export const DRAFT_LECTURES: Record<string, DraftLecture[]> = {
   "green-buildings": [
     {
       id: "why-cooling-is-the-problem",
@@ -419,29 +421,29 @@ export const DRAFT_MODULES: Record<string, DraftModule[]> = {
 };
 
 /**
- * Editorial state for the modules that ARE published.
+ * Editorial state for the lectures that ARE published.
  *
- * Keyed by module id. Anything missing is treated as published and untouched
- * since launch by `lib/admin.ts` - authoring an entry for all 42 would be 42
+ * Keyed by lecture id. Anything missing is treated as published and untouched
+ * since launch by `lib/admin.ts` - authoring an entry for all 37 would be 37
  * lines saying the same thing.
  */
-export const MODULE_EDITS: Record<
+export const LECTURE_EDITS: Record<
   string,
-  { state: DraftModule["state"]; updatedOn: string; authorId: string }
+  { state: DraftLecture["state"]; updatedOn: string; authorId: string }
 > = {
-  // The two most recently worked-on modules on the platform, so the
+  // The two most recently worked-on lectures on the platform, so the
   // dashboards have something true to point at.
-  "solar-wind-and-what-they-need": {
-    state: "published",
-    updatedOn: "2026-08-11",
-    authorId: "staff-inst-3",
-  },
-  "walking-cycling-first-mile": {
+  "auditing-a-budget-circular-for-gsi-compliance": {
     state: "published",
     updatedOn: "2026-08-13",
     authorId: "staff-inst-5",
   },
-  "inside-the-national-adaptation-plan": {
+  "designing-an-inclusive-consultation": {
+    state: "published",
+    updatedOn: "2026-08-11",
+    authorId: "staff-inst-3",
+  },
+  "presenting-findings-to-decision-makers": {
     state: "published",
     updatedOn: "2026-08-04",
     authorId: "staff-inst-1",

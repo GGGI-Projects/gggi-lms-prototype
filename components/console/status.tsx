@@ -48,32 +48,32 @@ export const STAFF_STATUS_TONE: Record<
   suspended: "warn",
 };
 
-/* -------------------------------------------------------------- programmes */
+/* -------------------------------------------------------------- modules */
 
-export const PROGRAMME_STATUS_LABEL = {
+export const MODULE_STATUS_LABEL = {
   published: "Published",
   draft: "Draft",
 } as const;
 
-export const PROGRAMME_STATUS_TONE: Record<
-  keyof typeof PROGRAMME_STATUS_LABEL,
+export const MODULE_STATUS_TONE: Record<
+  keyof typeof MODULE_STATUS_LABEL,
   BadgeTone
 > = {
   published: "done",
   draft: "neutral",
 };
 
-/* ----------------------------------------------------------------- modules */
+/* ----------------------------------------------------------------- lectures */
 
-export const MODULE_STATE_LABEL = {
+export const LECTURE_STATE_LABEL = {
   published: "Published",
   "in-review": "In review",
   draft: "Draft",
   "not-started": "Not started",
 } as const;
 
-export const MODULE_STATE_TONE: Record<
-  keyof typeof MODULE_STATE_LABEL,
+export const LECTURE_STATE_TONE: Record<
+  keyof typeof LECTURE_STATE_LABEL,
   BadgeTone
 > = {
   published: "done",

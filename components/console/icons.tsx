@@ -2,7 +2,7 @@
  * The console's extra icons.
  *
  * NOT a second icon set. Everything the portal already draws - dashboard,
- * programmes, certificate, settings, profile, chevrons, check, clock, search,
+ * modules, certificate, settings, profile, chevrons, check, clock, search,
  * bell, menu, close, download - is imported from
  * `components/student-portal/icons.tsx` and used unchanged. Redrawing a
  * dashboard glyph here so that the console could have "its own" set is how one
@@ -68,7 +68,7 @@ export function TeamIcon({ className }: IconProps) {
 /* --------------------------------------------------------------- moderation */
 
 // `StarIcon` and `StarFilledIcon` used to live here - "reviews are a console
-// concern". They are not, now that a learner rates a programme on the
+// concern". They are not, now that a learner rates a module on the
 // certificate page too, so they moved to the portal's set, which this file's
 // own header says is where every icon starts unless the portal never needed
 // it. Re-exported rather than dropped, so every file already importing them
@@ -146,8 +146,8 @@ export function LibraryIcon({ className }: IconProps) {
   );
 }
 
-/** A module - a stack of things read in order. */
-export function ModulesIcon({ className }: IconProps) {
+/** A lecture - a stack of things read in order. */
+export function LecturesIcon({ className }: IconProps) {
   return (
     <svg {...base} className={className}>
       <rect x="3.5" y="3.5" width="17" height="6" rx="2" />

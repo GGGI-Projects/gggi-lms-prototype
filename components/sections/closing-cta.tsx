@@ -23,14 +23,14 @@ export function ClosingCta() {
         </Reveal>
         <Reveal delay={0.08}>
           <h2 className={HEADING.sectionOnDark}>
-            {TOTALS.modules} modules. No cost. One certificate at the end of
+            {TOTALS.lectures} lectures. No cost. One certificate at the end of
             each.
           </h2>
         </Reveal>
         <Reveal delay={0.16}>
           <p className={`mx-auto mt-6 max-w-xl ${BODY.leadOnDark}`}>
             Creating an account takes about a minute, and you can be part-way
-            through your first module before the kettle boils.
+            through your first lecture before the kettle boils.
           </p>
         </Reveal>
 

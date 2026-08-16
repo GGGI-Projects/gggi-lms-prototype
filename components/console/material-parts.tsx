@@ -74,7 +74,7 @@ export function KindMark({
 /**
  * A material as a row.
  *
- * USAGE IS THE SECOND LINE, always. "Attached to 3 modules" and "Not attached
+ * USAGE IS THE SECOND LINE, always. "Attached to 3 lectures" and "Not attached
  * to anything" are the two facts that decide what happens to a file next, and
  * putting them anywhere but directly under the title means nobody reads them.
  */
@@ -103,7 +103,7 @@ export function MaterialRow({
 
         <p className={`mt-0.5 ${META.base}`}>
           {usage.length
-            ? `Attached to ${usage.length} ${usage.length === 1 ? "module" : "modules"}`
+            ? `Attached to ${usage.length} ${usage.length === 1 ? "lecture" : "lectures"}`
             : "Not attached to anything yet"}
           {group ? ` · ${group.name}` : null}
           {asset.size ? ` · ${asset.size}` : null}
@@ -128,7 +128,7 @@ export function GroupCard({
   description,
   count,
   attached,
-  modules,
+  lectures,
   newest,
 }: {
   href: string;
@@ -136,7 +136,7 @@ export function GroupCard({
   description: string;
   count: number;
   attached: number;
-  modules: number;
+  lectures: number;
   newest?: string;
 }) {
   return (
@@ -163,9 +163,9 @@ export function GroupCard({
           </dd>
         </div>
         <div>
-          <dt className={META.base}>Modules</dt>
+          <dt className={META.base}>Lectures</dt>
           <dd className="font-display text-lg font-bold tabular-nums tracking-tight text-ink">
-            {modules}
+            {lectures}
           </dd>
         </div>
         {newest ? (
@@ -182,15 +182,15 @@ export function GroupCard({
 /** Where a material is used, as links into whichever console is asking. */
 export function UsageList({
   entry,
-  moduleHref,
+  lectureHref,
 }: {
   entry: LibraryEntry;
-  moduleHref: (programmeId: string, moduleId: string) => string;
+  lectureHref: (moduleId: string, lectureId: string) => string;
 }) {
   if (!entry.usage.length) {
     return (
       <p className={BODY.base}>
-        Nothing attaches this yet. It is either the next module&rsquo;s handout
+        Nothing attaches this yet. It is either the next lecture&rsquo;s handout
         or dead weight - the library exists so that difference is visible rather
         than buried in somebody&rsquo;s uploads.
       </p>
@@ -200,16 +200,16 @@ export function UsageList({
   return (
     <ul className="divide-y divide-surface-deep">
       {entry.usage.map((use) => (
-        <li key={`${use.programmeId}-${use.moduleId}`} className="py-3 first:pt-0 last:pb-0">
+        <li key={`${use.moduleId}-${use.lectureId}`} className="py-3 first:pt-0 last:pb-0">
           <Link
-            href={moduleHref(use.programmeId, use.moduleId)}
+            href={lectureHref(use.moduleId, use.lectureId)}
             className="block text-lg font-semibold text-ink"
           >
             <span className="link-wipe">
-              {use.moduleNumber}. {use.moduleTitle}
+              {use.lectureNumber}. {use.lectureTitle}
             </span>
           </Link>
-          <p className={`mt-0.5 ${META.base}`}>{use.programmeTitle}</p>
+          <p className={`mt-0.5 ${META.base}`}>{use.moduleTitle}</p>
         </li>
       ))}
     </ul>

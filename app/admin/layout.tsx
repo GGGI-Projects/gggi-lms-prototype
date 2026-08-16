@@ -9,7 +9,7 @@ import { pendingReviewCount } from "@/lib/admin";
  *
  * `/admin` is a real segment rather than a route group, unlike the student
  * portal's `(studentportal)`. The portal owns the bare paths because it is
- * what a learner thinks the product IS - `/programmes` is the catalogue they
+ * what a learner thinks the product IS - `/modules` is the catalogue they
  * were sent a link to. The console is a place staff go, and every address in
  * it saying so is worth more than four characters of tidiness: a screenshot,
  * a bookmark or a support ticket carries its own context.

@@ -27,7 +27,7 @@ import {
   CertificateIcon,
   DashboardIcon,
   ProfileIcon,
-  ProgrammesIcon,
+  ModulesIcon,
   QuizIcon,
   SettingsIcon,
 } from "@/components/student-portal/icons";
@@ -35,7 +35,7 @@ import {
   InstructorIcon,
   LibraryIcon,
   LogIcon,
-  ModulesIcon,
+  LecturesIcon,
   StarIcon,
   StudentsIcon,
   TeamIcon,
@@ -86,7 +86,7 @@ const ADMIN_NAV: NavGroup[] = [
   {
     label: "Learning",
     items: [
-      { href: "/admin/programmes", label: "Programmes", icon: ProgrammesIcon },
+      { href: "/admin/modules", label: "Modules", icon: ModulesIcon },
       { href: "/admin/materials", label: "Materials", icon: LibraryIcon },
       { href: "/admin/reviews", label: "Reviews", icon: StarIcon },
       {
@@ -122,11 +122,11 @@ const INSTRUCTOR_NAV: NavGroup[] = [
         exact: true,
       },
       {
-        href: "/instructor/programmes",
-        label: "Programmes",
-        icon: ProgrammesIcon,
+        href: "/instructor/modules",
+        label: "Modules",
+        icon: ModulesIcon,
       },
-      { href: "/instructor/modules", label: "Modules", icon: ModulesIcon },
+      { href: "/instructor/lectures", label: "Lectures", icon: LecturesIcon },
       { href: "/instructor/quizzes", label: "Quizzes", icon: QuizIcon },
       { href: "/instructor/materials", label: "Materials", icon: LibraryIcon },
     ],
@@ -151,31 +151,31 @@ export function navFor(area: ConsoleArea): NavGroup[] {
 }
 
 /**
- * A module and its quiz live at `/instructor/programmes/[id]/modules/[id]`
- * and `.../quiz` - nested under a programme in the URL, because a module
- * belongs to one. But the rail item that should light up there is Modules,
+ * A lecture and its quiz live at `/instructor/modules/[id]/lectures/[id]`
+ * and `.../quiz` - nested under a module in the URL, because a lecture
+ * belongs to one. But the rail item that should light up there is Lectures,
  * or Quizzes on the quiz page, because that is the job an instructor is
  * doing on that screen, not the path it happens to hang off. Left to the
- * portal's plain prefix rule, both pages would light up Programmes instead -
- * the one item that is actually wrong, since neither page is the programme
+ * portal's plain prefix rule, both pages would light up Modules instead -
+ * the one item that is actually wrong, since neither page is the module
  * list or its overview.
  *
- * Admin's equivalent pages sit under `/admin/programmes/...` and are
+ * Admin's equivalent pages sit under `/admin/modules/...` and are
  * unaffected: these patterns only match the instructor's URLs, and the admin
- * rail has no Modules or Quizzes entry to redirect the highlight to anyway -
- * an administrator reading a module correctly stays on Programmes.
+ * rail has no Lectures or Quizzes entry to redirect the highlight to anyway -
+ * an administrator reading a lecture correctly stays on Modules.
  */
 const INSTRUCTOR_QUIZ_PAGE =
-  /^\/instructor\/programmes\/[^/]+\/modules\/[^/]+\/quiz(?:\/|$)/;
-const INSTRUCTOR_MODULE_PAGE =
-  /^\/instructor\/programmes\/[^/]+\/modules\/[^/]+(?:\/|$)/;
+  /^\/instructor\/modules\/[^/]+\/lectures\/[^/]+\/quiz(?:\/|$)/;
+const INSTRUCTOR_LECTURE_PAGE =
+  /^\/instructor\/modules\/[^/]+\/lectures\/[^/]+(?:\/|$)/;
 
 export function isActive(pathname: string, item: NavItem): boolean {
   if (INSTRUCTOR_QUIZ_PAGE.test(pathname)) {
     return item.href === "/instructor/quizzes";
   }
-  if (INSTRUCTOR_MODULE_PAGE.test(pathname)) {
-    return item.href === "/instructor/modules";
+  if (INSTRUCTOR_LECTURE_PAGE.test(pathname)) {
+    return item.href === "/instructor/lectures";
   }
   return pathIsActive(pathname, item);
 }

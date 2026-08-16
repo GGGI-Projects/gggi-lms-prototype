@@ -79,8 +79,8 @@ export function AuthAside({
       </div>
 
       <dl className="mt-12 hidden max-w-md grid-cols-3 gap-x-6 border-t border-primary-800 pt-8 lg:mt-0 lg:grid">
-        <Stat value={TOTALS.programmes} label="Programmes" />
         <Stat value={TOTALS.modules} label="Modules" />
+        <Stat value={TOTALS.lectures} label="Lectures" />
         <Stat value={TOTALS.hours} label="Hours of material" />
       </dl>
 
@@ -110,7 +110,7 @@ const COPY = {
     promises: [
       "Free at every stage - no card, ever",
       "No prior qualification required",
-      "A checkable certificate for each programme you finish",
+      "A checkable certificate for each module you finish",
       "Self-paced, and your place is held if you stop",
     ],
   },
@@ -119,9 +119,9 @@ const COPY = {
     heading: "Everything is exactly where you left it.",
     body: `Your enrolments, your progress and every certificate you have earned are held against your account - on whatever device you sign in from.`,
     promises: [
-      "Picks up at the module you stopped on",
+      "Picks up at the lecture you stopped on",
       "Certificates stored, and downloadable again any time",
-      "Enrol in another programme whenever you like",
+      "Enrol in another module whenever you like",
       "Still free - nothing has been added behind a paywall",
     ],
   },

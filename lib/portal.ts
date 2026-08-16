@@ -2,8 +2,8 @@
  * Everything the portal DERIVES from the mock data.
  *
  * The rule this file exists to enforce: a component may read a fact, but never
- * compute one. Progress percentages, "next module", quiz status and the pass
- * rule appear on the dashboard, the programme page, the module page, the
+ * compute one. Progress percentages, "next lecture", quiz status and the pass
+ * rule appear on the dashboard, the module page, the lecture page, the
  * quizzes page and the certificate - five screens, and five slightly different
  * roundings if each of them does its own arithmetic.
  *
@@ -12,7 +12,7 @@
  * sites do not move.
  */
 
-import { MODULES, type Module } from "@/content/curriculum";
+import { LECTURES, type Lecture } from "@/content/curriculum";
 import {
   ACTIVITY,
   CERTIFICATES,
@@ -24,27 +24,27 @@ import {
   type EnrolmentStatus,
   type Question,
 } from "@/content/portal";
-import { PROGRAMMES, type Programme } from "@/content/site";
+import { MODULES, type Module } from "@/content/site";
 
 /* ---------------------------------------------------------------- lookups */
 
-export function getProgramme(programmeId: string): Programme | undefined {
-  return PROGRAMMES.find((programme) => programme.id === programmeId);
+export function getModule(moduleId: string): Module | undefined {
+  return MODULES.find((mdl) => mdl.id === moduleId);
 }
 
-export function getModules(programmeId: string): Module[] {
-  return MODULES[programmeId] ?? [];
+export function getLectures(moduleId: string): Lecture[] {
+  return LECTURES[moduleId] ?? [];
 }
 
-export function getModule(
-  programmeId: string,
+export function getLecture(
   moduleId: string,
-): Module | undefined {
-  return getModules(programmeId).find((module) => module.id === moduleId);
+  lectureId: string,
+): Lecture | undefined {
+  return getLectures(moduleId).find((lecture) => lecture.id === lectureId);
 }
 
-export function getEnrolment(programmeId: string): Enrolment | undefined {
-  return ENROLMENTS.find((enrolment) => enrolment.programmeId === programmeId);
+export function getEnrolment(moduleId: string): Enrolment | undefined {
+  return ENROLMENTS.find((enrolment) => enrolment.moduleId === moduleId);
 }
 
 export function getCertificate(certificateId: string): Certificate | undefined {
@@ -52,105 +52,105 @@ export function getCertificate(certificateId: string): Certificate | undefined {
 }
 
 export function getCertificateFor(
-  programmeId: string,
+  moduleId: string,
 ): Certificate | undefined {
   return CERTIFICATES.find(
-    (certificate) => certificate.programmeId === programmeId,
+    (certificate) => certificate.moduleId === moduleId,
   );
 }
 
 /* --------------------------------------------------------------- progress */
 
 /**
- * One programme, as the portal talks about it.
+ * One module, as the portal talks about it.
  *
- * Every screen that shows a programme shows some subset of this, which is why
+ * Every screen that shows a module shows some subset of this, which is why
  * it is one object rather than six loose helpers - a card that shows a
- * percentage and a "next module" from two different calls can show 100% next
- * to a module still to do.
+ * percentage and a "next lecture" from two different calls can show 100% next
+ * to a lecture still to do.
  */
-export type ProgrammeProgress = {
-  programme: Programme;
-  modules: Module[];
+export type ModuleProgress = {
+  module: Module;
+  lectures: Lecture[];
   enrolment?: Enrolment;
   status: EnrolmentStatus;
   enrolled: boolean;
   completedCount: number;
-  moduleCount: number;
+  lectureCount: number;
   /** 0-100, rounded. Zero when not enrolled. */
   percent: number;
-  /** Where "Resume" goes: the current module, or the first if untouched. */
-  nextModule?: Module;
+  /** Where "Resume" goes: the current lecture, or the first if untouched. */
+  nextLecture?: Lecture;
   minutesDone: number;
   minutesTotal: number;
   certificate?: Certificate;
   /** Quizzes passed against quizzes available to take. */
   quizzesPassed: number;
-  /** Modules finished whose quiz has not been passed yet. */
+  /** Lectures finished whose quiz has not been passed yet. */
   quizzesOutstanding: number;
 };
 
-export function progressFor(programmeId: string): ProgrammeProgress | undefined {
-  const programme = getProgramme(programmeId);
-  if (!programme) return undefined;
+export function progressFor(moduleId: string): ModuleProgress | undefined {
+  const mdl = getModule(moduleId);
+  if (!mdl) return undefined;
 
-  const modules = getModules(programmeId);
-  const enrolment = getEnrolment(programmeId);
-  const completed = new Set(enrolment?.completedModuleIds ?? []);
-  const completedCount = modules.filter((module) =>
-    completed.has(module.id),
+  const lectures = getLectures(moduleId);
+  const enrolment = getEnrolment(moduleId);
+  const completed = new Set(enrolment?.completedLectureIds ?? []);
+  const completedCount = lectures.filter((lecture) =>
+    completed.has(lecture.id),
   ).length;
 
   const status: EnrolmentStatus = !enrolment
     ? "not-started"
-    : completedCount === modules.length
+    : completedCount === lectures.length
       ? "completed"
       : "in-progress";
 
-  // `currentModuleId` is where the learner stopped. Falling back to the first
-  // unfinished module means a resume link is never dead, even if the mock data
+  // `currentLectureId` is where the learner stopped. Falling back to the first
+  // unfinished lecture means a resume link is never dead, even if the mock data
   // is edited into an inconsistent state.
-  const nextModule =
-    modules.find((module) => module.id === enrolment?.currentModuleId) ??
-    modules.find((module) => !completed.has(module.id)) ??
+  const nextLecture =
+    lectures.find((lecture) => lecture.id === enrolment?.currentLectureId) ??
+    lectures.find((lecture) => !completed.has(lecture.id)) ??
     undefined;
 
   const scores = enrolment?.quizScores ?? {};
-  const quizzesPassed = modules.filter(
-    (module) => (scores[module.id] ?? 0) >= PASS_MARK,
+  const quizzesPassed = lectures.filter(
+    (lecture) => (scores[lecture.id] ?? 0) >= PASS_MARK,
   ).length;
 
   return {
-    programme,
-    modules,
+    module: mdl,
+    lectures,
     enrolment,
     status,
     enrolled: Boolean(enrolment),
     completedCount,
-    moduleCount: modules.length,
-    percent: modules.length
-      ? Math.round((completedCount / modules.length) * 100)
+    lectureCount: lectures.length,
+    percent: lectures.length
+      ? Math.round((completedCount / lectures.length) * 100)
       : 0,
-    nextModule,
-    minutesDone: modules
-      .filter((module) => completed.has(module.id))
-      .reduce((sum, module) => sum + module.minutes, 0),
-    minutesTotal: modules.reduce((sum, module) => sum + module.minutes, 0),
-    certificate: getCertificateFor(programmeId),
+    nextLecture,
+    minutesDone: lectures
+      .filter((lecture) => completed.has(lecture.id))
+      .reduce((sum, lecture) => sum + lecture.minutes, 0),
+    minutesTotal: lectures.reduce((sum, lecture) => sum + lecture.minutes, 0),
+    certificate: getCertificateFor(moduleId),
     quizzesPassed,
     quizzesOutstanding: completedCount - quizzesPassed,
   };
 }
 
-/** Every programme, enrolled or not, in catalogue order. */
-export function allProgress(): ProgrammeProgress[] {
-  return PROGRAMMES.map((programme) => progressFor(programme.id)!).filter(
+/** Every module, enrolled or not, in catalogue order. */
+export function allProgress(): ModuleProgress[] {
+  return MODULES.map((mdl) => progressFor(mdl.id)!).filter(
     Boolean,
   );
 }
 
 /** Only the ones the learner is in, most recently enrolled first. */
-export function enrolledProgress(): ProgrammeProgress[] {
+export function enrolledProgress(): ModuleProgress[] {
   return allProgress()
     .filter((entry) => entry.enrolled)
     .sort((a, b) =>
@@ -159,44 +159,44 @@ export function enrolledProgress(): ProgrammeProgress[] {
 }
 
 /**
- * What the dashboard's "continue" card points at: the programme in progress
+ * What the dashboard's "continue" card points at: the module in progress
  * that was enrolled in most recently. Undefined once everything is finished,
  * which the dashboard renders as its own state rather than as an empty card.
  */
-export function resumePoint(): ProgrammeProgress | undefined {
+export function resumePoint(): ModuleProgress | undefined {
   return enrolledProgress().find((entry) => entry.status === "in-progress");
 }
 
-/* ----------------------------------------------------------- module state */
+/* ----------------------------------------------------------- lecture state */
 
-export type ModuleState = "completed" | "current" | "available";
+export type LectureState = "completed" | "current" | "available";
 
 /**
  * Nothing is LOCKED.
  *
- * Modules can be taken in any order and a learner can look at module nine on
- * their first day - the landing page says the programmes are self-paced with
+ * Lectures can be taken in any order and a learner can look at lecture nine on
+ * their first day - the landing page says the modules are self-paced with
  * nothing held back, and a padlock on row four contradicts it. The three
  * states below are about where you are, not about permission.
  */
-export function moduleState(
-  progress: ProgrammeProgress,
-  moduleId: string,
-): ModuleState {
-  if (progress.enrolment?.completedModuleIds.includes(moduleId)) {
+export function lectureState(
+  progress: ModuleProgress,
+  lectureId: string,
+): LectureState {
+  if (progress.enrolment?.completedLectureIds.includes(lectureId)) {
     return "completed";
   }
-  return progress.nextModule?.id === moduleId ? "current" : "available";
+  return progress.nextLecture?.id === lectureId ? "current" : "available";
 }
 
-/** Previous and next in the programme, for the module page's footer. */
-export function moduleNeighbours(programmeId: string, moduleId: string) {
-  const modules = getModules(programmeId);
-  const index = modules.findIndex((module) => module.id === moduleId);
+/** Previous and next in the module, for the lecture page's footer. */
+export function lectureNeighbours(moduleId: string, lectureId: string) {
+  const lectures = getLectures(moduleId);
+  const index = lectures.findIndex((lecture) => lecture.id === lectureId);
   return {
     index,
-    previous: index > 0 ? modules[index - 1] : undefined,
-    next: index >= 0 && index < modules.length - 1 ? modules[index + 1] : undefined,
+    previous: index > 0 ? lectures[index - 1] : undefined,
+    next: index >= 0 && index < lectures.length - 1 ? lectures[index + 1] : undefined,
   };
 }
 
@@ -205,22 +205,22 @@ export function moduleNeighbours(programmeId: string, moduleId: string) {
 export type QuizStatus = "passed" | "failed" | "not-attempted";
 
 export type QuizSummary = {
-  programme: Programme;
   module: Module;
+  lecture: Lecture;
   status: QuizStatus;
   /** Undefined when never attempted. */
   score?: number;
-  /** A quiz sits behind its module - taking it first would give the answers away. */
-  moduleCompleted: boolean;
+  /** A quiz sits behind its lecture - taking it first would give the answers away. */
+  lectureCompleted: boolean;
   href: string;
 };
 
 /**
- * The three questions a given module's quiz asks.
+ * The three questions a given lecture's quiz asks.
  *
- * The pool is per programme (see the note in `content/portal.ts`), so the deal
- * rotates by module index to keep two consecutive quizzes from being identical.
- * Replacing the pools with real per-module banks means changing this function
+ * The pool is per module (see the note in `content/portal.ts`), so the deal
+ * rotates by lecture index to keep two consecutive quizzes from being identical.
+ * Replacing the pools with real per-lecture banks means changing this function
  * and nothing that calls it.
  */
 /**
@@ -232,12 +232,12 @@ export type QuizSummary = {
  */
 export const QUIZ_LENGTH = 4;
 
-export function quizFor(programmeId: string, moduleId: string): Question[] {
-  const pool = QUESTION_POOL[programmeId] ?? [];
+export function quizFor(moduleId: string, lectureId: string): Question[] {
+  const pool = QUESTION_POOL[moduleId] ?? [];
   if (!pool.length) return [];
 
-  const index = getModules(programmeId).findIndex(
-    (module) => module.id === moduleId,
+  const index = getLectures(moduleId).findIndex(
+    (lecture) => lecture.id === lectureId,
   );
   const offset = ((index < 0 ? 0 : index) * 2) % pool.length;
 
@@ -247,24 +247,24 @@ export function quizFor(programmeId: string, moduleId: string): Question[] {
   );
 }
 
-export function quizStatus(programmeId: string, moduleId: string): QuizStatus {
-  const score = getEnrolment(programmeId)?.quizScores[moduleId];
+export function quizStatus(moduleId: string, lectureId: string): QuizStatus {
+  const score = getEnrolment(moduleId)?.quizScores[lectureId];
   if (score === undefined) return "not-attempted";
   return score >= PASS_MARK ? "passed" : "failed";
 }
 
-/** Every quiz in every enrolled programme, for the quizzes page. */
+/** Every quiz in every enrolled module, for the quizzes page. */
 export function allQuizzes(): QuizSummary[] {
   return enrolledProgress().flatMap((progress) =>
-    progress.modules.map((module) => ({
-      programme: progress.programme,
-      module,
-      status: quizStatus(progress.programme.id, module.id),
-      score: progress.enrolment?.quizScores[module.id],
-      moduleCompleted: Boolean(
-        progress.enrolment?.completedModuleIds.includes(module.id),
+    progress.lectures.map((lecture) => ({
+      module: progress.module,
+      lecture,
+      status: quizStatus(progress.module.id, lecture.id),
+      score: progress.enrolment?.quizScores[lecture.id],
+      lectureCompleted: Boolean(
+        progress.enrolment?.completedLectureIds.includes(lecture.id),
       ),
-      href: `/programmes/${progress.programme.id}/modules/${module.id}/quiz`,
+      href: `/modules/${progress.module.id}/lectures/${lecture.id}/quiz`,
     })),
   );
 }
@@ -275,8 +275,8 @@ export function allQuizzes(): QuizSummary[] {
 export function learnerTotals() {
   const entries = enrolledProgress();
   return {
-    programmes: entries.length,
-    modulesCompleted: entries.reduce(
+    modules: entries.length,
+    lecturesCompleted: entries.reduce(
       (sum, entry) => sum + entry.completedCount,
       0,
     ),
@@ -336,27 +336,27 @@ export { PASS_MARK };
 /* -------------------------------------------------------------- consistency */
 
 /**
- * The landing page promises a module count and an hours figure per programme,
- * and the curriculum has to deliver both. Checked once at module load, in
+ * The landing page promises a lecture count and an hours figure per module,
+ * and the curriculum has to deliver both. Checked once at lecture load, in
  * development only.
  *
  * This is the kind of drift nobody sees in review and a client sees
- * immediately - they read "9 modules, 6 hours" on the landing page and then
- * count eight rows on the programme page during the demo.
+ * immediately - they read "9 lectures, 6 hours" on the landing page and then
+ * count eight rows on the module page during the demo.
  */
 if (process.env.NODE_ENV !== "production") {
-  for (const programme of PROGRAMMES) {
-    const modules = getModules(programme.id);
-    const hours = modules.reduce((sum, module) => sum + module.minutes, 0) / 60;
+  for (const mdl of MODULES) {
+    const lectures = getLectures(mdl.id);
+    const hours = lectures.reduce((sum, lecture) => sum + lecture.minutes, 0) / 60;
 
-    if (modules.length !== programme.modules) {
+    if (lectures.length !== mdl.lectures) {
       console.warn(
-        `[portal] ${programme.id}: site.ts promises ${programme.modules} modules, curriculum.ts has ${modules.length}.`,
+        `[portal] ${mdl.id}: site.ts promises ${mdl.lectures} lectures, curriculum.ts has ${lectures.length}.`,
       );
     }
-    if (Math.abs(hours - programme.hours) > 0.5) {
+    if (Math.abs(hours - mdl.hours) > 0.5) {
       console.warn(
-        `[portal] ${programme.id}: site.ts promises ${programme.hours}h, curriculum.ts sums to ${hours.toFixed(1)}h.`,
+        `[portal] ${mdl.id}: site.ts promises ${mdl.hours}h, curriculum.ts sums to ${hours.toFixed(1)}h.`,
       );
     }
   }

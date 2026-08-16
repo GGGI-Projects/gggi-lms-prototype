@@ -11,11 +11,11 @@ import type { ContentBlock } from "@/content/curriculum";
 import type { Capability } from "@/lib/permissions";
 
 /**
- * Writing a block - a video lecture or a piece of reading, added to a module
+ * Writing a block - a video or a piece of reading, added to a lecture
  * or opened to change what is already there.
  *
  * ONE PAIR OF FORMS, TWO DOORS IN. `<AddContentBlockActions>` is the two
- * buttons under a module's block list; `<EditContentBlockAction>` is the
+ * buttons under a lecture's block list; `<EditContentBlockAction>` is the
  * "Edit block" control on a block already written, opening the same form
  * with `initial` set. A block that can be added and a block that can be
  * edited are not two different things to build - the second is the first
@@ -39,7 +39,7 @@ function DoneNote({ children }: { children: ReactNode }) {
   );
 }
 
-/** Every block a module can hold, minus the one this screen never edits here -
+/** Every block a lecture can hold, minus the one this screen never edits here -
  *  materials are attached from the library, not authored as a block. */
 type EditableBlock = Exclude<ContentBlock, { type: "materials" }>;
 
@@ -210,10 +210,10 @@ function TextBlockForm({
 /* -------------------------------------------------------------------- add */
 
 /**
- * The two ways a module gains a block, each its own button and its own
+ * The two ways a lecture gains a block, each its own button and its own
  * drawer - not one "Add a block" control with a kind picker inside it, which
- * would hide the choice this screen most wants an author to see: a module is
- * a lecture, or an argument written out, and which one comes next is a
+ * would hide the choice this screen most wants an author to see: a lecture is
+ * a video, or an argument written out, and which one comes next is a
  * decision made here, not on a second screen.
  */
 export function AddContentBlockActions({
@@ -255,7 +255,7 @@ export function AddContentBlockActions({
         open={open === "video"}
         onClose={() => setOpen(null)}
         title="Add a video block"
-        description="A recorded lecture. The title and the minutes are what the block list shows; the caption is what a learner reads before pressing play."
+        description="A recorded video. The title and the minutes are what the block list shows; the caption is what a learner reads before pressing play."
         size="md"
         footer={
           <ActionButton
@@ -346,7 +346,7 @@ export function EditContentBlockAction({
 /* ----------------------------------------------------------------- remove */
 
 /**
- * A block, taken out of the module.
+ * A block, taken out of the lecture.
  *
  * `<ConfirmAction>`, not a bare "Remove" - a written block is not a checkbox
  * left over from before the library existed, it is writing, and the console's
@@ -369,7 +369,7 @@ export function RemoveContentBlockAction({
       <ConfirmAction
         label="Remove block"
         question={`Remove "${name}"?`}
-        detail="Its writing goes with it. Learners already past this block keep their progress; the module simply reads shorter from here."
+        detail="Its writing goes with it. Learners already past this block keep their progress; the lecture simply reads shorter from here."
         confirmLabel="Remove it"
         tone="warn"
         done="Prototype - the block is unchanged."

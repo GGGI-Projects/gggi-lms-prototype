@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { CONSOLE, META } from "@/lib/theme";
-import { instructors, moduleLoad, formatNumber } from "@/lib/admin";
+import { instructors, lectureLoad, formatNumber } from "@/lib/admin";
 import { formatDate } from "@/lib/portal";
 import {
   Badge,
@@ -19,15 +19,15 @@ import {
   STAFF_STATUS_LABEL,
   STAFF_STATUS_TONE,
 } from "@/components/console/status";
-import { MANAGED_PROGRAMMES } from "@/content/staff";
+import { MANAGED_MODULES } from "@/content/staff";
 
 export const metadata: Metadata = { title: "Instructors" };
 
 const COLUMNS: Column[] = [
   { key: "name", head: "Instructor" },
   { key: "field", head: "Field", hideBelow: "lg" },
-  { key: "programmes", head: "Programmes" },
-  { key: "modules", head: "Modules", numeric: true, hideBelow: "sm" },
+  { key: "modules", head: "Modules" },
+  { key: "lectures", head: "Lectures", numeric: true, hideBelow: "sm" },
   { key: "learners", head: "Learners", numeric: true, hideBelow: "md" },
   { key: "active", head: "Last active", numeric: true, hideBelow: "xl" },
   { key: "status", head: "Status" },
@@ -36,7 +36,7 @@ const COLUMNS: Column[] = [
 /**
  * The people who write the material.
  *
- * The column that matters is PROGRAMMES, not modules or learners: an
+ * The column that matters is MODULES, not lectures or learners: an
  * instructor with nothing assigned cannot do anything at all, and that is the
  * single most useful fact this screen can surface. It is why the empty case is
  * called out in words rather than left as a blank cell for someone to notice.
@@ -45,13 +45,13 @@ export default function InstructorsPage() {
   const people = instructors();
 
   const items: RegisterItem[] = people.map((member) => {
-    const load = moduleLoad(member);
-    const unassigned = load.programmes.length === 0;
+    const load = lectureLoad(member);
+    const unassigned = load.modules.length === 0;
 
     return {
       id: member.id,
       text: [member.name, member.email, member.title]
-        .concat(load.programmes.map((programme) => programme.title))
+        .concat(load.modules.map((mdl) => mdl.title))
         .join(" ")
         .toLowerCase(),
       tags: [member.status, unassigned ? "unassigned" : "assigned"],
@@ -69,13 +69,13 @@ export default function InstructorsPage() {
               <span className="text-clay">Nothing assigned</span>
             ) : (
               <span className="flex flex-wrap gap-1.5">
-                {load.programmes.map((programme) => (
+                {load.modules.map((mdl) => (
                   <Badge
-                    key={programme.id}
-                    tone={programme.status === "draft" ? "neutral" : "info"}
+                    key={mdl.id}
+                    tone={mdl.status === "draft" ? "neutral" : "info"}
                   >
-                    {programme.title.split(" ")[0]}
-                    {programme.status === "draft" ? " (draft)" : ""}
+                    {mdl.title.split(" ")[0]}
+                    {mdl.status === "draft" ? " (draft)" : ""}
                   </Badge>
                 ))}
               </span>
@@ -104,10 +104,10 @@ export default function InstructorsPage() {
   });
 
   const unassignedCount = people.filter(
-    (member) => (member.programmeIds ?? []).length === 0,
+    (member) => (member.moduleIds ?? []).length === 0,
   ).length;
-  const totalModules = people.reduce(
-    (sum, member) => sum + moduleLoad(member).published,
+  const totalLectures = people.reduce(
+    (sum, member) => sum + lectureLoad(member).published,
     0,
   );
 
@@ -116,14 +116,14 @@ export default function InstructorsPage() {
       <PageHeader
         eyebrow="People"
         title="Instructors"
-        lead="Module instructors write and revise the material for the programmes they are assigned to. They cannot see the register, change a programme's settings or touch anybody's account."
+        lead="Lecture instructors write and revise the material for the modules they are assigned to. They cannot see the register, change a module's settings or touch anybody's account."
       />
 
       <div className={`${CONSOLE.stack} grid gap-4 sm:grid-cols-2 xl:grid-cols-4`}>
         <MetricCard label="Instructors" value={people.length} hint="on the platform" />
         <MetricCard
-          label="Published modules"
-          value={totalModules}
+          label="Published lectures"
+          value={totalLectures}
           hint="written by this team"
         />
         <MetricCard
@@ -133,23 +133,23 @@ export default function InstructorsPage() {
           goodWhen="down"
         />
         <MetricCard
-          label="Programmes covered"
-          value={`${MANAGED_PROGRAMMES.filter((p) => p.instructorIds.length).length} of ${MANAGED_PROGRAMMES.length}`}
-          hint="every programme has an author"
+          label="Modules covered"
+          value={`${MANAGED_MODULES.filter((p) => p.instructorIds.length).length} of ${MANAGED_MODULES.length}`}
+          hint="every module has an author"
         />
       </div>
 
       <div className={CONSOLE.stack}>
         <Register
           columns={COLUMNS}
-          caption="Module instructors"
+          caption="Lecture instructors"
           items={items}
-          searchPlaceholder="Search by name, field or programme"
+          searchPlaceholder="Search by name, field or module"
           action={
             <NewInstructorAction
-              programmes={MANAGED_PROGRAMMES.map((programme) => ({
-                id: programme.id,
-                title: programme.title,
+              modules={MANAGED_MODULES.map((mdl) => ({
+                id: mdl.id,
+                title: mdl.title,
               }))}
             />
           }

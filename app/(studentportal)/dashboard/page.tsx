@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ActionButton } from "@/components/ui/action-button";
-import { ProgrammeScene } from "@/components/art/scenes";
-import { ProgrammeCard } from "@/components/student-portal/programme-card";
+import { ModuleScene } from "@/components/art/scenes";
+import { ModuleCard } from "@/components/student-portal/module-card";
 import {
   EmptyState,
   PageBody,
@@ -17,7 +17,7 @@ import {
   CertificateIcon,
   CheckIcon,
   ClockIcon,
-  ProgrammesIcon,
+  ModulesIcon,
   QuizIcon,
   ReadingIcon,
   VideoIcon,
@@ -37,14 +37,14 @@ import { BODY, EYEBROW, HEADING, META, PORTAL } from "@/lib/theme";
 
 export const metadata: Metadata = {
   title: "Dashboard",
-  description: "Your programmes, your progress and your certificates.",
+  description: "Your modules, your progress and your certificates.",
 };
 
 /**
  * The screen a learner sees most.
  *
  * ORDERED BY WHAT THEY CAME FOR. Almost everyone opening this page is here to
- * carry on with the module they stopped on, so that is the first thing under
+ * carry on with the lecture they stopped on, so that is the first thing under
  * the greeting and it is a full-width block rather than one card in a grid.
  * The totals row sits below it, not above: it is reassurance, and reassurance
  * does not go in front of the door.
@@ -61,11 +61,11 @@ export default function DashboardPage() {
   const catalogue = allProgress().filter((entry) => !entry.enrolled);
   const activity = recentActivity();
 
-  // Modules finished whose quiz is still unpassed. This is the one thing on
+  // Lectures finished whose quiz is still unpassed. This is the one thing on
   // the platform that is genuinely outstanding - everything else is optional -
   // so it gets a panel rather than a line in the activity feed.
   const outstanding = allQuizzes().filter(
-    (quiz) => quiz.moduleCompleted && quiz.status !== "passed",
+    (quiz) => quiz.lectureCompleted && quiz.status !== "passed",
   );
 
   return (
@@ -75,8 +75,8 @@ export default function DashboardPage() {
         title={`Welcome back, ${LEARNER.name.split(" ")[0]}.`}
         lead={
           enrolled.length
-            ? `You are enrolled in ${enrolled.length} programmes and have finished ${totals.modulesCompleted} modules. Everything is where you left it.`
-            : "Nothing is enrolled yet. Every programme is free, self-paced, and open to you right now."
+            ? `You are enrolled in ${enrolled.length} modules and have finished ${totals.lecturesCompleted} lectures. Everything is where you left it.`
+            : "Nothing is enrolled yet. Every module is free, self-paced, and open to you right now."
         }
       />
 
@@ -88,19 +88,19 @@ export default function DashboardPage() {
 
       <dl className="mt-10 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatTile
-          value={totals.programmes}
-          label="Programmes enrolled"
+          value={totals.modules}
+          label="Modules enrolled"
           hint={`${catalogue.length} more available`}
         />
         <StatTile
-          value={totals.modulesCompleted}
-          label="Modules completed"
-          hint="Across all programmes"
+          value={totals.lecturesCompleted}
+          label="Lectures completed"
+          hint="Across all modules"
         />
         <StatTile
           value={`${totals.hours}h`}
           label="Time studied"
-          hint="Counted from completed modules"
+          hint="Counted from completed lectures"
         />
         <StatTile
           value={totals.certificates}
@@ -112,10 +112,10 @@ export default function DashboardPage() {
       <div className={`grid gap-10 lg:grid-cols-12 ${PORTAL.stack}`}>
         <div className="lg:col-span-8">
           <Section
-            title="Your programmes"
+            title="Your modules"
             action={
               <Link
-                href="/programmes"
+                href="/modules"
                 className="link-wipe inline-flex items-center gap-1.5 text-lg font-semibold text-primary"
               >
                 Browse all
@@ -126,7 +126,7 @@ export default function DashboardPage() {
             {enrolled.length ? (
               <div className="grid gap-5 sm:grid-cols-2">
                 {enrolled.map((entry) => (
-                  <ProgrammeCard key={entry.programme.id} progress={entry} />
+                  <ModuleCard key={entry.module.id} progress={entry} />
                 ))}
               </div>
             ) : (
@@ -134,8 +134,8 @@ export default function DashboardPage() {
                 title="You have not enrolled yet"
                 body="Pick the subject closest to your work. You can enrol in as many as you like and leave whenever you want - your place is held."
                 action={
-                  <ActionButton href="/programmes" variant="solid" size="sm">
-                    Browse programmes
+                  <ActionButton href="/modules" variant="solid" size="sm">
+                    Browse modules
                   </ActionButton>
                 }
               />
@@ -153,11 +153,11 @@ export default function DashboardPage() {
         <Section
           className={PORTAL.stack}
           title="Room for another"
-          description="Each programme is self-contained, so there is no order to follow and nothing to finish first."
+          description="Each module is self-contained, so there is no order to follow and nothing to finish first."
         >
           <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
             {catalogue.map((entry) => (
-              <ProgrammeCard key={entry.programme.id} progress={entry} />
+              <ModuleCard key={entry.module.id} progress={entry} />
             ))}
           </div>
         </Section>
@@ -181,10 +181,10 @@ function ContinueCard({
 }: {
   progress: NonNullable<ReturnType<typeof resumePoint>>;
 }) {
-  const mod = progress.nextModule;
+  const mod = progress.nextLecture;
   if (!mod) return null;
 
-  const href = `/programmes/${progress.programme.id}/modules/${mod.id}`;
+  const href = `/modules/${progress.module.id}/lectures/${mod.id}`;
   const Icon = mod.kind === "video" ? VideoIcon : ReadingIcon;
 
   return (
@@ -208,12 +208,12 @@ function ContinueCard({
 
           <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-primary-500">
             <span className="inline-flex items-center gap-2">
-              <ProgrammesIcon className="size-4" />
-              {progress.programme.title}
+              <ModulesIcon className="size-4" />
+              {progress.module.title}
             </span>
             <span className="inline-flex items-center gap-2">
               <Icon className="size-4" />
-              {mod.kind === "video" ? "Video module" : "Reading module"}
+              {mod.kind === "video" ? "Video lecture" : "Reading lecture"}
             </span>
             <span className="inline-flex items-center gap-2">
               <ClockIcon className="size-4" />
@@ -223,26 +223,26 @@ function ContinueCard({
 
           <div className="mt-8 flex flex-wrap items-center gap-4">
             <ActionButton href={href} variant="solid" size="md" className="group">
-              Resume module
+              Resume lecture
               <ArrowRightIcon className="size-4 transition-transform duration-500 ease-out-expo group-hover:translate-x-1" />
             </ActionButton>
             <Link
-              href={`/programmes/${progress.programme.id}`}
+              href={`/modules/${progress.module.id}`}
               className="link-wipe text-lg font-semibold text-accent-soft"
             >
-              See the whole programme
+              See the whole module
             </Link>
           </div>
         </div>
 
         <div className="w-full shrink-0 lg:w-72">
-          <ProgrammeScene
-            scene={progress.programme.scene}
+          <ModuleScene
+            scene={progress.module.scene}
             className="h-32 w-full rounded-md object-cover lg:h-40"
           />
           <div className="mt-5 flex items-baseline justify-between gap-4">
             <p className="text-sm text-primary-500">
-              {progress.completedCount} of {progress.moduleCount} modules done
+              {progress.completedCount} of {progress.lectureCount} lectures done
             </p>
             <p className="font-display text-lg leading-none text-paper">
               {progress.percent}%
@@ -250,7 +250,7 @@ function ContinueCard({
           </div>
           <ProgressBar
             percent={progress.percent}
-            label={`${progress.programme.title} progress`}
+            label={`${progress.module.title} progress`}
             // The track has to be lighter than the ground it sits on here; the
             // page-palette `surface-deep` all but disappears on `primary-950`.
             className="mt-2.5 bg-primary-800"
@@ -276,7 +276,7 @@ function OutstandingQuizzes({
           <Panel className="p-0! divide-y divide-surface-deep">
             {items.slice(0, 4).map((quiz) => (
               <Link
-                key={`${quiz.programme.id}-${quiz.module.id}`}
+                key={`${quiz.module.id}-${quiz.lecture.id}`}
                 href={quiz.href}
                 className="group flex items-start gap-4 px-6 py-5 transition-colors hover:bg-surface/60"
               >
@@ -285,10 +285,10 @@ function OutstandingQuizzes({
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className="block font-semibold leading-snug text-ink">
-                    {quiz.module.title}
+                    {quiz.lecture.title}
                   </span>
                   <span className={`mt-1 block ${META.base}`}>
-                    {quiz.programme.title}
+                    {quiz.module.title}
                   </span>
                 </span>
                 <ArrowRightIcon className="mt-1 size-4 shrink-0 text-muted transition-transform duration-500 ease-out-expo group-hover:translate-x-1" />
@@ -302,7 +302,7 @@ function OutstandingQuizzes({
                 <CheckIcon className="size-5" />
               </span>
               <p className={BODY.base}>
-                Nothing outstanding. Every module you have finished has a passed
+                Nothing outstanding. Every lecture you have finished has a passed
                 quiz behind it.
               </p>
             </div>
@@ -319,10 +319,10 @@ function OutstandingQuizzes({
  * meant to distinguish, and there is nothing to do with the distinction.
  */
 const ACTIVITY_ICON = {
-  module: ReadingIcon,
+  lecture: ReadingIcon,
   quiz: QuizIcon,
   certificate: CertificateIcon,
-  enrolment: ProgrammesIcon,
+  enrolment: ModulesIcon,
 } as const;
 
 function ActivityFeed({ items }: { items: ActivityItem[] }) {
@@ -360,7 +360,7 @@ function ActivityFeed({ items }: { items: ActivityItem[] }) {
           <Panel>
             <p className={BODY.base}>
               Nothing here yet. Your progress appears as you work through a
-              programme.
+              module.
             </p>
           </Panel>
         )}

@@ -50,7 +50,7 @@ export function Audience() {
                   className="pointer-events-none absolute inset-x-0 bottom-0 h-0 bg-surface/80 transition-[height] duration-600 ease-out-expo group-hover:h-full"
                 />
 
-                {/* A NUMERAL, not a label - the same move the programmes list
+                {/* A NUMERAL, not a label - the same move the modules list
                     makes, at a size that suits a card rather than a full-width
                     row. That is why it is off the four-step text scale and why
                     that is not a leak: it is `aria-hidden`, it carries no

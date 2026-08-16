@@ -5,7 +5,7 @@ import { BODY, CONSOLE, META } from "@/lib/theme";
 import { LEARNER } from "@/content/portal";
 import {
   certificateRegister,
-  managedProgramme,
+  managedModule,
   students,
   studentById,
   summarise,
@@ -54,7 +54,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
  * do about it. Administrative actions are LAST and behind a confirmation,
  * because this page is read fifty times for every time it is acted on.
  *
- * What is deliberately NOT here: quiz answers, time spent per module, sign-in
+ * What is deliberately NOT here: quiz answers, time spent per lecture, sign-in
  * history. An administrator has a legitimate reason to see progress and none
  * at all to read over somebody's shoulder, and a console that collects it
  * because it could is a console that will be asked to hand it over.
@@ -125,10 +125,10 @@ export default async function StudentPage({ params }: Params) {
       ) : null}
 
       <div className={`${CONSOLE.stack} grid gap-4 sm:grid-cols-2 xl:grid-cols-4`}>
-        <MetricCard label="Programmes" value={summary.enrolled} hint="enrolled" />
+        <MetricCard label="Modules" value={summary.enrolled} hint="enrolled" />
         <MetricCard
-          label="Modules finished"
-          value={summary.modulesDone}
+          label="Lectures finished"
+          value={summary.lecturesDone}
           hint={`${summary.percent}% of everything enrolled in`}
         />
         <MetricCard
@@ -139,34 +139,34 @@ export default async function StudentPage({ params }: Params) {
         <MetricCard
           label="Certificates"
           value={summary.completed}
-          hint="programmes completed"
+          hint="modules completed"
         />
       </div>
 
       <div className={`${CONSOLE.stack} grid gap-4 lg:grid-cols-3`}>
         <div className="min-w-0 lg:col-span-2">
-          <Section title="Enrolments" description="Every programme this learner has joined.">
+          <Section title="Enrolments" description="Every module this learner has joined.">
             {student.enrolments.length ? (
               <ul className="space-y-4">
                 {student.enrolments.map((enrolment) => {
-                  const programme = managedProgramme(enrolment.programmeId);
-                  if (!programme) return null;
+                  const mdl = managedModule(enrolment.moduleId);
+                  if (!mdl) return null;
                   const percent = Math.round(
-                    (enrolment.modulesDone / programme.moduleCount) * 100,
+                    (enrolment.lecturesDone / mdl.lectureCount) * 100,
                   );
 
                   return (
                     <li
-                      key={enrolment.programmeId}
+                      key={enrolment.moduleId}
                       className="rounded-sm border border-surface-deep bg-paper-raised p-6"
                     >
                       <div className="flex flex-wrap items-start justify-between gap-4">
                         <div className="min-w-0">
                           <Link
-                            href={`/admin/programmes/${programme.id}`}
+                            href={`/admin/modules/${mdl.id}`}
                             className="block text-lg font-semibold text-ink"
                           >
-                            <span className="link-wipe">{programme.title}</span>
+                            <span className="link-wipe">{mdl.title}</span>
                           </Link>
                           <p className={`mt-1 ${META.base}`}>
                             Enrolled {formatDateLong(enrolment.enrolledOn)}
@@ -189,7 +189,7 @@ export default async function StudentPage({ params }: Params) {
                       <div className="mt-5 flex items-center gap-4">
                         <ProgressBar
                           percent={percent}
-                          label={`${programme.title}: ${percent}% complete`}
+                          label={`${mdl.title}: ${percent}% complete`}
                           className="flex-1"
                         />
                         <span className="shrink-0 font-display text-lg font-bold tabular-nums tracking-tight text-ink">
@@ -198,8 +198,8 @@ export default async function StudentPage({ params }: Params) {
                       </div>
 
                       <p className={`mt-3 ${META.base}`}>
-                        {enrolment.modulesDone} of {programme.moduleCount}{" "}
-                        modules
+                        {enrolment.lecturesDone} of {mdl.lectureCount}{" "}
+                        lectures
                         {enrolment.averageScore !== null
                           ? ` · quizzes averaging ${enrolment.averageScore}%`
                           : " · no quiz attempted yet"}
@@ -236,7 +236,7 @@ export default async function StudentPage({ params }: Params) {
                   >
                     <span className="min-w-0 flex-1">
                       <span className="block truncate text-lg font-semibold text-ink">
-                        {certificate.programmeTitle}
+                        {certificate.moduleTitle}
                       </span>
                       <span className={`block ${META.base}`}>
                         {certificate.reference} · issued{" "}

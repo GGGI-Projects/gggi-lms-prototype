@@ -26,7 +26,7 @@ const PORTAL_ICON: Record<StaffRole, ComponentType<{ className?: string }>> = {
  *
  * WHY THIS EXISTS AT ALL: one email can hold more than one role - the same
  * person is sometimes the super administrator on this platform AND an
- * instructor for a programme they wrote themselves. A sign-in cannot know
+ * instructor for a module they wrote themselves. A sign-in cannot know
  * which hat the visitor wants to wear next, so it asks, once, right after the
  * password is accepted rather than guessing and making them find the switcher
  * buried in the rail afterwards.

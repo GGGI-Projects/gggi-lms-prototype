@@ -91,7 +91,7 @@ export const EYEBROW = {
   onDark: "label-eyebrow text-accent-soft",
   muted: "label-eyebrow text-muted",
   /** For the two sections that are pitched bronze rather than teal - the
-   *  programmes list and the certificate. `accent` itself is too light to sit
+   *  modules list and the certificate. `accent` itself is too light to sit
    *  as 11px text on paper, so this is the darker `accent-strong`. */
   accent: "label-eyebrow text-accent-strong",
 } as const;
@@ -119,7 +119,7 @@ export const HEADING = {
   /** ...and dark. */
   sectionOnDark: "font-display text-display-lg mt-5 text-balance text-paper",
   /**
-   * Title. Every h3 on the page: card titles, programme rows, FAQ questions,
+   * Title. Every h3 on the page: card titles, module rows, FAQ questions,
    * journey step titles.
    *
    * `sub`, `subOnDark` and `row` used to sit between this and `section` at

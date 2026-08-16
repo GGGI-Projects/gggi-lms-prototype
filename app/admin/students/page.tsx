@@ -23,7 +23,7 @@ export const metadata: Metadata = { title: "Students" };
 const COLUMNS: Column[] = [
   { key: "learner", head: "Learner" },
   { key: "where", head: "Organisation", hideBelow: "lg" },
-  { key: "programmes", head: "Programmes", numeric: true },
+  { key: "modules", head: "Modules", numeric: true },
   { key: "progress", head: "Progress" },
   { key: "score", head: "Avg. score", numeric: true, hideBelow: "sm" },
   { key: "active", head: "Last active", numeric: true, hideBelow: "md" },
@@ -134,7 +134,7 @@ export default function StudentsPage() {
         <MetricCard
           label="Holding a certificate"
           value={formatNumber(PLATFORM.certificates)}
-          hint="one per completed programme"
+          hint="one per completed module"
         />
         <MetricCard
           label="Suspended"

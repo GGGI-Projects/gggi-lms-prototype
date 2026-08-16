@@ -7,7 +7,7 @@ import { CheckIcon, SearchIcon } from "@/components/student-portal/icons";
 import { PlusIcon, TrashIcon } from "@/components/console/icons";
 
 /**
- * Putting something on the shelf, and taking something off it into a module.
+ * Putting something on the shelf, and taking something off it into a lecture.
  *
  * These are the two interactions the library exists for, and they are written
  * together because they are two halves of one decision: whether the thing you
@@ -27,7 +27,7 @@ export type PickerMaterial = {
   size?: string;
   groupId: string;
   groupName: string;
-  /** How many modules already attach it. Shown so the shelf reads as used. */
+  /** How many lectures already attach it. Shown so the shelf reads as used. */
   uses: number;
 };
 
@@ -193,12 +193,12 @@ export function UploadMaterial({
 /* ------------------------------------------------------------------ picker */
 
 /**
- * Attach material to a module, from the shelf.
+ * Attach material to a lecture, from the shelf.
  *
  * Search, or narrow to a group first - the group filter is what covers "this
- * module needs the whole waste-templates set" without a second, separate way
+ * lecture needs the whole waste-templates set" without a second, separate way
  * of doing the same thing. Whatever is checked lands in the same list
- * underneath, which is what the module will attach.
+ * underneath, which is what the lecture will attach.
  *
  * Removing something here does not delete it from the library, and the screen
  * says so - that confusion is the single most likely misunderstanding of a
@@ -213,7 +213,7 @@ export function AttachMaterials({
 }: {
   materials: PickerMaterial[];
   groups: PickerGroup[];
-  /** Titles the module already attaches. */
+  /** Titles the lecture already attaches. */
   attached: string[];
   uploadHref: string;
   /** See the note on `InviteForm`'s `formId` - same device: a drawer's
@@ -326,7 +326,7 @@ export function AttachMaterials({
                       {material.groupName}
                       {material.size ? ` · ${material.size}` : null}
                       {material.uses
-                        ? ` · used by ${material.uses} ${material.uses === 1 ? "module" : "modules"}`
+                        ? ` · used by ${material.uses} ${material.uses === 1 ? "lecture" : "lectures"}`
                         : " · not used yet"}
                     </span>
                   </span>
@@ -381,7 +381,7 @@ export function AttachMaterials({
           {!formId ? (
             <div className="mt-5">
               <ActionButton type="submit" variant="solid" size="sm">
-                Attach to this module
+                Attach to this lecture
               </ActionButton>
             </div>
           ) : null}
@@ -390,9 +390,9 @@ export function AttachMaterials({
 
       {saved ? (
         <DoneNote>
-          Prototype - nothing was attached. Removing a file from a module never
+          Prototype - nothing was attached. Removing a file from a lecture never
           deletes it from the library; it stays on its shelf for every other
-          module that uses it.
+          lecture that uses it.
         </DoneNote>
       ) : null}
 

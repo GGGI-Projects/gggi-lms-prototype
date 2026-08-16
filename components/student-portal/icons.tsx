@@ -37,7 +37,7 @@ export function DashboardIcon({ className }: IconProps) {
   );
 }
 
-export function ProgrammesIcon({ className }: IconProps) {
+export function ModulesIcon({ className }: IconProps) {
   return (
     <svg {...base} className={className}>
       <path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H10a2 2 0 0 1 2 2v13a2 2 0 0 0-2-2H5.5A1.5 1.5 0 0 1 4 15.5Z" />

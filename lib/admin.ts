@@ -2,7 +2,7 @@
  * Everything the console DERIVES, in one place.
  *
  * Same rule as `lib/portal.ts`: a screen never works out a total, a join or a
- * permission for itself. Three screens counting an instructor's modules three
+ * permission for itself. Three screens counting an instructor's lectures three
  * different ways is how a console ends up with a number that is right on the
  * list and wrong on the profile, and nobody can say which one to believe.
  *
@@ -12,19 +12,19 @@
  * itself what an administrator is.
  */
 
-import { PROGRAMMES, type Programme } from "@/content/site";
-import { MODULES } from "@/content/curriculum";
+import { MODULES, type Module } from "@/content/site";
+import { LECTURES } from "@/content/curriculum";
 import { LEARNER, ENROLMENTS, CERTIFICATES } from "@/content/portal";
 import { PASS_MARK, QUIZ_LENGTH } from "@/lib/portal";
 import {
-  DRAFT_MODULES,
-  MANAGED_PROGRAMMES,
-  MODULE_EDITS,
+  DRAFT_LECTURES,
+  MANAGED_MODULES,
+  LECTURE_EDITS,
   ROLE_LABEL,
   SESSION,
   STAFF,
-  type DraftModule,
-  type ManagedProgramme,
+  type DraftLecture,
+  type ManagedModule,
   type StaffMember,
   type StaffRole,
 } from "@/content/staff";
@@ -102,55 +102,55 @@ export function instructors(): StaffMember[] {
   return STAFF.filter((member) => member.role === "instructor");
 }
 
-/* -------------------------------------------------------------- programmes */
+/* -------------------------------------------------------------- modules */
 
-export function managedProgramme(id: string): ManagedProgramme | undefined {
-  return MANAGED_PROGRAMMES.find((programme) => programme.id === id);
+export function managedModule(id: string): ManagedModule | undefined {
+  return MANAGED_MODULES.find((mdl) => mdl.id === id);
 }
 
 /** The public catalogue entry, when there is one. Drafts have none. */
-export function catalogueProgramme(id: string): Programme | undefined {
-  return PROGRAMMES.find((programme) => programme.id === id);
+export function catalogueModule(id: string): Module | undefined {
+  return MODULES.find((mdl) => mdl.id === id);
 }
 
-export function programmesFor(member: StaffMember): ManagedProgramme[] {
-  const ids = member.programmeIds ?? [];
-  return MANAGED_PROGRAMMES.filter((programme) => ids.includes(programme.id));
+export function modulesFor(member: StaffMember): ManagedModule[] {
+  const ids = member.moduleIds ?? [];
+  return MANAGED_MODULES.filter((mdl) => ids.includes(mdl.id));
 }
 
-export function instructorsFor(programmeId: string): StaffMember[] {
-  const programme = managedProgramme(programmeId);
-  if (!programme) return [];
-  return programme.instructorIds
+export function instructorsFor(moduleId: string): StaffMember[] {
+  const mdl = managedModule(moduleId);
+  if (!mdl) return [];
+  return mdl.instructorIds
     .map(staffById)
     .filter((member): member is StaffMember => Boolean(member));
 }
 
 /**
- * A programme's modules as the console needs them - the same shape whether
+ * A module's lectures as the console needs them - the same shape whether
  * they come from the published curriculum or from a draft's plan.
  *
  * This is the join that would otherwise be written on four screens. A
- * published module has real content, so its state comes from `MODULE_EDITS`
- * and defaults to published-and-untouched; a draft's modules are a plan and
+ * published lecture has real content, so its state comes from `LECTURE_EDITS`
+ * and defaults to published-and-untouched; a draft's lectures are a plan and
  * carry their own state.
  */
-export type ConsoleModule = {
+export type ConsoleLecture = {
   id: string;
   number: string;
   title: string;
-  state: DraftModule["state"];
+  state: DraftLecture["state"];
   updatedOn: string | null;
   /** Null when nobody has been recorded as the author. */
   author: StaffMember | null;
-  /** False for a draft programme's planned modules - there is nothing to read. */
+  /** False for a draft module's planned lectures - there is nothing to read. */
   hasContent: boolean;
 };
 
-export function consoleModules(programmeId: string): ConsoleModule[] {
-  const drafts = DRAFT_MODULES[programmeId];
-  const programme = managedProgramme(programmeId);
-  const fallbackAuthor = programme?.instructorIds[0] ?? null;
+export function consoleLectures(moduleId: string): ConsoleLecture[] {
+  const drafts = DRAFT_LECTURES[moduleId];
+  const mdl = managedModule(moduleId);
+  const fallbackAuthor = mdl?.instructorIds[0] ?? null;
 
   if (drafts) {
     return drafts.map((mod) => ({
@@ -164,14 +164,14 @@ export function consoleModules(programmeId: string): ConsoleModule[] {
     }));
   }
 
-  return (MODULES[programmeId] ?? []).map((mod) => {
-    const edit = MODULE_EDITS[mod.id];
+  return (LECTURES[moduleId] ?? []).map((mod) => {
+    const edit = LECTURE_EDITS[mod.id];
     return {
       id: mod.id,
       number: mod.number,
       title: mod.title,
       state: edit?.state ?? "published",
-      updatedOn: edit?.updatedOn ?? programme?.createdOn ?? null,
+      updatedOn: edit?.updatedOn ?? mdl?.createdOn ?? null,
       author: staffById(edit?.authorId ?? fallbackAuthor ?? "") ?? null,
       hasContent: true,
     };
@@ -179,35 +179,35 @@ export function consoleModules(programmeId: string): ConsoleModule[] {
 }
 
 /**
- * The material touched most recently, across every programme.
+ * The material touched most recently, across every module.
  *
- * The dashboard's answer to "is anyone actually writing anything". Modules
- * with no recorded edit date sort last rather than being dropped - a module
+ * The dashboard's answer to "is anyone actually writing anything". Lectures
+ * with no recorded edit date sort last rather than being dropped - a lecture
  * nobody has touched since launch is a fact worth seeing.
  */
-export function recentModules(limit = 6) {
-  return MANAGED_PROGRAMMES.flatMap((programme) =>
-    consoleModules(programme.id).map((mod) => ({ ...mod, programme })),
+export function recentLectures(limit = 6) {
+  return MANAGED_MODULES.flatMap((mdl) =>
+    consoleLectures(mdl.id).map((mod) => ({ ...mod, module: mdl })),
   )
     .sort((a, b) => (b.updatedOn ?? "").localeCompare(a.updatedOn ?? ""))
     .slice(0, limit);
 }
 
 /**
- * How a module's quiz is going, where the prototype carries figures for it.
+ * How a lecture's quiz is going, where the prototype carries figures for it.
  *
  * Returns null rather than zeroes. A quiz with no results and a quiz everybody
  * fails are opposite facts, and a screen that renders both as "0%" is worse
  * than one that admits it does not know.
  */
-export function quizStatsFor(moduleId: string): QuizStats | null {
-  return QUIZ_STATS[moduleId] ?? null;
+export function quizStatsFor(lectureId: string): QuizStats | null {
+  return QUIZ_STATS[lectureId] ?? null;
 }
 
 /**
  * When a quiz is worth an instructor's attention.
  *
- * ONE DEFINITION, used by the dashboard queue, the quizzes list, the module
+ * ONE DEFINITION, used by the dashboard queue, the quizzes list, the lecture
  * screen and the quiz itself - four places that were each about to decide this
  * for themselves, which is how a console ends up flagging a quiz on one screen
  * and calling it healthy on the next.
@@ -226,33 +226,33 @@ export function quizNeedsAttention(stats: QuizStats | null): boolean {
   return stats.passRate < PASS_RATE_FLOOR || stats.averageScore < PASS_MARK;
 }
 
-/** Every quiz on one programme, with its module and whatever is known about it. */
-export function quizzesForProgramme(programmeId: string) {
-  return consoleModules(programmeId).map((mod) => ({
+/** Every quiz on one module, with its lecture and whatever is known about it. */
+export function quizzesForModule(moduleId: string) {
+  return consoleLectures(moduleId).map((mod) => ({
     mod,
-    programme: managedProgramme(programmeId),
+    module: managedModule(moduleId),
     stats: quizStatsFor(mod.id),
     questions: mod.hasContent ? QUIZ_LENGTH : 0,
   }));
 }
 
-/** Modules an instructor is responsible for, across every assigned programme. */
-export function moduleLoad(member: StaffMember) {
-  const programmes = programmesFor(member);
-  const modules = programmes.flatMap((programme) =>
-    consoleModules(programme.id).map((mod) => ({ ...mod, programme })),
+/** Lectures an instructor is responsible for, across every assigned module. */
+export function lectureLoad(member: StaffMember) {
+  const modules = modulesFor(member);
+  const lectures = modules.flatMap((mdl) =>
+    consoleLectures(mdl.id).map((mod) => ({ ...mod, module: mdl })),
   );
 
   return {
-    programmes,
     modules,
-    published: modules.filter((mod) => mod.state === "published").length,
-    inReview: modules.filter((mod) => mod.state === "in-review").length,
-    unwritten: modules.filter(
+    lectures,
+    published: lectures.filter((mod) => mod.state === "published").length,
+    inReview: lectures.filter((mod) => mod.state === "in-review").length,
+    unwritten: lectures.filter(
       (mod) => mod.state === "draft" || mod.state === "not-started",
     ).length,
-    learners: programmes.reduce(
-      (sum, programme) => sum + programme.enrolments,
+    learners: modules.reduce(
+      (sum, mdl) => sum + mdl.enrolments,
       0,
     ),
   };
@@ -284,13 +284,13 @@ function demoLearnerRecord(): StudentRecord {
     enrolments: ENROLMENTS.map((enrolment) => {
       const scores = Object.values(enrolment.quizScores);
       const certificate = CERTIFICATES.find(
-        (entry) => entry.programmeId === enrolment.programmeId,
+        (entry) => entry.moduleId === enrolment.moduleId,
       );
 
       return {
-        programmeId: enrolment.programmeId,
+        moduleId: enrolment.moduleId,
         enrolledOn: enrolment.enrolledOn,
-        modulesDone: enrolment.completedModuleIds.length,
+        lecturesDone: enrolment.completedLectureIds.length,
         averageScore: scores.length
           ? Math.round(scores.reduce((sum, score) => sum + score, 0) / scores.length)
           : null,
@@ -316,34 +316,34 @@ export type StudentSummary = {
   student: StudentRecord;
   enrolled: number;
   completed: number;
-  modulesDone: number;
+  lecturesDone: number;
   /** Mean of the enrolments that have a score at all. */
   averageScore: number | null;
   certificates: string[];
-  /** Progress across every programme they are enrolled in, 0-100. */
+  /** Progress across every module they are enrolled in, 0-100. */
   percent: number;
 };
 
 export function summarise(student: StudentRecord): StudentSummary {
   const totals = student.enrolments.map((enrolment) => {
-    const programme = managedProgramme(enrolment.programmeId);
+    const mdl = managedModule(enrolment.moduleId);
     return {
-      done: enrolment.modulesDone,
-      of: programme?.moduleCount ?? 0,
+      done: enrolment.lecturesDone,
+      of: mdl?.lectureCount ?? 0,
       score: enrolment.averageScore,
       certificate: enrolment.certificateRef,
     };
   });
 
   const scored = totals.filter((entry) => entry.score !== null);
-  const moduleTotal = totals.reduce((sum, entry) => sum + entry.of, 0);
-  const modulesDone = totals.reduce((sum, entry) => sum + entry.done, 0);
+  const lectureTotal = totals.reduce((sum, entry) => sum + entry.of, 0);
+  const lecturesDone = totals.reduce((sum, entry) => sum + entry.done, 0);
 
   return {
     student,
     enrolled: student.enrolments.length,
     completed: totals.filter((entry) => entry.certificate).length,
-    modulesDone,
+    lecturesDone,
     averageScore: scored.length
       ? Math.round(
           scored.reduce((sum, entry) => sum + (entry.score ?? 0), 0) /
@@ -353,15 +353,15 @@ export function summarise(student: StudentRecord): StudentSummary {
     certificates: totals
       .map((entry) => entry.certificate)
       .filter((reference): reference is string => Boolean(reference)),
-    percent: moduleTotal ? Math.round((modulesDone / moduleTotal) * 100) : 0,
+    percent: lectureTotal ? Math.round((lecturesDone / lectureTotal) * 100) : 0,
   };
 }
 
-/** Learners on the programmes one instructor is assigned to. */
+/** Learners on the modules one instructor is assigned to. */
 export function learnersFor(member: StaffMember): StudentRecord[] {
-  const ids = member.programmeIds ?? [];
+  const ids = member.moduleIds ?? [];
   return students().filter((student) =>
-    student.enrolments.some((enrolment) => ids.includes(enrolment.programmeId)),
+    student.enrolments.some((enrolment) => ids.includes(enrolment.moduleId)),
   );
 }
 
@@ -371,8 +371,8 @@ export type CertificateRecord = {
   reference: string;
   studentId: string;
   studentName: string;
-  programmeId: string;
-  programmeTitle: string;
+  moduleId: string;
+  moduleTitle: string;
   issuedOn: string;
   score: number | null;
   status: "issued" | "revoked";
@@ -404,10 +404,10 @@ export function certificateRegister(): CertificateRecord[] {
           reference,
           studentId: student.id,
           studentName: student.name,
-          programmeId: enrolment.programmeId,
-          programmeTitle:
-            managedProgramme(enrolment.programmeId)?.title ??
-            enrolment.programmeId,
+          moduleId: enrolment.moduleId,
+          moduleTitle:
+            managedModule(enrolment.moduleId)?.title ??
+            enrolment.moduleId,
           issuedOn: portalCertificate?.issuedOn ?? student.lastActive,
           score: enrolment.averageScore,
           status: revoked ? ("revoked" as const) : ("issued" as const),
@@ -429,8 +429,8 @@ export function pendingReviewCount(): number {
   return reviewsByStatus("pending").length;
 }
 
-export function reviewsForProgramme(programmeId: string): Review[] {
-  return REVIEWS.filter((review) => review.programmeId === programmeId);
+export function reviewsForModule(moduleId: string): Review[] {
+  return REVIEWS.filter((review) => review.moduleId === moduleId);
 }
 
 /* ------------------------------------------------------------------ audit */
@@ -456,16 +456,16 @@ export function monthOverMonth(key: "signups" | "enrolments" | "completions") {
   return Math.round(((latest - previous) / previous) * 100);
 }
 
-/** Enrolments per programme, biggest first, for the bar chart. */
-export function enrolmentsByProgramme() {
-  return [...MANAGED_PROGRAMMES]
-    .filter((programme) => programme.status === "published")
+/** Enrolments per module, biggest first, for the bar chart. */
+export function enrolmentsByModule() {
+  return [...MANAGED_MODULES]
+    .filter((mdl) => mdl.status === "published")
     .sort((a, b) => b.enrolments - a.enrolments)
-    .map((programme) => ({
-      id: programme.id,
-      label: programme.title,
-      value: programme.enrolments,
-      completions: programme.completions,
+    .map((mdl) => ({
+      id: mdl.id,
+      label: mdl.title,
+      value: mdl.enrolments,
+      completions: mdl.completions,
     }));
 }
 
@@ -496,14 +496,14 @@ export function completionSplit() {
 
 /** Things waiting for somebody. The dashboard's first block. */
 export function queues() {
-  const drafts = MANAGED_PROGRAMMES.filter(
-    (programme) => programme.status === "draft",
+  const drafts = MANAGED_MODULES.filter(
+    (mdl) => mdl.status === "draft",
   );
   const unassigned = instructors().filter(
-    (member) => (member.programmeIds ?? []).length === 0,
+    (member) => (member.moduleIds ?? []).length === 0,
   );
-  const modulesInReview = MANAGED_PROGRAMMES.flatMap((programme) =>
-    consoleModules(programme.id).filter((mod) => mod.state === "in-review"),
+  const lecturesInReview = MANAGED_MODULES.flatMap((mdl) =>
+    consoleLectures(mdl.id).filter((mod) => mod.state === "in-review"),
   );
   const flagged = REVIEWS.filter(
     (review) => review.status === "pending" && review.flagged,
@@ -512,8 +512,8 @@ export function queues() {
   return {
     pendingReviews: pendingReviewCount(),
     flaggedReviews: flagged.length,
-    modulesInReview: modulesInReview.length,
-    draftProgrammes: drafts.length,
+    lecturesInReview: lecturesInReview.length,
+    draftModules: drafts.length,
     unassignedInstructors: unassigned.length,
     suspendedLearners: students().filter(
       (student) => student.status === "suspended",
@@ -592,77 +592,77 @@ if (process.env.NODE_ENV !== "production") {
     warn(`enrolment split sums to ${split}, PLATFORM.enrolments is ${PLATFORM.enrolments}`);
   }
 
-  const programmeEnrolments = sum(
-    MANAGED_PROGRAMMES.map((programme) => programme.enrolments),
+  const moduleEnrolments = sum(
+    MANAGED_MODULES.map((mdl) => mdl.enrolments),
   );
-  if (programmeEnrolments !== PLATFORM.enrolments) {
+  if (moduleEnrolments !== PLATFORM.enrolments) {
     warn(
-      `programme enrolments sum to ${programmeEnrolments}, PLATFORM.enrolments is ${PLATFORM.enrolments}`,
+      `module enrolments sum to ${moduleEnrolments}, PLATFORM.enrolments is ${PLATFORM.enrolments}`,
     );
   }
 
-  const programmeCompletions = sum(
-    MANAGED_PROGRAMMES.map((programme) => programme.completions),
+  const moduleCompletions = sum(
+    MANAGED_MODULES.map((mdl) => mdl.completions),
   );
-  if (programmeCompletions !== PLATFORM.certificates) {
+  if (moduleCompletions !== PLATFORM.certificates) {
     warn(
-      `programme completions sum to ${programmeCompletions}, PLATFORM.certificates is ${PLATFORM.certificates}`,
+      `module completions sum to ${moduleCompletions}, PLATFORM.certificates is ${PLATFORM.certificates}`,
     );
   }
 
-  for (const programme of MANAGED_PROGRAMMES) {
-    const modules = consoleModules(programme.id);
-    if (modules.length !== programme.moduleCount) {
+  for (const mdl of MANAGED_MODULES) {
+    const lectures = consoleLectures(mdl.id);
+    if (lectures.length !== mdl.lectureCount) {
       warn(
-        `${programme.id} declares ${programme.moduleCount} modules, ${modules.length} exist`,
+        `${mdl.id} declares ${mdl.lectureCount} lectures, ${lectures.length} exist`,
       );
     }
-    const published = modules.filter((mod) => mod.state === "published").length;
-    if (published !== programme.publishedModules) {
+    const published = lectures.filter((mod) => mod.state === "published").length;
+    if (published !== mdl.publishedLectures) {
       warn(
-        `${programme.id} declares ${programme.publishedModules} published modules, ${published} are`,
+        `${mdl.id} declares ${mdl.publishedLectures} published lectures, ${published} are`,
       );
     }
   }
 
-  // The attempt-weighted mean of the per-module quiz averages has to match
-  // what the programme declares, or the instructor console and the admin
-  // console disagree about the same programme.
-  const statModules = Object.keys(QUIZ_STATS);
-  if (statModules.length) {
-    const owner = MANAGED_PROGRAMMES.find((programme) =>
-      consoleModules(programme.id).some((mod) => QUIZ_STATS[mod.id]),
+  // The attempt-weighted mean of the per-lecture quiz averages has to match
+  // what the module declares, or the instructor console and the admin
+  // console disagree about the same module.
+  const statLectures = Object.keys(QUIZ_STATS);
+  if (statLectures.length) {
+    const owner = MANAGED_MODULES.find((mdl) =>
+      consoleLectures(mdl.id).some((mod) => QUIZ_STATS[mod.id]),
     );
-    const attempts = sum(statModules.map((id) => QUIZ_STATS[id].attempts));
+    const attempts = sum(statLectures.map((id) => QUIZ_STATS[id].attempts));
     const weighted = sum(
-      statModules.map((id) => QUIZ_STATS[id].attempts * QUIZ_STATS[id].averageScore),
+      statLectures.map((id) => QUIZ_STATS[id].attempts * QUIZ_STATS[id].averageScore),
     );
     const mean = Math.round(weighted / attempts);
     if (owner && mean !== owner.averageScore) {
       warn(
-        `module quiz averages weight to ${mean}%, ${owner.id} declares ${owner.averageScore}%`,
+        `lecture quiz averages weight to ${mean}%, ${owner.id} declares ${owner.averageScore}%`,
       );
     }
   }
 
   for (const student of students()) {
     for (const enrolment of student.enrolments) {
-      const programme = managedProgramme(enrolment.programmeId);
-      if (!programme) {
-        warn(`${student.id} is enrolled in unknown programme ${enrolment.programmeId}`);
+      const mdl = managedModule(enrolment.moduleId);
+      if (!mdl) {
+        warn(`${student.id} is enrolled in unknown module ${enrolment.moduleId}`);
         continue;
       }
-      if (enrolment.modulesDone > programme.moduleCount) {
+      if (enrolment.lecturesDone > mdl.lectureCount) {
         warn(
-          `${student.id} has ${enrolment.modulesDone} of ${programme.moduleCount} modules in ${programme.id}`,
+          `${student.id} has ${enrolment.lecturesDone} of ${mdl.lectureCount} lectures in ${mdl.id}`,
         );
       }
       if (
         enrolment.certificateRef &&
-        enrolment.modulesDone !== programme.moduleCount
+        enrolment.lecturesDone !== mdl.lectureCount
       ) {
         warn(
-          `${student.id} holds a certificate for ${programme.id} without finishing it`,
+          `${student.id} holds a certificate for ${mdl.id} without finishing it`,
         );
       }
     }

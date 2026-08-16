@@ -4,8 +4,8 @@ import { SESSION } from "@/content/staff";
 import {
   formatNumber,
   learnersFor,
-  managedProgramme,
-  moduleLoad,
+  managedModule,
+  lectureLoad,
   staffById,
 } from "@/lib/admin";
 import { formatDate } from "@/lib/portal";
@@ -29,7 +29,7 @@ export const metadata: Metadata = { title: "Learners" };
 
 const COLUMNS: Column[] = [
   { key: "learner", head: "Learner" },
-  { key: "programme", head: "Programme" },
+  { key: "module", head: "Module" },
   { key: "progress", head: "Progress" },
   { key: "score", head: "Avg. score", numeric: true, hideBelow: "sm" },
   { key: "active", head: "Last active", numeric: true, hideBelow: "md" },
@@ -41,7 +41,7 @@ const COLUMNS: Column[] = [
  * DELIBERATELY LESS THAN THE ADMIN REGISTER, and the page says so rather than
  * quietly omitting columns. No email address, no district, no organisation, no
  * account status, no administrative actions - an instructor needs to know that
- * eleven people are stuck on module four, and has no business knowing where
+ * eleven people are stuck on lecture four, and has no business knowing where
  * any of them works.
  *
  * Names are kept because teaching is not anonymous: an instructor answering a
@@ -53,33 +53,33 @@ export default function InstructorLearnersPage() {
   const member = staffById(SESSION.instructor);
   if (!member) throw new Error("[instructor] no session account");
 
-  const load = moduleLoad(member);
-  const mine = (member.programmeIds ?? []).filter(
-    (id) => managedProgramme(id)?.status === "published",
+  const load = lectureLoad(member);
+  const mine = (member.moduleIds ?? []).filter(
+    (id) => managedModule(id)?.status === "published",
   );
   const learners = learnersFor(member);
 
-  // One row per learner per programme of this instructor's: the same person on
-  // two of their programmes is two different pieces of progress, and merging
+  // One row per learner per module of this instructor's: the same person on
+  // two of their modules is two different pieces of progress, and merging
   // them into an average would hide both.
   const rows = learners.flatMap((student) =>
     student.enrolments
-      .filter((enrolment) => mine.includes(enrolment.programmeId))
+      .filter((enrolment) => mine.includes(enrolment.moduleId))
       .map((enrolment) => ({ student, enrolment })),
   );
 
   const items: RegisterItem[] = rows.map(({ student, enrolment }) => {
-    const programme = managedProgramme(enrolment.programmeId);
-    const percent = programme
-      ? Math.round((enrolment.modulesDone / programme.moduleCount) * 100)
+    const mdl = managedModule(enrolment.moduleId);
+    const percent = mdl
+      ? Math.round((enrolment.lecturesDone / mdl.lectureCount) * 100)
       : 0;
     const state =
       percent === 100 ? "finished" : percent === 0 ? "not-started" : "in-progress";
 
     return {
-      id: `${student.id}-${enrolment.programmeId}`,
-      text: [student.name, programme?.title].join(" ").toLowerCase(),
-      tags: [state, enrolment.programmeId],
+      id: `${student.id}-${enrolment.moduleId}`,
+      text: [student.name, mdl?.title].join(" ").toLowerCase(),
+      tags: [state, enrolment.moduleId],
       row: (
         <Row href={`/instructor/learners/${student.id}`}>
           <NameCell
@@ -87,7 +87,7 @@ export default function InstructorLearnersPage() {
             initials={student.initials}
             title={student.name}
           />
-          <Cell>{programme?.title}</Cell>
+          <Cell>{mdl?.title}</Cell>
           <Cell className="min-w-[12rem]">
             <span className="flex items-center gap-3">
               <ProgressBar
@@ -96,7 +96,7 @@ export default function InstructorLearnersPage() {
                 className="w-24"
               />
               <span className="shrink-0 tabular-nums text-sm text-muted">
-                {enrolment.modulesDone}/{programme?.moduleCount}
+                {enrolment.lecturesDone}/{mdl?.lectureCount}
               </span>
               {enrolment.certificateRef ? (
                 <Badge tone="done">Finished</Badge>
@@ -128,16 +128,16 @@ export default function InstructorLearnersPage() {
       <PageHeader
         eyebrow="Teaching"
         title="Learners"
-        lead="Everybody enrolled on a programme you write for, and how far they have got. Nothing here is about their account - see the note below."
+        lead="Everybody enrolled on a module you write for, and how far they have got. Nothing here is about their account - see the note below."
       />
 
-      {load.programmes.length ? (
+      {load.modules.length ? (
         <>
           <div className={`${CONSOLE.stack} grid gap-4 sm:grid-cols-2 xl:grid-cols-4`}>
             <MetricCard
               label="Enrolled"
               value={formatNumber(load.learners)}
-              hint="across your programmes"
+              hint="across your modules"
             />
             <MetricCard
               label="In this sample"
@@ -147,7 +147,7 @@ export default function InstructorLearnersPage() {
             <MetricCard label="Finished" value={finished} hint="earned a certificate" />
             <MetricCard
               label="Never started"
-              value={rows.filter(({ enrolment }) => enrolment.modulesDone === 0).length}
+              value={rows.filter(({ enrolment }) => enrolment.lecturesDone === 0).length}
               hint="enrolled but not opened"
               goodWhen="down"
             />
@@ -156,9 +156,9 @@ export default function InstructorLearnersPage() {
           <div className={CONSOLE.stack}>
             <Register
               columns={COLUMNS}
-              caption="Learners on your programmes"
+              caption="Learners on your modules"
               items={items}
-              searchPlaceholder="Search by name or programme"
+              searchPlaceholder="Search by name or module"
               filters={[
                 { value: "all", label: "All", count: rows.length },
                 {
@@ -187,8 +187,8 @@ export default function InstructorLearnersPage() {
       ) : (
         <div className={CONSOLE.stack}>
           <EmptyState
-            title="No programmes, no learners"
-            body="Once an administrator assigns you a programme, everybody enrolled on it appears here."
+            title="No modules, no learners"
+            body="Once an administrator assigns you a module, everybody enrolled on it appears here."
           />
         </div>
       )}
@@ -201,7 +201,7 @@ export default function InstructorLearnersPage() {
           <p className={`mt-3 ${BODY.base}`}>
             Email addresses, employers, districts, account status, and any way
             to act on an account. Those belong to an administrator. You can see
-            that eleven people stopped at module four - which is a fact about
+            that eleven people stopped at lecture four - which is a fact about
             your material - and not where any of them works.
           </p>
           <p className={`mt-3 ${META.base}`}>
@@ -214,8 +214,8 @@ export default function InstructorLearnersPage() {
             Reading it
           </h2>
           <p className={`mt-3 ${BODY.base}`}>
-            A cluster of learners stalling at the same module is usually the
-            module, not the learners. A quiz average below 70% on one module and
+            A cluster of learners stalling at the same lecture is usually the
+            lecture, not the learners. A quiz average below 70% on one lecture and
             above 90% either side is a question that is wrong, not a cohort that
             is weak.
           </p>

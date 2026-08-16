@@ -14,7 +14,7 @@ import type { Capability } from "@/lib/permissions";
  * `<NewInstructorAction>`.
  *
  * The gate depends on which console is asking - an administrator uploads
- * under `manageProgrammes`, an instructor under `authorModules` - which is
+ * under `manageModules`, an instructor under `authorLectures` - which is
  * the same split `<MaterialsLibrary>` already makes for the rest of the page,
  * kept here rather than duplicated as a second decision about who may add to
  * the shelf.
@@ -29,7 +29,7 @@ export function NewMaterialAction({
   const [open, setOpen] = useState(false);
   const formId = useId();
   const capability: Capability =
-    area === "admin" ? "manageProgrammes" : "authorModules";
+    area === "admin" ? "manageModules" : "authorLectures";
 
   return (
     <>
@@ -47,7 +47,7 @@ export function NewMaterialAction({
         open={open}
         onClose={() => setOpen(false)}
         title="Add a file to the library"
-        description="It goes on a shelf, not into a module. Attaching it to a module is a separate act, done from that module - which is what lets one file be used by six of them."
+        description="It goes on a shelf, not into a lecture. Attaching it to a lecture is a separate act, done from that lecture - which is what lets one file be used by six of them."
         size="md"
         footer={
           <IfCan capability={capability}>

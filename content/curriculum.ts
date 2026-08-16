@@ -1,23 +1,23 @@
 /**
- * The curriculum: every module of every programme, and what is inside it.
+ * The curriculum: every lecture of every module, and what is inside it.
  *
  * Same job as `content/site.ts` - this is mock data standing in for what will
  * later be an API response, kept in one file so copy changes never touch a
- * component. `site.ts` owns what the LANDING page says about a programme
+ * component. `site.ts` owns what the LANDING page says about a module
  * (summary, topics, totals); this owns what a LEARNER sees once they are
  * inside it.
  *
- * The two must agree: `MODULES[id].length` has to equal `PROGRAMMES[i].modules`,
- * or the marketing page promises nine modules and the programme page shows
+ * The two must agree: `LECTURES[id].length` has to equal `MODULES[i].lectures`,
+ * or the marketing page promises nine lectures and the module page shows
  * eight. `lib/portal.ts` asserts this in development rather than leaving it to
  * be spotted in a demo.
  *
- * A module is a short list of CONTENT BLOCKS rather than a single body of
+ * A lecture is a short list of CONTENT BLOCKS rather than a single body of
  * prose, because the real platform will mix three kinds of thing inside one
- * module - a recorded lecture, written material, and files to take away - and
- * the module page has to be built to render them in any order. Every module
+ * lecture - a recorded video, written material, and files to take away - and
+ * the lecture page has to be built to render them in any order. Every lecture
  * here carries at least one primary block (video or text) and a materials
- * block, so the page has all three shapes to draw from whichever module is
+ * block, so the page has all three shapes to draw from whichever lecture is
  * opened during a demo.
  */
 
@@ -40,32 +40,32 @@ export type Material = {
 
 export type ContentBlock =
   /**
-   * A recorded lecture. There is no video file in the prototype - the player
+   * A recorded video. There is no video file in the prototype - the player
    * is a mock (see `<VideoStage>`), and `caption` is what a learner would
    * otherwise get from the first thirty seconds of it.
    */
   | { type: "video"; title: string; minutes: number; caption: string }
   /** Written material. One heading, one passage - never a wall. */
   | { type: "text"; heading: string; body: string }
-  /** Files attached to the module. */
+  /** Files attached to the lecture. */
   | { type: "materials"; items: Material[] };
 
-export type Module = {
+export type Lecture = {
   id: string;
-  /** Two digits, like the programme numerals on the landing page. */
+  /** Two digits, like the module numerals on the landing page. */
   number: string;
   title: string;
   /**
-   * What the module mostly IS, for the badge in a list. A video module still
-   * carries written material and a reading module can still carry a clip; this
+   * What the lecture mostly IS, for the badge in a list. A video lecture still
+   * carries written material and a reading lecture can still carry a clip; this
    * is the headline, not an exclusive category.
    */
   kind: "video" | "reading";
   /**
-   * Estimated study time for the WHOLE module - the lecture plus the written
+   * Estimated study time for the WHOLE lecture - the video plus the written
    * material plus working through the attachments - not the length of the
-   * video, which the video block carries separately. The modules of a
-   * programme sum to the hours `content/site.ts` advertises for it, and
+   * video, which the video block carries separately. The lectures of a
+   * module sum to the hours `content/site.ts` advertises for it, and
    * `lib/portal.ts` checks that in development.
    */
   minutes: number;
@@ -75,1090 +75,527 @@ export type Module = {
   content: ContentBlock[];
 };
 
-/* ------------------------------------------------------------------ modules */
+/* ------------------------------------------------------------------ lectures */
 
-/** Keyed by `Programme["id"]` from `content/site.ts`. */
-export const MODULES: Record<string, Module[]> = {
-  "climate-resilience": [
+/** Keyed by `Module["id"]` from `content/site.ts`. */
+export const LECTURES: Record<string, Lecture[]> = {
+  "climate-vulnerability-assessment": [
     {
-      id: "why-climate-reaches-your-desk",
+      id: "why-vulnerability-is-not-risk",
       number: "01",
-      title: "Why climate reaches your desk",
+      title: "Why vulnerability is not the same as risk",
       kind: "video",
       minutes: 35,
       summary:
-        "How a global temperature figure turns into a decision an officer has to sign, and why adaptation arrives as an administrative problem before it arrives as a technical one.",
+        "The three-part model behind every serious climate risk assessment, and why treating vulnerability as a stand-alone problem gets the diagnosis wrong before the work even starts.",
       objectives: [
-        "Trace a climate signal to a departmental decision",
-        "Separate mitigation from adaptation",
-        "Name who is accountable for what",
+        "Separate hazard, exposure and vulnerability",
+        "Explain why the same hazard produces different outcomes",
+        "Place vulnerability assessment inside the wider risk framework",
       ],
       content: [
         {
           type: "video",
-          title: "From global average to local decision",
+          title: "Three words, one equation",
           minutes: 8,
           caption:
-            "A degree and a half is an abstraction until it is a drainage culvert sized for rainfall that no longer happens. This opening lecture follows one number down through the levels of government until it becomes a line in a procurement file.",
+            "Risk is not a hazard, and a hazard is not a threat until something is exposed to it and unable to absorb it. This opening lecture builds the hazard-exposure-vulnerability model climate risk assessments use, and follows one cyclone through all three terms to show why the same storm produces a fatality in one town and a power cut in the next.",
         },
         {
           type: "text",
-          heading: "Adaptation is not a separate workstream",
-          body: "Departments often set up adaptation as its own unit, which is how it ends up parallel to the work rather than inside it. Every roads budget, every housing approval and every water licence already makes an assumption about the climate. Adaptation is the practice of making that assumption explicit and checking it.",
+          heading: "Vulnerability is the part policy can change fastest",
+          body: "A department cannot move a coastline or cancel a monsoon, but it can put a title deed, a second income or an early-warning system in front of a household before the next event arrives. Hazard and exposure are largely given; vulnerability is where an assessment earns its budget, because it is the term most open to intervention.",
         },
         {
           type: "materials",
           items: [
-            { title: "Module 01 - lecture slides", kind: "slides", size: "2.1 MB" },
-            { title: "Glossary of adaptation terms", kind: "pdf", size: "480 KB" },
+            { title: "Vulnerability Assessment 01 - slide deck", kind: "slides", size: "2.0 MB" },
+            { title: "Risk framework glossary", kind: "pdf", size: "310 KB" },
           ],
         },
       ],
     },
     {
-      id: "reading-a-climate-risk-assessment",
+      id: "hazard-exposure-sensitivity",
       number: "02",
-      title: "Reading a climate risk assessment",
+      title: "Hazard, exposure and sensitivity: the three inputs",
       kind: "reading",
-      minutes: 45,
+      minutes: 40,
       summary:
-        "The structure every risk assessment shares, and the four places where the numbers in one are usually weakest.",
+        "What each of the three inputs to a vulnerability assessment actually measures, and the data source a Sri Lankan officer can realistically get for each one.",
       objectives: [
-        "Find the hazard, exposure and vulnerability sections",
-        "Check which scenario the figures assume",
-        "Read an uncertainty range honestly",
+        "Define sensitivity separately from exposure",
+        "Match each input to an available data source",
+        "Avoid double-counting between inputs",
       ],
       content: [
         {
           type: "text",
-          heading: "Hazard, exposure, vulnerability",
-          body: "Risk is not a hazard. A cyclone over open sea is a hazard and no risk at all; the same cyclone over a coastal town is a risk because something is exposed to it and unable to absorb it. Any assessment worth reading treats those three as separate quantities, and tells you which one it measured well.",
+          heading: "Exposure is a location question",
+          body: "Exposure asks only where people, assets and systems sit relative to the hazard - a school on a flood plain is exposed whether or not it ever floods. Confusing exposure with vulnerability is the most common error in a first assessment, and it inflates the apparent risk of well-protected places while hiding the real one.",
         },
         {
           type: "text",
-          heading: "Which future is being described",
-          body: "Every projection is conditional on a scenario. An assessment that quotes a single sea-level figure without naming its scenario and time horizon has not given you a number, it has given you a mood. Look for the horizon first, then the scenario, then the confidence range - in that order.",
+          heading: "Sensitivity is a condition, not a location",
+          body: "Two schools on the same flood plain are not equally sensitive: one built on stilts with a raised generator room absorbs a flood the other cannot. Sensitivity records the physical and social condition that decides how much a given exposure actually hurts, and it is normally the hardest of the three inputs to find good data for.",
         },
         {
           type: "materials",
           items: [
-            {
-              title: "Worked example - district risk assessment",
-              kind: "pdf",
-              size: "1.6 MB",
-            },
-            { title: "Assessment reading checklist", kind: "sheet", size: "92 KB" },
+            { title: "District-level hazard layers", kind: "dataset", size: "480 KB" },
+            { title: "Sensitivity indicator checklist", kind: "sheet", size: "88 KB" },
           ],
         },
       ],
     },
     {
-      id: "sri-lanka-exposure",
+      id: "reading-sri-lankas-climate-hazard-data",
       number: "03",
-      title: "Exposure in Sri Lanka: heat, rain, sea",
+      title: "Reading Sri Lanka's climate hazard data",
       kind: "video",
       minutes: 40,
       summary:
-        "What the observed record already shows for the island, and which three changes are doing most of the damage to public assets.",
+        "Where the country's actual hazard data lives, what each dataset is and is not good for, and the mistake that makes an assessment quietly wrong.",
       objectives: [
-        "Read the observed trend, not the projection",
-        "Rank hazards by what they cost",
-        "Locate the districts most exposed",
+        "Locate the main national hazard datasets",
+        "Match a dataset's resolution to the decision it can support",
+        "Avoid over-reading a coarse national dataset",
       ],
       content: [
         {
           type: "video",
-          title: "What the record already shows",
+          title: "A tour of what already exists",
           minutes: 10,
           caption:
-            "Before any projection, the observed record: rainfall arriving in fewer and heavier events, a lengthening dry spell in the intermediate zone, and a coastline losing ground faster than the maps behind most planning decisions admit.",
+            "Before commissioning new data, a working tour of what the Department of Meteorology, the Disaster Management Centre and the National Adaptation Plan's own technical annexes already hold - rainfall, temperature, sea-level and past-event records - and what resolution each one actually supports.",
         },
         {
           type: "text",
-          heading: "Intensity, not just totals",
-          body: "Annual rainfall totals have moved less than people expect. What has moved is how the rain arrives - the same volume delivered in fewer, harder events, which is a drainage problem rather than a water-supply one. Infrastructure sized on annual averages is sized for a climate that no longer exists.",
+          heading: "National resolution is not divisional resolution",
+          body: "A national hazard map is built to compare provinces, not to site a culvert. Using it to make a divisional-level decision borrows a precision the data never had, and an assessment that says so plainly is more useful than one that quietly assumes a downscaling nobody checked.",
         },
         {
           type: "materials",
           items: [
-            {
-              title: "District exposure summary - all 25",
-              kind: "dataset",
-              size: "310 KB",
-            },
+            { title: "National hazard data sources - map", kind: "pdf", size: "1.1 MB" },
           ],
         },
       ],
     },
     {
-      id: "vulnerability-and-who-carries-it",
+      id: "building-a-vulnerability-index",
       number: "04",
-      title: "Vulnerability and who carries it",
+      title: "Building a vulnerability index",
       kind: "reading",
-      minutes: 40,
+      minutes: 35,
       summary:
-        "Why two communities behind the same sea wall experience the same storm differently, and what that means for how a measure is targeted.",
+        "Combining sensitivity and adaptive-capacity indicators into one score without hiding the decisions that went into it.",
       objectives: [
-        "Distinguish sensitivity from adaptive capacity",
-        "Read a vulnerability index critically",
-        "Target a measure at the people it protects",
+        "Select indicators that do not overlap",
+        "Weight indicators defensibly",
+        "Present an index alongside its components",
       ],
       content: [
         {
           type: "text",
-          heading: "The same hazard, two outcomes",
-          body: "Vulnerability is the part of risk that policy can act on fastest. A household with savings, a second income and a title deed recovers from a flood; the household next door, with none of the three, does not. Nothing about the water was different. Measures that ignore this protect the people who were already protected.",
+          heading: "An index is a compression, not a discovery",
+          body: "Every composite score throws information away on purpose, in exchange for something that ranks. The value of a vulnerability index is entirely in whether the compression was done honestly - indicators that do not double-count the same underlying condition, and weights that are stated rather than buried in a spreadsheet.",
         },
         {
           type: "text",
-          heading: "What an index hides",
-          body: "A composite vulnerability score is useful for ranking and dangerous for designing. It compresses a dozen distinct conditions into one number, and two districts scoring 0.61 may need entirely opposite interventions. Use the index to decide where to look, and the underlying indicators to decide what to do.",
+          heading: "Publish the components, not just the score",
+          body: "Two districts scoring 0.6 can need opposite interventions if one result is driven by income and the other by distance from a hospital. An index published with its component indicators lets a planner see which one; an index published alone does not.",
         },
         {
           type: "materials",
           items: [
-            {
-              title: "Vulnerability indicators - working list",
-              kind: "sheet",
-              size: "120 KB",
-            },
-            { title: "Case note: two wards, one flood", kind: "pdf", size: "740 KB" },
+            { title: "Index-building worksheet", kind: "sheet", size: "140 KB" },
+            { title: "Worked example - district index", kind: "pdf", size: "620 KB" },
           ],
         },
       ],
     },
     {
-      id: "inside-the-national-adaptation-plan",
+      id: "assessing-adaptive-capacity",
       number: "05",
-      title: "Inside the National Adaptation Plan",
+      title: "Assessing adaptive capacity",
       kind: "video",
       minutes: 35,
       summary:
-        "What the NAP actually obliges a department to do, how its sector chapters are organised, and where your own work already appears in it.",
+        "What actually predicts whether a household or an institution can respond to a shock, and why income alone is a weak proxy for it.",
       objectives: [
-        "Navigate the plan's sector structure",
-        "Find your department's named actions",
-        "Understand the reporting cycle",
+        "Distinguish coping capacity from adaptive capacity",
+        "Identify institutional as well as household capacity",
+        "Avoid income as the sole indicator",
       ],
       content: [
         {
           type: "video",
-          title: "The plan, chapter by chapter",
+          title: "Capacity is not just money",
           minutes: 9,
           caption:
-            "A guided read of the plan's structure - the sector chapters, the cross-cutting actions, and the annexes where the costed measures and the responsible agencies are actually listed. Most officers have never been shown the annexes.",
+            "A household with savings still fails to adapt if it has no information about the hazard or no access to the institutions that could help it. This lecture works through the non-financial capacities that predict recovery as reliably as income does, using two households with identical earnings and very different outcomes.",
         },
         {
           type: "text",
-          heading: "You are probably already in it",
-          body: "Departments frequently discover they hold named actions in the plan that nobody in the building is tracking. The actions were agreed at ministry level and never travelled down. Finding yours is a fifteen-minute exercise and it changes what you can put in a budget submission.",
+          heading: "Institutions have capacity too",
+          body: "A divisional secretariat's adaptive capacity - its staffing, its early-warning links, its access to contingency funds - shapes every household's outcome inside its boundary. An assessment that measures only households and never the institution around them is missing half the picture.",
         },
         {
           type: "materials",
           items: [
-            { title: "NAP sector chapter map", kind: "pdf", size: "1.1 MB" },
-            {
-              title: "Where to find your department's actions",
-              kind: "link",
-            },
+            { title: "Adaptive capacity indicator set", kind: "sheet", size: "96 KB" },
           ],
         },
       ],
     },
     {
-      id: "choosing-adaptation-options",
+      id: "ground-truthing-a-desk-assessment",
       number: "06",
-      title: "Choosing between adaptation options",
+      title: "Ground-truthing a desk assessment",
       kind: "reading",
-      minutes: 45,
+      minutes: 40,
       summary:
-        "Hard infrastructure, ecosystem-based measures and behavioural change compared on the terms a department is actually judged by.",
+        "Why a desk-based vulnerability assessment has to be checked against a site visit, and how to run one that a small team can complete in days, not months.",
       objectives: [
-        "Compare grey, green and soft measures",
-        "Apply a no-regrets test",
-        "Avoid locking in a bad assumption",
+        "Design a short field verification",
+        "Spot where desk data and reality diverge",
+        "Record findings that can update the index",
       ],
       content: [
         {
           type: "text",
-          heading: "No-regrets first",
-          body: "A no-regrets measure pays for itself under the climate you have now, and pays more under the climate you are heading into. Fixing a leaking distribution network is one. Because it does not depend on a projection being right, it is the easiest kind of measure to defend in a budget hearing, and it should be exhausted before anything harder is proposed.",
+          heading: "Desk data is a hypothesis",
+          body: "A composite index built entirely from national datasets is a hypothesis about a place, not a description of it. A short field visit - a walk-through, a handful of household conversations, a look at what has already flooded - is what turns the hypothesis into an assessment somebody can act on.",
         },
         {
           type: "text",
-          heading: "The lock-in problem",
-          body: "A sea wall built to one design standard commits the coastline behind it for fifty years, including the settlement that grows in its shadow because the wall made the land look safe. Measures that can be adjusted later - raised in stages, extended, abandoned cheaply - are worth a real premium over ones that cannot.",
+          heading: "Two days, one ward, real answers",
+          body: "A verification visit does not need to be exhaustive to be useful. A structured half-day per ward, checking the two or three indicators the desk data was least confident about, catches most of the divergence a full re-survey would find at a fraction of the cost.",
         },
         {
           type: "materials",
           items: [
-            {
-              title: "Options appraisal template",
-              kind: "sheet",
-              size: "160 KB",
-            },
+            { title: "Field verification checklist", kind: "sheet", size: "78 KB" },
+            { title: "Ward visit recording sheet", kind: "sheet", size: "64 KB" },
           ],
         },
       ],
     },
     {
-      id: "costing-an-adaptation-measure",
+      id: "presenting-findings-to-decision-makers",
       number: "07",
-      title: "Costing an adaptation measure",
+      title: "Presenting findings to decision-makers",
       kind: "video",
       minutes: 40,
       summary:
-        "How to put a defensible number on a measure when the benefit is a loss that did not happen.",
+        "Turning an assessment into a briefing a busy official will actually read and act on, rather than a report that gets filed.",
       objectives: [
-        "Cost avoided damage, not just capital",
+        "Lead with the decision, not the method",
+        "Use a map before a table",
+        "State the confidence level honestly",
+      ],
+      content: [
+        {
+          type: "video",
+          title: "The one page that gets read",
+          minutes: 10,
+          caption:
+            "Most vulnerability assessments are read by exactly one person, once, for about four minutes. This lecture builds a one-page briefing from a full assessment - the map first, the three highest-priority areas named, the method held to an appendix - and shows what a rewrite for a district secretary cuts compared with the technical report underneath it.",
+        },
+        {
+          type: "text",
+          heading: "Say what you are not sure of",
+          body: "A briefing that states its confidence level plainly - which figures are measured and which are modelled - is trusted more, not less, than one that presents everything with equal certainty. Decision-makers have usually been shown at least one report that overclaimed, and they read for the tell.",
+        },
+        {
+          type: "materials",
+          items: [
+            { title: "Briefing template - one page", kind: "pdf", size: "540 KB" },
+          ],
+        },
+      ],
+    },
+    {
+      id: "from-assessment-to-action",
+      number: "08",
+      title: "From assessment to action",
+      kind: "reading",
+      minutes: 35,
+      summary:
+        "Handing a finished assessment to the planning process it exists to feed, and keeping it from becoming a document nobody opens again.",
+      objectives: [
+        "Link assessment findings to specific planning decisions",
+        "Set a review cycle for the index",
+        "Avoid a one-off assessment that goes stale",
+      ],
+      content: [
+        {
+          type: "text",
+          heading: "An assessment with no receiving process is wasted",
+          body: "A vulnerability assessment commissioned without a named planning process to feed - a provincial adaptation plan, a budget cycle, a zoning review - is written once and read never. Before the fieldwork starts, name the decision the assessment is for.",
+        },
+        {
+          type: "text",
+          heading: "Set the next update before you file this one",
+          body: "Conditions the index measures - income, infrastructure, hazard exposure - move over a three-to-five-year horizon. An assessment with a stated review date is a living input to planning; one without it is a snapshot nobody remembers to retake.",
+        },
+        {
+          type: "materials",
+          items: [
+            { title: "Assessment-to-planning handover note", kind: "pdf", size: "410 KB" },
+          ],
+        },
+      ],
+    },
+  ],
+
+  "provincial-adaptation-plan": [
+    {
+      id: "what-the-nap-asks-of-a-province",
+      number: "01",
+      title: "What the National Adaptation Plan asks of a province",
+      kind: "video",
+      minutes: 40,
+      summary:
+        "What the National Adaptation Plan actually obliges a province to do, and where the gap between a national commitment and provincial delivery usually opens up.",
+      objectives: [
+        "Explain the NAP's status and structure",
+        "Identify a province's specific obligations",
+        "Locate where implementation typically stalls",
+      ],
+      content: [
+        {
+          type: "video",
+          title: "A plan written nationally, delivered locally",
+          minutes: 10,
+          caption:
+            "The NAP sets direction at a national scale, but almost every action inside it is actually delivered by a provincial or divisional office. This lecture follows one named NAP action from its national chapter down to the provincial department that is - often unknowingly - responsible for it.",
+        },
+        {
+          type: "text",
+          heading: "The gap is administrative, not technical",
+          body: "Most localisation failures are not caused by a lack of technical knowledge in the province - they are caused by nobody at the provincial level having been told the action exists, or being shown how to read it. Localisation starts as an administrative act: finding the action and naming an owner.",
+        },
+        {
+          type: "materials",
+          items: [
+            { title: "NAP structure and provincial obligations - briefing", kind: "pdf", size: "1.0 MB" },
+          ],
+        },
+      ],
+    },
+    {
+      id: "reading-the-naps-sector-chapters",
+      number: "02",
+      title: "Reading the NAP's sector chapters for local relevance",
+      kind: "reading",
+      minutes: 45,
+      summary:
+        "How to read a NAP sector chapter for what it means at provincial scale, rather than taking the national framing at face value.",
+      objectives: [
+        "Extract province-relevant actions from a sector chapter",
+        "Separate national-level and sub-national actions",
+        "Flag actions with unclear ownership",
+      ],
+      content: [
+        {
+          type: "text",
+          heading: "Every chapter has a provincial reading",
+          body: "A sector chapter written for a national ministry still contains actions that only make sense once translated to a specific province - an irrigation action reads differently in the dry zone than on the wet southwest coast. The chapter itself rarely makes that translation; a province has to do it.",
+        },
+        {
+          type: "text",
+          heading: "Unclear ownership is the most common finding",
+          body: "The most frequent output of a first localisation read-through is not a list of actions to deliver - it is a list of actions with no province, department or budget line clearly attached to them yet. Naming that gap is itself useful work.",
+        },
+        {
+          type: "materials",
+          items: [
+            { title: "Sector chapter extraction template", kind: "sheet", size: "110 KB" },
+          ],
+        },
+      ],
+    },
+    {
+      id: "translating-priorities-into-provincial-action",
+      number: "03",
+      title: "Translating national priorities into provincial action",
+      kind: "video",
+      minutes: 40,
+      summary:
+        "Converting a national adaptation priority into a specific, deliverable provincial action - the step most localisation exercises skip.",
+      objectives: [
+        "Convert a general priority into a specific action",
+        "Match an action to a provincial delivery unit",
+        "State a realistic timeframe",
+      ],
+      content: [
+        {
+          type: "video",
+          title: "From 'strengthen resilience' to a named culvert",
+          minutes: 9,
+          caption:
+            "A national priority stated as 'strengthen drainage resilience in flood-prone areas' means nothing until it becomes a specific culvert, on a specific road, sized against a specific rainfall figure. This lecture walks the translation from priority to deliverable action for one province's roads department.",
+        },
+        {
+          type: "text",
+          heading: "Specificity is what makes an action fundable",
+          body: "A vague provincial action attracts no budget, because nobody can cost it. The same priority, translated into a named site with an estimated cost, is what a budget officer or a climate fund can actually act on.",
+        },
+        {
+          type: "materials",
+          items: [
+            { title: "Priority-to-action translation worksheet", kind: "sheet", size: "104 KB" },
+          ],
+        },
+      ],
+    },
+    {
+      id: "consulting-divisional-secretariats",
+      number: "04",
+      title: "Consulting divisional secretariats and local government",
+      kind: "reading",
+      minutes: 45,
+      summary:
+        "Running a consultation with divisional secretariats and local authorities that produces real local knowledge rather than a signed attendance sheet.",
+      objectives: [
+        "Design a consultation that surfaces local priorities",
+        "Avoid consultation fatigue",
+        "Record input in a form planning can use",
+      ],
+      content: [
+        {
+          type: "text",
+          heading: "The divisional secretariat already knows the answer",
+          body: "Divisional secretariats hold local knowledge no national dataset carries - which roads actually flood, which communities were already relocated once, which measures were tried and abandoned. A localisation exercise that skips this consultation rediscovers, slowly and expensively, what a two-hour meeting would have surfaced.",
+        },
+        {
+          type: "text",
+          heading: "One good meeting beats five token ones",
+          body: "Local officials asked to attend a fourth consultation on the same plan in a year give a fourth-rate answer. A single, well-prepared session with clear questions and visible follow-through earns better input than a round of box-ticking visits.",
+        },
+        {
+          type: "materials",
+          items: [
+            { title: "Divisional consultation guide", kind: "pdf", size: "780 KB" },
+            { title: "Input recording template", kind: "sheet", size: "72 KB" },
+          ],
+        },
+      ],
+    },
+    {
+      id: "costing-a-localised-adaptation-action",
+      number: "05",
+      title: "Costing a localised adaptation action",
+      kind: "video",
+      minutes: 40,
+      summary:
+        "Putting a defensible cost on a localised adaptation action, using the same discipline a national costing exercise would require.",
+      objectives: [
+        "Cost a localised action against a unit-cost reference",
         "Include operation and maintenance",
-        "State the assumptions with the number",
+        "Present a cost range, not a single figure",
       ],
       content: [
         {
           type: "video",
-          title: "Costing what did not happen",
-          minutes: 10,
+          title: "Costing what the national plan left blank",
+          minutes: 9,
           caption:
-            "The central difficulty of adaptation economics: the benefit is an absence. This lecture walks through an avoided-damage calculation for a drainage upgrade, including the maintenance line that most submissions leave out and that decides whether the asset survives a decade.",
+            "National adaptation plans frequently cost a priority at a national scale, or not at all. This lecture builds a bottom-up cost for one localised action - a coastal buffer strip for a specific stretch of shoreline - including the maintenance line that most provincial submissions leave out.",
         },
         {
           type: "text",
-          heading: "Maintenance is the measure",
-          body: "An adaptation asset with no maintenance budget is a capital expense with a five-year life pretending to be a thirty-year one. Where the operating cost cannot be secured, the honest move is to propose a smaller measure that can be maintained rather than a larger one that cannot.",
+          heading: "A range, honestly bounded, survives review",
+          body: "A single costed figure invites challenge the moment ground conditions differ from the assumption behind it. A cost presented as a bounded range, with the assumptions stated, survives scrutiny because it has already admitted where it could be wrong.",
         },
         {
           type: "materials",
           items: [
-            { title: "Avoided-damage worksheet", kind: "sheet", size: "180 KB" },
-            { title: "Unit cost reference - common measures", kind: "pdf", size: "890 KB" },
+            { title: "Localised costing worksheet", kind: "sheet", size: "150 KB" },
           ],
         },
       ],
     },
     {
-      id: "adaptation-in-a-budget-line",
-      number: "08",
-      title: "Writing adaptation into a budget line",
+      id: "sequencing-across-the-budget-cycle",
+      number: "06",
+      title: "Sequencing actions across the provincial budget cycle",
       kind: "reading",
       minutes: 45,
       summary:
-        "Where adaptation spending sits in the estimates, and how to write a submission that survives the treasury officer reading it.",
+        "Fitting a set of localised actions into the province's actual budget cycle, rather than a wish list that competes with everything else every year.",
       objectives: [
-        "Place a measure in the right budget head",
-        "Write a justification that answers the obvious question",
-        "Tag spending so it can be reported",
+        "Match actions to budget cycle stages",
+        "Sequence actions across multiple years",
+        "Avoid an all-at-once submission that gets cut",
       ],
       content: [
         {
           type: "text",
-          heading: "The question you will be asked",
-          body: "Every adaptation submission meets the same challenge: why now, and why this amount. A submission that answers it in its first paragraph - with the observed trend, the exposed asset and the cost of losing it - clears review far more often than one that opens with international commitments.",
+          heading: "The budget cycle does not wait for the plan",
+          body: "A provincial budget cycle runs on its own calendar, and an adaptation action submitted after the relevant call for bids waits a full year for nothing but timing. Sequencing starts with knowing the calendar, not the actions.",
         },
         {
           type: "text",
-          heading: "Tagging, and why it matters later",
-          body: "Spending that is not tagged as climate-related cannot be counted, and a country that cannot count its own adaptation spending is in a weak position when it asks for external finance. Tagging costs a field on a form and is the cheapest thing in this module.",
+          heading: "Sequence for delivery, not for ambition",
+          body: "A submission asking for every action in one year is the easiest one to cut in full. A sequenced submission - a smaller first-year ask that unlocks a second, larger one - survives a tight budget round better than an ambitious one submitted whole.",
         },
         {
           type: "materials",
           items: [
-            { title: "Budget submission - annotated example", kind: "pdf", size: "1.3 MB" },
-            { title: "Climate expenditure tagging codes", kind: "sheet", size: "88 KB" },
+            { title: "Provincial budget cycle map", kind: "pdf", size: "540 KB" },
+            { title: "Multi-year sequencing template", kind: "sheet", size: "98 KB" },
           ],
         },
       ],
     },
     {
-      id: "monitoring-what-adaptation-achieved",
-      number: "09",
-      title: "Monitoring what adaptation achieved",
+      id: "monitoring-a-localised-plan",
+      number: "07",
+      title: "Monitoring and reporting a localised plan",
       kind: "video",
-      minutes: 35,
+      minutes: 45,
       summary:
-        "Choosing indicators that show whether a measure worked, rather than indicators that show it was built.",
+        "Setting up monitoring for a localised plan from the day it is adopted, so a province can report progress rather than reconstruct it later.",
       objectives: [
-        "Separate output from outcome indicators",
-        "Set a baseline before the measure",
-        "Report against the plan's cycle",
+        "Set indicators before implementation starts",
+        "Assign reporting responsibility to a named post",
+        "Feed provincial monitoring back to the national NAP cycle",
       ],
       content: [
         {
           type: "video",
-          title: "Built is not the same as working",
-          minutes: 9,
-          caption:
-            "Kilometres of drain laid is an output. Households not flooded in the following monsoon is an outcome. This closing lecture builds a small indicator set for one measure and shows how to collect the baseline before construction starts - which is the only moment it can be collected.",
-        },
-        {
-          type: "text",
-          heading: "Baselines cannot be recovered",
-          body: "The single most common failure in adaptation monitoring is starting to measure after the work is finished, which leaves nothing to compare against. A baseline is a week of effort before the contract is signed and it is unrecoverable afterwards.",
-        },
-        {
-          type: "materials",
-          items: [
-            { title: "Indicator set - starter list", kind: "sheet", size: "104 KB" },
-          ],
-        },
-      ],
-    },
-  ],
-
-  "circular-economy": [
-    {
-      id: "collect-and-dump-to-recover",
-      number: "01",
-      title: "From collect-and-dump to recover-and-reuse",
-      kind: "video",
-      minutes: 35,
-      summary:
-        "What changes in a local authority when waste stops being a disposal problem and starts being a stream of materials with a value.",
-      objectives: [
-        "Describe the linear and circular models",
-        "Locate the value in a waste stream",
-        "See where the current system loses it",
-      ],
-      content: [
-        {
-          type: "video",
-          title: "The same lorry, a different job",
-          minutes: 9,
-          caption:
-            "A circular system is not built by buying different lorries. It is built by changing what happens in the ten minutes before the lorry arrives, at the household. This lecture follows one district's transition and the three decisions that made it hold.",
-        },
-        {
-          type: "text",
-          heading: "Where the value leaks",
-          body: "Mixed waste is worth close to nothing. The same material, kept separate at the point it is discarded, is worth enough to fund part of the collection that moved it. Almost the entire economics of a circular scheme is decided in the household, not at the facility.",
-        },
-        {
-          type: "materials",
-          items: [
-            { title: "Module 01 - lecture slides", kind: "slides", size: "2.4 MB" },
-          ],
-        },
-      ],
-    },
-    {
-      id: "characterising-a-waste-stream",
-      number: "02",
-      title: "Characterising a waste stream",
-      kind: "reading",
-      minutes: 40,
-      summary:
-        "How to find out what is actually in your authority's waste, using a method a small team can run in a week.",
-      objectives: [
-        "Run a simple characterisation study",
-        "Sample without biasing the result",
-        "Convert findings into a recovery estimate",
-      ],
-      content: [
-        {
-          type: "text",
-          heading: "You cannot plan for waste you have not weighed",
-          body: "Most municipal plans quote national composition figures because no local study exists. Composition varies enormously between a coastal town, a hill town and a city ward - organic fractions between forty and seventy per cent - and a facility sized on the wrong figure is the most expensive mistake available in this field.",
-        },
-        {
-          type: "text",
-          heading: "A week, eight households, four rounds",
-          body: "A defensible characterisation needs a stratified sample across income levels and housing types, repeated across the week to catch the weekend shift, and separated into no more than eight categories. Finer categories look rigorous and are rarely used by any decision that follows.",
-        },
-        {
-          type: "materials",
-          items: [
-            { title: "Characterisation protocol", kind: "pdf", size: "980 KB" },
-            { title: "Field recording sheet", kind: "sheet", size: "76 KB" },
-          ],
-        },
-      ],
-    },
-    {
-      id: "segregation-at-source",
-      number: "03",
-      title: "Segregation at source, in practice",
-      kind: "video",
-      minutes: 40,
-      summary:
-        "Why household separation schemes fail, and the small number of operational details that decide whether one survives its first six months.",
-      objectives: [
-        "Design a two- or three-bin scheme",
-        "Keep collection days consistent",
-        "Handle the first non-compliant month",
-      ],
-      content: [
-        {
-          type: "video",
-          title: "The scheme fails on the third week",
+          title: "Report upward, not just outward",
           minutes: 11,
           caption:
-            "Households separate reliably until the first time a mixed lorry takes both bins in front of them. This lecture is about the operational discipline that prevents that moment, and what to do in the month after it happens anyway.",
+            "A localised plan that only reports to the province it serves quietly disconnects from the national NAP reporting cycle, and the national plan loses visibility of exactly the delivery it depends on. This closing lecture sets up a monitoring structure that reports in both directions from a single indicator set.",
         },
         {
           type: "text",
-          heading: "Two bins before three",
-          body: "Organic and non-organic is a distinction every household already understands. Adding a third and fourth stream at launch raises the error rate on all of them. Schemes that start with two, hold them for a year and then split the dry stream consistently outperform schemes that launch with four.",
+          heading: "A name against the indicator, not just a target",
+          body: "A target with nobody named to report against it drifts unmeasured within a year. Monitoring survives staff turnover only when a specific post - not a person - is made responsible for it, with the reporting date built into that post's own calendar.",
         },
         {
           type: "materials",
           items: [
-            { title: "Household leaflet - editable", kind: "pdf", size: "620 KB" },
-            { title: "Collection roster template", kind: "sheet", size: "110 KB" },
-          ],
-        },
-      ],
-    },
-    {
-      id: "composting-and-organic-recovery",
-      number: "04",
-      title: "Composting and organic recovery",
-      kind: "reading",
-      minutes: 35,
-      summary:
-        "The organic fraction is the majority of Sri Lankan municipal waste. What to do with it at household, ward and district scale.",
-      objectives: [
-        "Match a method to a scale",
-        "Manage moisture and odour",
-        "Find an outlet for the product",
-      ],
-      content: [
-        {
-          type: "text",
-          heading: "Scale decides the method",
-          body: "Household bins, ward-level windrows and district composting plants are three different operations with different failure modes. The common error is choosing the largest option available with the funding on offer, then discovering the collection system cannot feed it and the plant runs at a fifth of capacity.",
-        },
-        {
-          type: "text",
-          heading: "Compost nobody wants is still waste",
-          body: "A plant that produces material it cannot sell or give away has moved the problem, not solved it. Secure the outlet - estates, nurseries, municipal landscaping, farmer cooperatives - before the plant is commissioned, and test the product against what that buyer will actually accept.",
-        },
-        {
-          type: "materials",
-          items: [
-            { title: "Composting methods compared", kind: "pdf", size: "1.2 MB" },
-          ],
-        },
-      ],
-    },
-    {
-      id: "recyclables-markets-and-buyers",
-      number: "05",
-      title: "Recyclables, markets and buyers",
-      kind: "video",
-      minutes: 35,
-      summary:
-        "Who buys recovered material in Sri Lanka, what they pay, and how price volatility should shape a scheme's finances.",
-      objectives: [
-        "Map the buyers for each stream",
-        "Read the price cycle for PET and paper",
-        "Build a contract that survives a price fall",
-      ],
-      content: [
-        {
-          type: "video",
-          title: "The buyer decides your quality standard",
-          minutes: 10,
-          caption:
-            "Recovered material is only worth what a specific buyer will pay for it, at a specific cleanliness. This lecture works through the actual chain for PET, paper, glass and metal - who is at each step, and where the margin sits.",
-        },
-        {
-          type: "text",
-          heading: "Never build the budget on the peak price",
-          body: "Recovered material prices move with international commodity cycles and can halve inside a year. A scheme whose operating budget assumes last year's peak is insolvent at the trough. Budget at the low end of the five-year range and treat anything above it as surplus.",
-        },
-        {
-          type: "materials",
-          items: [
-            { title: "Buyer directory - by province", kind: "dataset", size: "240 KB" },
-            { title: "Five-year price ranges", kind: "sheet", size: "94 KB" },
-          ],
-        },
-      ],
-    },
-    {
-      id: "economics-of-a-municipal-scheme",
-      number: "06",
-      title: "The economics of a municipal scheme",
-      kind: "reading",
-      minutes: 45,
-      summary:
-        "The full cost of collection, sorting and disposal set against the revenue and the avoided disposal cost - the arithmetic a council has to approve.",
-      objectives: [
-        "Build a per-tonne cost model",
-        "Count avoided disposal as revenue",
-        "Present the case to a council",
-      ],
-      content: [
-        {
-          type: "text",
-          heading: "Per tonne, all in",
-          body: "A scheme is judged on cost per tonne handled, and most models understate it by leaving out supervision, vehicle depreciation and the site's eventual closure cost. A model that is honest about those three is more likely to be believed on everything else, including its savings.",
-        },
-        {
-          type: "text",
-          heading: "The saving is mostly avoided disposal",
-          body: "Material sales rarely fund a scheme. What funds it is the tonnage that no longer needs collecting, hauling and burying - and that saving only appears if the disposal cost was being properly counted in the first place. Establish the true baseline disposal cost before proposing anything.",
-        },
-        {
-          type: "materials",
-          items: [
-            { title: "Per-tonne cost model", kind: "sheet", size: "210 KB" },
-            { title: "Council presentation - worked example", kind: "slides", size: "1.9 MB" },
-          ],
-        },
-      ],
-    },
-    {
-      id: "contracts-tenders-service-levels",
-      number: "07",
-      title: "Contracts, tenders and service levels",
-      kind: "video",
-      minutes: 35,
-      summary:
-        "Procuring a collection or processing contract that specifies the outcome you need rather than the vehicles you imagined.",
-      objectives: [
-        "Write output-based service levels",
-        "Set penalties that are actually applied",
-        "Keep the data rights with the authority",
-      ],
-      content: [
-        {
-          type: "video",
-          title: "Specify the outcome, not the lorry",
-          minutes: 9,
-          caption:
-            "Contracts that specify equipment get the equipment and not the service. This lecture rewrites three real clauses - collection frequency, contamination rates and reporting - from input terms into output terms, and shows what each change does when a dispute arises.",
-        },
-        {
-          type: "text",
-          heading: "Own your own data",
-          body: "If the contractor owns the weighbridge records, the authority cannot verify performance, cannot retender competitively and cannot report its own diversion rate. A clause placing operational data with the authority costs nothing at signature and is close to unobtainable afterwards.",
-        },
-        {
-          type: "materials",
-          items: [
-            { title: "Model service-level schedule", kind: "pdf", size: "760 KB" },
-          ],
-        },
-      ],
-    },
-    {
-      id: "past-year-one",
-      number: "08",
-      title: "Keeping a scheme alive past year one",
-      kind: "reading",
-      minutes: 35,
-      summary:
-        "Most separation schemes are working at month six and gone at month twenty. What the surviving ones did differently.",
-      objectives: [
-        "Plan for the post-launch attention drop",
-        "Keep political sponsorship after a handover",
-        "Publish performance where residents see it",
-      ],
-      content: [
-        {
-          type: "text",
-          heading: "The quiet failure",
-          body: "Schemes rarely collapse. They erode - a route missed, then a week, then the separate lorry reassigned during a festival and never returned. By the time anyone reviews it, households stopped separating months earlier and the reported diversion rate is being estimated rather than measured.",
-        },
-        {
-          type: "text",
-          heading: "Publish the number monthly",
-          body: "The single strongest predictor of a scheme surviving is a diversion figure published every month somewhere residents and councillors both see it. It makes erosion visible while it is still cheap to reverse, and it converts a project into a standing commitment.",
-        },
-        {
-          type: "materials",
-          items: [
-            { title: "Month-by-month review checklist", kind: "sheet", size: "98 KB" },
-            { title: "Two schemes, four years - case notes", kind: "pdf", size: "1.1 MB" },
+            { title: "Provincial monitoring indicator set", kind: "sheet", size: "116 KB" },
           ],
         },
       ],
     },
   ],
 
-  "sustainable-energy": [
-    {
-      id: "the-grid-you-already-have",
-      number: "01",
-      title: "The grid you already have",
-      kind: "video",
-      minutes: 40,
-      summary:
-        "How electricity reaches a household in Sri Lanka today, and which parts of that system a transition actually has to change.",
-      objectives: [
-        "Follow a unit of power from plant to meter",
-        "Name the system's current constraints",
-        "See where renewables have to fit",
-      ],
-      content: [
-        {
-          type: "video",
-          title: "Generation, transmission, distribution",
-          minutes: 8,
-          caption:
-            "A short tour of the national system as it stands - the hydro backbone, the thermal plants that fill the evening peak, and the distribution network that most new renewable capacity will have to connect through rather than around.",
-        },
-        {
-          type: "text",
-          heading: "The evening peak is the problem",
-          body: "Sri Lanka's demand peaks after dark, which is precisely when solar output is zero. Almost every difficult decision in the transition - storage, tariffs, which thermal plant retires last - follows from that one fact, and any proposal that ignores it will not survive technical review.",
-        },
-        {
-          type: "materials",
-          items: [
-            { title: "System overview - lecture slides", kind: "slides", size: "2.6 MB" },
-          ],
-        },
-      ],
-    },
-    {
-      id: "solar-wind-and-what-they-need",
-      number: "02",
-      title: "Solar, wind and what they need",
-      kind: "reading",
-      minutes: 45,
-      summary:
-        "What each technology produces, when, and what it demands from the site and the network around it.",
-      objectives: [
-        "Compare capacity with actual output",
-        "Read a capacity factor",
-        "Match a technology to a site",
-      ],
-      content: [
-        {
-          type: "text",
-          heading: "Capacity is not output",
-          body: "A ten-megawatt solar plant does not produce ten megawatts. It produces that at noon on a clear day and nothing at night, averaging perhaps a fifth of its nameplate across the year. Capacity factor is the number that makes two proposals comparable, and it is the first figure to ask for.",
-        },
-        {
-          type: "text",
-          heading: "The site does most of the deciding",
-          body: "Wind resource in Sri Lanka is concentrated and seasonal; solar is distributed and reliable. A proposal that puts the wrong technology on a site can rarely be rescued by better equipment, which is why resource assessment belongs before procurement rather than inside it.",
-        },
-        {
-          type: "materials",
-          items: [
-            { title: "Technology comparison table", kind: "sheet", size: "130 KB" },
-            { title: "Resource maps - solar and wind", kind: "pdf", size: "3.2 MB" },
-          ],
-        },
-      ],
-    },
-    {
-      id: "reading-a-generation-profile",
-      number: "03",
-      title: "Reading a generation profile",
-      kind: "video",
-      minutes: 40,
-      summary:
-        "Twenty-four hours of output on one chart, and what it tells you about whether a project helps the system or strains it.",
-      objectives: [
-        "Read a daily and seasonal profile",
-        "Overlay generation on demand",
-        "Spot a curtailment risk early",
-      ],
-      content: [
-        {
-          type: "video",
-          title: "Output against demand, hour by hour",
-          minutes: 10,
-          caption:
-            "Two curves on one axis explain most of what is contested in energy planning. This lecture builds the overlay for a mid-sized solar project and shows the hours where its output has real value and the hours where it may simply be turned off.",
-        },
-        {
-          type: "text",
-          heading: "Curtailment is a cost, not a footnote",
-          body: "Power that cannot be absorbed is not generated, and a plant curtailed for hours each afternoon earns less than its feasibility study assumed. Ask any proposal what it expects to be curtailed and what the contract says happens when it is.",
-        },
-        {
-          type: "materials",
-          items: [
-            { title: "Sample generation profiles", kind: "dataset", size: "420 KB" },
-          ],
-        },
-      ],
-    },
-    {
-      id: "integrating-variable-renewables",
-      number: "04",
-      title: "Integrating variable renewables",
-      kind: "reading",
-      minutes: 45,
-      summary:
-        "What a network operator has to do differently once a meaningful share of supply cannot be dispatched on demand.",
-      objectives: [
-        "Explain why variability is an operating problem",
-        "Name the flexibility options available",
-        "Judge a hosting-capacity claim",
-      ],
-      content: [
-        {
-          type: "text",
-          heading: "Dispatchable and non-dispatchable",
-          body: "A thermal plant is asked to produce and does. A solar farm produces what the weather allows. Beyond a certain share, the system needs something that can move quickly in the other direction - hydro, storage, demand response - and the cost of that flexibility belongs in the comparison between options.",
-        },
-        {
-          type: "text",
-          heading: "Hosting capacity is local",
-          body: "A feeder can absorb only so much distributed generation before voltage rises out of limits. National headroom figures say nothing about the particular line a project wants to connect to, and connection studies are the only real answer. Budget time for them at the start rather than discovering them at financial close.",
-        },
-        {
-          type: "materials",
-          items: [
-            { title: "Flexibility options briefing", kind: "pdf", size: "1.4 MB" },
-          ],
-        },
-      ],
-    },
-    {
-      id: "storage-what-it-solves",
-      number: "05",
-      title: "Storage: what it does and does not solve",
-      kind: "video",
-      minutes: 40,
-      summary:
-        "Batteries move energy by hours, not by seasons. What that limitation means for how storage should be sized and justified.",
-      objectives: [
-        "Distinguish power from energy capacity",
-        "Size storage against a real duty",
-        "Avoid over-specifying duration",
-      ],
-      content: [
-        {
-          type: "video",
-          title: "Hours, not seasons",
-          minutes: 9,
-          caption:
-            "A battery rated in megawatts and megawatt-hours is answering two different questions - how hard it can push, and how long it can push for. This lecture sizes one against an actual evening peak and shows how quickly cost grows with duration.",
-        },
-        {
-          type: "text",
-          heading: "Duration is where the money goes",
-          body: "Doubling a battery's duration roughly doubles its cost while adding nothing to the peak it can cover. Storage justified against a specific two- or four-hour duty is affordable; storage specified as general insurance against variability is not, and rarely clears appraisal.",
-        },
-        {
-          type: "materials",
-          items: [
-            { title: "Storage sizing worksheet", kind: "sheet", size: "150 KB" },
-          ],
-        },
-      ],
-    },
-    {
-      id: "efficiency-before-generation",
-      number: "06",
-      title: "Energy efficiency before generation",
-      kind: "reading",
-      minutes: 40,
-      summary:
-        "The cheapest unit is the one not consumed. Where the savings actually are in public buildings and municipal services.",
-      objectives: [
-        "Rank measures by cost per unit saved",
-        "Find the savings in lighting and cooling",
-        "Build the case without capital funding",
-      ],
-      content: [
-        {
-          type: "text",
-          heading: "Cost per unit saved",
-          body: "Efficiency measures compete with each other and with generation on one metric: rupees per kilowatt-hour saved or supplied. Ranked that way, lighting retrofits and cooling set-point control usually sit far below any new generation, and they need no connection study.",
-        },
-        {
-          type: "text",
-          heading: "Street lighting and pumping",
-          body: "For most local authorities, street lighting and water pumping are the two largest electricity bills and the two least examined. Both respond to unglamorous interventions - schedules, sensors, correctly sized pumps - that pay back inside three years and are within an authority's own control.",
-        },
-        {
-          type: "materials",
-          items: [
-            { title: "Measure ranking template", kind: "sheet", size: "140 KB" },
-            { title: "Public-building savings benchmarks", kind: "pdf", size: "820 KB" },
-          ],
-        },
-      ],
-    },
-    {
-      id: "running-a-building-energy-audit",
-      number: "07",
-      title: "Running a building energy audit",
-      kind: "video",
-      minutes: 50,
-      summary:
-        "A walk-through audit a two-person team can complete in a day, and what to do with the findings afterwards.",
-      objectives: [
-        "Prepare twelve months of billing data",
-        "Run a structured walk-through",
-        "Turn findings into a costed list",
-      ],
-      content: [
-        {
-          type: "video",
-          title: "One building, one day",
-          minutes: 12,
-          caption:
-            "An audit of a district secretariat building, filmed room by room - meter readings, load inventory, the plant room, and the four findings that accounted for most of the saving. Nothing here needs equipment beyond a clamp meter and a spreadsheet.",
-        },
-        {
-          type: "text",
-          heading: "Bills before buildings",
-          body: "A year of billing data tells you the shape of consumption before you set foot in the building, and it is usually enough to identify whether the problem is cooling, lighting or something running overnight that nobody has noticed. Walking in without it wastes the visit.",
-        },
-        {
-          type: "materials",
-          items: [
-            { title: "Walk-through audit form", kind: "sheet", size: "170 KB" },
-            { title: "Load inventory template", kind: "sheet", size: "82 KB" },
-          ],
-        },
-      ],
-    },
-    {
-      id: "tariffs-ppas-and-cost-recovery",
-      number: "08",
-      title: "Tariffs, PPAs and cost recovery",
-      kind: "reading",
-      minutes: 45,
-      summary:
-        "How a project earns money, who pays it, and why the tariff structure matters more to viability than the technology does.",
-      objectives: [
-        "Read the key terms of a power purchase agreement",
-        "Understand net metering and net accounting",
-        "See how cost recovery constrains policy",
-      ],
-      content: [
-        {
-          type: "text",
-          heading: "The four terms that decide a PPA",
-          body: "Price, term, curtailment treatment and the definition of an event of default. Everything else in a power purchase agreement is administration. A project that has not modelled what happens under each of the four is not yet a project, whatever its feasibility study concludes.",
-        },
-        {
-          type: "text",
-          heading: "Rooftop schemes are a tariff design",
-          body: "Whether a household exports at the retail rate, a lower rate, or receives credit in units rather than money changes both the uptake and the utility's revenue. These schemes are policy instruments dressed as technical arrangements, and the arithmetic should be understood before they are extended.",
-        },
-        {
-          type: "materials",
-          items: [
-            { title: "PPA term sheet - annotated", kind: "pdf", size: "1.5 MB" },
-            { title: "Rooftop scheme comparison", kind: "sheet", size: "120 KB" },
-          ],
-        },
-      ],
-    },
-    {
-      id: "procuring-a-renewable-project",
-      number: "09",
-      title: "Procuring a renewable project",
-      kind: "video",
-      minutes: 40,
-      summary:
-        "Running a competitive process that gets a working plant rather than the lowest number on a page.",
-      objectives: [
-        "Set qualification criteria that matter",
-        "Evaluate on lifetime cost",
-        "Guard against underbidding",
-      ],
-      content: [
-        {
-          type: "video",
-          title: "The lowest bid and the working plant",
-          minutes: 10,
-          caption:
-            "Underbidding is the standard failure in renewable procurement, and it is visible at evaluation if anyone is looking. This lecture goes through three bids for the same site and identifies which one could not have been delivered at the price offered.",
-        },
-        {
-          type: "text",
-          heading: "Evaluate over the life, not at handover",
-          body: "Capital cost is between a half and two thirds of what a plant costs over twenty years. An evaluation that scores only the capital number reliably selects equipment that is cheap to install and expensive to keep running, and the authority carries the difference.",
-        },
-        {
-          type: "materials",
-          items: [
-            { title: "Evaluation criteria - worked set", kind: "pdf", size: "940 KB" },
-          ],
-        },
-      ],
-    },
-    {
-      id: "operations-maintenance-handover",
-      number: "10",
-      title: "Operations, maintenance and handover",
-      kind: "reading",
-      minutes: 35,
-      summary:
-        "What has to be in place on the day a contractor leaves site, and why so many public installations stop producing within three years.",
-      objectives: [
-        "Specify a handover pack",
-        "Plan maintenance and its budget",
-        "Monitor output after commissioning",
-      ],
-      content: [
-        {
-          type: "text",
-          heading: "The three-year failure",
-          body: "Public solar installations frequently stop producing not because equipment failed but because nobody was watching the output, no one held the passwords to the monitoring portal, and the cleaning that inverter output depends on was never assigned to a post. All three are handover problems.",
-        },
-        {
-          type: "text",
-          heading: "Somebody's name against the asset",
-          body: "Maintenance that belongs to a department belongs to nobody. Name the post responsible, give it the budget line and the monthly output report, and the asset survives staff changes - which over twenty years it will need to.",
-        },
-        {
-          type: "materials",
-          items: [
-            { title: "Handover checklist", kind: "sheet", size: "96 KB" },
-            { title: "O&M schedule template", kind: "sheet", size: "115 KB" },
-          ],
-        },
-      ],
-    },
-  ],
-
-  "green-finance": [
-    {
-      id: "where-climate-money-comes-from",
-      number: "01",
-      title: "Where climate money comes from",
-      kind: "video",
-      minutes: 40,
-      summary:
-        "The sources of climate and green finance available to Sri Lanka, and what each one wants in exchange.",
-      objectives: [
-        "Map the main sources of finance",
-        "Distinguish grant, concessional and commercial",
-        "Match a source to a project type",
-      ],
-      content: [
-        {
-          type: "video",
-          title: "Four kinds of money",
-          minutes: 9,
-          caption:
-            "Grants, concessional loans, commercial debt and equity behave differently and are won differently. This lecture sets out who holds each in the climate space, what they are trying to achieve, and which project types each will and will not consider.",
-        },
-        {
-          type: "text",
-          heading: "Every source has an objective",
-          body: "A climate fund is not a bank and does not want what a bank wants. Reading the objective a source is accountable for - emissions avoided, adaptation benefit, private capital mobilised - tells you which parts of your project to lead with, and which parts will simply be tolerated.",
-        },
-        {
-          type: "materials",
-          items: [
-            { title: "Sources of climate finance - map", kind: "pdf", size: "1.3 MB" },
-          ],
-        },
-      ],
-    },
-    {
-      id: "concessional-finance",
-      number: "02",
-      title: "Concessional finance and how it differs",
-      kind: "reading",
-      minutes: 45,
-      summary:
-        "What makes a loan concessional, how to compare two offers honestly, and where the hidden costs sit.",
-      objectives: [
-        "Calculate a grant element",
-        "Compare offers on total cost",
-        "Identify tied conditions",
-      ],
-      content: [
-        {
-          type: "text",
-          heading: "The grant element",
-          body: "Concessionality is the gap between a loan's terms and market terms, expressed as a single percentage. Two offers with the same headline rate can differ substantially once tenor, grace period and fees are included, and the grant element is what makes them comparable in one number.",
-        },
-        {
-          type: "text",
-          heading: "Conditions are part of the price",
-          body: "Procurement tied to the lender's suppliers, mandatory technical assistance and currency exposure all cost money that never appears in the interest rate. A cheaper loan with tied procurement is regularly the more expensive of two offers once delivered.",
-        },
-        {
-          type: "materials",
-          items: [
-            { title: "Grant element calculator", kind: "sheet", size: "125 KB" },
-            { title: "Offer comparison - worked example", kind: "pdf", size: "760 KB" },
-          ],
-        },
-      ],
-    },
-    {
-      id: "climate-funds-and-gatekeepers",
-      number: "03",
-      title: "The climate funds and their gatekeepers",
-      kind: "video",
-      minutes: 45,
-      summary:
-        "How the major climate funds are accessed, the role of accredited entities, and where a national proposal usually stalls.",
-      objectives: [
-        "Explain direct and international access",
-        "Identify the right accredited entity",
-        "Anticipate the stage where proposals stall",
-      ],
-      content: [
-        {
-          type: "video",
-          title: "You do not apply directly",
-          minutes: 11,
-          caption:
-            "Most climate funds are reached through an accredited entity rather than by a department applying on its own. This lecture explains what accreditation means, why the choice of entity shapes the proposal, and how the national designated authority fits in.",
-        },
-        {
-          type: "text",
-          heading: "Where proposals die",
-          body: "Concept notes rarely fail on ambition. They fail on the climate rationale being asserted rather than evidenced, and on the absence of a credible plan for what happens after the funded period ends. Both are addressable at the concept stage and expensive to fix later.",
-        },
-        {
-          type: "materials",
-          items: [
-            { title: "Access routes diagram", kind: "pdf", size: "690 KB" },
-            { title: "Accredited entities - current list", kind: "link" },
-          ],
-        },
-      ],
-    },
-    {
-      id: "green-bonds",
-      number: "04",
-      title: "Green bonds and use-of-proceeds",
-      kind: "reading",
-      minutes: 50,
-      summary:
-        "What makes a bond green, what the issuer commits to, and why the reporting obligation outlives the funding.",
-      objectives: [
-        "Explain a use-of-proceeds framework",
-        "Describe second-party opinion and verification",
-        "Weigh the reporting burden honestly",
-      ],
-      content: [
-        {
-          type: "text",
-          heading: "The framework is the product",
-          body: "A green bond is an ordinary bond plus a published framework saying what the proceeds may fund, how projects are selected, how the money is tracked while unspent, and what will be reported. Investors are buying that framework as much as the credit behind it.",
-        },
-        {
-          type: "text",
-          heading: "The obligation lasts the term",
-          body: "Allocation and impact reporting continues annually for the life of the bond, long after the launch and the press coverage. An issuer without the systems to track proceeds by project should build them before issuing, because a missed report is a reputational event in a small market.",
-        },
-        {
-          type: "materials",
-          items: [
-            { title: "Framework outline - template", kind: "pdf", size: "1.0 MB" },
-            { title: "Reporting obligations timeline", kind: "sheet", size: "88 KB" },
-          ],
-        },
-      ],
-    },
+  "bankable-climate-finance-proposals": [
     {
       id: "what-makes-a-project-bankable",
-      number: "05",
+      number: "01",
       title: "What makes a project bankable",
       kind: "video",
       minutes: 40,
       summary:
-        "The difference between a good idea and a financeable one, seen from the side of the institution deciding.",
+        "The difference between a good idea and a financeable one, seen from the side of the institution deciding whether to fund it.",
       objectives: [
         "Identify a revenue or savings stream",
         "Allocate risk to who can carry it",
@@ -1167,32 +604,130 @@ export const MODULES: Record<string, Module[]> = {
       content: [
         {
           type: "video",
-          title: "Read it as the lender does",
+          title: "Read it as the funder does",
           minutes: 10,
           caption:
-            "The same project, read twice - once as its sponsor wrote it and once as an appraisal officer reads it. The second reading looks for one thing the first rarely states plainly: what repays the money, and what happens to that if the project underperforms.",
+            "The same project, read twice - once as its author wrote it, once as an appraisal officer reads it. The second reading looks for one thing the first rarely states plainly: what repays the money, and what happens to that if the project underperforms.",
         },
         {
           type: "text",
-          heading: "Risk goes to whoever can manage it",
-          body: "Bankability is largely a question of whether risks sit with the party able to control them. Demand risk placed on a contractor who cannot influence demand is priced heavily and often refused; the same risk retained by the authority may cost far less overall.",
+          heading: "Bankable is not the same as worthwhile",
+          body: "A project can be entirely worth doing and still not be bankable, if nothing about it produces a measurable return or saving a funder can point to. Recognising that distinction early saves months spent writing a proposal for the wrong kind of finance.",
         },
         {
           type: "materials",
           items: [
-            { title: "Bankability checklist", kind: "sheet", size: "105 KB" },
+            { title: "Bankability checklist", kind: "sheet", size: "108 KB" },
           ],
         },
       ],
     },
     {
-      id: "building-the-financial-case",
-      number: "06",
-      title: "Building the financial case",
+      id: "matching-a-project-to-a-source-of-finance",
+      number: "02",
+      title: "Matching a project to the right source of finance",
       kind: "reading",
-      minutes: 55,
+      minutes: 45,
       summary:
-        "Assembling a cash-flow model that an appraiser can follow, and stating its assumptions where they can be challenged.",
+        "The sources of climate finance actually available to Sri Lankan applicants, and what each one wants in exchange.",
+      objectives: [
+        "Map the main sources of finance",
+        "Distinguish grant, concessional and commercial",
+        "Match a source to a project type",
+      ],
+      content: [
+        {
+          type: "text",
+          heading: "Every source has an objective",
+          body: "A climate fund is not a bank and does not want what a bank wants. Reading the objective a source is accountable for - emissions avoided, adaptation benefit, private capital mobilised - tells you which parts of a project to lead with, and which will simply be tolerated.",
+        },
+        {
+          type: "text",
+          heading: "Grant, concessional, commercial: pick correctly",
+          body: "A grant-appropriate project pitched to a commercial lender reads as unbankable; a revenue-generating project pitched only for grant funding wastes the strongest thing it has. Matching the finance type to the project's actual cash flow is decided before the proposal is drafted, not during review.",
+        },
+        {
+          type: "materials",
+          items: [
+            { title: "Sources of climate finance - map", kind: "pdf", size: "1.2 MB" },
+          ],
+        },
+      ],
+    },
+    {
+      id: "building-the-climate-rationale",
+      number: "03",
+      title: "Building the climate rationale",
+      kind: "video",
+      minutes: 45,
+      summary:
+        "Connecting a project to a climate outcome by a chain a reviewer can follow and dispute - the test every concept note is actually held to.",
+      objectives: [
+        "Write a defensible climate rationale",
+        "Distinguish causal claims from correlated ones",
+        "Handle a project that would have happened anyway",
+      ],
+      content: [
+        {
+          type: "video",
+          title: "The chain a reviewer follows",
+          minutes: 11,
+          caption:
+            "A climate rationale has to connect an intervention to a climate outcome by steps someone else can check, not assert. This lecture rewrites a weak rationale - 'this project supports climate resilience' - into a chain of specific, checkable claims, and shows what each rewrite was fixing.",
+        },
+        {
+          type: "text",
+          heading: "Projects that were worth doing anyway",
+          body: "A project is not disqualified for being sensible on its own merits. What matters is stating plainly what the climate finance specifically buys beyond what would have happened regardless - the increment, not the whole project, is the rationale's job to defend.",
+        },
+        {
+          type: "materials",
+          items: [
+            { title: "Climate rationale worksheet", kind: "sheet", size: "94 KB" },
+          ],
+        },
+      ],
+    },
+    {
+      id: "structuring-a-concept-note",
+      number: "04",
+      title: "Structuring a concept note",
+      kind: "reading",
+      minutes: 40,
+      summary:
+        "The structure reviewers expect from a concept note, and why departing from it costs more than it saves.",
+      objectives: [
+        "Structure a concept note in the expected order",
+        "Write a problem statement a stranger can follow",
+        "Keep the ask specific and singular",
+      ],
+      content: [
+        {
+          type: "text",
+          heading: "Structure is not bureaucracy, it is comparison",
+          body: "A reviewer reads dozens of concept notes against each other. A note in the expected order - problem, rationale, intervention, ask - is compared fairly against the others; a note that reorders itself for effect is compared unfavourably by default, because the reviewer has to work to locate what they need.",
+        },
+        {
+          type: "text",
+          heading: "One ask, stated once, early",
+          body: "A concept note that buries its funding request in a final paragraph, after pages of context, reads as unsure of itself. State the ask in the first page, then use the rest of the note to justify it.",
+        },
+        {
+          type: "materials",
+          items: [
+            { title: "Concept note structure - template", kind: "pdf", size: "620 KB" },
+          ],
+        },
+      ],
+    },
+    {
+      id: "modelling-the-financial-case",
+      number: "05",
+      title: "Modelling the financial case",
+      kind: "video",
+      minutes: 50,
+      summary:
+        "Assembling a cash-flow model an appraiser can follow, and stating its assumptions where they can be challenged rather than discovered.",
       objectives: [
         "Build a simple project cash flow",
         "Test it against downside cases",
@@ -1200,36 +735,70 @@ export const MODULES: Record<string, Module[]> = {
       ],
       content: [
         {
-          type: "text",
-          heading: "A model nobody can follow is not evidence",
-          body: "The purpose of a financial model in a public proposal is to let someone else check your reasoning. Assumptions belong on one visible sheet, formulas should be traceable, and every figure taken from elsewhere needs a source. Sophistication that obscures this makes a proposal weaker, not stronger.",
+          type: "video",
+          title: "A model nobody can follow is not evidence",
+          minutes: 12,
+          caption:
+            "The purpose of a financial model in a proposal is to let someone else check the reasoning behind it. This lecture builds a cash-flow model from a real project's numbers, keeping every assumption on one visible sheet rather than buried in a formula.",
         },
         {
           type: "text",
           heading: "Show the case where it fails",
-          body: "Appraisers trust a proposal that names the conditions under which it does not work. Run the downside - lower uptake, higher capital cost, delayed commissioning - and state the point at which the project stops being viable. Withholding it does not prevent them from finding it.",
+          body: "Appraisers trust a proposal that names the conditions under which it does not work. Running the downside - lower uptake, higher capital cost, delayed commissioning - and stating the point the project stops being viable earns more trust than withholding it, because they will find it either way.",
         },
         {
           type: "materials",
           items: [
-            { title: "Cash-flow model skeleton", kind: "sheet", size: "230 KB" },
-            { title: "Sensitivity testing note", kind: "pdf", size: "540 KB" },
+            { title: "Cash-flow model skeleton", kind: "sheet", size: "240 KB" },
+            { title: "Sensitivity testing note", kind: "pdf", size: "560 KB" },
           ],
         },
       ],
     },
     {
-      id: "writing-a-proposal-that-survives",
-      number: "07",
-      title: "Writing a proposal that survives review",
-      kind: "video",
-      minutes: 50,
+      id: "allocating-risk-correctly",
+      number: "06",
+      title: "Allocating risk correctly",
+      kind: "reading",
+      minutes: 40,
       summary:
-        "Structure, evidence and the climate rationale - what reviewers look for first and what they discount immediately.",
+        "Placing project risk with whoever can actually manage it, and why that decision affects the price a funder sets more than almost anything else.",
       objectives: [
-        "Structure a concept note",
-        "Write a defensible climate rationale",
-        "Handle the sustainability question",
+        "Identify the major risk categories in a project",
+        "Allocate each risk to the party best able to manage it",
+        "Recognise when the public sector should retain a risk",
+      ],
+      content: [
+        {
+          type: "text",
+          heading: "Risk goes to whoever can control it",
+          body: "Bankability is largely a question of whether risks sit with the party able to manage them. Demand risk placed on a contractor who cannot influence demand is priced heavily, or refused outright; the same risk retained by the implementing authority may cost far less across the life of the project.",
+        },
+        {
+          type: "text",
+          heading: "Some risks belong with government, deliberately",
+          body: "Land acquisition delay, permitting risk and policy risk are usually cheaper for the public sector to hold than to transfer, because the public sector is the party that can actually resolve them. Transferring them anyway is not caution, it is an expensive way to look prudent.",
+        },
+        {
+          type: "materials",
+          items: [
+            { title: "Risk allocation matrix - template", kind: "sheet", size: "118 KB" },
+          ],
+        },
+      ],
+    },
+    {
+      id: "writing-the-proposal-that-survives-review",
+      number: "07",
+      title: "Writing the proposal that survives review",
+      kind: "video",
+      minutes: 45,
+      summary:
+        "Structure, evidence and the climate rationale together - what reviewers look for first, and what they discount immediately.",
+      objectives: [
+        "Assemble a complete proposal from its parts",
+        "Write an executive summary that survives a four-minute read",
+        "Handle the sustainability question directly",
       ],
       content: [
         {
@@ -1237,289 +806,524 @@ export const MODULES: Record<string, Module[]> = {
           title: "The first two pages decide it",
           minutes: 12,
           caption:
-            "Reviewers read a great many proposals and form a view early. This lecture rewrites the opening of a real concept note - problem, rationale, intervention, and what changes if it is funded - and shows what each revision was fixing.",
+            "Reviewers form a view early and read the rest of a proposal to confirm or overturn it. This lecture rewrites the opening of a real proposal - problem, rationale, intervention, and what changes if it is funded - and shows what each revision was fixing.",
         },
         {
           type: "text",
-          heading: "The rationale has to be causal",
-          body: "A climate rationale must connect the intervention to a climate outcome by a chain someone can follow and dispute. Projects that would have been worth doing anyway are not disqualified, but the case has to explain what the climate finance specifically buys.",
+          heading: "Sustainability is a specific question",
+          body: "'What happens after the funded period ends' is asked of almost every proposal, and a vague answer is one of the most common reasons a concept note is not advanced. Naming a specific institution, budget line or revenue stream that continues the work after funding closes is what the question is actually asking for.",
         },
         {
           type: "materials",
           items: [
-            { title: "Concept note - annotated example", kind: "pdf", size: "1.7 MB" },
-            { title: "Reviewer's scoring rubric", kind: "sheet", size: "110 KB" },
+            { title: "Full proposal - annotated example", kind: "pdf", size: "1.8 MB" },
+            { title: "Reviewer's scoring rubric", kind: "sheet", size: "112 KB" },
           ],
         },
       ],
     },
     {
-      id: "reporting-verification-cost",
+      id: "reporting-once-finance-is-approved",
       number: "08",
-      title: "Reporting, verification and what it costs",
+      title: "Reporting once the finance is approved",
       kind: "reading",
-      minutes: 35,
+      minutes: 55,
       summary:
-        "The obligations that come with accepted finance, and how to budget for them before rather than after signature.",
+        "The obligations that come with accepted finance, and budgeting for them before signature rather than after the first report is due.",
       objectives: [
         "List the standard reporting obligations",
         "Budget for verification",
-        "Set up data collection at the start",
+        "Set up data collection at the start of implementation",
       ],
       content: [
         {
           type: "text",
-          heading: "Compliance is a line item",
-          body: "Monitoring, third-party verification and annual reporting typically consume a small but non-trivial share of a facility, and a budget that omits them funds the project and not the obligations attached to it. Include the cost in the proposal; funders expect to see it.",
+          heading: "Compliance is a line item, not an afterthought",
+          body: "Monitoring, third-party verification and annual reporting consume a real share of a facility's budget, and a proposal that omits the cost funds the project but not the obligations attached to it. Funders expect to see it costed, not discover its absence.",
         },
         {
           type: "text",
           heading: "Collect from day one",
-          body: "Impact reporting asks for baselines and time series that cannot be reconstructed later. Set up the collection when the agreement is signed, not when the first report is due, or the first report will be an estimate defended in front of people who audit estimates.",
+          body: "Impact reporting asks for baselines and time series that cannot be reconstructed later. Set up the data collection when the agreement is signed, not when the first report is due, or that report will be an estimate defended in front of people whose job is to audit estimates.",
         },
         {
           type: "materials",
           items: [
-            { title: "Reporting obligations checklist", kind: "sheet", size: "92 KB" },
+            { title: "Reporting obligations checklist", kind: "sheet", size: "96 KB" },
           ],
         },
       ],
     },
   ],
 
-  "mobility-landscapes": [
+  "gender-social-inclusion": [
     {
-      id: "transport-land-one-carbon-budget",
+      id: "gsi-as-a-planning-discipline",
       number: "01",
-      title: "Transport, land and one carbon budget",
-      kind: "video",
-      minutes: 40,
-      summary:
-        "Why transport planning and land restoration belong in the same programme, and how decisions in one constrain the other.",
-      objectives: [
-        "Connect land use to travel demand",
-        "See restoration as infrastructure",
-        "Read both against one budget",
-      ],
-      content: [
-        {
-          type: "video",
-          title: "Two subjects, one system",
-          minutes: 9,
-          caption:
-            "Where people live decides how far they travel, and what is built decides what is cleared. This opening lecture puts a transport plan and a restoration plan for the same district side by side and shows the four points at which each determines the other.",
-        },
-        {
-          type: "text",
-          heading: "Travel demand is designed, not observed",
-          body: "A settlement pattern that puts housing far from work generates the traffic that later justifies a wider road. Treating travel demand as fixed and responding with capacity is the mechanism by which transport emissions grow. The land-use decision came first and is where the leverage is.",
-        },
-        {
-          type: "materials",
-          items: [
-            { title: "Module 01 - lecture slides", kind: "slides", size: "2.2 MB" },
-          ],
-        },
-      ],
-    },
-    {
-      id: "planning-public-transport",
-      number: "02",
-      title: "Planning public transport people use",
-      kind: "reading",
-      minutes: 45,
-      summary:
-        "Frequency, reliability and the interchange - the three things that decide whether a service attracts riders who had a choice.",
-      objectives: [
-        "Prioritise frequency over coverage",
-        "Design an interchange that works",
-        "Measure reliability, not punctuality",
-      ],
-      content: [
-        {
-          type: "text",
-          heading: "Frequency is freedom",
-          body: "A service every ten minutes needs no timetable and no planning by its user; a service every hour needs both, and loses everyone who has an alternative. Where budget forces a choice, concentrating frequency on fewer corridors nearly always carries more people than spreading coverage thinly.",
-        },
-        {
-          type: "text",
-          heading: "The interchange is where trips are lost",
-          body: "Most abandoned public transport trips are abandoned at a transfer - an unsheltered wait, a road to cross, a fare paid twice. Fixing an interchange is cheap relative to new vehicles and usually buys more ridership per rupee than either end of the journey.",
-        },
-        {
-          type: "materials",
-          items: [
-            { title: "Corridor prioritisation worksheet", kind: "sheet", size: "140 KB" },
-            { title: "Interchange design notes", kind: "pdf", size: "1.2 MB" },
-          ],
-        },
-      ],
-    },
-    {
-      id: "walking-cycling-first-mile",
-      number: "03",
-      title: "Walking, cycling and the first mile",
-      kind: "video",
-      minutes: 40,
-      summary:
-        "The shortest trips are the easiest to shift and the least funded. What a footpath programme can achieve in a tropical city.",
-      objectives: [
-        "Audit a walking route honestly",
-        "Design for shade and drainage",
-        "Cost a footpath programme",
-      ],
-      content: [
-        {
-          type: "video",
-          title: "Walk it yourself",
-          minutes: 10,
-          caption:
-            "A recorded audit of one kilometre of urban footpath at three in the afternoon - the surface, the parked vehicles, the absent crossings and the total lack of shade. Every deficiency found is inexpensive to fix and none of it appears in a transport model.",
-        },
-        {
-          type: "text",
-          heading: "Shade is infrastructure",
-          body: "In this climate, an unshaded footpath is unusable for much of the day regardless of its surface. Street trees are the cheapest intervention in the programme and the slowest to mature, which is an argument for planting them at the start of a plan rather than at the end.",
-        },
-        {
-          type: "materials",
-          items: [
-            { title: "Walking route audit form", kind: "sheet", size: "86 KB" },
-          ],
-        },
-      ],
-    },
-    {
-      id: "restoring-forest-and-mangrove",
-      number: "04",
-      title: "Restoring forest and mangrove",
-      kind: "reading",
-      minutes: 50,
-      summary:
-        "What restoration actually requires beyond planting, and why survival rates rather than seedling counts are the measure.",
-      objectives: [
-        "Match species and site conditions",
-        "Plan for the years after planting",
-        "Report survival, not seedlings",
-      ],
-      content: [
-        {
-          type: "text",
-          heading: "Planting is the cheap part",
-          body: "Seedlings are a small fraction of a restoration budget. Site preparation, hydrology, protection from grazing and three years of tending are the rest, and a programme funded only for the planting day reliably produces a photograph and very little forest.",
-        },
-        {
-          type: "text",
-          heading: "Mangroves fail on hydrology",
-          body: "Mangrove restoration fails most often because the site's tidal flow was altered and never restored - the species was right and the water was wrong. Restoring the hydrology, and sometimes doing nothing else, outperforms planting on a site that cannot support it.",
-        },
-        {
-          type: "materials",
-          items: [
-            { title: "Species and site matching guide", kind: "pdf", size: "1.8 MB" },
-            { title: "Survival monitoring sheet", kind: "sheet", size: "94 KB" },
-          ],
-        },
-      ],
-    },
-    {
-      id: "coastal-buffers",
-      number: "05",
-      title: "Coastal buffers and what they hold back",
-      kind: "video",
-      minutes: 45,
-      summary:
-        "Dunes, reefs, mangroves and sea walls compared on what they protect against, what they cost, and what they take away.",
-      objectives: [
-        "Compare natural and built defences",
-        "Understand the setback line",
-        "Weigh protection against access",
-      ],
-      content: [
-        {
-          type: "video",
-          title: "Four defences, one shoreline",
-          minutes: 11,
-          caption:
-            "The same stretch of coast with four different responses modelled against it. Each holds back a different event at a different cost, and each does something to the fishing landing, the access path and the sand budget of the beach next door.",
-        },
-        {
-          type: "text",
-          heading: "A wall moves the problem sideways",
-          body: "Hard defences interrupt the movement of sediment along a coast, and the erosion prevented in front of the structure frequently reappears beyond its end. Coastal protection assessed one property at a time produces a shoreline of walls and a district worse off than before.",
-        },
-        {
-          type: "materials",
-          items: [
-            { title: "Defence options comparison", kind: "pdf", size: "1.4 MB" },
-            { title: "Setback rules - summary", kind: "sheet", size: "76 KB" },
-          ],
-        },
-      ],
-    },
-    {
-      id: "land-use-planning-as-climate-policy",
-      number: "06",
-      title: "Land-use planning as climate policy",
-      kind: "reading",
-      minutes: 45,
-      summary:
-        "The zoning and approval decisions taken now determine emissions and exposure for decades, mostly without being described as climate decisions.",
-      objectives: [
-        "Read a zoning decision for its climate effect",
-        "Keep development out of the hazard zone",
-        "Protect land that is doing a job",
-      ],
-      content: [
-        {
-          type: "text",
-          heading: "Approvals are commitments",
-          body: "A housing approval on a flood plain commits the state to protecting or eventually relocating those households. The decision is taken by an officer applying planning rules and is almost never recorded as a climate decision, which is why the rules themselves are the intervention.",
-        },
-        {
-          type: "text",
-          heading: "Land already at work",
-          body: "Wetland absorbing storm water and paddy holding a catchment are performing services that would cost a great deal to replace in concrete. Valuing that service explicitly, before a rezoning is considered, changes what the comparison looks like.",
-        },
-        {
-          type: "materials",
-          items: [
-            { title: "Climate screening for planning decisions", kind: "pdf", size: "1.1 MB" },
-          ],
-        },
-      ],
-    },
-    {
-      id: "transport-and-landscape-together",
-      number: "07",
-      title: "Bringing transport and landscape together",
+      title: "Why GSI is a planning discipline, not an add-on",
       kind: "video",
       minutes: 35,
       summary:
-        "A closing worked example: one district corridor planned for movement, restoration and flood absorption at the same time.",
+        "What Gender Equality and Social Inclusion actually means as a working discipline, and why bolting it onto a finished plan produces worse outcomes than building it in from the start.",
       objectives: [
-        "Combine measures on one corridor",
-        "Sequence work across budget years",
-        "Present an integrated plan",
+        "Define GSI as distinct from a stand-alone women's programme",
+        "Name the groups a GSI lens routinely misses",
+        "Explain why late-stage GSI review changes little",
       ],
       content: [
         {
           type: "video",
-          title: "One corridor, three objectives",
-          minutes: 9,
+          title: "Not a chapter, a lens",
+          minutes: 8,
           caption:
-            "The programme closes on a single eight-kilometre corridor: a bus priority lane, a shaded walking route, a restored canal edge that takes storm water, and the sequencing that let a district deliver all three across four budget years without a special allocation.",
+            "A GSI annex added after a plan is written rarely changes what the plan actually does. This opening lecture shows what changes when the same lens is applied from the first consultation instead - using one district plan revised at two different stages to show the difference.",
         },
         {
           type: "text",
-          heading: "Sequencing is the whole trick",
-          body: "Integrated plans fail when they require everything to be funded at once. Ordering the work so each year's budget delivers something usable, and each piece makes the next cheaper, is what allows an ambitious plan to survive an ordinary funding cycle.",
+          heading: "GSI is wider than gender alone",
+          body: "Gender is the most visible axis of exclusion and the one most often addressed, but disability, age, ethnicity, language and poverty routinely decide who benefits from a plan just as much. A GSI approach that only asks about women misses most of who it is meant to include.",
         },
         {
           type: "materials",
           items: [
-            { title: "Integrated corridor plan - example", kind: "pdf", size: "2.3 MB" },
-            { title: "Four-year sequencing table", kind: "sheet", size: "118 KB" },
+            { title: "GSI Module 01 - slide deck", kind: "slides", size: "1.8 MB" },
+            { title: "GSI glossary of terms", kind: "pdf", size: "260 KB" },
+          ],
+        },
+      ],
+    },
+    {
+      id: "reading-a-situation-through-a-gsi-lens",
+      number: "02",
+      title: "Reading a situation through a GSI lens",
+      kind: "reading",
+      minutes: 40,
+      summary:
+        "A structured way to read who is affected by a plan or a project, and who was left out of the version already on the table.",
+      objectives: [
+        "Map stakeholders by exposure and by voice",
+        "Identify who was consulted and who was not",
+        "Read a plan for its unstated assumptions",
+      ],
+      content: [
+        {
+          type: "text",
+          heading: "Two questions, asked separately",
+          body: "Who is affected by a decision and who had a say in it are two different questions, and a plan can score well on one while failing the other completely. Reading a plan through a GSI lens means asking both, and naming the gap when they diverge.",
+        },
+        {
+          type: "text",
+          heading: "The unstated assumption is the one that excludes",
+          body: "A consultation scheduled for a weekday afternoon assumes the attendee does not do paid or unpaid care work that hour. Most exclusion in planning is not a decision, it is an unexamined assumption about who the 'typical' participant is.",
+        },
+        {
+          type: "materials",
+          items: [
+            { title: "Stakeholder mapping worksheet", kind: "sheet", size: "92 KB" },
+          ],
+        },
+      ],
+    },
+    {
+      id: "designing-an-inclusive-consultation",
+      number: "03",
+      title: "Designing an inclusive consultation",
+      kind: "video",
+      minutes: 45,
+      summary:
+        "Designing a consultation that reaches people a standard meeting misses, without turning the exercise into a much larger undertaking.",
+      objectives: [
+        "Identify barriers to standard consultation formats",
+        "Design at least one alternative format",
+        "Record input from people who could not attend in person",
+      ],
+      content: [
+        {
+          type: "video",
+          title: "Who the standard meeting already excludes",
+          minutes: 10,
+          caption:
+            "A single public meeting, on a working day, at the district office, quietly filters out shift workers, carers, people with mobility restrictions and anyone without transport. This lecture redesigns one such consultation into a small number of parallel formats that reach each of those groups without multiplying the budget.",
+        },
+        {
+          type: "text",
+          heading: "Small and local beats large and central",
+          body: "Three short sessions held in different wards, at different times, typically surface more usable input than one large central meeting - and cost less, because travel and venue costs fall rather than rise with the split.",
+        },
+        {
+          type: "materials",
+          items: [
+            { title: "Inclusive consultation design guide", kind: "pdf", size: "890 KB" },
+          ],
+        },
+      ],
+    },
+    {
+      id: "setting-gsi-indicators-that-mean-something",
+      number: "04",
+      title: "Setting GSI indicators that mean something",
+      kind: "reading",
+      minutes: 40,
+      summary:
+        "Choosing GSI indicators that can actually be measured and that change behaviour, rather than indicators chosen because the data already exists.",
+      objectives: [
+        "Distinguish a meaningful indicator from a convenient one",
+        "Set a baseline before the intervention starts",
+        "Avoid indicators that reward participation over outcome",
+      ],
+      content: [
+        {
+          type: "text",
+          heading: "Available is not the same as meaningful",
+          body: "'Number of women attending' is easy to count and measures almost nothing about whether the plan changed anything for them. A meaningful indicator asks what changed - access, decision-making role, resource control - not who showed up.",
+        },
+        {
+          type: "text",
+          heading: "Baseline first, always",
+          body: "An indicator without a baseline can only ever report a number, never a change. Setting the baseline before an intervention starts is the single most commonly skipped step in GSI monitoring, and the one that makes every later report defensible.",
+        },
+        {
+          type: "materials",
+          items: [
+            { title: "GSI indicator selection guide", kind: "sheet", size: "104 KB" },
+            { title: "Baseline data collection template", kind: "sheet", size: "78 KB" },
+          ],
+        },
+      ],
+    },
+    {
+      id: "mainstreaming-gsi-into-a-sector-plan",
+      number: "05",
+      title: "Mainstreaming GSI into a sector plan",
+      kind: "video",
+      minutes: 45,
+      summary:
+        "Embedding GSI into a sector plan's actual decisions - budget lines, procurement criteria, staffing - rather than a preamble nobody reads.",
+      objectives: [
+        "Locate the decision points a sector plan actually makes",
+        "Attach a GSI requirement to a specific decision point",
+        "Avoid GSI language with no operational consequence",
+      ],
+      content: [
+        {
+          type: "video",
+          title: "Find the decision, not the paragraph",
+          minutes: 11,
+          caption:
+            "Mainstreaming succeeds or fails at specific decision points - who qualifies for a subsidy, what a procurement scores on, who sits on a selection panel - not in a plan's introductory language. This lecture finds four such decision points in a real sector plan and attaches a specific, checkable GSI requirement to each.",
+        },
+        {
+          type: "text",
+          heading: "A requirement with no consequence is a wish",
+          body: "'Gender considerations will be taken into account' commits nobody to anything. 'At least one of three technical panel members must be trained in GSI screening' can be checked, and only the second kind of statement changes what a sector plan actually does.",
+        },
+        {
+          type: "materials",
+          items: [
+            { title: "Sector plan mainstreaming checklist", kind: "sheet", size: "112 KB" },
+          ],
+        },
+      ],
+    },
+    {
+      id: "handling-exclusion-when-you-find-it",
+      number: "06",
+      title: "Handling exclusion when you find it",
+      kind: "reading",
+      minutes: 40,
+      summary:
+        "What to do once an assessment or a consultation surfaces real exclusion, rather than recording it and moving on.",
+      objectives: [
+        "Distinguish a finding from a response",
+        "Prioritise responses within a limited budget",
+        "Report back to the people who raised the issue",
+      ],
+      content: [
+        {
+          type: "text",
+          heading: "A finding without a response trains people not to speak",
+          body: "A community that raises an exclusion issue and sees no visible response learns, correctly, that raising it again is a waste of their time. The response does not have to be immediate or complete, but it has to be visible.",
+        },
+        {
+          type: "text",
+          heading: "Close the loop, even with a partial answer",
+          body: "Reporting back - even to say a raised issue could not be funded this cycle and why - keeps a consultation channel usable for the next round. Silence after a finding is what ends participation, not the limits of the budget itself.",
+        },
+        {
+          type: "materials",
+          items: [
+            { title: "Exclusion-response prioritisation template", kind: "sheet", size: "86 KB" },
+          ],
+        },
+      ],
+    },
+    {
+      id: "reporting-on-gsi-without-tokenism",
+      number: "07",
+      title: "Reporting on GSI without tokenism",
+      kind: "video",
+      minutes: 55,
+      summary:
+        "Reporting GSI progress in a way that survives scrutiny, avoiding both the token photograph and the number that means nothing on its own.",
+      objectives: [
+        "Choose reporting formats that show outcomes, not optics",
+        "Avoid the most common tokenism traps",
+        "Present a GSI report alongside the sector results it sits within",
+      ],
+      content: [
+        {
+          type: "video",
+          title: "The photograph is not the report",
+          minutes: 13,
+          caption:
+            "A page of photographs captioned 'women participants' is the most common form GSI reporting takes and the least informative. This closing lecture rebuilds a real GSI report around outcome indicators instead - what changed, for whom, against the baseline set earlier in this module - and shows what the photograph-led version was actually hiding.",
+        },
+        {
+          type: "text",
+          heading: "Report GSI inside the sector result, not beside it",
+          body: "A GSI report filed separately from the sector's main results reads as a compliance exercise. Presented inside the same report - this is what the irrigation scheme delivered, and this is who it reached - GSI reporting reads as part of judging whether the scheme worked at all, which is the point.",
+        },
+        {
+          type: "materials",
+          items: [
+            { title: "GSI reporting template", kind: "pdf", size: "740 KB" },
+          ],
+        },
+      ],
+    },
+  ],
+
+  "gender-responsive-budgeting": [
+    {
+      id: "what-grb-actually-changes",
+      number: "01",
+      title: "What gender-responsive budgeting actually changes",
+      kind: "video",
+      minutes: 40,
+      summary:
+        "What gender-responsive budgeting is not - a separate fund for women - and what it actually is: a way of reading and building an ordinary budget.",
+      objectives: [
+        "Correct the most common misunderstanding of GRB",
+        "Explain what a gender-responsive budget actually contains",
+        "Locate GRB inside the existing budget cycle",
+      ],
+      content: [
+        {
+          type: "video",
+          title: "It is not a separate budget",
+          minutes: 9,
+          caption:
+            "The most persistent misconception about gender-responsive budgeting is that it means setting aside a fund earmarked for women. This opening lecture corrects that directly: GRB is a method for examining and adjusting the whole budget - every vote, not a new one - for who it actually reaches.",
+        },
+        {
+          type: "text",
+          heading: "The same rupee, read differently",
+          body: "A road maintenance budget line looks gender-neutral until it is read against who walks, who drives, and whose unpaid care journeys depend on the footpath rather than the carriageway. GRB does not add spending; it changes how existing spending is examined and, where the reading shows a gap, adjusted.",
+        },
+        {
+          type: "materials",
+          items: [
+            { title: "GRB Module 01 - slide deck", kind: "slides", size: "1.9 MB" },
+          ],
+        },
+      ],
+    },
+    {
+      id: "reading-a-budget-for-who-it-reaches",
+      number: "02",
+      title: "Reading a budget for who it reaches",
+      kind: "reading",
+      minutes: 35,
+      summary:
+        "A practical method for reading an existing budget line for who benefits from it, before proposing any change.",
+      objectives: [
+        "Read a budget line against beneficiary data",
+        "Identify a line that looks neutral but is not",
+        "Avoid assuming neutrality without checking",
+      ],
+      content: [
+        {
+          type: "text",
+          heading: "Gender-neutral language is not gender-neutral spending",
+          body: "A budget line written in gender-neutral language - 'agricultural extension services' - can still reach men and women in very different proportions if extension officers visit farms during hours or through channels that only one group can access. The line is neutral on paper and not neutral in effect.",
+        },
+        {
+          type: "text",
+          heading: "Check before you conclude",
+          body: "The only way to know whether a line is genuinely neutral in effect is to check who used it last year, disaggregated by sex where the data exists. Assuming neutrality from the wording alone is the single most common error in a first budget read-through.",
+        },
+        {
+          type: "materials",
+          items: [
+            { title: "Budget line reading worksheet", kind: "sheet", size: "84 KB" },
+          ],
+        },
+      ],
+    },
+    {
+      id: "gender-budget-statements",
+      number: "03",
+      title: "Gender budget statements: what goes in one",
+      kind: "video",
+      minutes: 45,
+      summary:
+        "What a gender budget statement actually contains, and how to write one that a treasury officer will accept rather than return.",
+      objectives: [
+        "Structure a gender budget statement",
+        "Support each claim with data",
+        "Avoid a statement that restates the budget without analysis",
+      ],
+      content: [
+        {
+          type: "video",
+          title: "Analysis, not a restated budget",
+          minutes: 11,
+          caption:
+            "A gender budget statement that lists spending by ministry without analysing who it reaches is rejected as often as it is approved. This lecture builds a statement from a real sector budget, showing the analysis a treasury officer is actually checking for underneath the required format.",
+        },
+        {
+          type: "text",
+          heading: "Every claim needs a number behind it",
+          body: "'This programme benefits women and men equally' is a claim, not evidence. A statement that instead says '58% of participants in 2025 were women, against a target beneficiary population that is 51% women' gives a reviewer something to check, and something that survives scrutiny.",
+        },
+        {
+          type: "materials",
+          items: [
+            { title: "Gender budget statement template", kind: "pdf", size: "920 KB" },
+          ],
+        },
+      ],
+    },
+    {
+      id: "sex-disaggregated-data",
+      number: "04",
+      title: "Sex-disaggregated data: finding and using it",
+      kind: "reading",
+      minutes: 40,
+      summary:
+        "Where sex-disaggregated data actually exists in the public sector, and how to work with what exists when the ideal dataset does not.",
+      objectives: [
+        "Locate existing sex-disaggregated administrative data",
+        "Assess data quality before using it",
+        "Work credibly with a partial dataset",
+      ],
+      content: [
+        {
+          type: "text",
+          heading: "More exists than most officers expect",
+          body: "Beneficiary registers, training attendance sheets and service uptake records are frequently already collected by sex, even where nobody has analysed them that way. The first step is rarely commissioning new data collection - it is asking what is already sitting in an existing register.",
+        },
+        {
+          type: "text",
+          heading: "A partial dataset, used honestly, still helps",
+          body: "Where disaggregated data covers only part of a programme or a recent year, using it with that limitation stated is more credible than waiting for a complete dataset that may never arrive. State the coverage, and the gap becomes part of the evidence rather than a reason to say nothing.",
+        },
+        {
+          type: "materials",
+          items: [
+            { title: "Data source inventory - public sector", kind: "pdf", size: "680 KB" },
+            { title: "Data quality checklist", kind: "sheet", size: "70 KB" },
+          ],
+        },
+      ],
+    },
+    {
+      id: "costing-a-gender-responsive-intervention",
+      number: "05",
+      title: "Costing a gender-responsive intervention",
+      kind: "video",
+      minutes: 35,
+      summary:
+        "Putting a specific cost on a gender-responsive adjustment to an existing programme, rather than treating GRB as a costless exercise in review.",
+      objectives: [
+        "Identify the marginal cost of a gender-responsive adjustment",
+        "Distinguish design changes from new spending",
+        "Present the cost alongside the benefit it targets",
+      ],
+      content: [
+        {
+          type: "video",
+          title: "The adjustment usually costs less than expected",
+          minutes: 8,
+          caption:
+            "Shifting an extension visit schedule, adding a second consultation time, or translating a form into the language most applicants actually use are typically marginal design changes, not new budget lines. This lecture costs three such adjustments against a real programme budget to show how small the increment usually is.",
+        },
+        {
+          type: "text",
+          heading: "State the cost against the gap it closes",
+          body: "A costed adjustment presented beside the participation gap it is meant to close - not as an abstract 'inclusion cost' - is far easier for a budget officer to approve, because the return on the marginal spend is stated in the same breath as the spend itself.",
+        },
+        {
+          type: "materials",
+          items: [
+            { title: "Marginal costing worksheet", kind: "sheet", size: "98 KB" },
+          ],
+        },
+      ],
+    },
+    {
+      id: "auditing-a-budget-circular-for-gsi-compliance",
+      number: "06",
+      title: "Auditing a budget circular for GSI compliance",
+      kind: "reading",
+      minutes: 45,
+      summary:
+        "Checking a budget circular against GSI compliance requirements before submission, rather than after it is returned.",
+      objectives: [
+        "Read a budget circular for its GSI requirements",
+        "Run a compliance check before submission",
+        "Avoid the most common reasons a submission is returned",
+      ],
+      content: [
+        {
+          type: "text",
+          heading: "The circular already tells you what it wants",
+          body: "Budget circulars increasingly state their gender-responsive requirements directly - a disaggregation requirement, a mandatory statement, a specific annex. Missing a stated requirement is an avoidable rejection, not a technical judgment call, and a checklist against the circular's own text catches most of them.",
+        },
+        {
+          type: "text",
+          heading: "The three reasons submissions come back",
+          body: "In practice, most GRB submissions are returned for the same three reasons: no baseline data, a claim with no evidence behind it, or a gender budget statement that restates the budget without analysis. Checking a draft against these three before submission clears most of a review cycle.",
+        },
+        {
+          type: "materials",
+          items: [
+            { title: "Budget circular GSI compliance checklist", kind: "sheet", size: "90 KB" },
+          ],
+        },
+      ],
+    },
+    {
+      id: "reporting-gender-responsive-spending-upward",
+      number: "07",
+      title: "Reporting gender-responsive spending upward",
+      kind: "video",
+      minutes: 60,
+      summary:
+        "Reporting gender-responsive spending upward through the budget cycle so it is counted, credited and used to justify the next allocation.",
+      objectives: [
+        "Report against the indicators set earlier in the cycle",
+        "Route a report to where it is actually read",
+        "Use a completed report to strengthen the next year's ask",
+      ],
+      content: [
+        {
+          type: "video",
+          title: "Uncounted spending cannot be defended",
+          minutes: 14,
+          caption:
+            "Spending that is not tagged and reported as gender-responsive cannot be counted at the national level, and an institution that cannot demonstrate its own record is in a weak position when the next budget round is negotiated. This closing lecture builds an upward report from the indicators, baselines and costings set earlier in the module, and follows it to where it is actually read in the budget cycle.",
+        },
+        {
+          type: "text",
+          heading: "Last year's report is next year's evidence",
+          body: "A completed, well-evidenced gender budget report is the strongest argument for the following year's allocation - it is proof the previous investment worked, rather than a promise that the next one will. Institutions that report consistently tend to be trusted with larger, less-scrutinised allocations over time.",
+        },
+        {
+          type: "materials",
+          items: [
+            { title: "Upward reporting template", kind: "pdf", size: "860 KB" },
+            { title: "Multi-year GRB tracking sheet", kind: "sheet", size: "104 KB" },
           ],
         },
       ],

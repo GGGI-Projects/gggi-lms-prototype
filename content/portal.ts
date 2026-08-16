@@ -2,7 +2,7 @@
  * The signed-in learner, and everything the portal shows about them.
  *
  * This is the mock account the client will be shown during the demo. It has a
- * DELIBERATE SHAPE: one programme finished (so the certificate screens have
+ * DELIBERATE SHAPE: one module finished (so the certificate screens have
  * something in them), one part-way through (so the dashboard has something to
  * resume), one barely started (so progress bars are not all at the same
  * position), and two never enrolled (so the catalogue has an empty state to
@@ -14,7 +14,7 @@
  * time.
  */
 
-import { MODULES } from "@/content/curriculum";
+import { LECTURES } from "@/content/curriculum";
 
 /* ------------------------------------------------------------------ learner */
 
@@ -35,7 +35,7 @@ export const LEARNER = {
   /** Used by the settings page. No preference is persisted anywhere. */
   preferences: {
     emailProgress: true,
-    emailNewProgrammes: true,
+    emailNewModules: true,
     emailProduct: false,
     language: "English",
     reminders: "Weekly",
@@ -47,18 +47,18 @@ export const LEARNER = {
 export type EnrolmentStatus = "completed" | "in-progress" | "not-started";
 
 export type Enrolment = {
-  programmeId: string;
+  moduleId: string;
   enrolledOn: string;
-  /** Module ids, in the order they were finished. */
-  completedModuleIds: string[];
+  /** Lecture ids, in the order they were finished. */
+  completedLectureIds: string[];
   /**
-   * Percentage scored, keyed by module id. A module can be complete without a
+   * Percentage scored, keyed by lecture id. A lecture can be complete without a
    * pass here - the quiz is taken after the content - which is exactly the
    * state the quizzes page exists to surface.
    */
   quizScores: Record<string, number>;
-  /** Null once every module is done. */
-  currentModuleId: string | null;
+  /** Null once every lecture is done. */
+  currentLectureId: string | null;
 };
 
 /** The pass mark for every quiz on the platform. One number, one rule. */
@@ -66,51 +66,50 @@ export const PASS_MARK = 70;
 
 export const ENROLMENTS: Enrolment[] = [
   {
-    programmeId: "circular-economy",
+    moduleId: "provincial-adaptation-plan",
     enrolledOn: "2026-05-19",
-    completedModuleIds: MODULES["circular-economy"].map((m) => m.id),
+    completedLectureIds: LECTURES["provincial-adaptation-plan"].map((m) => m.id),
     // Every score here is a multiple of 25: a quiz is four questions, so those
     // are the only results that exist. See `QUIZ_LENGTH` in `lib/portal.ts`.
     quizScores: {
-      "collect-and-dump-to-recover": 100,
-      "characterising-a-waste-stream": 75,
-      "segregation-at-source": 100,
-      "composting-and-organic-recovery": 75,
-      "recyclables-markets-and-buyers": 100,
-      "economics-of-a-municipal-scheme": 75,
-      "contracts-tenders-service-levels": 100,
-      "past-year-one": 100,
+      "what-the-nap-asks-of-a-province": 100,
+      "reading-the-naps-sector-chapters": 100,
+      "translating-priorities-into-provincial-action": 75,
+      "consulting-divisional-secretariats": 100,
+      "costing-a-localised-adaptation-action": 75,
+      "sequencing-across-the-budget-cycle": 100,
+      "monitoring-a-localised-plan": 100,
     },
-    currentModuleId: null,
+    currentLectureId: null,
   },
   {
-    programmeId: "climate-resilience",
+    moduleId: "climate-vulnerability-assessment",
     enrolledOn: "2026-06-02",
-    completedModuleIds: [
-      "why-climate-reaches-your-desk",
-      "reading-a-climate-risk-assessment",
-      "sri-lanka-exposure",
-      "vulnerability-and-who-carries-it",
+    completedLectureIds: [
+      "why-vulnerability-is-not-risk",
+      "hazard-exposure-sensitivity",
+      "reading-sri-lankas-climate-hazard-data",
+      "building-a-vulnerability-index",
     ],
     quizScores: {
-      "why-climate-reaches-your-desk": 100,
+      "why-vulnerability-is-not-risk": 100,
       // Below the 70% pass mark - the quizzes page has to show a retake as
       // well as a tick, or half of what that screen is for is invisible.
-      "reading-a-climate-risk-assessment": 50,
-      "sri-lanka-exposure": 100,
-      // Module 04 is finished but its quiz has not been attempted - the case
+      "hazard-exposure-sensitivity": 50,
+      "reading-sri-lankas-climate-hazard-data": 100,
+      // Lecture 04 is finished but its quiz has not been attempted - the case
       // the quizzes page is built around.
     },
-    currentModuleId: "inside-the-national-adaptation-plan",
+    currentLectureId: "assessing-adaptive-capacity",
   },
   {
-    programmeId: "sustainable-energy",
+    moduleId: "bankable-climate-finance-proposals",
     enrolledOn: "2026-07-14",
-    completedModuleIds: ["the-grid-you-already-have"],
+    completedLectureIds: ["what-makes-a-project-bankable"],
     quizScores: {
-      "the-grid-you-already-have": 100,
+      "what-makes-a-project-bankable": 100,
     },
-    currentModuleId: "solar-wind-and-what-they-need",
+    currentLectureId: "matching-a-project-to-a-source-of-finance",
   },
 ];
 
@@ -118,33 +117,33 @@ export const ENROLMENTS: Enrolment[] = [
 
 export type Certificate = {
   id: string;
-  programmeId: string;
+  moduleId: string;
   /** Printed on the certificate and checkable against the register. */
   reference: string;
   issuedOn: string;
-  /** Average across the programme's module quizzes, rounded. */
+  /** Average across the module's lecture quizzes, rounded. */
   averageScore: number;
 };
 
 export const CERTIFICATES: Certificate[] = [
   {
-    id: "gp-2026-ce-04817",
-    programmeId: "circular-economy",
-    reference: "GP-2026-CE-04817",
+    id: "gp-2026-pa-04817",
+    moduleId: "provincial-adaptation-plan",
+    reference: "GP-2026-PA-04817",
     issuedOn: "2026-07-28",
-    averageScore: 91,
+    averageScore: 93,
   },
 ];
 
 /* ---------------------------------------------------------------- activity */
 
-export type ActivityKind = "module" | "quiz" | "certificate" | "enrolment";
+export type ActivityKind = "lecture" | "quiz" | "certificate" | "enrolment";
 
 export type ActivityItem = {
   id: string;
   kind: ActivityKind;
   title: string;
-  /** Second line - the programme, or the score. */
+  /** Second line - the module, or the score. */
   detail: string;
   /** ISO date. Rendered through one formatter so the whole portal agrees. */
   on: string;
@@ -159,43 +158,43 @@ export type ActivityItem = {
 export const ACTIVITY: ActivityItem[] = [
   {
     id: "a1",
-    kind: "module",
-    title: "Vulnerability and who carries it",
-    detail: "Climate Resilience & Adaptation",
+    kind: "lecture",
+    title: "Building a vulnerability index",
+    detail: "Climate Vulnerability Assessment",
     on: "2026-08-11",
-    href: "/programmes/climate-resilience/modules/vulnerability-and-who-carries-it",
+    href: "/modules/climate-vulnerability-assessment/lectures/building-a-vulnerability-index",
   },
   {
     id: "a2",
     kind: "quiz",
-    title: "Exposure in Sri Lanka: heat, rain, sea",
+    title: "Reading Sri Lanka's climate hazard data",
     detail: "Passed with 100%",
     on: "2026-08-09",
-    href: "/programmes/climate-resilience/modules/sri-lanka-exposure/quiz",
+    href: "/modules/climate-vulnerability-assessment/lectures/reading-sri-lankas-climate-hazard-data/quiz",
   },
   {
     id: "a3",
-    kind: "module",
-    title: "The grid you already have",
-    detail: "Sustainable Energy Transition",
+    kind: "lecture",
+    title: "What makes a project bankable",
+    detail: "Developing Bankable Climate Finance Proposals",
     on: "2026-07-31",
-    href: "/programmes/sustainable-energy/modules/the-grid-you-already-have",
+    href: "/modules/bankable-climate-finance-proposals/lectures/what-makes-a-project-bankable",
   },
   {
     id: "a4",
     kind: "certificate",
-    title: "Circular Economy & Sustainable Waste",
-    detail: "Certificate GP-2026-CE-04817 issued",
+    title: "Localising the Provincial Adaptation Plan",
+    detail: "Certificate GP-2026-PA-04817 issued",
     on: "2026-07-28",
-    href: "/certificates/gp-2026-ce-04817",
+    href: "/certificates/gp-2026-pa-04817",
   },
   {
     id: "a5",
     kind: "enrolment",
-    title: "Sustainable Energy Transition",
+    title: "Developing Bankable Climate Finance Proposals",
     detail: "Enrolled",
     on: "2026-07-14",
-    href: "/programmes/sustainable-energy",
+    href: "/modules/bankable-climate-finance-proposals",
   },
 ];
 
@@ -212,22 +211,22 @@ export type Question = {
 };
 
 /**
- * A pool of questions per programme, not per module.
+ * A pool of questions per module, not per lecture.
  *
- * In the real platform each module owns its own questions. Authoring five
- * genuine questions for each of the 42 modules is a content job rather than a
- * design one, so the prototype holds five per PROGRAMME and `quizFor()` in
- * `lib/portal.ts` deals a rotating three of them to each module. Every quiz a
+ * In the real platform each lecture owns its own questions. Authoring five
+ * genuine questions for each of the 37 lectures is a content job rather than a
+ * design one, so the prototype holds five per MODULE and `quizFor()` in
+ * `lib/portal.ts` deals a rotating three of them to each lecture. Every quiz a
  * client opens is therefore about the right subject and is genuinely
- * answerable; two quizzes in the same programme will share a question.
+ * answerable; two quizzes in the same module will share a question.
  *
- * The rotation lives in one function, so replacing this with real per-module
+ * The rotation lives in one function, so replacing this with real per-lecture
  * banks means changing that function and nothing else.
  */
 export const QUESTION_POOL: Record<string, Question[]> = {
-  "climate-resilience": [
+  "climate-vulnerability-assessment": [
     {
-      id: "cr1",
+      id: "cva1",
       prompt: "Risk is usually described as the combination of three things. Which set is it?",
       options: [
         "Hazard, exposure and vulnerability",
@@ -240,47 +239,21 @@ export const QUESTION_POOL: Record<string, Question[]> = {
         "A hazard on its own creates no risk. Risk appears when something is exposed to it and is unable to absorb the effect.",
     },
     {
-      id: "cr2",
-      prompt: "A projection quotes a sea-level figure with no scenario and no time horizon. What should you conclude?",
+      id: "cva2",
+      prompt: "What does exposure measure that vulnerability does not?",
       options: [
-        "It is a conservative estimate",
-        "The figure cannot be interpreted as it stands",
-        "It applies to the present day",
-        "It is the worst case",
+        "How much damage an event causes",
+        "Where something sits relative to a hazard",
+        "How quickly a community recovers",
+        "The cost of an adaptation measure",
       ],
       answer: 1,
       explanation:
-        "Every projection is conditional. Without the horizon and the scenario there is nothing to compare the number against.",
+        "Exposure is a location question - what sits in the hazard's path - independent of how well that thing can absorb the impact, which is what vulnerability measures.",
     },
     {
-      id: "cr3",
-      prompt: "What makes a measure a 'no-regrets' measure?",
-      options: [
-        "It has no maintenance cost",
-        "It is funded by a grant",
-        "It is worth doing under today's climate as well as tomorrow's",
-        "It can be reversed at any time",
-      ],
-      answer: 2,
-      explanation:
-        "Because the case does not depend on a projection being right, a no-regrets measure is the easiest kind to defend in a budget hearing.",
-    },
-    {
-      id: "cr4",
-      prompt: "Which of these is an outcome indicator rather than an output indicator?",
-      options: [
-        "Kilometres of drain constructed",
-        "Households not flooded in the following monsoon",
-        "Value of contracts awarded",
-        "Number of officers trained",
-      ],
-      answer: 1,
-      explanation:
-        "Outputs record that the work happened. Outcomes record whether it changed anything, which is what a measure is ultimately judged on.",
-    },
-    {
-      id: "cr5",
-      prompt: "Why is a composite vulnerability index a poor basis for designing an intervention?",
+      id: "cva3",
+      prompt: "Why is a composite vulnerability index dangerous to use alone?",
       options: [
         "It is usually out of date",
         "It cannot be compared between districts",
@@ -291,277 +264,303 @@ export const QUESTION_POOL: Record<string, Question[]> = {
       explanation:
         "Two districts can score identically for opposite reasons. Use the index to decide where to look and the underlying indicators to decide what to do.",
     },
-  ],
-
-  "circular-economy": [
     {
-      id: "ce1",
-      prompt: "Where is most of the value in a waste stream won or lost?",
+      id: "cva4",
+      prompt: "Why does a national hazard dataset need care when used at divisional scale?",
       options: [
-        "At the processing facility",
-        "At the household, before collection",
-        "In the transfer station",
-        "At the point of sale to a buyer",
+        "It is usually inaccurate",
+        "Its resolution was built for a coarser comparison",
+        "It excludes rainfall data",
+        "It is updated too rarely to use",
       ],
       answer: 1,
       explanation:
-        "Mixed waste is worth almost nothing. Keeping materials separate at the moment they are discarded decides nearly all of the economics that follow.",
+        "A national map is built to compare provinces, not to site a specific culvert. Using it at finer scale borrows a precision the data never had.",
     },
     {
-      id: "ce2",
-      prompt: "Why should a characterisation study be run locally rather than using national figures?",
+      id: "cva5",
+      prompt: "What is the purpose of a field verification visit?",
       options: [
-        "National figures are usually out of date",
-        "Composition varies widely between towns and wards",
-        "Donors require a local study",
-        "National figures exclude organic waste",
+        "To collect data for the first time",
+        "To check a desk-based assessment against reality",
+        "To replace the vulnerability index entirely",
+        "To satisfy a funder's reporting requirement",
       ],
       answer: 1,
       explanation:
-        "Organic fractions can range from roughly forty to seventy per cent between locations, and a facility sized on the wrong figure is very expensive to correct.",
-    },
-    {
-      id: "ce3",
-      prompt: "A separation scheme is being launched. What does the evidence suggest about the number of streams?",
-      options: [
-        "Start with four so households learn once",
-        "Start with two and split later",
-        "Start with three, always",
-        "The number makes no measurable difference",
-      ],
-      answer: 1,
-      explanation:
-        "Adding streams at launch raises the error rate on all of them. Two well-understood streams, held for a year, outperform four introduced at once.",
-    },
-    {
-      id: "ce4",
-      prompt: "Which figure usually contributes most to a municipal scheme's financial case?",
-      options: [
-        "Revenue from selling recovered material",
-        "Grant funding for equipment",
-        "Avoided disposal cost",
-        "Household collection fees",
-      ],
-      answer: 2,
-      explanation:
-        "Material sales rarely fund a scheme. The tonnage that no longer has to be collected, hauled and buried is where the saving is.",
-    },
-    {
-      id: "ce5",
-      prompt: "A collection contract is being drafted. Which clause matters most for the authority's long-term position?",
-      options: [
-        "The specified vehicle type",
-        "Ownership of operational data",
-        "The uniform standard for crews",
-        "The depot location",
-      ],
-      answer: 1,
-      explanation:
-        "Without the weighbridge records the authority cannot verify performance, retender competitively or report its own diversion rate.",
+        "A desk-based index is a hypothesis about a place. A short, structured field visit is what turns that hypothesis into an assessment somebody can act on.",
     },
   ],
 
-  "sustainable-energy": [
+  "provincial-adaptation-plan": [
     {
-      id: "se1",
-      prompt: "Why does Sri Lanka's evening demand peak complicate a solar-led transition?",
+      id: "pap1",
+      prompt: "What is the most common reason a NAP action fails to reach the province responsible for it?",
       options: [
-        "Solar panels degrade faster in the evening",
-        "Transmission losses are highest after dark",
-        "Solar output is zero when demand is highest",
-        "Tariffs are lower in the evening",
+        "The action is technically infeasible",
+        "Nobody at the provincial level was told it exists",
+        "The province lacks any relevant staff",
+        "The action was written for a different country",
+      ],
+      answer: 1,
+      explanation:
+        "Most localisation failures are administrative, not technical - the action simply was never routed to a named owner.",
+    },
+    {
+      id: "pap2",
+      prompt: "Which of these is a well-localised version of a national priority?",
+      options: [
+        "Strengthen drainage resilience in flood-prone areas",
+        "Improve infrastructure nationwide",
+        "A costed culvert upgrade on a named road, sized to a stated rainfall figure",
+        "Support climate adaptation in general",
       ],
       answer: 2,
       explanation:
-        "The mismatch between an evening peak and daytime generation drives almost every hard decision in the transition, including storage and which thermal plant retires last.",
+        "Specificity is what makes an action fundable. A named site with an estimated cost is something a budget officer can act on.",
     },
     {
-      id: "se2",
-      prompt: "What does a capacity factor tell you?",
+      id: "pap3",
+      prompt: "Why should a localisation exercise consult divisional secretariats directly?",
       options: [
-        "The share of the year a plant is available",
-        "Actual output as a share of nameplate capacity",
-        "The plant's efficiency at peak load",
-        "How much of the grid the plant can serve",
+        "It is a legal requirement",
+        "They hold local knowledge no national dataset carries",
+        "It reduces the cost of the exercise",
+        "It replaces the need for hazard data",
       ],
       answer: 1,
       explanation:
-        "Nameplate capacity is what a plant can do at its best moment. Capacity factor is what it actually produces across a year, and it makes two proposals comparable.",
+        "Divisional secretariats know which roads actually flood and which measures were already tried - knowledge a desk exercise cannot recover on its own.",
     },
     {
-      id: "se3",
-      prompt: "A battery is described as 5 MW / 20 MWh. What does the second figure describe?",
+      id: "pap4",
+      prompt: "Why present a localised action's cost as a range rather than a single figure?",
       options: [
-        "How hard it can push at any instant",
-        "How long it can sustain that output",
-        "Its total lifetime output",
-        "The size of the plant it serves",
+        "Ranges are required by the treasury",
+        "A single figure invites challenge the moment ground conditions differ from its assumption",
+        "Ranges are easier to calculate",
+        "Single figures cannot be audited",
       ],
       answer: 1,
       explanation:
-        "Megawatts is power, megawatt-hours is energy. Duration is where cost grows fastest, so storage should be sized against a specific duty.",
+        "A cost presented as a bounded range, with its assumptions stated, survives scrutiny because it has already admitted where it could be wrong.",
     },
     {
-      id: "se4",
-      prompt: "Two proposals are being evaluated. Why is capital cost alone a poor criterion?",
+      id: "pap5",
+      prompt: "What usually happens to an adaptation submission asking for every action in one budget year?",
       options: [
-        "It excludes taxes and duties",
-        "It is only half to two thirds of lifetime cost",
-        "It cannot be verified at bid stage",
-        "It varies with exchange rates",
+        "It is approved in full more often",
+        "It is the easiest one to cut in full",
+        "It automatically rolls over to next year",
+        "It receives priority processing",
       ],
       answer: 1,
       explanation:
-        "Scoring only the capital number reliably selects equipment that is cheap to install and expensive to keep running, and the authority carries the difference.",
-    },
-    {
-      id: "se5",
-      prompt: "Public solar installations often stop producing within a few years. What is the usual cause?",
-      options: [
-        "Equipment failure under tropical conditions",
-        "Grid connection being withdrawn",
-        "No one assigned to monitor output and maintain the plant",
-        "Tariff changes making operation uneconomic",
-      ],
-      answer: 2,
-      explanation:
-        "It is nearly always a handover problem: nobody holds the monitoring access, and cleaning and maintenance were never attached to a post with a budget.",
+        "A sequenced submission - a smaller first-year ask that unlocks a larger second one - survives a tight budget round better than an ambitious one submitted whole.",
     },
   ],
 
-  "green-finance": [
+  "bankable-climate-finance-proposals": [
     {
-      id: "gf1",
-      prompt: "What does the grant element of a loan measure?",
+      id: "bcf1",
+      prompt: "What makes a project 'bankable' rather than simply worthwhile?",
       options: [
-        "The portion that need not be repaid",
-        "How far the terms sit below market terms",
-        "The share funded by a donor",
-        "Interest waived during the grace period",
+        "It has government backing",
+        "It produces a measurable return or saving a funder can point to",
+        "It is technically innovative",
+        "It has no environmental impact",
       ],
       answer: 1,
       explanation:
-        "It combines rate, tenor, grace period and fees into a single percentage, which is what allows two offers to be compared honestly.",
+        "A project can be entirely worth doing and still not be bankable if nothing about it produces a measurable return a funder can point to.",
     },
     {
-      id: "gf2",
-      prompt: "Most climate funds are accessed through which route?",
+      id: "bcf2",
+      prompt: "A revenue-generating project pitched only for grant funding is making what mistake?",
       options: [
-        "Direct application by the implementing department",
-        "An accredited entity",
-        "The national treasury only",
-        "A commercial bank acting as agent",
+        "Asking for too much money",
+        "Wasting the strongest thing the project has",
+        "Underestimating construction costs",
+        "Ignoring the climate rationale",
       ],
       answer: 1,
       explanation:
-        "The choice of accredited entity shapes the proposal itself, which is why it is a decision to take early rather than an administrative step.",
+        "Matching the finance type to a project's actual cash flow is decided before the proposal is drafted - a revenue-generating project belongs with a different source.",
     },
     {
-      id: "gf3",
-      prompt: "What is a green bond's use-of-proceeds framework for?",
+      id: "bcf3",
+      prompt: "What does a strong climate rationale have to do?",
       options: [
-        "Setting the coupon rate",
-        "Guaranteeing the principal",
-        "Stating what the money may fund and what will be reported",
-        "Certifying the issuer's credit rating",
+        "Cite as many co-benefits as possible",
+        "Connect the intervention to a climate outcome by steps someone can check",
+        "Avoid mentioning cost",
+        "Focus only on emissions reduced",
       ],
-      answer: 2,
+      answer: 1,
       explanation:
-        "Investors are buying the framework as much as the credit. The reporting it commits to continues for the life of the bond.",
+        "A rationale that asserts a benefit without a checkable chain of steps does not survive review; each link has to be something a reader can follow and dispute.",
     },
     {
-      id: "gf4",
-      prompt: "In project finance terms, risk should generally be allocated to:",
+      id: "bcf4",
+      prompt: "In project finance terms, where should risk generally sit?",
       options: [
-        "The party best able to manage it",
-        "The party with the deepest balance sheet",
-        "The public sector in all cases",
-        "Whichever party the funder prefers",
+        "With the party that has the deepest balance sheet",
+        "With the party best able to manage it",
+        "Always with the public sector",
+        "Wherever the funder prefers",
       ],
-      answer: 0,
+      answer: 1,
       explanation:
-        "Demand risk placed on a contractor who cannot influence demand is priced heavily or refused; retained by the authority it may cost far less overall.",
+        "Demand risk placed on a contractor who cannot influence demand is priced heavily or refused; retained by the party that can manage it, it often costs far less.",
     },
     {
-      id: "gf5",
-      prompt: "Why should a proposal include the case in which the project underperforms?",
+      id: "bcf5",
+      prompt: "Why include a downside case in a financial model?",
       options: [
-        "It is a mandatory annex",
-        "It reduces the interest rate offered",
+        "It is a mandatory annex in every template",
         "Appraisers will find it anyway, and naming it builds credibility",
+        "It lowers the interest rate offered",
         "It transfers liability to the funder",
       ],
-      answer: 2,
+      answer: 1,
       explanation:
-        "Stating the point at which the project stops being viable is a signal of a model worth trusting on everything else.",
+        "Stating the point at which a project stops being viable is a signal of a model worth trusting on everything else.",
     },
   ],
 
-  "mobility-landscapes": [
+  "gender-social-inclusion": [
     {
-      id: "ml1",
-      prompt: "Where budget forces a choice, which usually carries more passengers?",
+      id: "gsi1",
+      prompt: "Why does a GSI lens have to be applied from the first consultation, not added afterward?",
       options: [
-        "Wider coverage across many routes",
-        "Higher frequency on fewer corridors",
-        "Newer vehicles on existing routes",
-        "Lower fares across the network",
+        "It is a legal requirement",
+        "A GSI annex added after a plan is written rarely changes what the plan does",
+        "It reduces the cost of the plan",
+        "It is faster to do afterward",
       ],
       answer: 1,
       explanation:
-        "A service every ten minutes needs no timetable and no planning by its user. An hourly service loses everyone who has an alternative.",
+        "Mainstreaming succeeds or fails at specific decision points made early on; adding a review chapter at the end changes very little about what the plan actually does.",
     },
     {
-      id: "ml2",
-      prompt: "Where are public transport trips most often abandoned?",
+      id: "gsi2",
+      prompt: "Which of these is a meaningful GSI indicator?",
       options: [
-        "At the origin stop",
-        "At the transfer between services",
-        "At the destination end",
-        "During the main line-haul",
+        "Number of women who attended a meeting",
+        "Change in who holds a decision-making role after an intervention",
+        "Number of leaflets distributed",
+        "Number of consultations held",
       ],
       answer: 1,
       explanation:
-        "An unsheltered wait, a road to cross or a second fare loses the trip. Fixing an interchange usually buys more ridership per rupee than new vehicles.",
+        "Attendance measures who showed up, not whether anything changed. A meaningful indicator tracks a real shift - access, role or resource control.",
     },
     {
-      id: "ml3",
-      prompt: "Why does mangrove restoration most often fail?",
+      id: "gsi3",
+      prompt: "Why is a single, centrally held public meeting often exclusionary?",
       options: [
-        "The wrong species was planted",
-        "Seedlings were too young",
-        "The site's hydrology was never restored",
-        "Salinity was too high",
-      ],
-      answer: 2,
-      explanation:
-        "The species is frequently right and the water wrong. Restoring tidal flow, sometimes on its own, outperforms planting on a site that cannot support it.",
-    },
-    {
-      id: "ml4",
-      prompt: "What is the usual consequence of protecting one stretch of coast with a hard sea wall?",
-      options: [
-        "Erosion reappears beyond the end of the structure",
-        "Sediment accumulates evenly along the coast",
-        "Wave energy is absorbed permanently",
-        "The beach in front of it widens",
-      ],
-      answer: 0,
-      explanation:
-        "Hard defences interrupt sediment movement along the shore, which is why coastal protection assessed one property at a time leaves a district worse off.",
-    },
-    {
-      id: "ml5",
-      prompt: "Why is street shade treated as infrastructure in this programme?",
-      options: [
-        "It reduces road maintenance costs",
-        "An unshaded footpath is unusable for much of the day",
-        "It is required by the planning rules",
-        "It lowers vehicle emissions directly",
+        "It is too expensive to organise",
+        "It assumes the attendee is free at that time and place",
+        "It requires too much paperwork",
+        "It reduces attendance overall",
       ],
       answer: 1,
       explanation:
-        "In this climate the surface is not what stops people walking. Trees are the cheapest intervention available and the slowest to mature, so they are planted first.",
+        "A weekday afternoon meeting at a district office assumes the attendee does not have paid or unpaid care responsibilities at that hour - an unexamined assumption, not a deliberate exclusion.",
+    },
+    {
+      id: "gsi4",
+      prompt: "What makes a GSI requirement operationally meaningful, rather than a wish?",
+      options: [
+        "It uses the word 'inclusive'",
+        "It is attached to a specific, checkable decision point",
+        "It appears in the plan's introduction",
+        "It is signed by a senior official",
+      ],
+      answer: 1,
+      explanation:
+        "'Gender considerations will be taken into account' commits nobody to anything; a checkable requirement attached to a specific decision - like a panel composition rule - actually changes what happens.",
+    },
+    {
+      id: "gsi5",
+      prompt: "What should happen after a consultation surfaces an exclusion finding?",
+      options: [
+        "Nothing, until the next full review",
+        "A visible response, even if partial",
+        "The finding should be removed from the report",
+        "A new consultation should be held immediately",
+      ],
+      answer: 1,
+      explanation:
+        "A community that raises an issue and sees no visible response learns not to raise it again. The response does not need to be complete, but it needs to be visible.",
+    },
+  ],
+
+  "gender-responsive-budgeting": [
+    {
+      id: "grb1",
+      prompt: "What is the most common misunderstanding about gender-responsive budgeting?",
+      options: [
+        "That it requires new legislation",
+        "That it means setting aside a separate fund for women",
+        "That it only applies to health and education",
+        "That it cannot be audited",
+      ],
+      answer: 1,
+      explanation:
+        "GRB is a method for examining and adjusting the whole budget for who it reaches - it does not create a separate, earmarked fund.",
+    },
+    {
+      id: "grb2",
+      prompt: "Why can a budget line written in gender-neutral language still be gender-unequal in effect?",
+      options: [
+        "Because budgets are always biased",
+        "Because who actually uses a service can differ sharply even when the line's wording does not name any group",
+        "Because gender-neutral language is illegal",
+        "Because it is never checked",
+      ],
+      answer: 1,
+      explanation:
+        "'Agricultural extension services' sounds neutral, but if officers visit only during hours or channels one group can access, the line reaches groups very unevenly in practice.",
+    },
+    {
+      id: "grb3",
+      prompt: "What is the main weakness of a gender budget statement that lists spending by ministry with no further comment?",
+      options: [
+        "It is too long",
+        "It restates the budget without analysing who it reaches",
+        "It omits the treasury's letterhead",
+        "It uses too many numbers",
+      ],
+      answer: 1,
+      explanation:
+        "A statement that lists figures without analysis is rejected as often as it is approved - reviewers are checking for analysis, not a restated budget.",
+    },
+    {
+      id: "grb4",
+      prompt: "Where does most sex-disaggregated administrative data actually come from?",
+      options: [
+        "A dedicated national household survey",
+        "Existing beneficiary registers and attendance records not yet analysed by sex",
+        "Data purchased from a private vendor",
+        "It generally does not exist anywhere",
+      ],
+      answer: 1,
+      explanation:
+        "Beneficiary registers and attendance sheets are frequently already collected by sex, even where nobody has analysed them that way yet.",
+    },
+    {
+      id: "grb5",
+      prompt: "Why does uncounted gender-responsive spending weaken an institution's next budget request?",
+      options: [
+        "It has no effect on future requests",
+        "A completed, evidenced report is the strongest argument for the next allocation, and uncounted spending provides none",
+        "It triggers an automatic audit",
+        "It reduces the pass mark for future submissions",
+      ],
+      answer: 1,
+      explanation:
+        "A well-evidenced report is proof the previous investment worked. Spending that was never tagged and reported cannot be used to make that case.",
     },
   ],
 };

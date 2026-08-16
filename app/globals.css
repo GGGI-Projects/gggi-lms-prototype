@@ -78,7 +78,7 @@
      Their lightness is set by contrast, not by eye. `accent-strong` is the
      largest L that still clears 4.5:1 on `surface` - the DARKER of the two
      light grounds it appears on, so the certificate section governs and the
-     programmes section gets margin. It measures 5.04 on paper and 4.54 on
+     modules section gets margin. It measures 5.04 on paper and 4.54 on
      surface, against 4.03 and 3.63 before: the 14px `EYEBROW.accent` was
      failing AA on both, and now clears on both. */
   --color-accent: #f3ba32;
@@ -100,7 +100,7 @@
   --color-plum: #6d3d7b;
   --color-plum-pale: #f0e7f4;
 
-  /* Mid steps, for the programme illustrations only. A `-pale` is a wash and
+  /* Mid steps, for the module illustrations only. A `-pale` is a wash and
      a full hue is a mark; a small SVG needs the step between them to model a
      ridge or a bar without going flat. */
   --color-clay-soft: #dfa285;
@@ -123,7 +123,7 @@
 
   /* --- Highlight: the sun and warm washes in the artwork -----------------
      This one IS the hero's gold, to the eye. It only ever fills artwork - the
-     sun in the programme thumbnails, warm gradient stops - never text and
+     sun in the module thumbnails, warm gradient stops - never text and
      never a control, so nothing constrains it and it can sit at the season
      accent's own lightness and chroma. */
   --color-highlight: #fec43a;
@@ -387,7 +387,7 @@ body {
   font-weight: 700;
 }
 
-/* The oversized 01–05 numerals in the programmes list. */
+/* The oversized 01–05 numerals in the modules list. */
 .text-numeral {
   font-family: var(--font-display);
   font-size: clamp(3.25rem, 8vw, 6.5rem);
@@ -1355,7 +1355,7 @@ html:has(dialog[open]) {
    * page's "go" colour nor a warning - exporting a record, generating a file,
    * anything that HANDLES data rather than encouraging or endangering
    * something. Marine is already this console's `info` role everywhere else
-   * (`<Callout tone="info">`, the draft-programme notice), so a marine button
+   * (`<Callout tone="info">`, the draft-module notice), so a marine button
    * reads as "here is information" without having to be read twice.
    */
   .btn-info {

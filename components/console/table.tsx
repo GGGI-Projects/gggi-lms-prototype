@@ -139,7 +139,7 @@ export function NameCell({
   subtitle,
 }: {
   href: string;
-  /** Omit for rows that are not people - a programme, a certificate. */
+  /** Omit for rows that are not people - a module, a certificate. */
   initials?: string;
   title: string;
   subtitle?: string;

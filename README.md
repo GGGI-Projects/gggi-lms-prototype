@@ -20,16 +20,17 @@ come next.
 ## Ground rules this prototype follows
 
 **No GGGI branding anywhere.** The platform reads as a standalone product - no
-logo, no name, no borrowed colours. The subject matter is drawn from the
-green-growth priorities that actually apply to Sri Lankan ministries
-(adaptation, circular economy and waste, renewable energy, green finance,
-mobility and landscapes), but the organisation is never named. There is a
-`grep -ci gggi` check worth re-running after any copy change.
+logo, no name, no borrowed colours. The subject matter is the client's real
+first curriculum (climate vulnerability assessment, provincial adaptation
+planning, bankable climate finance proposals, and gender equality & social
+inclusion including gender-responsive budgeting), but the organisation is
+never named. There is a `grep -ci gggi` check worth re-running after any copy
+change.
 
-**No backend.** Every number, programme and answer comes from
+**No backend.** Every number, module and answer comes from
 `content/site.ts`. Nothing fetches, nothing persists.
 
-**No dead ends.** The programme rows expand in place rather than linking to
+**No dead ends.** The module rows expand in place rather than linking to
 detail pages that do not exist yet, so nothing 404s during a demo. The only
 links that leave the page are `/signup` and `/login`, which are the next things
 to build.
@@ -46,7 +47,7 @@ certificate mock - reads from one file:
 export const BRAND = {
   name: "GreenPath",
   suffix: "Academy",
-  tagline: "Foundations for Sri Lanka's green transition",
+  tagline: "Foundations for Sri Lanka's climate and inclusion agenda",
   // ...
 };
 ```
@@ -88,7 +89,7 @@ components/
 scripts/
   generate-globe.mjs  regenerates the coastlines from Natural Earth
   site/               header, footer
-  sections/           hero, marquee, mission, programmes, journey,
+  sections/           hero, marquee, mission, modules, journey,
                       certificate, audience, faq, closing CTA
 ```
 

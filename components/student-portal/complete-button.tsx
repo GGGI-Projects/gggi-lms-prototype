@@ -7,19 +7,19 @@ import { CheckIcon } from "@/components/student-portal/icons";
 /**
  * "Mark as complete".
  *
- * The one control on the module page that changes state, and in a prototype
+ * The one control on the lecture page that changes state, and in a prototype
  * with no backend it changes state for exactly as long as the page is open.
  * It says so once it has been pressed rather than pretending to have saved -
  * the same choice the sign-up form makes, and for the same reason: a client
  * who presses it, navigates away and comes back to find the tick gone will
  * spend the rest of the demo wondering what else is broken.
  *
- * It stays pressable after the fact so a learner can un-mark a module they
+ * It stays pressable after the fact so a learner can un-mark a lecture they
  * ticked by accident. A completion control that only goes one way is one
  * people are afraid to press.
  */
 export function CompleteButton({
-  /** True when the mock data already has this module finished. */
+  /** True when the mock data already has this lecture finished. */
   initiallyComplete,
   className = "",
 }: {
