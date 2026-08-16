@@ -179,6 +179,29 @@ function PinnedJourney() {
 
               {NODE_Y.map((y, i) => {
                 const reached = i <= active;
+
+                // Handed to BOTH `initial` and `animate` below. `active` starts
+                // at 0, so node 0 is already `reached` on the very first paint -
+                // without an explicit `initial`, motion has no starting colour
+                // to animate `fill`/`stroke` FROM on mount and logs "trying to
+                // animate fill from undefined". `initial` only matters at mount,
+                // so handing it the current values is correct, not a duplicate
+                // of `animate`: every later re-render, only `animate` is read.
+                const nodeColors = {
+                  fill: reached
+                    ? "var(--color-accent)"
+                    : "var(--color-marine-950)",
+                  stroke: reached
+                    ? "var(--color-accent)"
+                    : "var(--color-marine-800)",
+                  scale: i === active ? 1.25 : 1,
+                };
+                const labelColor = {
+                  fill: reached
+                    ? "var(--color-marine-950)"
+                    : "var(--color-marine-600)",
+                };
+
                 return (
                   <g key={y}>
                     {reached ? (
@@ -204,15 +227,8 @@ function PinnedJourney() {
                       cx="100"
                       cy={y}
                       r="11"
-                      animate={{
-                        fill: reached
-                          ? "var(--color-accent)"
-                          : "var(--color-marine-950)",
-                        stroke: reached
-                          ? "var(--color-accent)"
-                          : "var(--color-marine-800)",
-                        scale: i === active ? 1.25 : 1,
-                      }}
+                      initial={nodeColors}
+                      animate={nodeColors}
                       transition={{ duration: 0.5, ease: EASE }}
                       strokeWidth="2"
                     />
@@ -222,11 +238,8 @@ function PinnedJourney() {
                       textAnchor="middle"
                       dominantBaseline="middle"
                       className="font-display text-[11px]"
-                      animate={{
-                        fill: reached
-                          ? "var(--color-marine-950)"
-                          : "var(--color-marine-600)",
-                      }}
+                      initial={labelColor}
+                      animate={labelColor}
                       transition={{ duration: 0.4 }}
                     >
                       {i + 1}

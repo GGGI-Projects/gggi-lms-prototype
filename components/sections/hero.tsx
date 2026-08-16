@@ -12,6 +12,7 @@ import { SeasonParticles } from "@/components/hero/season-particles";
 import { YearRibbon } from "@/components/hero/year-ribbon";
 import { useSeason } from "@/components/hero/season-provider";
 import { useInViewport } from "@/components/motion/viewport";
+import { usePerfTier } from "@/components/motion/use-perf-tier";
 import { HEADING } from "@/lib/theme";
 
 /**
@@ -45,6 +46,14 @@ export function Hero() {
   // section nobody is looking at.
   const ref = useRef<HTMLElement>(null);
   const visible = useInViewport(ref);
+
+  // The rotating phrase's blur-in/out is a live `filter` animated by `motion`
+  // every ~6s, not a CSS keyframe - so `[data-perf="low"]` in globals.css
+  // cannot reach it. A `filter`, even at low tier, is its own GPU pass every
+  // frame of the transition; the low tier keeps the same opacity/position
+  // motion and just stops asking for that pass. See use-perf-tier.ts for why
+  // this always reads "high" until an effect corrects it.
+  const tier = usePerfTier();
 
   return (
     <section
@@ -140,9 +149,21 @@ export function Hero() {
               <AnimatePresence mode="wait" initial={false}>
                 <motion.span
                   key={season.key}
-                  initial={{ opacity: 0, y: 16, filter: "blur(8px)" }}
-                  animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                  exit={{ opacity: 0, y: -14, filter: "blur(8px)" }}
+                  initial={
+                    tier === "low"
+                      ? { opacity: 0, y: 16 }
+                      : { opacity: 0, y: 16, filter: "blur(8px)" }
+                  }
+                  animate={
+                    tier === "low"
+                      ? { opacity: 1, y: 0 }
+                      : { opacity: 1, y: 0, filter: "blur(0px)" }
+                  }
+                  exit={
+                    tier === "low"
+                      ? { opacity: 0, y: -14 }
+                      : { opacity: 0, y: -14, filter: "blur(8px)" }
+                  }
                   transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
                   className="inline-block"
                 >

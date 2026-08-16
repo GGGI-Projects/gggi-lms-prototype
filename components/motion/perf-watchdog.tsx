@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { PERF_ATTRIBUTE, PERF_FORCED_ATTRIBUTE } from "@/lib/perf-tier";
 
 /**
@@ -27,7 +28,33 @@ import { PERF_ATTRIBUTE, PERF_FORCED_ATTRIBUTE } from "@/lib/perf-tier";
  *
  * There is no promotion, only demotion. A page that decides mid-scroll that it
  * can afford more is a page that stutters at the moment it changes its mind.
+ *
+ * THE WATCH IS SCOPED TO THE LANDING PAGE, RE-ARMED ON EVERY VISIT TO IT.
+ *
+ * This component lives in the root layout, which Next never remounts on
+ * client-side navigation - so a naive "watch once from mount" runs its entire
+ * 2.5s-settle-then-6s-window cycle exactly once, at whatever moment the tab
+ * first loaded, and never again. That window is easy to still be inside when
+ * someone reads the hero and clicks through to Login or a programme: the jank
+ * from THAT page's transition and hydration got attributed to the globe, and
+ * because `data-perf="low"` sits on `<html>`, which persists for the rest of
+ * the tab, the globe stayed off forever afterwards - including on every later
+ * trip back to this page, on a machine that never actually struggled to turn
+ * it. That is the bug this file used to have: demotion by a page the visitor
+ * was not even looking at, sticking for a session that had barely started.
+ *
+ * The fix is to only arm the watch while the landing page is the active
+ * route, and to re-arm a fresh settle-then-window cycle every time the route
+ * becomes it again - `pathname` is a dependency of the effect below. "No
+ * promotion, only demotion" still holds within that: the early return for an
+ * already-low tier is untouched, so a demotion that really did happen while
+ * this page was on screen still stands for the rest of the session. What
+ * changes is that a demotion can no longer be blamed on a page nobody was
+ * looking at.
  */
+
+/** The only route this page's ambience runs on. */
+const WATCHED_PATH = "/";
 
 /** Let hydration, fonts and the hero entrance finish before judging anything. */
 const SETTLE_MS = 2500;
@@ -49,7 +76,16 @@ const SLOW_FRAME_LIMIT = 12;
 const STALL_MS = 1000;
 
 export function PerfWatchdog() {
+  const pathname = usePathname();
+
   useEffect(() => {
+    // Off the landing page there is no globe to protect, and more importantly
+    // no jank from HERE should ever be attributed to it. Leaving this page
+    // also runs this cleanup (see below), so a cycle that was mid-window when
+    // the visitor clicked away is cancelled rather than left running against
+    // whatever they navigated to.
+    if (pathname !== WATCHED_PATH) return;
+
     const root = document.documentElement;
 
     // A tier chosen by hand stands, and the pre-paint guess having already said
@@ -74,6 +110,11 @@ export function PerfWatchdog() {
       settle = window.setTimeout(begin, SETTLE_MS);
     };
 
+    // On the very first load of the tab this waits for `load` like before.
+    // On every later arrival at this route the document is already
+    // `complete` - it has been for however long the visitor spent elsewhere -
+    // so this takes the true branch immediately and the settle timer starts
+    // right away, timing this visit rather than the tab's first one.
     if (document.readyState === "complete") afterLoad();
     else window.addEventListener("load", afterLoad, { once: true });
 
@@ -83,7 +124,7 @@ export function PerfWatchdog() {
       window.removeEventListener("load", afterLoad);
       release();
     };
-  }, []);
+  }, [pathname]);
 
   return null;
 }

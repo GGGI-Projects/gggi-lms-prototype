@@ -1734,18 +1734,90 @@ html:has(dialog[open]) {
 
    This is also why none of it is a media query. Being on a phone is not the
    same thing as being slow, and a 2019 laptop is not a phone at all.
+
+   NOTHING BELOW TURNS ANYTHING OFF ANY MORE. This block used to be a list of
+   `display: none`, and that is no longer the brief: every visible thing here
+   must keep running on every machine. What follows is instead the actual
+   per-frame cost of each one, and the specific change that buys it down -
+   cheaper, not absent.
    ========================================================================== */
 
-[data-perf="low"] .particle,
-[data-perf="low"] .season-sweep,
-[data-perf="low"] .cursor-glow,
+/**
+ * The globe's rotation is the one animation that was never allowed to stop -
+ * see the note by `.globe-spin` in the reduced-motion block below, which made
+ * the same call for the accessibility gate. Here is the performance side.
+ *
+ * Two costs stack on every frame: the `translateX` itself, and a re-raster of
+ * the ~1,397-command land path forced by `--season-ocean` / `--season-land`
+ * changing under it - the fill is inherited from `.season-clock`, so the SVG
+ * cannot be treated as "rasterise once, then move" for as long as its own
+ * colour is still interpolating. `.season-clock`'s `step-end` above already
+ * cuts that second cost by roughly 60x on its own (4 recolours a minute
+ * instead of 60 a second) - most of a settled low-tier frame is genuinely a
+ * pure translate now, which is why the rotation stays plain `linear` here:
+ * there used to be a `steps(90)` on this rule as a second saving on top of
+ * that. The arithmetic was wrong to ship - 54s over 90 steps is a ~600ms hold
+ * between jumps, which does not read as "a cheaper rotation", it reads as the
+ * globe freezing and lurching, repeatedly, forever. A quantised motion only
+ * reads as smooth at a step interval well under what a person can perceive as
+ * a discrete frame (order of 50ms, not 600) - fine print that got lost
+ * chasing a bigger number. `step-end` above already does the real work; this
+ * rule is not worth re-adding until it is tuned against an actual recording,
+ * not arithmetic done at review time.
+ */
+
+/**
+ * The halo's own comment already named the cost: `mix-blend-mode` forces a
+ * backdrop read every frame it is on screen, because the browser has to keep
+ * sampling whatever is now underneath it rather than compositing two static
+ * layers. Losing the blend mode was the old fix, and it is not this one - the
+ * blend is what keeps the glow from becoming a visible pale blob crossing the
+ * dark hero, which is a real regression, not a cheaper version of the same
+ * thing. What scales down instead is the AREA being read: half the diameter
+ * is a quarter of the backdrop pixels sampled per frame, for a glow that is
+ * still visibly there and still the right colour over both grounds.
+ */
+[data-perf="low"] .cursor-glow {
+  width: 22rem;
+  height: 22rem;
+  margin: -11rem 0 0 -11rem;
+}
+
+/**
+ * Grain has no comparable trade-off - it is not readable as "over the hero
+ * vs. over paper" the way the cursor halo is, it is a few percent of texture
+ * over everything. `mix-blend-mode: multiply` is what turned a free
+ * independently-composited `position: fixed` layer into one the browser has
+ * to recompute every scrolled frame (see the note above `.grain-overlay`);
+ * dropping to the default blend and compensating the opacity keeps the same
+ * layer cheap to composite - it no longer needs to know what is underneath it
+ * at all - at the cost of a slightly flatter texture than a true multiply.
+ */
 [data-perf="low"] .grain-overlay {
+  mix-blend-mode: normal;
+  opacity: 0.08;
+}
+
+/* Same move already used for phones below (`nth-child(n+9)`), for the same
+   reason: fewer elements carrying an animated, season-tinted fill is fewer
+   re-rasters, and the field still reads as weather at eight. Summer's motes
+   drop their `blur(1px)` too - a filter is its own GPU pass per element,
+   charged twenty-two times a season regardless of how cheap the blur itself
+   is. */
+[data-perf="low"] .particle:nth-child(n + 9) {
   display: none;
 }
 
-/* The Earth stays, and stops turning. It is the composition; the rotation is
-   the ambience - and it is the single most expensive animation on the page. */
-[data-perf="low"] .globe-spin,
+[data-perf="low"] .particle-summer {
+  filter: none;
+}
+
+/* The Earth stays. The rotation is the one animation on this page that is
+   never gated by hardware - see `.globe-spin` above and in the reduced-motion
+   block below for both halves of that decision. The marker's pulse is the one
+   thing here still worth dropping outright: it is a second always-on
+   animation on the same subtree as the rotation, and unlike the rotation
+   itself it is small enough that stopping it costs nothing to look at. */
 [data-perf="low"] .sl-pulse {
   animation: none;
 }
@@ -1845,15 +1917,30 @@ html:has(dialog[open]) {
    * What `prefers-reduced-motion` is asking for is an end to movement -
    * vestibular triggers, things that fly across the screen. A 24-second
    * crossfade between four dark palettes is neither. Everything that actually
-   * MOVES stays switched off by the rule above: the globe does not turn, the
-   * particles are not rendered at all (SeasonParticles returns null), the
-   * marquee stands still, the sweep does not travel.
+   * MOVES stays switched off by the rule above: the particles are not rendered
+   * at all (SeasonParticles returns null), the marquee stands still, the sweep
+   * does not travel.
    *
    * Specificity is what makes this work - `.season-clock` beats `*`, and
    * between two `!important` declarations the more specific one wins.
    */
   .season-clock {
     animation-duration: 24s !important;
+    animation-iteration-count: infinite !important;
+  }
+
+  /**
+   * The globe is a second, deliberate exception - on request, not by the same
+   * reasoning as the year above. A slow rotation IS motion, and the honest
+   * default would have been to stop it here like every other moving thing on
+   * the page. It keeps turning anyway because the brief is "it must rotate on
+   * any computer," full stop, including for a visitor whose system is telling
+   * every site on it to calm down. That is a real trade-off against a real
+   * accessibility signal, made knowingly rather than missed - if it ever needs
+   * revisiting, this is the rule to delete.
+   */
+  .globe-spin {
+    animation-duration: 54s !important;
     animation-iteration-count: infinite !important;
   }
 }
