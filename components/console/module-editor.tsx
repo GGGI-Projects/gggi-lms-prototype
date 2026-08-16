@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { ActionButton } from "@/components/ui/action-button";
 import { BODY, CONSOLE, HEADING, META } from "@/lib/theme";
 import type { ContentBlock, Module } from "@/content/curriculum";
 import type { QuizStats } from "@/content/operations";
@@ -29,6 +30,7 @@ import { KindMark, KIND_LABEL, type LibraryKindKey } from "@/components/console/
 import { IfCan, LockedNote } from "@/components/console/permission";
 import { MODULE_STATE_LABEL, MODULE_STATE_TONE } from "@/components/console/status";
 import {
+  ArrowRightIcon,
   ClockIcon,
   ReadingIcon,
   VideoIcon,
@@ -232,12 +234,10 @@ export function ModuleEditor({
           description={`${quiz.questions ? `${quiz.questions} questions` : "No questions"} close this module. The pass mark is ${quiz.passMark}% and is set once for the whole platform.`}
           action={
             quiz.questions ? (
-              <Link
-                href={hrefs.quiz}
-                className="link-wipe text-lg font-semibold text-primary"
-              >
+              <ActionButton href={hrefs.quiz} variant="line" size="sm">
                 Manage the quiz
-              </Link>
+                <ArrowRightIcon className="size-4" />
+              </ActionButton>
             ) : null
           }
         >

@@ -43,6 +43,7 @@ import {
 } from "@/components/console/material-parts";
 import { MaterialShelf } from "@/components/console/material-shelf";
 import { NewMaterialAction } from "@/components/console/new-material-action";
+import { AddGroupAction, EditGroupAction } from "@/components/console/group-actions";
 import { DownloadIcon } from "@/components/student-portal/icons";
 import { ExternalIcon } from "@/components/console/icons";
 
@@ -88,6 +89,7 @@ export function MaterialsLibrary({ area }: { area: ConsoleArea }) {
       <Section
         title="Groups"
         description="A group is a subject shelf, not an owner. Anybody may use anything on any of them, and a module can take a whole shelf in one go."
+        action={<AddGroupAction area={area} />}
         className={CONSOLE.stack}
       >
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
@@ -188,6 +190,7 @@ export function MaterialGroupPage({
             <Badge>Opened {formatDate(group.createdOn)}</Badge>
           </>
         }
+        actions={<EditGroupAction group={group} area={area} />}
       />
 
       <div className={`${CONSOLE.stack} grid gap-4 lg:grid-cols-3`}>

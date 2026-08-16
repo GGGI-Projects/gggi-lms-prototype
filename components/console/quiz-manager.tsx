@@ -9,12 +9,16 @@ import {
   DefinitionList,
   MetricCard,
   Panel,
-  PrototypeNote,
   Section,
 } from "@/components/console/ui";
 import { ConfirmAction } from "@/components/console/actions";
+import {
+  AddQuestionAction,
+  EditQuestionAction,
+  RemoveQuestionAction,
+} from "@/components/console/add-question-action";
 import { IfCan, LockedNote } from "@/components/console/permission";
-import { EditIcon, ExternalIcon, PlusIcon } from "@/components/console/icons";
+import { ExternalIcon } from "@/components/console/icons";
 
 /**
  * One module's quiz, as the person responsible for it sees it.
@@ -113,17 +117,9 @@ export function QuizManager({
                     key={question.id}
                     className="rounded-sm border border-surface-deep bg-paper-raised p-6"
                   >
-                    <div className="flex flex-wrap items-start justify-between gap-4">
-                      <p className="min-w-0 flex-1 text-lg font-semibold leading-snug text-ink">
-                        {index + 1}. {question.prompt}
-                      </p>
-                      <IfCan capability={capability}>
-                        <span className="inline-flex shrink-0 items-center gap-1.5 text-sm font-semibold text-primary">
-                          <EditIcon className="size-4" />
-                          Edit
-                        </span>
-                      </IfCan>
-                    </div>
+                    <p className="text-lg font-semibold leading-snug text-ink">
+                      {index + 1}. {question.prompt}
+                    </p>
 
                     <ul className="mt-4 space-y-1.5">
                       {question.options.map((option, optionIndex) => {
@@ -159,6 +155,24 @@ export function QuizManager({
                     >
                       {question.explanation}
                     </p>
+
+                    {/* A row of its own, not tucked beside the prompt - see the
+                        note on `<RemoveContentBlockAction>` in `module-editor.tsx`:
+                        `<RemoveQuestionAction>` can expand into a full
+                        confirmation panel, which needs somewhere safe to grow. */}
+                    <IfCan capability={capability}>
+                      <div className="mt-4 flex flex-wrap items-center gap-3 border-t border-surface-deep pt-4">
+                        <EditQuestionAction
+                          question={question}
+                          number={index + 1}
+                          capability={capability}
+                        />
+                        <RemoveQuestionAction
+                          number={index + 1}
+                          capability={capability}
+                        />
+                      </div>
+                    </IfCan>
                   </li>
                 ))}
               </ol>
@@ -169,18 +183,12 @@ export function QuizManager({
               </p>
             )}
 
-            <IfCan capability={capability}>
-              <div className="mt-4">
-                <span className="inline-flex items-center gap-2 rounded-sm border border-dashed border-muted-light bg-paper-raised px-4 py-2.5 text-lg text-ink-soft">
-                  <PlusIcon className="size-4" />
-                  Add a question
-                </span>
-                <PrototypeNote className="mt-3">
-                  Writing and reordering questions is out of scope for this
-                  prototype.
-                </PrototypeNote>
-              </div>
-            </IfCan>
+            <div className="mt-4">
+              <AddQuestionAction
+                capability={capability}
+                nextNumber={questions.length + 1}
+              />
+            </div>
           </Section>
         </div>
 

@@ -34,7 +34,7 @@ import {
   MODULE_STATE_LABEL,
   MODULE_STATE_TONE,
 } from "@/components/console/status";
-import { ExternalIcon, StarFilledIcon } from "@/components/console/icons";
+import { EditIcon, ExternalIcon, StarFilledIcon } from "@/components/console/icons";
 import { NewModuleAction } from "@/components/console/new-module-action";
 
 type Params = { params: Promise<{ programmeId: string }> };
@@ -207,9 +207,12 @@ export default async function InstructorProgrammePage({ params }: Params) {
                   <Cell numeric>
                     <Link
                       href={`/instructor/programmes/${programme.id}/modules/${mod.id}`}
-                      className="link-wipe text-sm font-semibold text-primary"
+                      className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary"
                     >
-                      {mod.hasContent ? "Edit" : "Start writing"}
+                      {mod.hasContent ? <EditIcon className="size-4" /> : null}
+                      <span className="link-wipe">
+                        {mod.hasContent ? "Edit" : "Start writing"}
+                      </span>
                     </Link>
                   </Cell>
                 </Row>
