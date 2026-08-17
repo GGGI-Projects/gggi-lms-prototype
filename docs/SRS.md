@@ -2,7 +2,7 @@
 
 ## Free Public Green-Growth Learning Platform
 
-**Working title used in this document:** *GreenPath Academy* — a placeholder name only. The client has not yet chosen the final product name. Every place the name appears in the code comes from one file (`lib/brand.ts`), so changing the name later is a small, one-file change, not a full rewrite. **The platform must not show who is funding or running it** — no sponsor name, logo, or sponsor colours may appear anywhere in the product. It must look and feel like a stand-alone product.
+**Working title used in this document:** *GreenFin Academy* — a placeholder name only. The client has not yet chosen the final product name. Every place the name appears in the code comes from one file (`lib/brand.ts`), so changing the name later is a small, one-file change, not a full rewrite. **The platform must not show who is funding or running it** — no sponsor name, logo, or sponsor colours may appear anywhere in the product. It must look and feel like a stand-alone product.
 
 | | |
 |---|---|
@@ -118,7 +118,7 @@ A responsive web app, used through desktop, laptop, and mobile browsers, on a wi
 
 ### 2.4 Design and Implementation Constraints
 
-- **No sponsor branding.** Nothing in the finished product — text, images, colours, or hidden page details — may show who is behind it. The brand identity (name, tagline, contact address) is a placeholder held in one settings file, so it can be swapped for the client's chosen brand without a rewrite.
+- **No sponsor branding.** Nothing in the finished product — text, images, colours, or hidden page details — may show who is behind it. The brand identity (name, slogan, contact address) is a placeholder held in one settings file, so it can be swapped for the client's chosen brand without a rewrite.
 - **Free, always.** No requirement in this document, now or in future, should add billing, a paid tier, or lock any content behind payment. This is a core rule of the product, not just today's price.
 - **English at launch; Sinhala and Tamil are planned**, and the system (content structure, settings, footer/legal text) is built so all three languages can run side by side once the translated content exists (see §11).
 - **One shared visual design** (a light, magazine-style layout with a teal/amber colour scheme, one shared font for headings and body text, and a carefully chosen amount of motion) has already been approved by the client through the prototype and should be carried into the finished product largely as built, rather than redesigned.
@@ -554,7 +554,7 @@ Normal secure web delivery (HTTPS); outgoing email for the flows listed above. N
 
 ### 10.6 Maintainability
 
-- Brand identity (name, tagline, contact address) must stay in one place that can be swapped easily.
+- Brand identity (name, slogan, contact address) must stay in one place that can be swapped easily.
 - The permission model must stay defined in one place and be used everywhere it is checked, rather than rebuilt separately on each screen.
 
 ### 10.7 Localisation
@@ -649,7 +649,7 @@ See §1.3.
 
 The items below need a decision from the client before, or during, the build of the finished product, and are listed here rather than assumed:
 
-1. **Final brand name, tagline, and look** — the current name is a working placeholder only.
+1. **Final brand name, slogan, and look** — the current name is a working placeholder only.
 2. **Certificate design** — the certificate document already uses the platform's own visual style, but has not yet had a final design pass.
 3. **Group or department sign-up** — how important this is, and when the "join as a team" feature mentioned in the platform's own FAQ should be built.
 4. **Sinhala and Tamil translation** — timeline, and where the translated content will come from.

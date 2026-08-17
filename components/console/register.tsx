@@ -47,11 +47,21 @@ export type RegisterFilter = {
   count?: number;
 };
 
+export type RegisterSelectFilter = {
+  /** Screen-reader label only - the control has no visible caption, the same
+   *  way the material shelf's group and kind selects don't. */
+  label: string;
+  /** The default option's text, shown at the "match everything" value. */
+  placeholder: string;
+  options: { value: string; label: string }[];
+};
+
 export function Register({
   columns,
   caption,
   items,
   filters,
+  selectFilter,
   action,
   searchPlaceholder = "Search",
   total,
@@ -64,6 +74,11 @@ export function Register({
   /** The first entry is the default. Give it a value no row carries and it
    *  matches everything - conventionally "all". */
   filters?: RegisterFilter[];
+  /** A SECOND, independent narrowing - module alongside status, say - matched
+   *  against the same `tags` a row already carries. Rendered as a `<select>`
+   *  rather than chips: `filters` assumes a handful of short labels, and a
+   *  module list is neither short nor few enough to read as a row of pills. */
+  selectFilter?: RegisterSelectFilter;
   /** The thing that adds to this register - "New instructor" and its like.
    *  Pinned to the right end of the search row, where the table starts. */
   action?: ReactNode;
@@ -75,68 +90,103 @@ export function Register({
 }) {
   const [query, setQuery] = useState("");
   const [tag, setTag] = useState(filters?.[0]?.value ?? "all");
+  const [selectTag, setSelectTag] = useState("all");
 
   const shown = useMemo(() => {
     const needle = query.trim().toLowerCase();
     return items.filter((item) => {
       const matchesTag = tag === "all" || item.tags.includes(tag);
+      const matchesSelectTag =
+        selectTag === "all" || item.tags.includes(selectTag);
       const matchesQuery = !needle || item.text.includes(needle);
-      return matchesTag && matchesQuery;
+      return matchesTag && matchesSelectTag && matchesQuery;
     });
-  }, [items, query, tag]);
+  }, [items, query, tag, selectTag]);
 
   return (
     <div>
-      <div className="mb-5 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-        <div className="flex flex-1 flex-col gap-4 sm:flex-row sm:items-center">
-          <label className="relative block w-full sm:max-w-sm">
-            <span className="sr-only">{searchPlaceholder}</span>
-            <SearchIcon className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-muted-light" />
-            <input
-              type="search"
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              placeholder={searchPlaceholder}
-              className="field py-2.5 pl-12"
-            />
-          </label>
+      {/* ONE flex-wrap row for the whole toolbar, not the nested groups this
+          used to be (a search+select+pills group, itself inside a row split
+          against the action button). Nesting meant the pills only ever had
+          the LEFTOVER width after everything else in their row claimed
+          space to wrap inside - which is how five short buttons ended up
+          squeezed into a narrow stacked column next to "New instructor"
+          rather than spreading across a line of their own. Flat, every
+          piece - search, select, the pill group, the action - is a sibling
+          that either fits on the current line or drops to a fresh one at
+          the container's FULL width, the way flex-wrap is supposed to work. */}
+      <div className="mb-5 flex flex-wrap items-center gap-3">
+        <label className="relative block w-full sm:max-w-sm">
+          <span className="sr-only">{searchPlaceholder}</span>
+          <SearchIcon className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-muted-light" />
+          <input
+            type="search"
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder={searchPlaceholder}
+            className="field py-2.5 pl-12"
+          />
+        </label>
 
-          {filters?.length ? (
-            <div
-              role="group"
-              aria-label="Filter the register"
-              className="flex flex-wrap items-center gap-2"
+        {/* Right beside the search box, not after the status pills - this is
+            the other half of "find this row", and putting it at the far end
+            of the row read as an afterthought rather than a second way in.
+            Same `w-full sm:max-w-sm` shape as the search box, on purpose: two
+            controls doing the same job should size the same way, not one
+            fixed to its own text and the other filling the line. */}
+        {selectFilter ? (
+          <label className="block w-full sm:max-w-sm">
+            <span className="sr-only">{selectFilter.label}</span>
+            <select
+              value={selectTag}
+              onChange={(event) => setSelectTag(event.target.value)}
+              className="field py-2.5"
             >
-              <FilterIcon className="size-4 shrink-0 text-muted-light" />
-              {filters.map((filter) => {
-                const active = filter.value === tag;
-                return (
-                  <button
-                    key={filter.value}
-                    type="button"
-                    onClick={() => setTag(filter.value)}
-                    aria-pressed={active}
-                    className={`rounded-full border px-3.5 py-1.5 text-sm font-medium transition-colors duration-300 ${
-                      active
-                        ? "border-primary bg-primary text-paper"
-                        : "border-surface-deep bg-paper text-ink-soft hover:border-muted-light hover:text-ink"
-                    }`}
-                  >
-                    {filter.label}
-                    {filter.count !== undefined ? (
-                      <span className={active ? "opacity-70" : "text-muted"}>
-                        {" "}
-                        {filter.count}
-                      </span>
-                    ) : null}
-                  </button>
-                );
-              })}
-            </div>
-          ) : null}
-        </div>
+              <option value="all">{selectFilter.placeholder}</option>
+              {selectFilter.options.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </label>
+        ) : null}
 
-        {action ? <div className="shrink-0">{action}</div> : null}
+        {filters?.length ? (
+          <div
+            role="group"
+            aria-label="Filter the register"
+            className="flex flex-wrap items-center gap-2"
+          >
+            <FilterIcon className="size-4 shrink-0 text-muted-light" />
+            {filters.map((filter) => {
+              const active = filter.value === tag;
+              return (
+                <button
+                  key={filter.value}
+                  type="button"
+                  onClick={() => setTag(filter.value)}
+                  aria-pressed={active}
+                  className={`rounded-full border px-3.5 py-1.5 text-sm font-medium transition-colors duration-300 ${
+                    active
+                      ? "border-primary bg-primary text-paper"
+                      : "border-surface-deep bg-paper text-ink-soft hover:border-muted-light hover:text-ink"
+                  }`}
+                >
+                  {filter.label}
+                  {filter.count !== undefined ? (
+                    <span className={active ? "opacity-70" : "text-muted"}>
+                      {" "}
+                      {filter.count}
+                    </span>
+                  ) : null}
+                </button>
+              );
+            })}
+          </div>
+        ) : null}
+
+        {action ? <div className="shrink-0 sm:ml-auto">{action}</div> : null}
       </div>
 
       <div className={`${CARD} overflow-hidden`}>

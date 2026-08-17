@@ -54,7 +54,11 @@ export default function InstructorsPage() {
         .concat(load.modules.map((mdl) => mdl.title))
         .join(" ")
         .toLowerCase(),
-      tags: [member.status, unassigned ? "unassigned" : "assigned"],
+      tags: [
+        member.status,
+        unassigned ? "unassigned" : "assigned",
+        ...load.modules.map((mdl) => mdl.id),
+      ],
       row: (
         <Row href={`/admin/instructors/${member.id}`}>
           <NameCell
@@ -167,6 +171,14 @@ export default function InstructorsPage() {
               count: people.filter((member) => member.status === "invited").length,
             },
           ]}
+          selectFilter={{
+            label: "Module",
+            placeholder: "Every module",
+            options: MANAGED_MODULES.map((mdl) => ({
+              value: mdl.id,
+              label: mdl.title,
+            })),
+          }}
           emptyMessage="No instructor matches that."
         />
       </div>

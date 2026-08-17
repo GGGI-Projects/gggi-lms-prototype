@@ -41,7 +41,7 @@ export function AuthHeader({
           aria-label={`${BRAND.name} ${BRAND.suffix} - home`}
         >
           <span className="grid size-9 place-items-center rounded-full bg-primary text-paper transition-transform duration-500 ease-out-expo group-hover:-rotate-12">
-            <LeafMark className="size-5" />
+            <LeafMark className="size-6" />
           </span>
           <span className="font-display whitespace-nowrap text-lg leading-none tracking-tight">
             {BRAND.name}

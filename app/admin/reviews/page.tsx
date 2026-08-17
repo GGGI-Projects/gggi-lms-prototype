@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { BODY, CONSOLE, META } from "@/lib/theme";
 import { REVIEWS } from "@/content/operations";
+import { MANAGED_MODULES } from "@/content/staff";
 import {
   managedModule,
   reviewsByStatus,
@@ -15,12 +16,11 @@ import {
   MetricCard,
   PageBody,
   PageHeader,
-  Panel,
   PrototypeNote,
-  Section,
 } from "@/components/console/ui";
 import { ModerationActions } from "@/components/console/actions";
 import { IfCan } from "@/components/console/permission";
+import { ReviewsBoard, type ReviewCard } from "@/components/console/reviews-board";
 import {
   REVIEW_STATUS_LABEL,
   REVIEW_STATUS_TONE,
@@ -84,18 +84,16 @@ export default function ReviewsPage() {
         />
       </div>
 
-      <Section
-        title="Waiting for a decision"
-        description="Oldest first, except anything flagged."
-        className={CONSOLE.stack}
-      >
-        {pending.length ? (
-          <ul className="space-y-4">
-            {pending.map((review) => {
-              const mdl = managedModule(review.moduleId);
-              const student = studentById(review.studentId);
+      <div className={CONSOLE.stack}>
+        <ReviewsBoard
+          pending={pending.map((review) => {
+            const mdl = managedModule(review.moduleId);
+            const student = studentById(review.studentId);
 
-              return (
+            const card: ReviewCard = {
+              id: review.id,
+              moduleId: review.moduleId,
+              row: (
                 <li
                   key={review.id}
                   className={`rounded-sm border bg-paper-raised p-6 sm:p-7 ${
@@ -163,55 +161,54 @@ export default function ReviewsPage() {
                     />
                   </IfCan>
                 </li>
-              );
-            })}
-          </ul>
-        ) : (
-          <Panel>
-            <p className={BODY.base}>Nothing is waiting. The queue is clear.</p>
-          </Panel>
-        )}
-      </Section>
-
-      <Section
-        title="Already decided"
-        description="Kept so that a decision can be explained months later."
-        className={CONSOLE.stack}
-      >
-        <ul className="divide-y divide-surface-deep rounded-sm border border-surface-deep bg-paper-raised">
-          {[...published, ...rejected]
+              ),
+            };
+            return card;
+          })}
+          decided={[...published, ...rejected]
             .sort((a, b) => b.submittedOn.localeCompare(a.submittedOn))
-            .map((review) => (
-              <li key={review.id} className="px-5 py-5 sm:px-6">
-                <div className="flex flex-wrap items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <p className="text-lg font-semibold text-ink">
-                      {review.studentName}
-                      <span className={`ml-2 font-normal ${META.base}`}>
-                        {managedModule(review.moduleId)?.title}
-                      </span>
-                    </p>
-                    <p className={`mt-2 ${BODY.base}`}>{review.body}</p>
-                  </div>
-                  <div className="flex shrink-0 items-center gap-3">
-                    <Stars rating={review.rating} />
-                    <Badge tone={REVIEW_STATUS_TONE[review.status]}>
-                      {REVIEW_STATUS_LABEL[review.status]}
-                    </Badge>
-                  </div>
-                </div>
+            .map((review) => {
+              const card: ReviewCard = {
+                id: review.id,
+                moduleId: review.moduleId,
+                row: (
+                  <li key={review.id} className="px-5 py-5 sm:px-6">
+                    <div className="flex flex-wrap items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="text-lg font-semibold text-ink">
+                          {review.studentName}
+                          <span className={`ml-2 font-normal ${META.base}`}>
+                            {managedModule(review.moduleId)?.title}
+                          </span>
+                        </p>
+                        <p className={`mt-2 ${BODY.base}`}>{review.body}</p>
+                      </div>
+                      <div className="flex shrink-0 items-center gap-3">
+                        <Stars rating={review.rating} />
+                        <Badge tone={REVIEW_STATUS_TONE[review.status]}>
+                          {REVIEW_STATUS_LABEL[review.status]}
+                        </Badge>
+                      </div>
+                    </div>
 
-                <p className={`mt-3 ${META.base}`}>
-                  {review.decidedBy
-                    ? `${review.status === "published" ? "Published" : "Rejected"} by ${staffName(review.decidedBy)}`
-                    : "Decided"}
-                  {review.decidedOn ? ` on ${formatDate(review.decidedOn)}` : null}
-                  {review.reason ? ` · ${review.reason}` : null}
-                </p>
-              </li>
-            ))}
-        </ul>
-      </Section>
+                    <p className={`mt-3 ${META.base}`}>
+                      {review.decidedBy
+                        ? `${review.status === "published" ? "Published" : "Rejected"} by ${staffName(review.decidedBy)}`
+                        : "Decided"}
+                      {review.decidedOn ? ` on ${formatDate(review.decidedOn)}` : null}
+                      {review.reason ? ` · ${review.reason}` : null}
+                    </p>
+                  </li>
+                ),
+              };
+              return card;
+            })}
+          modules={MANAGED_MODULES.map((mdl) => ({
+            id: mdl.id,
+            title: mdl.title,
+          }))}
+        />
+      </div>
 
       <PrototypeNote className="mt-6">
         Moderating here changes what this screen shows and nothing else - no

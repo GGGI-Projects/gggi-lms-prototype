@@ -76,71 +76,75 @@ export function MaterialShelf({
 
   return (
     <div>
-      <div className="mb-5 flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
-        <div className="flex flex-1 flex-col gap-4 lg:flex-row lg:items-center">
-          <label className="relative block w-full lg:max-w-sm">
-            <span className="sr-only">Search the library</span>
-            <SearchIcon className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-muted-light" />
-            <input
-              type="search"
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              placeholder="Search by title, group or who uploaded it"
-              className="field py-2.5 pl-12"
-            />
-          </label>
+      {/* ONE flex-wrap row for the whole toolbar - see the note on the same
+          shape in `register.tsx`. Nesting a nested "search + filters" group
+          against the action button meant the filters only ever got the
+          leftover width of their row to wrap inside, which is how a search
+          box, two selects and a toggle ended up squeezed into a narrow
+          column at exactly the widths a real screen sits at most often. Flat,
+          each control either fits the current line or drops to a fresh one
+          at the full container width. */}
+      <div className="mb-5 flex flex-wrap items-center gap-3">
+        <label className="relative block w-full lg:max-w-sm">
+          <span className="sr-only">Search the library</span>
+          <SearchIcon className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-muted-light" />
+          <input
+            type="search"
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="Search by title, group or who uploaded it"
+            className="field py-2.5 pl-12"
+          />
+        </label>
 
-          <div className="flex flex-wrap items-center gap-3">
-            <FilterIcon className="size-4 shrink-0 text-muted-light" />
+        <FilterIcon className="size-4 shrink-0 text-muted-light" />
 
-            <label className="block">
-              <span className="sr-only">Group</span>
-              <select
-                value={group}
-                onChange={(event) => setGroup(event.target.value)}
-                className="field w-auto py-2"
-              >
-                <option value="all">Every group</option>
-                {groups.map((entry) => (
-                  <option key={entry.id} value={entry.id}>
-                    {entry.name} ({entry.count})
-                  </option>
-                ))}
-              </select>
-            </label>
+        <label className="block w-full sm:w-auto sm:max-w-xs">
+          <span className="sr-only">Group</span>
+          <select
+            value={group}
+            onChange={(event) => setGroup(event.target.value)}
+            className="field py-2.5"
+          >
+            <option value="all">Every group</option>
+            {groups.map((entry) => (
+              <option key={entry.id} value={entry.id}>
+                {entry.name} ({entry.count})
+              </option>
+            ))}
+          </select>
+        </label>
 
-            <label className="block">
-              <span className="sr-only">File type</span>
-              <select
-                value={kind}
-                onChange={(event) => setKind(event.target.value)}
-                className="field w-auto py-2"
-              >
-                <option value="all">Any type</option>
-                {kinds.map((entry) => (
-                  <option key={entry} value={entry}>
-                    {KIND_LABEL[entry as LibraryKindKey] ?? entry}
-                  </option>
-                ))}
-              </select>
-            </label>
+        <label className="block w-full sm:w-auto sm:max-w-xs">
+          <span className="sr-only">File type</span>
+          <select
+            value={kind}
+            onChange={(event) => setKind(event.target.value)}
+            className="field py-2.5"
+          >
+            <option value="all">Any type</option>
+            {kinds.map((entry) => (
+              <option key={entry} value={entry}>
+                {KIND_LABEL[entry as LibraryKindKey] ?? entry}
+              </option>
+            ))}
+          </select>
+        </label>
 
-            <button
-              type="button"
-              onClick={() => setUnusedOnly((current) => !current)}
-              aria-pressed={unusedOnly}
-              className={`rounded-full border px-3.5 py-1.5 text-sm font-medium transition-colors duration-300 ${
-                unusedOnly
-                  ? "border-primary bg-primary text-paper"
-                  : "border-surface-deep bg-paper text-ink-soft hover:border-muted-light hover:text-ink"
-              }`}
-            >
-              Never used
-            </button>
-          </div>
-        </div>
+        <button
+          type="button"
+          onClick={() => setUnusedOnly((current) => !current)}
+          aria-pressed={unusedOnly}
+          className={`rounded-full border px-3.5 py-1.5 text-sm font-medium transition-colors duration-300 ${
+            unusedOnly
+              ? "border-primary bg-primary text-paper"
+              : "border-surface-deep bg-paper text-ink-soft hover:border-muted-light hover:text-ink"
+          }`}
+        >
+          Never used
+        </button>
 
-        {action ? <div className="shrink-0">{action}</div> : null}
+        {action ? <div className="shrink-0 sm:ml-auto">{action}</div> : null}
       </div>
 
       <div className={`${CARD} overflow-hidden`}>

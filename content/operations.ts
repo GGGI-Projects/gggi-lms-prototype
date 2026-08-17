@@ -579,8 +579,8 @@ export const AUDIT: AuditEntry[] = [
  */
 export const PLATFORM_SETTINGS = {
   general: {
-    platformName: "GreenPath Academy",
-    supportEmail: "hello@greenpath.lk",
+    platformName: "GreenFin Academy",
+    supportEmail: "hello@greenfin.lk",
     defaultLanguage: "English",
     languages: ["English", "සිංහල", "தமிழ்"],
     timezone: "Asia/Colombo (UTC+5:30)",
@@ -594,7 +594,7 @@ export const PLATFORM_SETTINGS = {
   certificates: {
     passMark: 70,
     issueOnCompletion: true,
-    referencePrefix: "GP",
+    referencePrefix: "GF",
     verificationPage: true,
   },
   moderation: {

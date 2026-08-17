@@ -10,9 +10,10 @@ import {
 } from "@/lib/theme";
 
 /**
- * Who the platform is for. The public sector is the reason it exists, but
- * enrolment is genuinely open - so the three groups are given equal visual
- * weight rather than making the public feel like an afterthought.
+ * Who the platform is for. Corporate finance and sustainability teams are the
+ * reason it exists, but enrolment is genuinely open - so the three groups are
+ * given equal visual weight rather than making the public feel like an
+ * afterthought.
  */
 export function Audience() {
   return (
@@ -25,14 +26,14 @@ export function Audience() {
             </Reveal>
             <Reveal delay={0.08}>
               <h2 className={HEADING.section}>
-                Built for the public sector. Open to everyone.
+                Built for corporate finance. Open to everyone.
               </h2>
             </Reveal>
           </div>
           <div className="lg:col-span-5 lg:pb-2">
             <Reveal delay={0.16}>
               <p className={`measure ${BODY.base}`}>
-                There is no approval step, no departmental sponsorship and no
+                There is no approval step, no corporate sign-off and no
                 eligibility check. If you want to learn the material, you can.
               </p>
             </Reveal>

@@ -45,9 +45,9 @@ certificate mock - reads from one file:
 ```ts
 // lib/brand.ts
 export const BRAND = {
-  name: "GreenPath",
+  name: "GreenFin",
   suffix: "Academy",
-  tagline: "Foundations for Sri Lanka's climate and inclusion agenda",
+  slogan: "Streamlining corporate sustainable finance",
   // ...
 };
 ```

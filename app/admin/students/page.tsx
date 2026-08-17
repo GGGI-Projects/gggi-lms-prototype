@@ -17,6 +17,7 @@ import {
 } from "@/components/console/ui";
 import { Register, type RegisterItem } from "@/components/console/register";
 import { STATUS_TONE, STATUS_LABEL } from "@/components/console/status";
+import { MANAGED_MODULES } from "@/content/staff";
 
 export const metadata: Metadata = { title: "Students" };
 
@@ -61,7 +62,10 @@ export default function StudentsPage() {
       ]
         .join(" ")
         .toLowerCase(),
-      tags: [student.status],
+      tags: [
+        student.status,
+        ...student.enrolments.map((enrolment) => enrolment.moduleId),
+      ],
       row: (
         <Row href={`/admin/students/${student.id}`}>
           <NameCell
@@ -162,6 +166,14 @@ export default function StudentsPage() {
               count: counts("suspended"),
             },
           ]}
+          selectFilter={{
+            label: "Module",
+            placeholder: "Every module",
+            options: MANAGED_MODULES.map((mdl) => ({
+              value: mdl.id,
+              label: mdl.title,
+            })),
+          }}
           emptyMessage="No learner matches that."
         />
       </div>

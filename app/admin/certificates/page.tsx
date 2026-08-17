@@ -26,6 +26,7 @@ import {
   CERTIFICATE_STATUS_TONE,
 } from "@/components/console/status";
 import { PLATFORM_SETTINGS } from "@/content/operations";
+import { MANAGED_MODULES } from "@/content/staff";
 
 export const metadata: Metadata = { title: "Certificates" };
 
@@ -60,7 +61,7 @@ export default function CertificatesPage() {
     text: [record.reference, record.studentName, record.moduleTitle]
       .join(" ")
       .toLowerCase(),
-    tags: [record.status],
+    tags: [record.status, record.moduleId],
     row: (
       <Row href={`/admin/students/${record.studentId}`}>
         <Cell className="font-display font-bold tracking-tight text-ink tabular-nums">
@@ -135,6 +136,14 @@ export default function CertificatesPage() {
             },
             { value: "revoked", label: "Withdrawn", count: revoked.length },
           ]}
+          selectFilter={{
+            label: "Module",
+            placeholder: "Every module",
+            options: MANAGED_MODULES.map((mdl) => ({
+              value: mdl.id,
+              label: mdl.title,
+            })),
+          }}
           emptyMessage="No certificate matches that."
         />
       </div>

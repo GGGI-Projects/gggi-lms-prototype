@@ -1,8 +1,8 @@
 import { BRAND } from "@/lib/brand";
 import { ActionButton } from "@/components/ui/action-button";
-import { PhotoSlot } from "@/components/art/scenes";
+import { CertificateSheet } from "@/components/student-portal/certificate-sheet";
 import { Reveal } from "@/components/motion/primitives";
-import { BODY, EYEBROW, HEADING, META, SECTION } from "@/lib/theme";
+import { BODY, EYEBROW, HEADING, SECTION } from "@/lib/theme";
 
 const GUARANTEES = [
   "A unique reference number on every certificate",
@@ -16,13 +16,24 @@ const GUARANTEES = [
  * order to hold up proof. So the certificate gets its own section and its own
  * hero treatment rather than being a bullet point further down.
  *
- * The artwork is a PLACEHOLDER. The certificate itself has not been designed
- * yet, and a mocked-up one in the meantime is worse than an empty frame - it
- * invites the client to review a document nobody has drawn, and every hour
- * spent tuning its seal and its rules is an hour spent on something that will
- * be thrown away. The copy either side of it is real, so the section still
- * makes its argument.
+ * THE CERTIFICATE ITSELF, not a placeholder for it. This section used to show
+ * a dashed empty frame, deliberately - see the note on `<CertificateSheet>`
+ * for why an undesigned mock-up would have been worse than nothing at all.
+ * That document now exists and is what the student portal actually issues, so
+ * showing anything less here would be the section under-selling the one thing
+ * it exists to sell. `EXAMPLE` below is invented - nobody by that name is
+ * enrolled - but the document rendering it is the real component, not a
+ * second drawing of one.
  */
+const EXAMPLE = {
+  name: "T. K. Fernando",
+  moduleTitle: "Climate Vulnerability Assessment",
+  reference: "GF-2026-CV-04521",
+  issuedOn: "2026-06-18",
+  lectures: 8,
+  hours: 5,
+};
+
 export function Certificate() {
   return (
     <section id="certificate" className={`bg-surface ${SECTION.y}`}>
@@ -77,36 +88,18 @@ export function Certificate() {
 
         <div className="lg:col-span-7">
           <Reveal delay={0.2}>
-            <CertificatePlaceholder />
+            {/* Same max width and centring the placeholder used to carry, so
+                this swap did not move anything else in the section. The
+                shadow is new - the placeholder was a flat dashed box that
+                needed no lift, but a real document sitting on the page reads
+                better set slightly above it. */}
+            <div className="mx-auto w-full max-w-2xl drop-shadow-xl">
+              <CertificateSheet {...EXAMPLE} />
+            </div>
           </Reveal>
         </div>
       </div>
     </section>
-  );
-}
-
-/**
- * Swap point for the real thing.
- *
- * Put the artwork at `public/images/certificate.png` and pass it as `src`
- * below - `<PhotoSlot>` renders the image instead of this frame, and nothing
- * else in the section has to change. Sized 7:5, close to the landscape a
- * certificate is normally set in, so the column does not reflow when the real
- * one arrives.
- */
-function CertificatePlaceholder() {
-  return (
-    <PhotoSlot
-      alt="Example certificate"
-      className="relative mx-auto aspect-7/5 w-full max-w-2xl overflow-hidden rounded-lg border border-dashed border-muted-light bg-paper-raised"
-    >
-      <div className="grid h-full place-items-center px-6 text-center">
-        <div>
-          <p className={EYEBROW.muted}>Certificate</p>
-          <p className={`mt-3 ${META.base}`}>Artwork to come</p>
-        </div>
-      </div>
-    </PhotoSlot>
   );
 }
 

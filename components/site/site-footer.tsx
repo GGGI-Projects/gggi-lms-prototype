@@ -51,7 +51,7 @@ export function SiteFooter() {
               aria-label={`${BRAND.name} ${BRAND.suffix} - home`}
             >
               <span className="grid size-9 place-items-center rounded-full bg-tint-mist text-primary">
-                <LeafMark className="size-5" />
+                <LeafMark className="size-6" />
               </span>
               <span className="font-display text-lg leading-none tracking-tight text-paper">
                 {BRAND.name}
@@ -61,7 +61,7 @@ export function SiteFooter() {
               </span>
             </Link>
             <p className="measure mt-5 text-lg leading-relaxed">
-              {BRAND.tagline}. Free, self-paced, and open to anyone - no cost at
+              {BRAND.slogan}. Free, self-paced, and open to anyone - no cost at
               any stage, and no revenue expected from it.
             </p>
           </div>

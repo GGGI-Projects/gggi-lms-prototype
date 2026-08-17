@@ -151,6 +151,18 @@ export default function InstructorLecturesPage() {
                   count: count("not-started"),
                 },
               ]}
+              selectFilter={
+                load.modules.length > 1
+                  ? {
+                      label: "Module",
+                      placeholder: "Every module",
+                      options: load.modules.map((mdl) => ({
+                        value: mdl.id,
+                        label: mdl.title,
+                      })),
+                    }
+                  : undefined
+              }
               emptyMessage="No lecture matches that."
             />
           </div>

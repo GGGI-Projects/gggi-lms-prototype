@@ -164,7 +164,7 @@ function Rail({
       logo={
         <>
           <span className="grid size-9 place-items-center rounded-full bg-accent text-primary-950 transition-transform duration-500 ease-out-expo group-hover:-rotate-12">
-            <LeafMark className="size-5" />
+            <LeafMark className="size-6" />
           </span>
           <span className="min-w-0">
             <span className="font-display block truncate text-lg leading-none tracking-tight">
@@ -386,7 +386,7 @@ function Topbar({
           aria-label={`${BRAND.name} ${BRAND.suffix} - console home`}
         >
           <span className="grid size-9 place-items-center rounded-full bg-primary text-paper">
-            <LeafMark className="size-5" />
+            <LeafMark className="size-6" />
           </span>
         </Link>
       }

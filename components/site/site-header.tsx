@@ -93,7 +93,7 @@ export function SiteHeader() {
                 color: "var(--season-ground, #0b2b24)",
               }}
             >
-              <LeafMark className="size-5" />
+              <LeafMark className="size-6" />
             </span>
             {/* Exactly the footer's wordmark - `font-display text-lg
                 leading-none tracking-tight`. It was 18.4px stepping up to

@@ -180,6 +180,18 @@ export default function InstructorLearnersPage() {
                     .length,
                 },
               ]}
+              selectFilter={
+                mine.length > 1
+                  ? {
+                      label: "Module",
+                      placeholder: "Every module",
+                      options: mine.map((id) => ({
+                        value: id,
+                        label: managedModule(id)?.title ?? id,
+                      })),
+                    }
+                  : undefined
+              }
               emptyMessage="No learner matches that."
             />
           </div>

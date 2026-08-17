@@ -43,7 +43,7 @@ const sourceSans = Source_Sans_3({
 
 export const metadata: Metadata = {
   title: {
-    default: `${BRAND.name} ${BRAND.suffix} - ${BRAND.tagline}`,
+    default: `${BRAND.name} ${BRAND.suffix} - ${BRAND.slogan}`,
     template: `%s · ${BRAND.name} ${BRAND.suffix}`,
   },
   description: BRAND.description,

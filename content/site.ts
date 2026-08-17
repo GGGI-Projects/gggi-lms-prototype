@@ -191,21 +191,21 @@ export type Audience = {
 
 export const AUDIENCES: Audience[] = [
   {
-    title: "Public sector officers",
-    body: "You are being asked to deliver on climate and inclusion commitments your training never covered. Start where the policy starts.",
+    title: "Corporate finance & sustainability teams",
+    body: "You are being asked to deliver on sustainability commitments your finance training never covered. Start where climate finance starts.",
     points: [
-      "Ministry & departmental staff",
-      "Provincial and local authority officers",
-      "Planning and procurement teams",
+      "CFOs and finance function staff",
+      "ESG and sustainability teams",
+      "Treasury and investment teams",
     ],
   },
   {
     title: "Practitioners & consultants",
-    body: "Working alongside government on climate and social-inclusion work, and needing shared vocabulary with the people signing off.",
+    body: "Working alongside corporates on climate finance and sustainability reporting, and needing shared vocabulary with the people signing off.",
     points: [
       "Project and programme staff",
-      "Technical advisors and consultants",
-      "NGO and development teams",
+      "Financial and sustainability advisors",
+      "Bank and DFI teams",
     ],
   },
   {

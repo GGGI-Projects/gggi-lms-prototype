@@ -44,7 +44,17 @@ export function Topography({ className }: { className?: string }) {
   );
 }
 
-/** The leaf-on-a-path logo mark. */
+/**
+ * The leaf-in-a-coin logo mark.
+ *
+ * A coin rim - the plainest way to draw "currency" that still survives a
+ * 16px favicon - with the platform's leaf embossed on its face, the way a
+ * mint stamps a coin. That is the whole idea in one shape: value with a leaf
+ * struck into it, rather than a leaf and a coin merely sitting side by side.
+ * The faint inner ring reads as the coin's milled edge at badge size and
+ * quietly disappears at favicon size, which is fine - the outer rim alone is
+ * what has to hold up that small, and it does.
+ */
 export function LeafMark({ className }: { className?: string }) {
   return (
     <svg
@@ -53,19 +63,38 @@ export function LeafMark({ className }: { className?: string }) {
       viewBox="0 0 32 32"
       fill="none"
     >
+      <circle cx="16" cy="16" r="13.8" stroke="currentColor" strokeWidth="2.5" />
+      <circle
+        cx="16"
+        cy="16"
+        r="10.4"
+        stroke="currentColor"
+        strokeWidth="1.3"
+        opacity="0.4"
+      />
       <path
-        d="M5 27C5 27 6.5 17.5 13 12.5C19.5 7.5 27 8 27 8C27 8 27.5 16.5 21.5 21.5C15.5 26.5 8 25 8 25"
+        d="M8.44 23.16C8.44 23.16 9.48 16.63 13.94 13.19C18.41 9.75 23.56 10.1 23.56 10.1C23.56 10.1 23.91 15.89 19.79 19.38C15.66 22.26 10.5 21.79 10.5 21.79"
         stroke="currentColor"
         strokeWidth="2.1"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
       <path
-        d="M5 27C7.5 21.5 13 15.5 20.5 12"
+        d="M8.44 23.16C10.16 19.38 13.94 14.65 19.1 12.85"
         stroke="currentColor"
-        strokeWidth="1.5"
+        strokeWidth="1.4"
         strokeLinecap="round"
-        opacity="0.55"
+        opacity="0.6"
+      />
+      {/* Two short side veins off the main rib, angled toward the tip like a
+          real leaf's - the detail that reads as "leaf" rather than "wing" or
+          "petal" once the outline alone is ambiguous at small sizes. */}
+      <path
+        d="M12.1 19.6L10.15 17.2M15.4 16.4L17.5 18.5"
+        stroke="currentColor"
+        strokeWidth="1.1"
+        strokeLinecap="round"
+        opacity="0.5"
       />
     </svg>
   );
@@ -217,11 +246,13 @@ function PalmTree({ x, y, scale }: { x: number; y: number; scale: number }) {
  *
  * The five illustrations below were drawn for the prototype's original five
  * subjects (adaptation, waste, energy, finance, mobility). The 2026-08-16
- * curriculum swap kept the hue assignment but inherited the drawings as-is -
- * `waste`'s recycling loop and `energy`'s turbine now sit beside modules that
- * are not literally about either. They still work as pure colour/texture
- * accents; replacing them with artwork drawn for the real five subjects is a
- * follow-up, not a blocker.
+ * curriculum swap kept the hue assignment but inherited three of the
+ * drawings as-is, so `waste`'s recycling loop and `energy`'s turbine sat
+ * beside modules that were not literally about either. `waste`, `energy` and
+ * `coast` have since been redrawn for the real subjects in their slot,
+ * keeping the same hue-per-row logic; `hills` and `finance` needed no
+ * change - a landscape and a finance bar chart still read correctly under
+ * their new module titles.
  */
 const SCENES: Record<Module["scene"], React.ReactNode> = {
   /* Now Climate Vulnerability Assessment - teal. */
@@ -233,53 +264,86 @@ const SCENES: Record<Module["scene"], React.ReactNode> = {
       <path d="M0 112c28-10 52 0 78-10s40 6 62-2v20H0v-8Z" fill="var(--color-primary-600)" />
     </>
   ),
-  /* Originally circular economy; now Maintaining GSI - clay, inherited. */
+  /* Maintaining GSI - clay. Three figures at one height, linked at the
+     hands: the module is about consultation design and inclusion, not any
+     one group, so no figure is drawn taller, first or apart from the rest. */
   waste: (
     <>
-      {/* Circular-economy loop */}
       <path
-        d="M70 34a36 36 0 1 1-32 52"
-        stroke="var(--color-clay)"
-        strokeWidth="6"
-        strokeLinecap="round"
-        fill="none"
-      />
-      <path d="M30 74l8 16 16-8-24-8Z" fill="var(--color-clay)" />
-      <path
-        d="M70 52a18 18 0 1 0 16 26"
-        stroke="var(--color-clay-soft)"
-        strokeWidth="5"
-        strokeLinecap="round"
-        fill="none"
-      />
-      <path d="M92 70l-8 12 12 6-4-18Z" fill="var(--color-clay-soft)" />
-      <path
-        d="M0 118c30-8 60 4 90-4s40 2 70-4v18H0v-10Z"
+        d="M0 120c26-6 54 2 80-4s40 6 80-2v16H0v-10Z"
         fill="var(--color-clay-pale)"
+        opacity="0.7"
+      />
+      <path
+        d="M27 120C27 90 27 63 40 63C53 63 53 90 53 120Z"
+        fill="var(--color-clay-soft)"
+      />
+      <circle cx="40" cy="54" r="9" fill="var(--color-clay-soft)" />
+      <path
+        d="M67 120C67 90 67 63 80 63C93 63 93 90 93 120Z"
+        fill="var(--color-clay)"
+      />
+      <circle cx="80" cy="54" r="9" fill="var(--color-clay)" />
+      <path
+        d="M107 120C107 90 107 63 120 63C133 63 133 90 133 120Z"
+        fill="var(--color-clay-soft)"
+      />
+      <circle cx="120" cy="54" r="9" fill="var(--color-clay-soft)" />
+      {/* Linked hands, drawn low and loose rather than as a rigid bar */}
+      <path
+        d="M40 100Q60 112 80 100Q100 112 120 100"
+        stroke="var(--color-clay-pale)"
+        strokeWidth="3.5"
+        strokeLinecap="round"
+        fill="none"
       />
     </>
   ),
-  /* Originally sustainable energy; now Gender-Responsive Budgeting - amber,
-     inherited. */
+  /* Gender-Responsive Budgeting - amber. A budget ring, the same chart
+     device the finance module uses for proposals, with the combined
+     gender-equality mark drawn beside it at full size rather than folded
+     into the ring's hollow - the same lesson the finance sprout already
+     applies: a detail that small only reads if it isn't crammed in. */
   energy: (
     <>
-      <circle cx="34" cy="38" r="18" fill="var(--color-highlight)" opacity="0.85" />
-      {/* Turbine */}
-      <path d="M112 108V52" stroke="var(--color-accent-600)" strokeWidth="4" />
+      <g transform="rotate(-90 52 70)" fill="none" strokeWidth="14">
+        <circle
+          cx="52"
+          cy="70"
+          r="24"
+          stroke="var(--color-accent)"
+          strokeDasharray="67.8 83"
+        />
+        <circle
+          cx="52"
+          cy="70"
+          r="24"
+          stroke="var(--color-accent-600)"
+          strokeDasharray="48.3 102.5"
+          strokeDashoffset="-67.8"
+        />
+        <circle
+          cx="52"
+          cy="70"
+          r="24"
+          stroke="var(--color-accent-soft)"
+          strokeDasharray="34.7 116.1"
+          strokeDashoffset="-116.1"
+        />
+      </g>
+      {/* Combined gender-equality mark */}
       <g
-        stroke="var(--color-accent-600)"
-        strokeWidth="4"
-        strokeLinecap="round"
         fill="none"
+        stroke="var(--color-accent-strong)"
+        strokeWidth="3.2"
+        strokeLinecap="round"
       >
-        <path d="M112 50 92 30M112 50l24-14M112 50l4 26" />
+        <circle cx="112" cy="52" r="11" />
+        <path d="M112 63v15M104 71h16" />
+        <circle cx="132" cy="78" r="11" />
+        <path d="M139.8 70.2 150 60M142 60h8v8" />
       </g>
-      {/* Solar array */}
-      <path d="M22 108l14-30h44l-14 30H22Z" fill="var(--color-accent-strong)" />
-      <g stroke="var(--color-accent-pale)" strokeWidth="2" opacity="0.8">
-        <path d="M38 78 30 108M54 78l-8 30M70 78l-8 30M30 92h44" />
-      </g>
-      <path d="M0 116h160v14H0z" fill="var(--color-accent-soft)" />
+      <rect x="0" y="120" width="160" height="10" fill="var(--color-accent-pale)" />
     </>
   ),
   /* Now Developing Bankable Climate Finance Proposals - marine, and still a
@@ -304,28 +368,29 @@ const SCENES: Record<Module["scene"], React.ReactNode> = {
       />
     </>
   ),
-  /* Originally mobility & landscapes; now Localising the Provincial
-     Adaptation Plan - plum, inherited. */
+  /* Localising the Provincial Adaptation Plan - plum. A place with a plan
+     pinned to it: the map is generic on purpose (this is the exercise of
+     localising, not one named province), and the checklist stands in for
+     the costing and sequencing work the module actually teaches. */
   coast: (
     <>
-      <circle cx="126" cy="36" r="16" fill="var(--color-highlight)" opacity="0.6" />
-      {/* Mangrove canopy + stilt roots */}
+      <circle cx="128" cy="32" r="15" fill="var(--color-highlight)" opacity="0.6" />
       <path
-        d="M44 66c0-16 14-28 30-28s30 12 30 28c0 6-4 10-10 10H54c-6 0-10-4-10-10Z"
-        fill="var(--color-plum-soft)"
+        d="M10 100C10 74 34 58 62 58C92 58 116 76 116 100C116 112 104 122 84 122H30C18 122 10 112 10 100Z"
+        fill="var(--color-plum-pale)"
       />
-      <g stroke="var(--color-plum)" strokeWidth="3" strokeLinecap="round">
-        <path d="M74 76v18M74 94l-16 14M74 94l16 14M62 88 48 108M86 88l14 20" />
-      </g>
-      {/* Water */}
-      <g
-        stroke="var(--color-plum-soft)"
-        strokeWidth="3"
-        strokeLinecap="round"
-        fill="none"
-      >
-        <path d="M8 116c10-6 20-6 30 0s20 6 30 0 20-6 30 0 20 6 30 0" />
-        <path d="M0 128c10-6 20-6 30 0s20 6 30 0 20-6 30 0 20 6 30 0" opacity="0.6" />
+      {/* Pin, planted where the plan applies */}
+      <path d="M50 68 62 96 74 68Z" fill="var(--color-plum)" />
+      <circle cx="62" cy="58" r="15" fill="var(--color-plum)" />
+      <circle cx="62" cy="58" r="6" fill="var(--color-plum-pale)" />
+      {/* Checklist: the plan, sequenced */}
+      <g stroke="var(--color-plum-soft)" strokeWidth="3" strokeLinecap="round">
+        <circle cx="94" cy="48" r="3" fill="var(--color-plum-soft)" stroke="none" />
+        <path d="M102 48h14" />
+        <circle cx="94" cy="64" r="3" fill="var(--color-plum-soft)" stroke="none" />
+        <path d="M102 64h10" />
+        <circle cx="94" cy="80" r="3" fill="var(--color-plum-soft)" stroke="none" />
+        <path d="M102 80h14" />
       </g>
     </>
   ),
