@@ -68,7 +68,7 @@ export default async function AdminQuizPage({ params }: Params) {
         }}
         eyebrow="Lecture quiz"
         title={`Quiz - ${mod.title}`}
-        lead={`${mdl.title}. Unlimited attempts, no timer, and one pass mark for the whole platform.`}
+        lead={`${mdl.title}. Unlimited attempts, no timer, and one pass mark for the whole platform${written.length ? ` - applied the same way to the ${written.length} written question${written.length === 1 ? "" : "s"} below the multiple choice` : ""}.`}
         meta={
           <QuizHeaderMeta
             questions={questions.length}

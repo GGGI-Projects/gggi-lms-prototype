@@ -86,9 +86,13 @@ export type ModuleProgress = {
   minutesDone: number;
   minutesTotal: number;
   certificate?: Certificate;
-  /** Quizzes passed against quizzes available to take. */
+  /**
+   * Lectures whose gate is fully cleared - quiz passed, and written
+   * questions passed too where the lecture has any (see
+   * `lectureGateCleared()`) - against lectures available to take.
+   */
   quizzesPassed: number;
-  /** Lectures finished whose quiz has not been passed yet. */
+  /** Lectures finished whose gate has not been cleared yet. */
   quizzesOutstanding: number;
 };
 
@@ -117,9 +121,11 @@ export function progressFor(moduleId: string): ModuleProgress | undefined {
     lectures.find((lecture) => !completed.has(lecture.id)) ??
     undefined;
 
-  const scores = enrolment?.quizScores ?? {};
-  const quizzesPassed = lectures.filter(
-    (lecture) => (scores[lecture.id] ?? 0) >= PASS_MARK,
+  // Gate-aware, not just the quiz score: a lecture with written questions
+  // that are not yet passed is not counted here even if its quiz is - see
+  // `lectureGateCleared()`.
+  const quizzesPassed = lectures.filter((lecture) =>
+    lectureGateCleared(moduleId, lecture.id),
   ).length;
 
   return {

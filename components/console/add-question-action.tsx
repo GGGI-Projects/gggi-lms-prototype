@@ -118,7 +118,7 @@ function QuestionForm({
             required
             rows={3}
             defaultValue={initial?.explanation}
-            placeholder="What a learner reads after submitting, whether they got it right or not."
+            placeholder="What this option is correct and the others are not - for you and other staff to check the question, never shown to a learner."
             className="field"
           />
         </label>
@@ -170,7 +170,7 @@ export function AddQuestionAction({
         open={open}
         onClose={() => setOpen(false)}
         title="Add a question"
-        description="Four options, one correct. The explanation is what a learner reads after submitting, whether they got it right or not."
+        description="Four options, one correct. The explanation is for staff only, to check the question against - a learner attempting the quiz never sees it."
         size="md"
         footer={
           <ActionButton type="submit" form={formId} variant="solid" size="sm">
@@ -380,7 +380,7 @@ function WrittenQuestionForm({
             required
             rows={3}
             defaultValue={initial?.modelAnswer}
-            placeholder="What a learner reads after submitting, alongside their own answer, whether it passed or not."
+            placeholder="What a correct answer would say - for you and other staff to check attempts against, never shown to a learner."
             className="field"
           />
         </label>

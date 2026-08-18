@@ -116,7 +116,7 @@ export function QuizManager({
         <div className="min-w-0 lg:col-span-2">
           <Section
             title="Questions"
-            description="The correct answer and its explanation are shown together - the explanation is what a learner reads after submitting, whether they got it right or not."
+            description="The correct answer and its explanation are shown together here so you can check them at a glance - neither is ever shown to a learner attempting the quiz, right or wrong."
           >
             {questions.length ? (
               <ol className="space-y-4">
@@ -248,9 +248,10 @@ export function QuizManager({
             </h2>
             <p className={`mt-3 ${BODY.base}`}>
               Pass mark, attempt limit and time limit are one set of rules for
-              every quiz on the platform. A quiz that could set its own would
-              make a certificate mean something different depending on which
-              lecture it came through.
+              every quiz on the platform - and for any written questions
+              attached to one. A quiz that could set its own would make a
+              certificate mean something different depending on which lecture
+              it came through.
             </p>
             {hrefs.settings ? (
               <Link

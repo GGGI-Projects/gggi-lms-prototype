@@ -60,7 +60,7 @@ export default function QuizzesPage() {
       <PageHeader
         eyebrow="Quizzes"
         title="A short quiz closes every lecture."
-        lead={`It confirms the ideas landed - nothing more. The pass mark is ${PASS_MARK}%, there is no limit on attempts, and the highest score is the one that counts.`}
+        lead={`It confirms the ideas landed - nothing more. Some lectures add a few short written questions to the end of the quiz. The pass mark is ${PASS_MARK}% either way, there is no limit on attempts, and the highest score is the one that counts.`}
       />
 
       <dl className="mt-10 grid gap-4 sm:grid-cols-3">

@@ -56,7 +56,7 @@ export default function CertificatesPage() {
       <PageHeader
         eyebrow="Certificates"
         title="Proof you can put in front of someone."
-        lead="Complete every lecture and pass every quiz in a module and the certificate issues straight away - carrying your name, the module, the date, and a reference number that can be checked against the register."
+        lead="Complete every lecture and pass every quiz - and any written questions a lecture carries - in a module and the certificate issues straight away, carrying your name, the module, the date, and a reference number that can be checked against the register."
       />
 
       <Section
@@ -127,7 +127,7 @@ export default function CertificatesPage() {
         ) : (
           <EmptyState
             title="Your first certificate is a module away"
-            body="Finish every lecture and quiz in any module and it issues immediately - there is no application, no fee and no waiting period."
+            body="Finish every lecture, quiz and written question in any module and it issues immediately - there is no application, no fee and no waiting period."
             action={
               <ActionButton href="/modules" variant="solid" size="sm">
                 Browse modules

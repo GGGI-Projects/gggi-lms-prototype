@@ -85,7 +85,7 @@ export default function InstructorQuizzesPage() {
       <PageHeader
         eyebrow="Teaching"
         title="Quizzes"
-        lead={`One quiz closes each lecture: ${QUIZ_LENGTH} questions, ${PASS_MARK}% to pass, unlimited attempts. This is where you find out which of them is working.`}
+        lead={`One quiz closes each lecture: ${QUIZ_LENGTH} multiple-choice questions, plus written questions on the lectures that carry them, ${PASS_MARK}% to pass, unlimited attempts. This is where you find out which of them is working.`}
       />
 
       {quizzes.length ? (
@@ -242,8 +242,9 @@ export default function InstructorQuizzesPage() {
               </h2>
               <p className={`mt-3 ${BODY.base}`}>
                 {QUIZ_LENGTH} questions, {PASS_MARK}% to pass, unlimited
-                attempts, no timer - the same for every quiz on the platform, so
-                a certificate means one thing. Only the super administrator can
+                attempts, no timer - the same for every quiz on the platform,
+                and for the written questions attached to any of them, so a
+                certificate means one thing. Only the super administrator can
                 change them.
               </p>
               <PrototypeNote className="mt-5">

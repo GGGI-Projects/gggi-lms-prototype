@@ -71,7 +71,11 @@ export default async function InstructorQuizPage({ params }: Params) {
         }}
         eyebrow="Lecture quiz"
         title={`Quiz - ${mod.title}`}
-        lead="Four questions close the lecture and confirm the ideas landed. Unlimited attempts, no timer - the quiz is a foundation, not a filter."
+        lead={
+          written.length
+            ? `Four multiple-choice questions, plus ${written.length} written question${written.length === 1 ? "" : "s"} below them, close the lecture and confirm the ideas landed. Unlimited attempts, no timer - the quiz is a foundation, not a filter.`
+            : "Four questions close the lecture and confirm the ideas landed. Unlimited attempts, no timer - the quiz is a foundation, not a filter."
+        }
         meta={
           <QuizHeaderMeta
             questions={questions.length}

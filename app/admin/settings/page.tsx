@@ -131,15 +131,16 @@ export default function SettingsPage() {
                 <option value="80">80%</option>
               </select>
               <span className={`mt-2 block ${META.base}`}>
-                One number for every quiz on the platform. Raising it does not
-                withdraw certificates already issued.
+                One number for every quiz on the platform, and for the
+                written questions attached to any of them. Raising it does
+                not withdraw certificates already issued.
               </span>
             </label>
 
             <Toggle
               name="issue-on-completion"
               label="Issue automatically on completion"
-              description="The certificate appears the moment the last quiz is passed. Switching this off means somebody has to approve each one, and that queue is nobody's job."
+              description="The certificate appears the moment the last quiz - and any written questions with it - is passed. Switching this off means somebody has to approve each one, and that queue is nobody's job."
               defaultChecked={certificates.issueOnCompletion}
             />
             <Toggle
