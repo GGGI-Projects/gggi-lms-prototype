@@ -18,6 +18,7 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
   ClockIcon,
+  LockIcon,
   QuizIcon,
   ReadingIcon,
   VideoIcon,
@@ -27,9 +28,13 @@ import { MODULES } from "@/content/site";
 import {
   QUIZ_LENGTH,
   formatDuration,
+  hasWrittenQuestions,
+  lectureGateCleared,
   lectureNeighbours,
   progressFor,
   quizStatus,
+  writtenQuestionsFor,
+  writtenStatus,
 } from "@/lib/portal";
 import { BODY, EYEBROW, HEADING, META } from "@/lib/theme";
 
@@ -83,6 +88,24 @@ export default async function LecturePage({ params }: Params) {
   const completed = Boolean(enrolment?.completedLectureIds.includes(mod.id));
   const quiz = quizStatus(moduleId, mod.id);
   const score = enrolment?.quizScores[mod.id];
+  const hasWritten = hasWrittenQuestions(mod.id);
+  const written = writtenStatus(moduleId, mod.id);
+  const writtenScore = enrolment?.writtenScores[mod.id];
+  // The one gate on the platform: cleared once the quiz is passed and, where
+  // this lecture has any, its written questions are too. See
+  // `lectureGateCleared()` in `lib/portal.ts`.
+  const gateCleared = lectureGateCleared(moduleId, mod.id);
+  const quizHref = `/modules/${mdl.id}/lectures/${mod.id}/quiz`;
+  // What `<CompleteButton>` shows when a mark-complete attempt is blocked -
+  // named specifically, not just "finish the gate", so the message points at
+  // the one thing still missing rather than repeating everything already
+  // passed.
+  const completionBlockedReason =
+    quiz !== "passed"
+      ? "This lecture can't be marked complete until its quiz is passed."
+      : hasWritten && written !== "passed"
+        ? "This lecture can't be marked complete until its written questions are passed too."
+        : undefined;
   const KindIcon = mod.kind === "video" ? VideoIcon : ReadingIcon;
 
   return (
@@ -110,6 +133,17 @@ export default async function LecturePage({ params }: Params) {
           <Badge tone="done">Quiz passed · {score}%</Badge>
         ) : quiz === "failed" ? (
           <Badge tone="warn">Quiz not passed · {score}%</Badge>
+        ) : null}
+        {hasWritten ? (
+          written === "passed" ? (
+            <Badge tone="done">Written questions passed · {writtenScore}%</Badge>
+          ) : written === "failed" ? (
+            <Badge tone="warn">
+              Written questions not passed · {writtenScore}%
+            </Badge>
+          ) : (
+            <Badge>Written questions to do</Badge>
+          )
         ) : null}
       </div>
 
@@ -145,12 +179,16 @@ export default async function LecturePage({ params }: Params) {
             href={`/modules/${mdl.id}/lectures/${mod.id}/quiz`}
             status={quiz}
             score={score}
+            writtenCount={hasWritten ? writtenQuestionsFor(mod.id).length : 0}
+            gateCleared={gateCleared}
           />
 
           <LectureFooterNav
             moduleId={mdl.id}
             previous={previous}
             next={next}
+            gateCleared={gateCleared}
+            hasWritten={hasWritten}
             index={index}
             total={lectures.length}
           />
@@ -172,20 +210,40 @@ export default async function LecturePage({ params }: Params) {
 
               <CompleteButton
                 initiallyComplete={completed}
+                gateCleared={gateCleared}
+                blockedReason={completionBlockedReason}
+                quizHref={quizHref}
                 className="mt-6"
               />
 
               {next ? (
                 <div className="mt-3">
-                  <ActionButton
-                    href={`/modules/${mdl.id}/lectures/${next.id}`}
-                    variant="solid"
-                    size="sm"
-                    className="group w-full"
-                  >
-                    Next lecture
-                    <ArrowRightIcon className="size-4 transition-transform duration-500 ease-out-expo group-hover:translate-x-1" />
-                  </ActionButton>
+                  {gateCleared ? (
+                    <ActionButton
+                      href={`/modules/${mdl.id}/lectures/${next.id}`}
+                      variant="solid"
+                      size="sm"
+                      className="group w-full"
+                    >
+                      Next lecture
+                      <ArrowRightIcon className="size-4 transition-transform duration-500 ease-out-expo group-hover:translate-x-1" />
+                    </ActionButton>
+                  ) : (
+                    <>
+                      <span
+                        aria-disabled="true"
+                        className="flex w-full cursor-not-allowed items-center justify-center gap-2 rounded-sm border border-surface-deep bg-paper-raised px-5 py-3 text-lg font-semibold text-muted"
+                      >
+                        <LockIcon className="size-4" />
+                        Next lecture
+                      </span>
+                      <p className={`mt-2 ${META.base}`}>
+                        {hasWritten
+                          ? "Pass the quiz, including its written questions, to unlock this."
+                          : "Pass the quiz to unlock this."}
+                      </p>
+                    </>
+                  )}
                 </div>
               ) : null}
             </Panel>
@@ -271,31 +329,40 @@ function Block({
  * taking the quiz is the single most common way a learner ends up short of a
  * certificate without knowing it. What it says changes with the state: an
  * invitation, a retake, or a result.
+ *
+ * WRITTEN QUESTIONS ARE PART OF THIS SAME CALLOUT, not a second one below it
+ * - where a lecture has any, they are simply the last few steps inside the
+ * one quiz a learner opens from here (see `<QuizRunner>`), so there is only
+ * ever one button to press and one gate to clear.
  */
 function QuizCallout({
   href,
   status,
   score,
+  writtenCount,
+  gateCleared,
 }: {
   href: string;
   status: ReturnType<typeof quizStatus>;
   score?: number;
+  /** How many written questions are appended to the end of this quiz - 0 for
+   *  most lectures. */
+  writtenCount: number;
+  gateCleared: boolean;
 }) {
-  const passed = status === "passed";
-
   return (
     <section className="mt-12">
       <div
-        className={`flex flex-col gap-6 rounded-sm border px-6 py-7 sm:flex-row sm:items-center sm:gap-8 sm:px-8 ${passed
+        className={`flex flex-col gap-6 rounded-sm border px-6 py-7 sm:flex-row sm:items-center sm:gap-8 sm:px-8 ${gateCleared
             ? "border-primary/25 bg-tint-mist"
             : "border-accent-600/35 bg-accent-pale"
           }`}
       >
         <span
-          className={`grid size-12 shrink-0 place-items-center rounded-full ${passed ? "bg-primary text-paper" : "bg-accent text-primary-950"
+          className={`grid size-12 shrink-0 place-items-center rounded-full ${gateCleared ? "bg-primary text-paper" : "bg-accent text-primary-950"
             }`}
         >
-          {passed ? (
+          {gateCleared ? (
             <CheckIcon className="size-6" />
           ) : (
             <QuizIcon className="size-6" />
@@ -304,14 +371,16 @@ function QuizCallout({
 
         <div className="min-w-0 flex-1">
           <h2 className={HEADING.card}>
-            {passed ? "Quiz passed" : "Lecture quiz"}
+            {gateCleared ? "Quiz passed" : "Lecture quiz"}
           </h2>
           <p className={`mt-2 ${BODY.base}`}>
-            {passed
+            {gateCleared
               ? `You scored ${score}%. You can take it again at any time - the highest score is the one that counts.`
               : status === "failed"
                 ? `You scored ${score}% last time. There is no limit on attempts - this is a foundation, not a filter.`
-                : `${QUIZ_LENGTH} questions, taken whenever you are ready. Retake it as many times as you need.`}
+                : writtenCount
+                  ? `${QUIZ_LENGTH} questions, plus ${writtenCount} written question${writtenCount === 1 ? "" : "s"} at the end - taken whenever you are ready. This is what unlocks the next lecture.`
+                  : `${QUIZ_LENGTH} questions, taken whenever you are ready. Retake it as many times as you need.`}
           </p>
         </div>
 
@@ -330,12 +399,18 @@ function LectureFooterNav({
   moduleId,
   previous,
   next,
+  gateCleared,
+  hasWritten,
   index,
   total,
 }: {
   moduleId: string;
   previous?: { id: string; number: string; title: string };
   next?: { id: string; number: string; title: string };
+  /** Whether THIS lecture's own gate is cleared - decides whether `next`,
+   *  when there is one, is a link or a locked cell. */
+  gateCleared: boolean;
+  hasWritten: boolean;
   index: number;
   total: number;
 }) {
@@ -364,18 +439,34 @@ function LectureFooterNav({
       )}
 
       {next ? (
-        <Link
-          href={`/modules/${moduleId}/lectures/${next.id}`}
-          className="group flex items-center gap-4 rounded-sm border border-surface-deep bg-paper-raised px-5 py-4 text-right transition-colors duration-300 hover:border-muted-light sm:justify-end"
-        >
-          <span className="min-w-0">
-            <span className={`block ${META.base}`}>Next</span>
-            <span className="mt-0.5 block truncate font-semibold text-ink">
-              {next.number}. {next.title}
+        gateCleared ? (
+          <Link
+            href={`/modules/${moduleId}/lectures/${next.id}`}
+            className="group flex items-center gap-4 rounded-sm border border-surface-deep bg-paper-raised px-5 py-4 text-right transition-colors duration-300 hover:border-muted-light sm:justify-end"
+          >
+            <span className="min-w-0">
+              <span className={`block ${META.base}`}>Next</span>
+              <span className="mt-0.5 block truncate font-semibold text-ink">
+                {next.number}. {next.title}
+              </span>
             </span>
-          </span>
-          <ChevronRightIcon className="size-5 shrink-0 text-muted transition-transform duration-500 ease-out-expo group-hover:translate-x-1" />
-        </Link>
+            <ChevronRightIcon className="size-5 shrink-0 text-muted transition-transform duration-500 ease-out-expo group-hover:translate-x-1" />
+          </Link>
+        ) : (
+          <div className="flex items-center justify-end gap-3 rounded-sm border border-dashed border-muted-light px-5 py-4 text-right">
+            <span className="min-w-0">
+              <span className={`flex items-center justify-end gap-1.5 ${META.base}`}>
+                <LockIcon className="size-3.5" />
+                Next
+              </span>
+              <span className="mt-0.5 block text-muted">
+                {hasWritten
+                  ? "Pass the quiz, including its written questions, to unlock this"
+                  : "Pass the quiz to unlock this"}
+              </span>
+            </span>
+          </div>
+        )
       ) : (
         <div className="flex items-center justify-end gap-3 rounded-sm border border-dashed border-muted-light px-5 py-4">
           <span className={META.base}>

@@ -13,6 +13,7 @@ import {
   formatDuration,
   type LectureState,
   type QuizStatus,
+  type WrittenStatus,
 } from "@/lib/portal";
 import { META } from "@/lib/theme";
 
@@ -25,10 +26,13 @@ import { META } from "@/lib/theme";
  * same treatment the landing page gives its module numerals, at a size that
  * fits a list.
  *
- * NOTHING IS LOCKED. Every row is a link, including lectures far ahead of where
- * the learner has reached. The platform promises self-paced study with nothing
- * held back, and a padlock on row seven is that promise being quietly
- * withdrawn - see `lectureState()` in `lib/portal.ts`.
+ * EVERY ROW IS STILL A LINK, including lectures far ahead of where the
+ * learner has reached - opening one directly is never blocked, so a curious
+ * or returning learner can always see what is ahead. What IS gated now is the
+ * "Next lecture" action on a lecture's own page, once its quiz - and its
+ * written questions, if it has any - have to be passed first. That gate is
+ * `lectureGateCleared()` in `lib/portal.ts`; this row only ever reports it,
+ * never enforces it.
  */
 export function LectureRow({
   moduleId,
@@ -36,12 +40,17 @@ export function LectureRow({
   state,
   quiz,
   score,
+  hasWritten = false,
+  written = "not-required",
 }: {
   moduleId: string;
   lecture: Lecture;
   state: LectureState;
   quiz: QuizStatus;
   score?: number;
+  /** Whether this lecture has written questions at all - most do not. */
+  hasWritten?: boolean;
+  written?: WrittenStatus;
 }) {
   const done = state === "completed";
   const current = state === "current";
@@ -102,6 +111,13 @@ export function LectureRow({
             <span className="font-medium text-clay">Quiz not passed · {score}%</span>
           ) : done ? (
             <span className="font-medium text-accent-strong">Quiz to take</span>
+          ) : null}
+          {hasWritten && written === "passed" ? (
+            <span className="font-medium text-primary">Written passed</span>
+          ) : hasWritten && written === "failed" ? (
+            <span className="font-medium text-clay">Written not passed</span>
+          ) : hasWritten && quiz === "passed" ? (
+            <span className="font-medium text-accent-strong">Written to do</span>
           ) : null}
         </span>
       </span>

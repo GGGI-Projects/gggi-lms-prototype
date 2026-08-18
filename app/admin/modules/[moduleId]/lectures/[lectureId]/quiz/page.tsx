@@ -2,10 +2,19 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { MANAGED_MODULES } from "@/content/staff";
 import { LECTURES } from "@/content/curriculum";
-import { consoleLectures, managedModule, quizStatsFor } from "@/lib/admin";
-import { PASS_MARK, quizFor } from "@/lib/portal";
+import {
+  consoleLectures,
+  managedModule,
+  quizStatsFor,
+  writtenStatsFor,
+} from "@/lib/admin";
+import { PASS_MARK, quizFor, writtenQuestionsFor } from "@/lib/portal";
 import { PageBody, PageHeader } from "@/components/console/ui";
-import { QuizHeaderMeta, QuizManager } from "@/components/console/quiz-manager";
+import {
+  QuizHeaderMeta,
+  QuizManager,
+  WrittenQuestionsManager,
+} from "@/components/console/quiz-manager";
 
 type Params = { params: Promise<{ moduleId: string; lectureId: string }> };
 
@@ -44,7 +53,9 @@ export default async function AdminQuizPage({ params }: Params) {
     LECTURES[moduleId]?.find((entry) => entry.id === lectureId),
   );
   const questions = hasContent ? quizFor(moduleId, lectureId) : [];
+  const written = hasContent ? writtenQuestionsFor(lectureId) : [];
   const stats = quizStatsFor(lectureId);
+  const writtenStats = writtenStatsFor(lectureId);
   const live = mdl.status === "published" && mod.state === "published";
   const base = `/admin/modules/${mdl.id}`;
 
@@ -63,6 +74,7 @@ export default async function AdminQuizPage({ params }: Params) {
             questions={questions.length}
             passMark={PASS_MARK}
             stats={stats}
+            writtenCount={written.length}
           />
         }
       />
@@ -83,6 +95,15 @@ export default async function AdminQuizPage({ params }: Params) {
         }}
         capability="authorLectures"
       />
+
+      <div className="mt-12">
+        <WrittenQuestionsManager
+          questions={written}
+          stats={writtenStats}
+          passMark={PASS_MARK}
+          capability="authorLectures"
+        />
+      </div>
     </PageBody>
   );
 }

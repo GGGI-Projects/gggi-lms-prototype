@@ -176,7 +176,7 @@ function QuizRow({ quiz }: { quiz: QuizSummary }) {
           </span>
         </span>
 
-        <span className="hidden shrink-0 sm:block">
+        <span className="hidden shrink-0 items-center gap-2 sm:flex">
           {passed ? (
             <Badge tone="done">Passed</Badge>
           ) : quiz.status === "failed" ? (
@@ -186,6 +186,15 @@ function QuizRow({ quiz }: { quiz: QuizSummary }) {
           ) : (
             <Badge>Not yet</Badge>
           )}
+          {quiz.hasWritten ? (
+            quiz.writtenStatus === "passed" ? (
+              <Badge tone="done">Written passed</Badge>
+            ) : quiz.writtenStatus === "failed" ? (
+              <Badge tone="warn">Written retake</Badge>
+            ) : passed ? (
+              <Badge tone="active">Written to do</Badge>
+            ) : null
+          ) : null}
         </span>
 
         <ChevronRightIcon className="size-5 shrink-0 text-muted-light transition-transform duration-500 ease-out-expo group-hover:translate-x-1 group-hover:text-ink" />

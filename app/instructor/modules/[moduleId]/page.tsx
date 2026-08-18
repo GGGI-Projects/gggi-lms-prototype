@@ -14,7 +14,7 @@ import {
   staffById,
 } from "@/lib/admin";
 import { attachmentsFor } from "@/lib/materials";
-import { formatDate, formatDateLong } from "@/lib/portal";
+import { formatDate, formatDateLong, hasWrittenQuestions } from "@/lib/portal";
 import {
   Badge,
   Callout,
@@ -189,14 +189,19 @@ export default async function InstructorModulePage({ params }: Params) {
                   </Cell>
                   <Cell hideBelow="md">
                     {mod.hasContent ? (
-                      <Link
-                        href={`/instructor/modules/${mdl.id}/lectures/${mod.id}/quiz`}
-                        className="link-wipe text-primary"
-                      >
-                        {quizStatsFor(mod.id)
-                          ? `${quizStatsFor(mod.id)?.passRate}% pass`
-                          : "Manage"}
-                      </Link>
+                      <span className="inline-flex items-center gap-2">
+                        <Link
+                          href={`/instructor/modules/${mdl.id}/lectures/${mod.id}/quiz`}
+                          className="link-wipe text-primary"
+                        >
+                          {quizStatsFor(mod.id)
+                            ? `${quizStatsFor(mod.id)?.passRate}% pass`
+                            : "Manage"}
+                        </Link>
+                        {hasWrittenQuestions(mod.id) ? (
+                          <Badge tone="active">+ written</Badge>
+                        ) : null}
+                      </span>
                     ) : (
                       <span className="text-muted-light">-</span>
                     )}

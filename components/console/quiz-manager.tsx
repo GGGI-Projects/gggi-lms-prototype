@@ -1,8 +1,13 @@
 import Link from "next/link";
 import { BODY, CONSOLE, META } from "@/lib/theme";
-import type { Question } from "@/content/portal";
+import type { Question, WrittenQuestion } from "@/content/portal";
 import type { QuizStats } from "@/content/operations";
-import { PASS_RATE_FLOOR, quizNeedsAttention, type ConsoleLecture } from "@/lib/admin";
+import {
+  PASS_RATE_FLOOR,
+  quizNeedsAttention,
+  type ConsoleLecture,
+} from "@/lib/admin";
+import type { Capability } from "@/lib/permissions";
 import {
   Badge,
   Callout,
@@ -14,8 +19,11 @@ import {
 import { ConfirmAction } from "@/components/console/actions";
 import {
   AddQuestionAction,
+  AddWrittenQuestionAction,
   EditQuestionAction,
+  EditWrittenQuestionAction,
   RemoveQuestionAction,
+  RemoveWrittenQuestionAction,
 } from "@/components/console/add-question-action";
 import { IfCan, LockedNote } from "@/components/console/permission";
 import { ExternalIcon } from "@/components/console/icons";
@@ -297,10 +305,15 @@ export function QuizHeaderMeta({
   questions,
   passMark,
   stats,
+  writtenCount,
 }: {
   questions: number;
   passMark: number;
   stats: QuizStats | null;
+  /** Chip is left out entirely when a lecture has no written questions -
+   *  most do not, and a "0 written questions" badge on every other quiz
+   *  screen would train people to stop reading that row. */
+  writtenCount?: number;
 }) {
   return (
     <>
@@ -313,6 +326,153 @@ export function QuizHeaderMeta({
       ) : (
         <Badge tone="neutral">No results recorded</Badge>
       )}
+      {writtenCount ? (
+        <Badge tone="active">
+          + {writtenCount} written question{writtenCount === 1 ? "" : "s"}
+        </Badge>
+      ) : null}
     </>
+  );
+}
+
+/* ============================================== written questions manager */
+
+/**
+ * A lecture's written questions - its own section, not folded into
+ * `<QuizManager>` above.
+ *
+ * OPTIONAL, AND SAID SO. Every lecture has a multiple-choice quiz; only some
+ * have written questions, and this section's empty state is the normal case
+ * for most lectures, not a gap waiting to be filled - the wording says that
+ * plainly rather than nagging an instructor to add questions their lecture
+ * does not need.
+ *
+ * THE GATE IS EXPLAINED HERE TOO, because this is where an instructor decides
+ * to add the thing that changes it: writing even one written question turns
+ * on a second, mandatory step between this lecture's quiz and the next
+ * lecture - see `lectureGateCleared()` in `lib/portal.ts`. That is worth
+ * saying next to the button that causes it, not only in a document nobody
+ * writing a question that afternoon has open.
+ */
+export function WrittenQuestionsManager({
+  questions,
+  stats,
+  passMark,
+  capability,
+}: {
+  questions: WrittenQuestion[];
+  stats: QuizStats | null;
+  passMark: number;
+  capability: Capability;
+}) {
+  const struggling = quizNeedsAttention(stats);
+
+  return (
+    <Section
+      title="Written questions"
+      description={`Optional - a lecture is complete without any. Add two-to-three sentence explanation questions where the multiple-choice quiz cannot tell whether an idea actually landed - as soon as one exists, a learner must pass it at ${passMark}%, the same platform-wide mark as the quiz, before the next lecture opens.`}
+    >
+      {questions.length ? (
+        <>
+          {stats ? (
+            <div className="mb-4 grid gap-4 sm:grid-cols-3">
+              <MetricCard
+                label="Attempts"
+                value={stats.attempts}
+                hint="learners who submitted"
+              />
+              <MetricCard label="Pass rate" value={`${stats.passRate}%`} hint="reached the pass mark" />
+              <MetricCard
+                label="Average score"
+                value={`${stats.averageScore}%`}
+                hint="across every attempt"
+                goodWhen="up"
+              />
+            </div>
+          ) : null}
+
+          {struggling && stats ? (
+            <div className="mb-4">
+              <Callout title="These are sending people back too">
+                {stats.passRate}% pass at the first attempt. The keywords
+                checked are shown below each question - a low pass rate here
+                usually means the required words are stricter than the
+                explanation actually needs, not that the answers are wrong.
+              </Callout>
+            </div>
+          ) : null}
+
+          <ol className="space-y-4">
+            {questions.map((question, index) => (
+              <li
+                key={question.id}
+                className="rounded-sm border border-surface-deep bg-paper-raised p-6"
+              >
+                <p className="text-lg font-semibold leading-snug text-ink">
+                  {index + 1}. {question.prompt}
+                </p>
+
+                <div className="mt-4 flex flex-wrap items-center gap-2">
+                  {question.keywords.map((keyword) => (
+                    <span
+                      key={keyword}
+                      className="rounded-full bg-tint-mist px-3 py-1 text-sm font-medium text-ink"
+                    >
+                      {keyword}
+                    </span>
+                  ))}
+                </div>
+                <p className={`mt-2 ${META.base}`}>
+                  {question.minMatches} of {question.keywords.length} have to
+                  appear to pass.
+                </p>
+
+                <p
+                  className={`mt-4 border-t border-surface-deep pt-3 ${META.base}`}
+                >
+                  Model answer: {question.modelAnswer}
+                </p>
+
+                <IfCan capability={capability}>
+                  <div className="mt-4 flex flex-wrap items-center gap-3 border-t border-surface-deep pt-4">
+                    <EditWrittenQuestionAction
+                      question={question}
+                      number={index + 1}
+                      capability={capability}
+                    />
+                    <RemoveWrittenQuestionAction
+                      number={index + 1}
+                      capability={capability}
+                    />
+                  </div>
+                </IfCan>
+              </li>
+            ))}
+          </ol>
+        </>
+      ) : (
+        <p
+          className={`rounded-sm border border-dashed border-muted-light bg-paper-raised px-6 py-12 text-center ${BODY.base}`}
+        >
+          No written questions on this lecture - that is the normal case.
+          Add some only where a multiple-choice question cannot tell whether
+          the idea actually landed.
+        </p>
+      )}
+
+      {questions.length < 4 ? (
+        <div className="mt-4">
+          <AddWrittenQuestionAction
+            capability={capability}
+            nextNumber={questions.length + 1}
+          />
+        </div>
+      ) : (
+        <p className={`mt-4 ${META.base}`}>
+          Four written questions is the limit - this stays a short check, not
+          a second quiz.
+        </p>
+      )}
+    </Section>
   );
 }

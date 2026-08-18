@@ -13,7 +13,7 @@ import {
   reviewsForModule,
 } from "@/lib/admin";
 import { attachmentsFor } from "@/lib/materials";
-import { formatDate, formatDateLong } from "@/lib/portal";
+import { formatDate, formatDateLong, hasWrittenQuestions } from "@/lib/portal";
 import {
   Badge,
   Callout,
@@ -221,14 +221,19 @@ export default async function ModulePage({ params }: Params) {
                   </Cell>
                   <Cell hideBelow="lg">
                     {mod.hasContent ? (
-                      <Link
-                        href={`/admin/modules/${mdl.id}/lectures/${mod.id}/quiz`}
-                        className="link-wipe text-primary"
-                      >
-                        {quizStatsFor(mod.id)
-                          ? `${quizStatsFor(mod.id)?.passRate}% pass`
-                          : "Manage"}
-                      </Link>
+                      <span className="inline-flex items-center gap-2">
+                        <Link
+                          href={`/admin/modules/${mdl.id}/lectures/${mod.id}/quiz`}
+                          className="link-wipe text-primary"
+                        >
+                          {quizStatsFor(mod.id)
+                            ? `${quizStatsFor(mod.id)?.passRate}% pass`
+                            : "Manage"}
+                        </Link>
+                        {hasWrittenQuestions(mod.id) ? (
+                          <Badge tone="active">+ written</Badge>
+                        ) : null}
+                      </span>
                     ) : (
                       <span className="text-muted-light">-</span>
                     )}

@@ -15,7 +15,7 @@
 import { MODULES, type Module } from "@/content/site";
 import { LECTURES } from "@/content/curriculum";
 import { LEARNER, ENROLMENTS, CERTIFICATES } from "@/content/portal";
-import { PASS_MARK, QUIZ_LENGTH } from "@/lib/portal";
+import { PASS_MARK, QUIZ_LENGTH, hasWrittenQuestions } from "@/lib/portal";
 import {
   DRAFT_LECTURES,
   MANAGED_MODULES,
@@ -38,6 +38,7 @@ import {
   QUIZ_STATS,
   REVIEWS,
   REVOCATIONS,
+  WRITTEN_STATS,
   type QuizStats,
   type Review,
 } from "@/content/operations";
@@ -204,6 +205,13 @@ export function quizStatsFor(lectureId: string): QuizStats | null {
   return QUIZ_STATS[lectureId] ?? null;
 }
 
+/** Same idea as `quizStatsFor()`, for a lecture's written questions - null
+ *  both when there are no written questions and when there are no figures
+ *  for them yet, which the caller tells apart with `hasWrittenQuestions()`. */
+export function writtenStatsFor(lectureId: string): QuizStats | null {
+  return WRITTEN_STATS[lectureId] ?? null;
+}
+
 /**
  * When a quiz is worth an instructor's attention.
  *
@@ -233,6 +241,8 @@ export function quizzesForModule(moduleId: string) {
     module: managedModule(moduleId),
     stats: quizStatsFor(mod.id),
     questions: mod.hasContent ? QUIZ_LENGTH : 0,
+    hasWritten: mod.hasContent && hasWrittenQuestions(mod.id),
+    writtenStats: writtenStatsFor(mod.id),
   }));
 }
 

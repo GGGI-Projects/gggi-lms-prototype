@@ -9,7 +9,7 @@ import {
   quizStatsFor,
   staffById,
 } from "@/lib/admin";
-import { PASS_MARK, QUIZ_LENGTH } from "@/lib/portal";
+import { PASS_MARK, QUIZ_LENGTH, hasWrittenQuestions } from "@/lib/portal";
 import {
   Badge,
   Callout,
@@ -161,11 +161,12 @@ export default function InstructorQuizzesPage() {
                           <NameCell
                             href={href}
                             title={`${mod.number}. ${mod.title}`}
-                            subtitle={
-                              stats
-                                ? undefined
-                                : "No attempts recorded in this prototype"
-                            }
+                            subtitle={[
+                              stats ? null : "No attempts recorded in this prototype",
+                              hasWrittenQuestions(mod.id) ? "has written questions" : null,
+                            ]
+                              .filter(Boolean)
+                              .join(" · ") || undefined}
                           />
                           <Cell numeric hideBelow="sm">
                             {QUIZ_LENGTH}

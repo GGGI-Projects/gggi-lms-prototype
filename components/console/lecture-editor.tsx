@@ -78,7 +78,13 @@ export function LectureEditor({
   content: Lecture | null;
   attachments: AttachedMaterial[];
   picker: { materials: PickerMaterial[]; groups: PickerGroup[] };
-  quiz: { questions: number; stats: QuizStats | null; passMark: number };
+  quiz: {
+    questions: number;
+    stats: QuizStats | null;
+    passMark: number;
+    /** How many written questions this lecture carries - 0 for most. */
+    writtenCount: number;
+  };
   hrefs: {
     module: string;
     quiz: string;
@@ -231,7 +237,7 @@ export function LectureEditor({
         <EditorSection
           index={3}
           title="Lecture quiz"
-          description={`${quiz.questions ? `${quiz.questions} questions` : "No questions"} close this lecture. The pass mark is ${quiz.passMark}% and is set once for the whole platform.`}
+          description={`${quiz.questions ? `${quiz.questions} questions` : "No questions"} close this lecture. The pass mark is ${quiz.passMark}% and is set once for the whole platform.${quiz.writtenCount ? ` It also carries ${quiz.writtenCount} written question${quiz.writtenCount === 1 ? "" : "s"} - a learner has to clear both to move on.` : ""}`}
           action={
             quiz.questions ? (
               <ActionButton href={hrefs.quiz} variant="line" size="sm">

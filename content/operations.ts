@@ -173,6 +173,23 @@ export const QUIZ_STATS: Record<string, QuizStats> = {
   },
 };
 
+/**
+ * Written-question results, same shape as `QUIZ_STATS` and carried for the
+ * same one module, but for only the lectures that actually have written
+ * questions - see `WRITTEN_QUESTIONS` in `content/portal.ts`. Unlike
+ * `QUIZ_STATS` these are illustrative only and are not weighted into
+ * `MANAGED_MODULES.averageScore`: written questions are optional per lecture,
+ * so folding them into one platform-wide average would make that number mean
+ * a different thing depending on which lectures happened to have them.
+ */
+export const WRITTEN_STATS: Record<string, QuizStats> = {
+  "designing-an-inclusive-consultation": {
+    attempts: 204,
+    passRate: 71,
+    averageScore: 74,
+  },
+};
+
 /* -------------------------------------------------------------- moderation */
 
 export type ReviewStatus = "pending" | "published" | "rejected";

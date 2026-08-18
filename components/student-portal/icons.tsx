@@ -211,6 +211,15 @@ export function ClockIcon({ className }: IconProps) {
   );
 }
 
+export function LockIcon({ className }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <rect x="5.5" y="11" width="13" height="9" rx="1.8" />
+      <path d="M8 11V7.8a4 4 0 0 1 8 0V11" />
+    </svg>
+  );
+}
+
 export function DownloadIcon({ className }: IconProps) {
   return (
     <svg {...base} className={className}>

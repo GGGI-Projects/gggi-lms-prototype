@@ -71,10 +71,11 @@ The platform has no payment feature, no advertising, and no way of making money 
 | Term | Meaning |
 |---|---|
 | **Module** | One of the platform's top-level courses. It stands on its own — a learner does not need to finish any other module first. How many modules exist, what they cover, and their content are decisions for the client to make, not fixed by this document. |
-| **Lecture** | One lesson inside a module. It includes a short video and/or written material, files to download, and ends with a quiz. |
+| **Lecture** | One lesson inside a module. It includes a short video and/or written material, files to download, and ends with a quiz and, optionally, written questions. |
 | **Content block** | One piece of a lecture's body: a *video* block, a *text* block, or a *materials* block. A lecture is simply an ordered list of these. |
 | **Quiz** | The four-question, multiple-choice test that closes a lecture. |
-| **Certificate** | The proof of completion given automatically once a learner has finished every lecture and passed every quiz in a module. |
+| **Written questions** | An *optional* second, short-answer step an instructor may add to a lecture on top of its quiz — up to four questions, each answered in two or three sentences and checked automatically for required words and phrases (see §4.6a, §4.11a). Most lectures have none. |
+| **Certificate** | The proof of completion given automatically once a learner has finished every lecture and passed every quiz — and every lecture's written questions, where it has any — in a module. |
 | **Learner** | Anyone using the student portal to sign up and study. Not a "staff" role. |
 | **Staff** | A general word for the three console roles: Super Administrator, Administrator, Instructor. |
 | **Console** | Either staff-facing app (the Instructor console or the Admin console), as opposed to the learner portal. |
@@ -207,10 +208,10 @@ Each requirement below has a stable ID (`FR-<area>-<number>`) and a priority (**
 | ID | Requirement | Pri. |
 |---|---|---|
 | FR-STU-120 | A lecture page shall show its content as an ordered set of blocks of three possible kinds — a video lesson, a piece of writing, or a set of files to download — in whatever order the lecture's own content sets, and shall always show exactly three learning aims for the lecture. | M |
-| FR-STU-130 | **No lecture, quiz, or module shall ever be locked behind another.** A learner may open any lecture of any module they have joined, at any time, in any order, no matter what else has or has not been finished. This is a deliberate rule of the product ("this is a foundation, not a filter"), not a mistake to fix later — no future requirement should lock lectures in order. | M |
-| FR-STU-140 | A lecture page shall let the learner mark the lecture as finished, and this shall be reversible (a learner may un-mark a lecture they finished by mistake). | S |
-| FR-STU-150 | A lecture page shall show, and let the learner go directly to, the previous and next lecture in the module, and shall show every lecture in the module in a list that stays visible, with each one's completion state marked. | M |
-| FR-STU-160 | Marking a lecture as finished is completely separate from passing its quiz — a lecture can be "done" even though its quiz has not been tried, or was failed — and this state must be visible and clickable, both on the lecture page and in the still-to-do panel described in FR-STU-040. | M |
+| FR-STU-130 | **Opening a lecture is never locked.** A learner may open any lecture of any module they have joined, at any time, in any order, no matter what else has or has not been finished — there is no padlock on the module contents list. **Advancing past a lecture is the one exception**: the "next lecture" action on a lecture's own page is withheld until that lecture's own quiz is passed and, where the lecture has any, its written questions are passed too (see §4.6, §4.6a). This is a deliberate, narrow gate — it blocks one button, not the platform's browsing — and no future requirement should extend it into locking the contents list itself. | M |
+| FR-STU-140 | A lecture page shall let the learner mark the lecture as finished, and this shall be reversible (a learner may un-mark a lecture they finished by mistake). This marker is informational only and is never what the "next lecture" gate in FR-STU-130 checks. | S |
+| FR-STU-150 | A lecture page shall show, and let the learner go directly to, the previous and next lecture in the module, and shall show every lecture in the module in a list that stays visible, with each one's completion, quiz, and (where it has any) written-question state marked. When the "next lecture" gate (FR-STU-130) is not yet cleared, the next-lecture control shall say so plainly rather than simply being absent. | M |
+| FR-STU-160 | Marking a lecture as finished is completely separate from passing its quiz (or its written questions) — a lecture can be "done" even though its quiz has not been tried, or was failed — and this state must be visible and clickable, both on the lecture page and in the still-to-do panel described in FR-STU-040. | M |
 | FR-STU-170 | Real video hosting/playback and real delivery of downloadable files shall be built for the finished product (the prototype has a working video player with no real video file behind it, and download buttons that do nothing — see §11). | M |
 
 ### 4.6 Quiz Engine
@@ -223,16 +224,29 @@ Each requirement below has a stable ID (`FR-<area>-<number>`) and a priority (**
 | FR-STU-190 | The platform-wide pass mark shall be a single percentage that can be changed by the super administrator (currently 70%), applied the same way to every quiz on the platform — it shall never be set separately for one lecture or one module, so a certificate means the same thing no matter which lecture it passed through. | M |
 | FR-STU-200 | A learner shall have **no limit on the number of attempts** at any quiz, with **no time limit**, and their **highest score so far** shall be the score that counts towards earning the certificate. | M |
 | FR-STU-210 | A quiz shall show one question at a time with a progress indicator and previous/next buttons, and shall refuse to submit until every question has been answered, showing a clear message on screen explaining why. | M |
-| FR-STU-220 | On submitting, the learner shall immediately see their score, whether they passed or failed against the platform's pass mark, and — separately, if they choose to look — a full review of every question showing what they picked, the correct answer, and a written explanation, **whether the question was answered correctly or not.** An explanation must never be left out for a question the learner got right. | M |
-| FR-STU-230 | A learner shall be able to retake a quiz at any time from the result screen, the review screen, the lecture page, or the quizzes list, with no penalty and no waiting period. | M |
-| FR-STU-240 | A dedicated "quizzes" list shall show every quiz across every module the learner has joined, grouped by module, showing for each one whether it is: passed; needs a retake (with the failing score shown against the pass mark); finished lecture but quiz never tried; or quiz available but lecture not yet finished — and every one of these shall stay clickable and able to be attempted (see FR-STU-130). | M |
+| FR-STU-220 | On submitting, the learner shall immediately see their score and whether they passed or failed against the platform's pass mark, and how many questions were correct out of how many. **No correct answer, no chosen-option marking, and no explanation is ever shown to the learner** — not on the result screen, not anywhere else in the student portal, for any question, whether it was answered correctly or not. A question bank is reused across lectures and across every retake (see §5), so revealing one answer once would leak it permanently; explanations exist only for staff, in the instructor and admin consoles (FR-INS-120). | M |
+| FR-STU-230 | A learner shall be able to retake a quiz at any time from the result screen, the lecture page, or the quizzes list, with no penalty and no waiting period. | M |
+| FR-STU-240 | A dedicated "quizzes" list shall show every quiz across every module the learner has joined, grouped by module, showing for each one whether it is: passed; needs a retake (with the failing score shown against the pass mark); finished lecture but quiz never tried; or quiz available but lecture not yet finished — and every one of these shall stay clickable and able to be attempted (see FR-STU-130), plus a marker on any row whose lecture also carries written questions and whether those are passed. | M |
 | FR-STU-250 | Every quiz attempt and its resulting score must be saved against the learner's account on the server once the real system is built (the prototype clearly states that no attempt is currently saved). | M |
+
+### 4.6a Written Questions Engine
+
+**Purpose:** an *optional* second, short-answer check on top of a lecture's quiz, for the lectures where an instructor judges that multiple choice cannot tell whether an explanation actually landed. Most lectures carry none of these.
+
+| ID | Requirement | Pri. |
+|---|---|---|
+| FR-STU-201 | A lecture may carry zero to four written questions, each asking for a short, free-text explanation (two or three sentences — never an essay, and never graded as one). Where a lecture has none, nothing about it changes from today's quiz-only flow. | M |
+| FR-STU-202 | Written questions shall only be reachable after the same lecture's quiz has been passed — they are a second step, not an alternative one — and a learner who reaches the page directly without a passed quiz shall be shown why and offered the quiz, not a broken or empty screen. | M |
+| FR-STU-203 | Each written answer shall be checked **automatically, the instant it is submitted**, against the required words and phrases the instructor attached to that question (see FR-INS-121a) — there is no instructor review queue and no waiting period. | M |
+| FR-STU-204 | On submitting, the learner shall immediately see the same kind of result as the quiz - a score, a pass/fail, and how many of the written questions passed. **No model answer and no per-question pass/fail is ever shown to the learner**, on the same rule as FR-STU-220; a model answer is a staff-facing fact (FR-INS-121a), not a learner-facing one. | M |
+| FR-STU-205 | The pass mark for written questions is the same single, platform-wide percentage used for the quiz (FR-STU-190) — the proportion of a lecture's written questions passed must reach it. There is no limit on attempts and no time limit, matching FR-STU-200. | M |
+| FR-STU-206 | Where a lecture has written questions, the "next lecture" gate described in FR-STU-130 is cleared only once **both** the quiz and the written questions are passed; the quiz result screen shall lead to the written questions rather than to the next lecture in that case. | M |
 
 ### 4.7 Certificates (Learner-Facing)
 
 | ID | Requirement | Pri. |
 |---|---|---|
-| FR-STU-260 | A certificate for a module shall be **given automatically, straight away**, the moment a learner has finished every lecture and passed every lecture's quiz in that module — there is no request, approval, or manual step for the learner to take. | M |
+| FR-STU-260 | A certificate for a module shall be **given automatically, straight away**, the moment a learner has finished every lecture and passed every lecture's quiz — and, for any lecture that has them, its written questions — in that module. There is no request, approval, or manual step for the learner to take. | M |
 | FR-STU-270 | Each certificate shall show: the holder's name **as entered separately for certificates** (different from the display name used elsewhere in the portal), the module title, lectures completed, average quiz score, hours of material, the date it was given, and a unique reference number that is easy to read. | M |
 | FR-STU-280 | A certificate shall never expire, shall be exactly one per completed module, and shall stay downloadable — and re-downloadable — by the learner at any later date. | M |
 | FR-STU-290 | Changing the "name on certificates" field after a certificate has already been given shall not change that certificate after the fact — only certificates given after the change shall show the new name. | M |
@@ -274,12 +288,24 @@ Each requirement below has a stable ID (`FR-<area>-<number>`) and a priority (**
 | ID | Requirement | Pri. |
 |---|---|---|
 | FR-INS-110 | A quiz cannot be written until its lecture has content — writing the quiz is a separate step that comes after the content, not alongside it. | M |
-| FR-INS-120 | The quiz editor shall let an instructor add, edit, and remove questions; each question shall need a prompt, exactly four answer options, one of them marked correct with a single-choice control (not a checkbox), and a required explanation shown to the learner after every attempt, whether they got it right or wrong. | M |
+| FR-INS-120 | The quiz editor shall let an instructor add, edit, and remove questions; each question shall need a prompt, exactly four answer options, one of them marked correct with a single-choice control (not a checkbox), and a required explanation. A learner attempting the quiz sees the prompt and the four options, same as always, but never which option is marked correct and never the explanation - those stay visible to the instructor and to administrators only. See FR-STU-220. | M |
 | FR-INS-130 | Removing a question shall need confirmation and shall state that learners who already answered it keep their earlier attempt — only future attempts see the changed set of questions. | S |
 | FR-INS-140 | Platform-wide quiz rules (number of questions, pass mark, no limit on attempts, no time limit) shall be shown to the instructor as read-only facts on the quiz screen, with a clear note that only the super administrator can change them — an instructor cannot set a different pass mark or attempt limit for their own quiz. | M |
 | FR-INS-150 | Any quiz whose pass rate falls below a set "needs attention" level, or whose average score falls below the platform pass mark, shall be clearly flagged to the instructor (and, as a combined figure, to administrators) as likely to have a wrong or unclear question, rather than reflecting a weak group of learners — since attempts are unlimited, a pass rate that stays low over time is a sign about the content, not the learners. | S |
 | FR-INS-160 | An instructor shall be able to clear (reset) recorded attempts for a quiz after fixing a question, with a clear statement that this clears scores but never takes back a certificate already given based on an earlier attempt. | S |
-| FR-INS-170 | A dedicated "quizzes" list shall show every quiz an instructor is responsible for, ranked with the weakest pass rate first, so the quiz that most needs attention is always the first thing seen. | S |
+| FR-INS-170 | A dedicated "quizzes" list shall show every quiz an instructor is responsible for, ranked with the weakest pass rate first, so the quiz that most needs attention is always the first thing seen, and shall mark which of those lectures also carry written questions. | S |
+
+### 4.11a Instructor Console — Written Question Authoring
+
+**Purpose:** letting an instructor add the optional short-answer step described in §4.6a to a lecture they are responsible for, on the same screen as that lecture's quiz.
+
+| ID | Requirement | Pri. |
+|---|---|---|
+| FR-INS-121 | Written questions are entirely **optional**, up to **four per lecture**, and shown in their own section of the quiz screen — a lecture with none shall show a plain empty state explaining that most lectures do not need them, never a prompt nagging an instructor to add some. | M |
+| FR-INS-121a | Each written question shall need: a prompt asking for a short (two-to-three-sentence) explanation; a list of the specific words and phrases a correct answer would use; how many of those must appear for an answer to pass (never all of them, since a real answer paraphrases); and a model answer. The model answer, and the required words and phrases, are visible to the instructor and to administrators only - a learner is told only whether their own answer passed, never what a correct one would have said. See FR-STU-204. | M |
+| FR-INS-121b | The instructor authoring screen shall state plainly, next to the "add a written question" control, that writing even one written question turns on a **mandatory second step** a learner must clear, alongside the quiz, before the next lecture opens (see FR-STU-206) — this consequence must be visible where the decision is made, not only in a policy document. | M |
+| FR-INS-122 | An instructor shall be able to edit and remove a written question the same way as a quiz question (FR-INS-120, FR-INS-130): removing one shall need confirmation, and shall state that learners who already passed it keep that pass. | S |
+| FR-INS-123 | The same platform-wide rules that apply to the quiz (one pass mark, no attempt limit, no time limit — FR-INS-140) apply to written questions too, shown as read-only facts on the same screen. | M |
 
 ### 4.12 Shared Materials Library
 
@@ -330,7 +356,7 @@ Each requirement below has a stable ID (`FR-<area>-<number>`) and a priority (**
 | FR-ADM-070 | A draft module's detail view shall leave out sign-up/completion/rating numbers (rather than showing zeroes, which could wrongly look like a live module that is failing) and shall clearly flag if it has no instructor assigned. | S |
 | FR-ADM-080 | An administrator shall be able to switch a module between Published (in the catalogue, open to sign-up) and Draft (hidden; learners already enrolled keep full access and their progress). | M |
 | FR-ADM-090 | An administrator shall be able to archive a module, behind a confirmation that clearly states what happens: archiving hides it from the catalogue for good, but **certificates already given for it stay valid** — something that has already happened stays true even after the module is later taken down. | M |
-| FR-ADM-100 | An administrator shall be able to view (but, per FR-INS-060/080, not write) every lecture's content and quiz to check it, and shall be able to change a lecture's own publishing state where the platform's review process calls for an administrator's approval. | S |
+| FR-ADM-100 | An administrator shall be able to view (but, per FR-INS-060/080, not write) every lecture's content, quiz, and written questions (where it has any) to check them, and shall be able to change a lecture's own publishing state where the platform's review process calls for an administrator's approval. | S |
 
 ### 4.17 Admin Console — Instructor Management
 
@@ -421,6 +447,7 @@ The shape of the curriculum is itself a requirement, not just content, because i
 | A **lecture** | belongs to exactly one module, and has a number in sequence, a title, a type label (*video* or *reading* — describing what the lecture mostly is, not a strict category), a total estimated study time, a short, consistent list of learning aims (the prototype's sample content uses three per lecture, as a style choice, not a fixed system limit), and an ordered list of **content blocks**. |
 | A **content block** | is one of: a **video** block (title, length, caption text standing in for the opening of the video); a **text** block (one heading, one passage — never a long, unbroken wall of text); or a **materials** block (a set of files/links taken from the shared library). |
 | The **quiz** | belonging to a lecture is a fixed set of exactly four multiple-choice questions (see §4.6); it is written once the lecture has content, never before. |
+| The **written questions** | belonging to a lecture are an *optional* set of zero to four short-answer questions (see §4.6a, §4.11a) — a lecture is complete without any, and most have none. |
 | **Consistency rule** | the lecture count and total study hours a module advertises publicly must always match what its actual lectures add up to — this must be checked automatically as part of the finished product's content system, the same way it is checked automatically in the current codebase while it is being built. |
 
 ---
@@ -429,11 +456,11 @@ The shape of the curriculum is itself a requirement, not just content, because i
 
 The rules below repeat across many screens in the prototype and are brought together here as one final list. Every functional requirement above that touches one of these rules must stay consistent with it.
 
-1. **Nothing on the learner side is locked.** No lecture, quiz, or module may ever require another to be finished first. (See FR-STU-130.)
-2. **Every quiz on the platform shares one pass mark, one question count, no limit on attempts, and no time limit** — set once, for the whole platform, by the super administrator. No single quiz, lecture, or module may set its own different version of these. (See FR-STU-190, FR-SA-110.)
+1. **Opening any lecture or module is never locked; advancing past one is, exactly once.** A learner may open any lecture of any joined module at any time, in any order (see FR-STU-130) — but the "next lecture" action on a lecture's own page is withheld until that lecture's quiz, and any written questions it has, are passed. This is the one gate on the platform, it blocks one button, and no future requirement may extend it into locking the module contents list itself.
+2. **Every quiz on the platform shares one pass mark, one question count, no limit on attempts, and no time limit** — set once, for the whole platform, by the super administrator. No single quiz, lecture, or module may set its own different version of these. Written questions, where a lecture has them, share the same pass mark, attempt, and time rules (see FR-STU-190, FR-STU-205, FR-SA-110).
 3. **The highest score ever reached on a quiz, not the most recent one, is the score that counts** towards earning the certificate.
-4. **Finishing a lecture and passing its quiz are two separate facts.** A lecture can be marked finished without its quiz being passed, and a quiz can be tried and passed even if the lecture has not been marked as read. The dashboard's "quizzes to take" panel exists specifically to show this gap.
-5. **A certificate is given automatically, and only, by finishing a whole module** — every lecture finished, every quiz passed. There is, and must always be, no manual "give certificate" button anywhere in the product.
+4. **Finishing a lecture and passing its quiz (or written questions) are separate facts.** A lecture can be marked finished without its quiz being passed, and a quiz can be tried and passed even if the lecture has not been marked as read. The dashboard's "quizzes to take" panel exists specifically to show this gap.
+5. **A certificate is given automatically, and only, by finishing a whole module** — every lecture finished, every quiz passed, and every written question set (where a lecture has one) passed. There is, and must always be, no manual "give certificate" button anywhere in the product.
 6. **A certificate never expires, is exactly one per completed module, and stays valid even if**: the module it came from is later archived; the learner later changes their certificate-name preference; or the learner's account is later deleted. Only a clear, reasoned, permanently recorded withdrawal by an administrator can make one invalid.
 7. **Any file or group in the shared library may be linked to any lecture, by any staff member writing it, in any module, with no limit.** No file or group belongs only to one person or one module — this must never be blocked, or made to sound blocked, in code, on screen, or in any written message.
 8. **Files are linked, not copied.** Replacing a file's content updates every lecture that links to it; linking a whole group ("shelf") to a lecture copies its contents as they are at that moment, and does not stay updated afterward.
@@ -478,13 +505,15 @@ The finished backend must, at minimum, store the following kinds of record and t
 
 | Record type | Main fields | Linked to |
 |---|---|---|
-| **Learner** | name, certificate name, email, password/sign-in details, sector, organisation, district, date joined, status (active/dormant/suspended), notification and language preferences | many Enrolments; many QuizAttempts; many Certificates; many Reviews |
+| **Learner** | name, certificate name, email, password/sign-in details, sector, organisation, district, date joined, status (active/dormant/suspended), notification and language preferences | many Enrolments; many QuizAttempts; many WrittenAttempts; many Certificates; many Reviews |
 | **Module** | title, summary, level, topics, status (draft/published/archived), created/updated dates | many Lectures; many Enrolments; many Instructor assignments |
-| **Lecture** | number, title, type, study minutes, learning aims (3), content blocks, publishing state, author, last updated | belongs to one Module; has one Quiz; links to many Materials |
+| **Lecture** | number, title, type, study minutes, learning aims (3), content blocks, publishing state, author, last updated | belongs to one Module; has one Quiz; has zero or more WrittenQuestions; links to many Materials |
 | **Content Block** | type (video / text / materials), fields specific to that type, order number | belongs to one Lecture |
 | **Quiz / Question** | prompt, 4 options, which one is correct, explanation | belongs to one Lecture |
+| **WrittenQuestion** | prompt, required keywords/phrases, minimum keywords needed to pass, model answer | belongs to one Lecture (zero to four per lecture) |
 | **Enrolment** | learner, module, date joined, current lecture, list of completed lectures | links a Learner to a Module |
 | **QuizAttempt** | learner, lecture, score, pass/fail, timestamp | belongs to one Learner, one Lecture |
+| **WrittenAttempt** | learner, lecture, per-question answer text and pass/fail, overall score, timestamp | belongs to one Learner, one Lecture (only where that lecture has WrittenQuestions) |
 | **Certificate** | reference number (unique, in the form e.g. `[PREFIX]-[YEAR]-[MODULE CODE]-[NUMBER]`), learner, module, date given, average score, status (given/withdrawn), withdrawal reason/who/when if it applies | belongs to one Learner, one Module |
 | **MaterialAsset** | title (unique), description, type, size, language, group, who uploaded it, upload date | belongs to one MaterialGroup; linked to by many Lectures |
 | **MaterialGroup** | name, description, who created it, date created | has many MaterialAssets |
@@ -612,6 +641,7 @@ Where a real example is useful elsewhere in this document (for instance, the cer
 | Learner portal | Module detail | §4.4 |
 | Learner portal | Lecture page | §4.5 |
 | Learner portal | Quiz | §4.6 |
+| Learner portal | Written questions | §4.6a |
 | Learner portal | Quizzes list | §4.6 |
 | Learner portal | Certificates list | §4.7 |
 | Learner portal | Certificate detail | §4.7 |
@@ -620,13 +650,13 @@ Where a real example is useful elsewhere in this document (for instance, the cer
 | Instructor console | Dashboard | §4.9 |
 | Instructor console | My modules / Module detail | §4.9 |
 | Instructor console | Lecture editor | §4.10 |
-| Instructor console | Quiz editor | §4.11 |
+| Instructor console | Quiz editor (includes written questions) | §4.11, §4.11a |
 | Instructor console | Lectures list / Quizzes list | §4.10, §4.11 |
 | Instructor console | Materials library / group / file detail | §4.12 |
 | Instructor console | Learners list / learner detail | §4.13 |
 | Instructor console | Profile / Settings | §4.14 |
 | Admin console | Dashboard | §4.15 |
-| Admin console | Modules list / detail / lecture / quiz | §4.16 |
+| Admin console | Modules list / detail / lecture / quiz (includes written questions, read-only) | §4.16 |
 | Admin console | Instructors list / detail | §4.17 |
 | Admin console | Students (learners) list / detail | §4.18 |
 | Admin console | Materials library / group / file detail | §4.12 |

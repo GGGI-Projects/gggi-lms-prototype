@@ -19,10 +19,12 @@ import {
   ENROLMENTS,
   PASS_MARK,
   QUESTION_POOL,
+  WRITTEN_QUESTIONS,
   type Certificate,
   type Enrolment,
   type EnrolmentStatus,
   type Question,
+  type WrittenQuestion,
 } from "@/content/portal";
 import { MODULES, type Module } from "@/content/site";
 
@@ -213,6 +215,12 @@ export type QuizSummary = {
   /** A quiz sits behind its lecture - taking it first would give the answers away. */
   lectureCompleted: boolean;
   href: string;
+  /** Whether this lecture has written questions at all - most do not. */
+  hasWritten: boolean;
+  writtenStatus: WrittenStatus;
+  /** Whether both the quiz and any written questions are cleared - see
+   *  `lectureGateCleared()`. This is what actually unlocks the next lecture. */
+  gateCleared: boolean;
 };
 
 /**
@@ -265,8 +273,76 @@ export function allQuizzes(): QuizSummary[] {
         progress.enrolment?.completedLectureIds.includes(lecture.id),
       ),
       href: `/modules/${progress.module.id}/lectures/${lecture.id}/quiz`,
+      hasWritten: hasWrittenQuestions(lecture.id),
+      writtenStatus: writtenStatus(progress.module.id, lecture.id),
+      gateCleared: lectureGateCleared(progress.module.id, lecture.id),
     })),
   );
+}
+
+/* --------------------------------------------------------- written questions */
+
+export type WrittenStatus = "passed" | "failed" | "not-attempted" | "not-required";
+
+/** Whether an instructor wrote any written questions for this lecture at all.
+ *  Most lectures have none - they are the exception, never the default. */
+export function hasWrittenQuestions(lectureId: string): boolean {
+  return (WRITTEN_QUESTIONS[lectureId]?.length ?? 0) > 0;
+}
+
+/** The 3-4 written questions a lecture asks, in the order they were written. */
+export function writtenQuestionsFor(lectureId: string): WrittenQuestion[] {
+  return WRITTEN_QUESTIONS[lectureId] ?? [];
+}
+
+/**
+ * A learner's own text, checked against one question's required keywords.
+ *
+ * A SIMPLE PRESENCE CHECK, not a language model - see the note on
+ * `WrittenQuestion.keywords`. It is deliberately forgiving about HOW MANY of
+ * the listed words are needed (`minMatches`, never all of them) because a
+ * real two-sentence answer paraphrases; it is deliberately strict about
+ * matching the words THEMSELVES, because that strictness is exactly what an
+ * instructor is shown on the authoring screen, so nobody is surprised by
+ * what "passed" meant.
+ */
+export function checkWrittenAnswer(
+  question: WrittenQuestion,
+  answer: string,
+): boolean {
+  const text = answer.toLowerCase();
+  const hits = question.keywords.filter((keyword) =>
+    text.includes(keyword.toLowerCase()),
+  ).length;
+  return hits >= question.minMatches;
+}
+
+export function writtenStatus(
+  moduleId: string,
+  lectureId: string,
+): WrittenStatus {
+  if (!hasWrittenQuestions(lectureId)) return "not-required";
+  const score = getEnrolment(moduleId)?.writtenScores[lectureId];
+  if (score === undefined) return "not-attempted";
+  return score >= PASS_MARK ? "passed" : "failed";
+}
+
+/**
+ * Whether a lecture's gate is cleared - the one thing that decides whether
+ * "next lecture" is offered.
+ *
+ * A lecture always has a quiz to clear; it only sometimes has written
+ * questions as well, and when it does not, they cannot block anything -
+ * `writtenStatus` returning `"not-required"` counts as cleared here. Nothing
+ * else on the platform is gated (a learner can still open any lecture's page
+ * directly - see `lectureState()`); this is the one control that actually
+ * withholds something, and it withholds exactly one thing: the "Next
+ * lecture" action on the lecture the gate belongs to.
+ */
+export function lectureGateCleared(moduleId: string, lectureId: string): boolean {
+  if (quizStatus(moduleId, lectureId) !== "passed") return false;
+  const written = writtenStatus(moduleId, lectureId);
+  return written === "passed" || written === "not-required";
 }
 
 /* -------------------------------------------------------------- dashboard */

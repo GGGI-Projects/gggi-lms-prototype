@@ -11,6 +11,7 @@ import {
   progressFor,
   quizFor,
   quizStatus,
+  writtenQuestionsFor,
 } from "@/lib/portal";
 import { META } from "@/lib/theme";
 
@@ -34,7 +35,8 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 }
 
 /**
- * The lecture quiz.
+ * The lecture quiz - and, where the lecture has any, its written questions,
+ * appended to the end of the same flow (see `<QuizRunner>`).
  *
  * Its own route rather than a panel on the lecture page, and that is a design
  * decision rather than a routing one: a quiz taken in a drawer over the
@@ -55,11 +57,16 @@ export default async function QuizPage({ params }: Params) {
 
   const questions = quizFor(moduleId, lectureId);
   if (!questions.length) notFound();
+  const written = writtenQuestionsFor(lectureId);
 
   const { next } = lectureNeighbours(moduleId, lectureId);
   const previous = quizStatus(moduleId, lectureId);
   const score = progress.enrolment?.quizScores[lectureId];
   const lectureHref = `/modules/${moduleId}/lectures/${lectureId}`;
+
+  const advance = next
+    ? { href: `/modules/${moduleId}/lectures/${next.id}`, label: "Go to next lecture" }
+    : undefined;
 
   return (
     <PageBody>
@@ -67,13 +74,22 @@ export default async function QuizPage({ params }: Params) {
         back={{ href: lectureHref, label: `${mod.number}. ${mod.title}` }}
         eyebrow="Lecture quiz"
         title={mod.title}
-        lead="Answer each question, then submit. Every answer is explained afterwards, whether you got it right or not."
+        lead={
+          written.length
+            ? "Answer each question, then submit - the written questions at the end are checked for the words a correct answer would use. You'll see your score straight away."
+            : "Answer each question, then submit. You'll see your score straight away."
+        }
       />
 
       <div className="mt-6 flex flex-wrap items-center gap-2">
         <Badge icon={<QuizIcon className="size-3.5" />}>
           {questions.length} questions
         </Badge>
+        {written.length ? (
+          <Badge tone="active">
+            + {written.length} written question{written.length === 1 ? "" : "s"}
+          </Badge>
+        ) : null}
         <Badge icon={<ClockIcon className="size-3.5" />}>No time limit</Badge>
         <Badge>Pass mark {PASS_MARK}%</Badge>
         {previous === "passed" ? (
@@ -89,11 +105,10 @@ export default async function QuizPage({ params }: Params) {
       <div className="mt-10 max-w-3xl">
         <QuizRunner
           questions={questions}
+          written={written}
           passMark={PASS_MARK}
           lectureHref={lectureHref}
-          nextHref={
-            next ? `/modules/${moduleId}/lectures/${next.id}` : undefined
-          }
+          advance={advance}
         />
 
         <p className={`mt-10 border-t border-surface-deep pt-6 ${META.base}`}>

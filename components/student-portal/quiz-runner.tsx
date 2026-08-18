@@ -1,8 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import type { Question } from "@/content/portal";
+import type { Question, WrittenQuestion } from "@/content/portal";
+import { checkWrittenAnswer } from "@/lib/portal";
 import { ActionButton } from "@/components/ui/action-button";
 import { ProgressBar, ProgressRing } from "@/components/student-portal/ui";
 import {
@@ -13,62 +13,109 @@ import {
 } from "@/components/student-portal/icons";
 import { BODY, EYEBROW, HEADING, META } from "@/lib/theme";
 
+/** One step of the combined quiz - a multiple-choice question or a written
+ *  one, told apart by `kind` so the runner can render and grade either. */
+type QuizItem =
+  | { kind: "mcq"; question: Question }
+  | { kind: "written"; question: WrittenQuestion };
+
+/** An mcq item is answered with the chosen option's index; a written item
+ *  with the text typed. `null` is "not answered yet" for either kind. */
+type Answer = number | string | null;
+
+function isAnswered(item: QuizItem, answer: Answer): boolean {
+  return item.kind === "mcq" ? answer !== null : Boolean((answer as string | null)?.trim());
+}
+
+function isCorrect(item: QuizItem, answer: Answer): boolean {
+  return item.kind === "mcq"
+    ? answer === item.question.answer
+    : checkWrittenAnswer(item.question, (answer as string | null) ?? "");
+}
+
 /**
- * Taking a quiz.
+ * Taking a quiz - and, where the lecture has any, its written questions too.
  *
- * ONE QUESTION AT A TIME, not a page of four. The quiz closes a lecture and
- * confirms the ideas landed; a single list of questions with one submit turns
- * that into a form, and people fill in forms by scanning for the shortest
- * answer. One question on screen with a progress bar above it is the shape
- * that says "think about this one".
+ * ONE FLOW, WRITTEN QUESTIONS AT THE END. A lecture's written questions are
+ * not a separate screen reached after the quiz is passed - they are simply
+ * the last few steps of the same one-question-at-a-time sequence, told apart
+ * by an answer box instead of four options. A learner who has just found the
+ * quiz should not have to go looking for the written questions somewhere
+ * else; appending them here is the one place they cannot be missed.
+ *
+ * ONE QUESTION AT A TIME, not a page of everything. The quiz closes a lecture
+ * and confirms the ideas landed; a single list of questions with one submit
+ * turns that into a form, and people fill in forms by scanning for the
+ * shortest answer. One question on screen with a progress bar above it is the
+ * shape that says "think about this one" - and it works the same way whether
+ * the question in front of you is four options or a blank box.
  *
  * NOTHING IS TIMED AND NOTHING IS LIMITED. The landing page promises unlimited
  * attempts and calls this "a foundation, not a filter", so there is no timer,
  * no attempt counter and no penalty for going back to a question already
- * answered. The review screen shows the explanation for every question,
- * including the ones answered correctly - a quiz whose feedback appears only
- * after a mistake teaches nobody anything.
+ * answered.
+ *
+ * NO ANSWER IS EVER SHOWN TO A LEARNER. This used to be a review screen with
+ * the correct option marked and an explanation underneath every question -
+ * it is not, on purpose: a bank of four questions per module is reused
+ * across every lecture and every retake (see `quizFor()` in `lib/portal.ts`),
+ * so revealing an answer once leaks it for good. What is shown after
+ * submitting is only ever the aggregate - a score, a pass/fail, how many
+ * were right out of how many - never which ones, never what the right
+ * option or model answer was. There is no route, link or button anywhere in
+ * the student portal that shows a correct answer; that information exists
+ * only in the instructor and admin consoles, where it belongs.
  *
  * Nothing is saved. The score is real for as long as the page is open, which
- * the review screen says plainly rather than implying a record was written.
+ * the result says plainly rather than implying a record was written.
  *
- * Submitting opens a RESULT DIALOG over the review rather than replacing it.
- * The score is the one thing the learner is waiting for and it should not have
- * to be looked for at the top of a long scroll; the dialog answers it, offers
- * the two things anyone does next - take it again, or move on - and dismisses
- * onto the explanations, which are already there underneath.
+ * Submitting opens a RESULT DIALOG over a plain summary rather than
+ * replacing it. The score is the one thing the learner is waiting for and it
+ * should not have to be looked for at the top of a long scroll; the dialog
+ * answers it and offers the two things anyone does next - take it again, or
+ * move on - and dismissing it leaves the same summary, not a hidden reveal.
+ *
+ * MOVING ON IS OFFERED ONLY AFTER A PASS. The next lecture is behind this
+ * quiz - see `lectureGateCleared()` in `lib/portal.ts` - so a failed attempt
+ * offers only "Try again", never a way past it.
  */
 export function QuizRunner({
   questions,
+  written = [],
   passMark,
   lectureHref,
-  nextHref,
+  advance,
 }: {
   questions: Question[];
+  /** The lecture's written questions, appended after the multiple-choice
+   *  ones - most lectures pass none, and the flow below simply has nothing
+   *  extra to show. */
+  written?: WrittenQuestion[];
   passMark: number;
   /** Back to the lecture the quiz belongs to. */
   lectureHref: string;
-  /** The next lecture, when there is one. Offered only after a pass. */
-  nextHref?: string;
+  /** Where a PASS leads next - the next lecture, or absent on the last
+   *  lecture of a module. Never shown on a failed attempt. */
+  advance?: { href: string; label: string };
 }) {
-  const [answers, setAnswers] = useState<(number | null)[]>(
-    () => questions.map(() => null),
-  );
+  const [items] = useState<QuizItem[]>(() => [
+    ...questions.map((question): QuizItem => ({ kind: "mcq", question })),
+    ...written.map((question): QuizItem => ({ kind: "written", question })),
+  ]);
+  const [answers, setAnswers] = useState<Answer[]>(() => items.map(() => null));
   const [index, setIndex] = useState(0);
   const [submitted, setSubmitted] = useState(false);
-  // Separate from `submitted` because the review outlives the dialog: closing
-  // the dialog must leave the marked answers on the page, not send the learner
-  // back to question one.
+  // Separate from `submitted` because the summary outlives the dialog:
+  // closing the dialog must leave the marked score on the page, not send the
+  // learner back to question one.
   const [resultOpen, setResultOpen] = useState(false);
 
-  const correct = answers.filter(
-    (answer, i) => answer === questions[i].answer,
-  ).length;
-  const score = Math.round((correct / questions.length) * 100);
+  const correct = items.filter((item, i) => isCorrect(item, answers[i])).length;
+  const score = Math.round((correct / items.length) * 100);
   const passed = score >= passMark;
 
   const retake = () => {
-    setAnswers(questions.map(() => null));
+    setAnswers(items.map(() => null));
     setIndex(0);
     setSubmitted(false);
     setResultOpen(false);
@@ -77,15 +124,14 @@ export function QuizRunner({
   if (submitted) {
     return (
       <>
-        <Review
-          questions={questions}
-          answers={answers}
+        <Summary
+          total={items.length}
           score={score}
           correct={correct}
           passed={passed}
           passMark={passMark}
           lectureHref={lectureHref}
-          nextHref={nextHref}
+          advance={advance}
           onRetake={retake}
         />
 
@@ -93,11 +139,11 @@ export function QuizRunner({
           open={resultOpen}
           score={score}
           correct={correct}
-          total={questions.length}
+          total={items.length}
           passed={passed}
           passMark={passMark}
           lectureHref={lectureHref}
-          nextHref={nextHref}
+          advance={advance}
           onRetake={retake}
           onClose={() => setResultOpen(false)}
         />
@@ -105,75 +151,98 @@ export function QuizRunner({
     );
   }
 
-  const question = questions[index];
+  const item = items[index];
   const chosen = answers[index];
-  const last = index === questions.length - 1;
-  const answeredAll = answers.every((answer) => answer !== null);
+  const last = index === items.length - 1;
+  const answeredAll = items.every((entry, i) => isAnswered(entry, answers[i]));
 
   return (
     <div>
       <div className="flex items-baseline justify-between gap-4">
         <p className={EYEBROW.muted}>
-          Question {index + 1} of {questions.length}
+          Question {index + 1} of {items.length}
         </p>
         <p className={META.base}>
-          {answers.filter((a) => a !== null).length} answered
+          {answers.filter((a, i) => isAnswered(items[i], a)).length} answered
         </p>
       </div>
       <ProgressBar
-        percent={((index + 1) / questions.length) * 100}
+        percent={((index + 1) / items.length) * 100}
         label="Quiz progress"
         className="mt-3"
       />
 
-      <fieldset className="mt-9">
-        {/* The prompt is the legend, so a screen reader announces it with each
-            option rather than leaving four unlabelled radios in a row. */}
-        <legend className="font-display text-2xl leading-snug tracking-tight text-ink text-balance">
-          {question.prompt}
-        </legend>
+      {item.kind === "mcq" ? (
+        <fieldset className="mt-9">
+          {/* The prompt is the legend, so a screen reader announces it with each
+              option rather than leaving four unlabelled radios in a row. */}
+          <legend className="font-display text-2xl leading-snug tracking-tight text-ink text-balance">
+            {item.question.prompt}
+          </legend>
 
-        <div className="mt-7 space-y-3">
-          {question.options.map((option, optionIndex) => {
-            const selected = chosen === optionIndex;
+          <div className="mt-7 space-y-3">
+            {item.question.options.map((option, optionIndex) => {
+              const selected = chosen === optionIndex;
 
-            return (
-              <label
-                key={option}
-                className={`flex cursor-pointer items-start gap-4 rounded-sm border px-5 py-4 text-lg leading-relaxed transition-colors duration-300 ${selected
-                    ? "border-primary bg-tint-mist text-ink"
-                    : "border-surface-deep bg-paper-raised text-ink-soft hover:border-muted-light hover:text-ink"
-                  }`}
-              >
-                <input
-                  type="radio"
-                  name={question.id}
-                  checked={selected}
-                  onChange={() =>
-                    setAnswers((current) =>
-                      current.map((value, i) =>
-                        i === index ? optionIndex : value,
-                      ),
-                    )
-                  }
-                  className="sr-only"
-                />
-                {/* A drawn control rather than the native radio: the whole row
-                    is the target, and a 16px OS radio in the corner of a 64px
-                    row invites people to aim at the wrong thing. */}
-                <span
-                  aria-hidden="true"
-                  className={`mt-1 grid size-5 shrink-0 place-items-center rounded-full border-2 transition-colors duration-300 ${selected ? "border-primary bg-primary" : "border-muted-light"
+              return (
+                <label
+                  key={option}
+                  className={`flex cursor-pointer items-start gap-4 rounded-sm border px-5 py-4 text-lg leading-relaxed transition-colors duration-300 ${selected
+                      ? "border-primary bg-tint-mist text-ink"
+                      : "border-surface-deep bg-paper-raised text-ink-soft hover:border-muted-light hover:text-ink"
                     }`}
                 >
-                  <span className="size-1.5 rounded-full bg-paper" />
-                </span>
-                {option}
-              </label>
-            );
-          })}
+                  <input
+                    type="radio"
+                    name={item.question.id}
+                    checked={selected}
+                    onChange={() =>
+                      setAnswers((current) =>
+                        current.map((value, i) => (i === index ? optionIndex : value)),
+                      )
+                    }
+                    className="sr-only"
+                  />
+                  {/* A drawn control rather than the native radio: the whole row
+                      is the target, and a 16px OS radio in the corner of a 64px
+                      row invites people to aim at the wrong thing. */}
+                  <span
+                    aria-hidden="true"
+                    className={`mt-1 grid size-5 shrink-0 place-items-center rounded-full border-2 transition-colors duration-300 ${selected ? "border-primary bg-primary" : "border-muted-light"
+                      }`}
+                  >
+                    <span className="size-1.5 rounded-full bg-paper" />
+                  </span>
+                  {option}
+                </label>
+              );
+            })}
+          </div>
+        </fieldset>
+      ) : (
+        <div className="mt-9">
+          <label className="block">
+            <span className="font-display text-2xl leading-snug tracking-tight text-ink text-balance">
+              {item.question.prompt}
+            </span>
+            <textarea
+              rows={4}
+              value={(chosen as string | null) ?? ""}
+              onChange={(event) =>
+                setAnswers((current) =>
+                  current.map((value, i) => (i === index ? event.target.value : value)),
+                )
+              }
+              placeholder="Two or three sentences is enough."
+              className="field mt-5"
+            />
+          </label>
+          <p className={`mt-2 ${META.base}`}>
+            A written question - checked for the words a correct explanation
+            would use, not multiple choice.
+          </p>
         </div>
-      </fieldset>
+      )}
 
       <div className="mt-9 flex flex-wrap items-center justify-between gap-4 border-t border-surface-deep pt-6">
         <button
@@ -205,7 +274,7 @@ export function QuizRunner({
             variant="solid"
             size="sm"
             className="group"
-            onClick={() => setIndex((i) => Math.min(questions.length - 1, i + 1))}
+            onClick={() => setIndex((i) => Math.min(items.length - 1, i + 1))}
           >
             Next question
             <ArrowRightIcon className="size-4 transition-transform duration-500 ease-out-expo group-hover:translate-x-1" />
@@ -239,9 +308,9 @@ export function QuizRunner({
  * every other product uses for "careful"; a 40px amber percentage is a warning
  * the learner has to read twice to find out it was good news.
  *
- * Dismissing does not undo anything. The review, with every answer marked and
- * explained, is already rendered underneath - the dialog is the headline over
- * a page that is finished, not a step in front of it.
+ * Dismissing does not reveal anything further. The summary underneath carries
+ * the same score and nothing more - the dialog is the headline over a page
+ * that is already finished, not a step in front of one that unlocks answers.
  */
 function ResultDialog({
   open,
@@ -251,7 +320,7 @@ function ResultDialog({
   passed,
   passMark,
   lectureHref,
-  nextHref,
+  advance,
   onRetake,
   onClose,
 }: {
@@ -262,7 +331,7 @@ function ResultDialog({
   passed: boolean;
   passMark: number;
   lectureHref: string;
-  nextHref?: string;
+  advance?: { href: string; label: string };
   onRetake: () => void;
   onClose: () => void;
 }) {
@@ -330,8 +399,8 @@ function ResultDialog({
       <div className="px-7 py-7 sm:px-9">
         <p className={BODY.base}>
           {passed
-            ? "That counts towards the module's certificate. The answers are explained below if you want to read them."
-            : `There is no limit on attempts and nothing is held against you. Every answer is explained below, which is the fastest way to ${passMark}%.`}
+            ? "That counts towards the module's certificate."
+            : "There is no limit on attempts and nothing is held against you - go back over the lecture and try again whenever you are ready."}
         </p>
 
         {/* ONE BUTTON, and everything else is a text action.
@@ -342,12 +411,12 @@ function ResultDialog({
         <div className="mt-7">
           {passed ? (
             <ActionButton
-              href={nextHref ?? lectureHref}
+              href={advance?.href ?? lectureHref}
               variant="solid"
               size="sm"
               className="group w-full"
             >
-              {nextHref ? "Go to next lecture" : "Back to the lecture"}
+              {advance?.label ?? "Back to the lecture"}
               <ArrowRightIcon className="size-4 transition-transform duration-500 ease-out-expo group-hover:translate-x-1" />
             </ActionButton>
           ) : (
@@ -361,26 +430,22 @@ function ResultDialog({
             </ActionButton>
           )}
 
+          {/* No "see the answers" here or anywhere else in the portal - a
+              learner is never shown which option, or whose written answer,
+              was correct. The only other thing on offer is closing the
+              dialog onto the same score, already summarised underneath. */}
           <div className="mt-6 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-lg font-semibold text-primary">
             {passed ? (
-              <button type="button" onClick={onRetake}>
-                <span className="link-wipe">Try again</span>
-              </button>
-            ) : nextHref ? (
-              // Offered after a failure too, because nothing in this
-              // module is locked - see `<LectureRow>`. Quietly: moving on
-              // is allowed, it is just not the advice.
-              <Link href={nextHref}>
-                <span className="link-wipe">Go to next lecture</span>
-              </Link>
-            ) : null}
-
-            {passed || nextHref ? (
-              <span aria-hidden="true" className="h-4 w-px bg-surface-deep" />
+              <>
+                <button type="button" onClick={onRetake}>
+                  <span className="link-wipe">Try again</span>
+                </button>
+                <span aria-hidden="true" className="h-4 w-px bg-surface-deep" />
+              </>
             ) : null}
 
             <button type="button" onClick={onClose}>
-              <span className="link-wipe">See the answers</span>
+              <span className="link-wipe">Close</span>
             </button>
           </div>
         </div>
@@ -393,27 +458,36 @@ function ResultDialog({
   );
 }
 
-/* ------------------------------------------------------------------ review */
+/* ----------------------------------------------------------------- summary */
 
-function Review({
-  questions,
-  answers,
+/**
+ * What is left once the dialog is closed - the score, and nothing else.
+ *
+ * PREVIOUSLY THIS WAS A REVIEW: every question listed again with the correct
+ * option marked and an explanation underneath, right or wrong. It no longer
+ * shows a single question, option or explanation, on purpose - see the note
+ * on `<QuizRunner>` for why an answer is never revealed to a learner. What
+ * is left is the same score card the dialog already showed, so closing the
+ * dialog does not feel like the page went blank, plus the two actions a
+ * learner actually needs next: take it again, or move on.
+ */
+function Summary({
+  total,
   score,
   correct,
   passed,
   passMark,
   lectureHref,
-  nextHref,
+  advance,
   onRetake,
 }: {
-  questions: Question[];
-  answers: (number | null)[];
+  total: number;
   score: number;
   correct: number;
   passed: boolean;
   passMark: number;
   lectureHref: string;
-  nextHref?: string;
+  advance?: { href: string; label: string };
   onRetake: () => void;
 }) {
   return (
@@ -431,85 +505,15 @@ function Review({
             {passed ? "Passed" : "Not passed this time"}
           </h2>
           <p className={`mt-2 ${BODY.base}`}>
-            {correct} of {questions.length} correct.{" "}
+            {correct} of {total} correct.{" "}
             {passed
               ? `That is above the ${passMark}% needed, and it counts towards the module's certificate.`
-              : `${passMark}% is the pass mark. There is no limit on attempts, and the explanations below are the whole point of taking it.`}
+              : `${passMark}% is the pass mark. There is no limit on attempts - go back over the lecture and try again whenever you are ready.`}
           </p>
         </div>
       </div>
 
-      <div className="mt-10 space-y-8">
-        {questions.map((question, i) => {
-          const chosen = answers[i];
-          const right = chosen === question.answer;
-
-          return (
-            <article
-              key={question.id}
-              className="rounded-sm border border-surface-deep bg-paper-raised p-6 sm:p-7"
-            >
-              <div className="flex items-start gap-4">
-                <span
-                  aria-hidden="true"
-                  className={`mt-0.5 grid size-7 shrink-0 place-items-center rounded-full ${right ? "bg-primary text-paper" : "bg-clay text-paper"
-                    }`}
-                >
-                  {right ? (
-                    <CheckIcon className="size-4" />
-                  ) : (
-                    <CloseIcon className="size-4" />
-                  )}
-                </span>
-                <h3 className="font-display text-lg leading-snug tracking-tight text-ink sm:text-xl">
-                  {question.prompt}
-                </h3>
-              </div>
-
-              <ul className="mt-5 space-y-2">
-                {question.options.map((option, optionIndex) => {
-                  const isAnswer = optionIndex === question.answer;
-                  const isChosen = optionIndex === chosen;
-
-                  return (
-                    <li
-                      key={option}
-                      className={`flex items-start gap-3 rounded-sm px-4 py-2.5 text-lg leading-relaxed ${isAnswer
-                          ? "bg-tint-mist font-medium text-ink"
-                          : isChosen
-                            ? "bg-clay-pale text-ink"
-                            : "text-muted"
-                        }`}
-                    >
-                      <span className={`mt-1 size-1.5 shrink-0 rounded-full ${isAnswer ? "bg-primary" : isChosen ? "bg-clay" : "bg-muted-light"
-                        }`} />
-                      <span className="flex-1">{option}</span>
-                      {isAnswer ? (
-                        <span className="shrink-0 text-sm font-semibold text-primary">
-                          Correct
-                        </span>
-                      ) : isChosen ? (
-                        <span className="shrink-0 text-sm font-semibold text-clay">
-                          Your answer
-                        </span>
-                      ) : null}
-                    </li>
-                  );
-                })}
-              </ul>
-
-              <p className={`mt-5 border-t border-surface-deep pt-4 ${BODY.base}`}>
-                {question.explanation}
-              </p>
-            </article>
-          );
-        })}
-      </div>
-
       <div className="mt-10 flex flex-wrap items-center gap-4 border-t border-surface-deep pt-8">
-        {/* Same two actions as the result dialog, in the same order and with
-            the same one solid, so dismissing the dialog does not change what
-            is on offer or where it is. */}
         <ActionButton
           variant={passed ? "line" : "solid"}
           size="sm"
@@ -518,24 +522,21 @@ function Review({
           Take it again
         </ActionButton>
 
-        {nextHref ? (
+        {passed && advance ? (
           <ActionButton
-            href={nextHref}
-            variant={passed ? "solid" : "line"}
+            href={advance.href}
+            variant="solid"
             size="sm"
             className="group"
           >
-            Next lecture
+            {advance.label}
             <ArrowRightIcon className="size-4 transition-transform duration-500 ease-out-expo group-hover:translate-x-1" />
           </ActionButton>
         ) : null}
 
-        <Link
-          href={lectureHref}
-          className="link-wipe text-lg font-semibold text-primary"
-        >
+        <ActionButton href={lectureHref} variant="mono" size="sm">
           Back to the lecture
-        </Link>
+        </ActionButton>
       </div>
 
       <p role="status" className={`mt-6 ${META.base}`}>

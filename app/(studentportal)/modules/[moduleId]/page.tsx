@@ -23,9 +23,11 @@ import { MODULES } from "@/content/site";
 import {
   formatDate,
   formatDuration,
+  hasWrittenQuestions,
   lectureState,
   progressFor,
   quizStatus,
+  writtenStatus,
 } from "@/lib/portal";
 import { BODY, EYEBROW, HEADING, META } from "@/lib/theme";
 
@@ -133,6 +135,8 @@ export default async function ModulePage({ params }: Params) {
                     state={lectureState(progress, lecture.id)}
                     quiz={quizStatus(mdl.id, lecture.id)}
                     score={enrolment?.quizScores[lecture.id]}
+                    hasWritten={hasWrittenQuestions(lecture.id)}
+                    written={writtenStatus(mdl.id, lecture.id)}
                   />
                 ))}
               </div>
