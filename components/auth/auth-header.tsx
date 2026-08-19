@@ -7,7 +7,7 @@ import { ActionButton } from "@/components/ui/action-button";
  * The account pages' header.
  *
  * GEOMETRICALLY IDENTICAL to `<SiteHeader>`, and that is the whole point: the
- * same `h-(--header-h)`, the same `px-fluid` gutter, the same 36px mark, the
+ * same `h-(--header-h)`, the same `px-fluid` gutter, the same 40px mark, the
  * same `font-display text-lg` wordmark and the same `btn-sm` pill on the right.
  * The landing page and these two routes are one site, and a header that sits at
  * a different height, on a different left edge, with a differently sized mark
@@ -40,8 +40,8 @@ export function AuthHeader({
           className="group flex items-center gap-2.5 text-ink"
           aria-label={`${BRAND.name} ${BRAND.suffix} - home`}
         >
-          <span className="grid size-9 place-items-center rounded-full bg-primary text-paper transition-transform duration-500 ease-out-expo group-hover:-rotate-12">
-            <LeafMark className="size-6" />
+          <span className="grid size-10 place-items-center rounded-full bg-primary text-paper transition-transform duration-500 ease-out-expo group-hover:-rotate-12">
+            <LeafMark className="size-10" />
           </span>
           <span className="font-display whitespace-nowrap text-lg leading-none tracking-tight">
             {BRAND.name}

@@ -47,54 +47,99 @@ export function Topography({ className }: { className?: string }) {
 /**
  * The leaf-in-a-coin logo mark.
  *
- * A coin rim - the plainest way to draw "currency" that still survives a
- * 16px favicon - with the platform's leaf embossed on its face, the way a
- * mint stamps a coin. That is the whole idea in one shape: value with a leaf
- * struck into it, rather than a leaf and a coin merely sitting side by side.
- * The faint inner ring reads as the coin's milled edge at badge size and
- * quietly disappears at favicon size, which is fine - the outer rim alone is
- * what has to hold up that small, and it does.
+ * A struck coin: a heavy rim, a milled edge, a hairline inner circle, and the
+ * platform's leaf filling the face. That is the whole idea in one shape -
+ * value with a leaf minted into it, rather than a leaf and a coin sitting
+ * side by side.
+ *
+ * The leaf is FILLED, not outlined, and its veins are cut OUT of the mass as
+ * negative space rather than drawn on top of it. That is what gives the mark
+ * its weight: at 40px an outlined leaf is four hairlines and reads as grey,
+ * whereas a solid one reads as a leaf.
+ *
+ * TWO DELIBERATE DEPARTURES from the artwork this is drawn from, both forced
+ * by the size the mark actually ships at:
+ *
+ * - The milled edge has 40 slots, not the ~120 of a real coin. At the 40px
+ *   the shells render this at, the band is 106px around; 120 slots is one
+ *   every 0.9px and aliases into a grey smear, while 40 gives a 1.3px slot
+ *   against a 1.3px separator and stays crisp.
+ * - The slots are cut with `stroke-dasharray` rather than by masking, so the
+ *   GROUND shows through them. Everything here is `currentColor` on whatever
+ *   the parent chip is filled with, which is what lets one mark sit on amber
+ *   in the console, teal on the certificate and the season accent in the site
+ *   header. The dash and gap are each a fortieth of the band's circumference,
+ *   so the pattern closes on itself with no seam.
+ *
+ * The mark FILLS its chip - the chip's `rounded-full` background is the
+ * coin's face, and the rim is struck just inside its edge. Sizing it smaller
+ * than the chip would draw a coin inside a disc and read as two circles.
+ *
+ * Below about 32px the milled band and the hairline stop resolving, so small
+ * renderings use the reduced cut in `app/icon.svg` instead of this one.
  */
 export function LeafMark({ className }: { className?: string }) {
   return (
     <svg
       aria-hidden="true"
       className={className}
-      viewBox="0 0 32 32"
+      viewBox="0 0 64 64"
       fill="none"
     >
-      <circle cx="16" cy="16" r="13.8" stroke="currentColor" strokeWidth="2.5" />
-      <circle
-        cx="16"
-        cy="16"
-        r="10.4"
-        stroke="currentColor"
-        strokeWidth="1.3"
-        opacity="0.4"
-      />
+      <g stroke="currentColor" fill="none">
+        {/* Rim, then the milled band with its two containing rings, then the
+            hairline that closes the face off from the leaf. */}
+        <circle cx="32" cy="32" r="30.39" strokeWidth="2.81" />
+        <circle
+          cx="32"
+          cy="32"
+          r="27.1"
+          strokeWidth="2.81"
+          strokeDasharray="2.128 2.128"
+        />
+        <circle cx="32" cy="32" r="25.695" strokeWidth="0.62" />
+        <circle cx="32" cy="32" r="28.505" strokeWidth="0.62" />
+        <circle cx="32" cy="32" r="23.37" strokeWidth="0.7" />
+      </g>
+      {/* One path, three subpaths: the blade, then the two vein channels that
+          `evenodd` knocks back out of it. */}
       <path
-        d="M8.44 23.16C8.44 23.16 9.48 16.63 13.94 13.19C18.41 9.75 23.56 10.1 23.56 10.1C23.56 10.1 23.91 15.89 19.79 19.38C15.66 22.26 10.5 21.79 10.5 21.79"
-        stroke="currentColor"
-        strokeWidth="2.1"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M8.44 23.16C10.16 19.38 13.94 14.65 19.1 12.85"
-        stroke="currentColor"
-        strokeWidth="1.4"
-        strokeLinecap="round"
-        opacity="0.6"
-      />
-      {/* Two short side veins off the main rib, angled toward the tip like a
-          real leaf's - the detail that reads as "leaf" rather than "wing" or
-          "petal" once the outline alone is ambiguous at small sizes. */}
-      <path
-        d="M12.1 19.6L10.15 17.2M15.4 16.4L17.5 18.5"
-        stroke="currentColor"
-        strokeWidth="1.1"
-        strokeLinecap="round"
-        opacity="0.5"
+        fill="currentColor"
+        fillRule="evenodd"
+        d="
+          M 37.8 14.0 C 37.8 14.0 39.6 15.3 40.4 16.1 C 41.3 16.9 42.2 17.9 42.9 18.8 C 43.5
+          19.6 44.1 20.5 44.5 21.4 C 45.1 22.5 45.8 24.1 46.2 25.3 C 46.5 26.4 46.8 27.6
+          46.9 28.8 C 47.1 30.1 47.2 31.4 47.0 32.7 C 46.8 34.4 46.0 37.6 45.5 39.1 C 45.2
+          40.0 44.7 40.8 44.2 41.6 C 43.6 42.5 42.9 43.5 42.1 44.3 C 41.0 45.3 39.1 46.7
+          37.5 47.5 C 36.1 48.2 34.4 48.7 32.9 48.9 C 31.6 49.2 30.0 49.1 28.8 49.1 C 27.7
+          49.1 26.6 48.7 25.6 48.8 C 24.6 48.8 23.7 49.5 22.6 49.7 C 21.6 49.9 20.3 50.1
+          19.6 50.0 C 19.0 50.0 18.5 49.7 18.1 49.4 C 17.7 49.1 17.0 48.3 17.0 48.3 C 17.0
+          48.3 24.0 47.3 24.0 47.3 C 24.0 47.3 22.5 45.4 22.1 44.4 C 21.6 43.4 21.3 42.4
+          21.1 41.4 C 21.0 40.3 20.9 39.1 21.0 38.0 C 21.1 36.8 21.3 35.7 21.7 34.7 C 22.1
+          33.6 22.7 32.6 23.4 31.7 C 24.2 30.7 25.2 29.5 26.3 28.7 C 28.1 27.4 32.7 25.2
+          34.4 24.0 C 35.4 23.4 36.3 22.7 37.0 21.8 C 37.6 20.8 38.2 19.5 38.3 18.2 C 38.5
+          16.9 37.8 14.0 37.8 14.0 Z M 38.9 15.8 C 38.9 15.8 41.4 18.3 42.4 19.8 C 43.3 21.3
+          44.2 23.1 44.8 24.8 C 45.3 26.5 45.6 28.4 45.7 30.0 C 45.8 31.4 45.7 32.9 45.5
+          34.2 C 45.2 35.4 44.7 36.6 44.1 37.6 C 43.4 38.6 42.5 39.7 41.5 40.5 C 40.5 41.3
+          39.0 42.2 37.6 42.8 C 36.3 43.4 33.4 44.0 33.4 44.0 C 33.4 44.0 36.1 41.2 37.2
+          39.7 C 38.3 38.3 38.9 36.3 39.9 35.0 C 40.7 33.9 42.1 33.0 42.9 32.0 C 43.6 31.2
+          44.2 30.0 44.5 29.3 C 44.7 28.9 44.9 28.0 44.9 28.0 C 44.9 28.0 44.6 28.6 44.4
+          29.0 C 44.0 29.5 43.3 30.8 42.7 31.6 C 42.0 32.4 40.4 33.8 40.4 33.8 C 40.4 33.8
+          41.7 28.8 41.9 27.0 C 42.1 25.8 42.0 24.5 41.8 23.3 C 41.6 22.1 40.9 19.8 40.9
+          19.8 C 40.9 19.8 41.4 22.2 41.4 23.3 C 41.5 24.4 41.5 25.4 41.4 26.5 C 41.3 27.6
+          41.1 28.7 40.8 29.8 C 40.5 31.0 39.5 33.4 39.5 33.4 C 39.5 33.4 39.5 31.4 39.4
+          30.5 C 39.2 29.8 38.9 29.0 38.6 28.4 C 38.3 27.7 37.9 27.1 37.4 26.6 C 37.0 26.1
+          35.9 25.3 35.9 25.3 C 35.9 25.3 37.6 23.4 38.1 22.7 C 38.5 22.1 38.9 21.4 39.0
+          20.7 C 39.2 19.8 39.3 18.3 39.3 17.5 C 39.2 16.9 38.9 15.8 38.9 15.8 Z M 35.7 25.4
+          C 35.7 25.4 37.5 27.1 38.1 27.9 C 38.5 28.7 38.7 29.6 38.9 30.4 C 39.0 31.2 39.1
+          31.9 39.0 32.7 C 38.9 33.7 38.5 35.4 38.0 36.5 C 37.5 37.5 35.9 39.3 35.9 39.3 C
+          35.9 39.3 35.9 36.5 35.7 35.5 C 35.5 34.7 35.0 33.8 34.6 33.1 C 34.3 32.6 33.4
+          31.8 33.4 31.8 C 33.4 31.8 34.3 33.0 34.6 33.7 C 35.0 34.5 35.3 35.7 35.4 36.6 C
+          35.5 37.3 35.5 38.2 35.3 38.9 C 35.2 39.5 35.1 40.2 34.7 40.7 C 33.9 41.6 32.3
+          43.0 30.9 44.0 C 29.4 44.9 26.0 46.6 26.0 46.6 C 26.0 46.6 27.6 45.4 28.2 44.7 C
+          28.9 43.9 29.5 43.1 29.7 42.2 C 29.9 40.6 29.4 37.3 29.6 35.5 C 29.7 34.0 30.2
+          32.3 30.7 31.2 C 31.1 30.2 31.7 29.3 32.4 28.5 C 33.3 27.5 35.7 25.4 35.7 25.4 Z
+        "
       />
     </svg>
   );

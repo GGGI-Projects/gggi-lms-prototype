@@ -35,7 +35,7 @@ import { TopbarShell } from "@/components/shell/topbar-shell";
  * The frame every staff screen sits in.
  *
  * THE SAME MATERIAL AS THE PORTAL, on purpose. A dark `primary-950` rail, the
- * ambient bloom, the landscape ribbon at its foot, the 36px leaf mark on the
+ * ambient bloom, the landscape ribbon at its foot, the 40px leaf mark on the
  * same gutter, the same 4.25rem header - because this is the same product seen
  * from a different desk, not a separate admin tool bolted to the side of it.
  * An administrator who opens the console and finds a grey Bootstrap panel has
@@ -163,8 +163,8 @@ function Rail({
       navLabel="Console"
       logo={
         <>
-          <span className="grid size-9 place-items-center rounded-full bg-accent text-primary-950 transition-transform duration-500 ease-out-expo group-hover:-rotate-12">
-            <LeafMark className="size-6" />
+          <span className="grid size-10 place-items-center rounded-full bg-accent text-primary-950 transition-transform duration-500 ease-out-expo group-hover:-rotate-12">
+            <LeafMark className="size-10" />
           </span>
           <span className="min-w-0">
             <span className="font-display block truncate text-lg leading-none tracking-tight">
@@ -385,8 +385,8 @@ function Topbar({
           className="flex items-center gap-2.5 text-ink lg:hidden"
           aria-label={`${BRAND.name} ${BRAND.suffix} - console home`}
         >
-          <span className="grid size-9 place-items-center rounded-full bg-primary text-paper">
-            <LeafMark className="size-6" />
+          <span className="grid size-10 place-items-center rounded-full bg-primary text-paper">
+            <LeafMark className="size-10" />
           </span>
         </Link>
       }

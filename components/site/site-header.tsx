@@ -87,13 +87,13 @@ export function SiteHeader() {
             aria-label={`${BRAND.name} ${BRAND.suffix} - home`}
           >
             <span
-              className="grid size-9 place-items-center rounded-full transition-transform duration-500 ease-out-expo group-hover:-rotate-12"
+              className="grid size-10 place-items-center rounded-full transition-transform duration-500 ease-out-expo group-hover:-rotate-12"
               style={{
                 backgroundColor: "var(--season-accent, #5fe0a8)",
                 color: "var(--season-ground, #0b2b24)",
               }}
             >
-              <LeafMark className="size-6" />
+              <LeafMark className="size-10" />
             </span>
             {/* Exactly the footer's wordmark - `font-display text-lg
                 leading-none tracking-tight`. It was 18.4px stepping up to

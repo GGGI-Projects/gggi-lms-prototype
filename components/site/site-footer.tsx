@@ -50,8 +50,8 @@ export function SiteFooter() {
               className="inline-flex items-center gap-2.5"
               aria-label={`${BRAND.name} ${BRAND.suffix} - home`}
             >
-              <span className="grid size-9 place-items-center rounded-full bg-tint-mist text-primary">
-                <LeafMark className="size-6" />
+              <span className="grid size-10 place-items-center rounded-full bg-tint-mist text-primary">
+                <LeafMark className="size-10" />
               </span>
               <span className="font-display text-lg leading-none tracking-tight text-paper">
                 {BRAND.name}

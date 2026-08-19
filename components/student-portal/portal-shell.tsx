@@ -109,8 +109,8 @@ function Rail({ className = "" }: { className?: string }) {
       navLabel="Portal"
       logo={
         <>
-          <span className="grid size-9 place-items-center rounded-full bg-accent text-primary-950 transition-transform duration-500 ease-out-expo group-hover:-rotate-12">
-            <LeafMark className="size-6" />
+          <span className="grid size-10 place-items-center rounded-full bg-accent text-primary-950 transition-transform duration-500 ease-out-expo group-hover:-rotate-12">
+            <LeafMark className="size-10" />
           </span>
           <span className="font-display whitespace-nowrap text-lg leading-none tracking-tight">
             {BRAND.name}
@@ -180,8 +180,8 @@ function Topbar({ onMenu }: { onMenu: () => void }) {
           className="flex items-center gap-2.5 text-ink lg:hidden"
           aria-label={`${BRAND.name} ${BRAND.suffix} - dashboard`}
         >
-          <span className="grid size-9 place-items-center rounded-full bg-primary text-paper">
-            <LeafMark className="size-6" />
+          <span className="grid size-10 place-items-center rounded-full bg-primary text-paper">
+            <LeafMark className="size-10" />
           </span>
           <span className="font-display hidden whitespace-nowrap text-lg leading-none tracking-tight sm:inline">
             {BRAND.name}

@@ -78,8 +78,8 @@ export function CertificateSheet({
           to spend and the three blocks would sit flush against each other. */}
       <div className="flex flex-col items-center justify-between gap-8 px-8 py-9 text-center sm:h-full sm:gap-0 sm:px-14 sm:py-12">
         <header className="flex flex-col items-center">
-          <span className="grid size-10 place-items-center rounded-full bg-primary text-paper">
-            <LeafMark className="size-7" />
+          <span className="grid size-11 place-items-center rounded-full bg-primary text-paper">
+            <LeafMark className="size-11" />
           </span>
           <p className="font-display mt-3 text-lg leading-none tracking-tight text-ink">
             {BRAND.name}
