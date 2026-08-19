@@ -17,6 +17,12 @@ import { SEASONS, SEASON_MS, YEAR_MS } from "@/content/seasons";
 /** Every animation that must stay phase-locked to the year. */
 const CLOCKED = new Set([
   "year",
+  // The sun's declination was split out of `year` so it could stay `linear`
+  // while the colours quantise - see `@keyframes year-tilt` in globals.css.
+  // It is a second animation now, so it needs its own entry here or a jump
+  // would move the palette to a new season and leave the terminator tilted
+  // for the old one.
+  "year-tilt",
   "globe-spin",
   "season-sweep",
   "underline-fill",

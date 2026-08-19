@@ -670,21 +670,25 @@ html:has(dialog[open]) {
 }
 
 /**
- * Earth rotation. The distance is one tile width of the equirectangular map,
- * handed in by <Globe> as `--globe-tile`, so the loop is seamless and the CSS
- * cannot fall out of step with the geometry.
+ * Earth rotation.
+ *
+ * `-50%` is one tile. The strip holds two copies of the map side by side and
+ * is 400% of the disc wide, so half of it is exactly one world - the loop is
+ * seamless by construction, and the distance cannot fall out of step with the
+ * geometry the way a handed-in pixel value could.
+ *
+ * `translate3d`, not `translateX`. Both composite in current browsers, but the
+ * 3D form is the one that has always forced the issue, and this is the single
+ * animation on the page that the whole globe restructure exists to keep on the
+ * GPU. See the header comment in components/art/globe.tsx.
  */
 @keyframes globe-spin {
   from {
-    transform: translateX(0);
+    transform: translate3d(0, 0, 0);
   }
   to {
-    transform: translateX(calc(var(--globe-tile) * -1));
+    transform: translate3d(-50%, 0, 0);
   }
-}
-
-.globe-spin {
-  animation: globe-spin 54s linear infinite;
 }
 
 @keyframes marquee-x {
@@ -956,7 +960,6 @@ html:has(dialog[open]) {
     --season-text-muted: #9dc4b4;
     --season-ocean: #0e3a31;
     --season-land: #8fe3be;
-    --sun-tilt: 0deg;
   }
   /* Summer - June solstice, sun north, terminator tilted. */
   25%,
@@ -968,7 +971,6 @@ html:has(dialog[open]) {
     --season-text-muted: #93b4cc;
     --season-ocean: #0b3355;
     --season-land: #7fc9e8;
-    --sun-tilt: 23.4deg;
   }
   /* Autumn - equinox again.
      Dry season reads as dusty umber and sand rather than red-brown. The
@@ -985,7 +987,6 @@ html:has(dialog[open]) {
     --season-text-muted: #c1b4a1;
     --season-ocean: #302a20;
     --season-land: #d9c49f;
-    --sun-tilt: 0deg;
   }
   /* Winter - December solstice, sun south, terminator tilted the other way. */
   75%,
@@ -997,7 +998,6 @@ html:has(dialog[open]) {
     --season-text-muted: #9fb2ce;
     --season-ocean: #132244;
     --season-land: #a9c4e8;
-    --sun-tilt: -23.4deg;
   }
   /* Must equal 0% exactly, or the loop jumps. */
   100% {
@@ -1008,6 +1008,56 @@ html:has(dialog[open]) {
     --season-text-muted: #9dc4b4;
     --season-ocean: #0e3a31;
     --season-land: #8fe3be;
+  }
+}
+
+/**
+ * The sun's declination, on its own track.
+ *
+ * It used to be the eighth property in `@keyframes year` above, and it was
+ * moved out for one reason: `year` is now quantised with `steps()` (see
+ * `.season-clock`) and this is the one value in the set that must NOT be.
+ *
+ * The seven colours quantise invisibly - a 2s blend split into steps moves
+ * each channel by well under one 0-255 unit per step, so there is nothing to
+ * see. This is geometry, not colour: it swings 23.4deg over the same 2s, and
+ * the terminator it rotates is drawn at the globe's full on-screen radius, so
+ * the same step interval that hides a colour change moves a soft edge by
+ * several pixels at the limb. Quantised, that reads as the day/night boundary
+ * ratcheting. Blended, it reads as the light moving.
+ *
+ * So: same 24s duration, same keyframe percentages, same document timeline,
+ * still `linear`. It stays phase-locked to `year` structurally, and both are
+ * declared on the same elements so they start together - `jumpToSeason` in
+ * use-season.ts lists it alongside `year` for the same reason.
+ *
+ * This is not free, but it is the cheap half of what was split: one gradient
+ * rect re-rasterising during the blend windows, rather than seven inherited
+ * properties invalidating computed style for the whole hero subtree.
+ */
+@keyframes year-tilt {
+  /* Spring - equinox, sun overhead the equator, terminator vertical. */
+  0%,
+  17% {
+    --sun-tilt: 0deg;
+  }
+  /* Summer - June solstice, sun north. */
+  25%,
+  42% {
+    --sun-tilt: 23.4deg;
+  }
+  /* Autumn - equinox again. */
+  50%,
+  67% {
+    --sun-tilt: 0deg;
+  }
+  /* Winter - December solstice, sun south. */
+  75%,
+  92% {
+    --sun-tilt: -23.4deg;
+  }
+  /* Must equal 0% exactly, or the loop jumps. */
+  100% {
     --sun-tilt: 0deg;
   }
 }
@@ -1041,8 +1091,61 @@ html:has(dialog[open]) {
  * the `@property` initial values, which is why `.btn-solid` and `.btn-line`
  * exist. Do not add `.season-clock` to anything below the hero.
  */
+/**
+ * WHY `steps()` AND NOT `linear`.
+ *
+ * `year` interpolates seven registered custom properties that all declare
+ * `inherits: true`. On `linear` that meant a new computed value sixty times a
+ * second, and a changed inherited custom property is not a cheap event: the
+ * style engine re-resolves the whole subtree beneath the element, and then
+ * everything that PAINTS with one of those values has to be painted again.
+ * On this page, per frame, that was the hero's sky gradient regenerated across
+ * the full viewport, the scrim's `color-mix()` recomputed, twenty-two particle
+ * fills, and - the expensive one - the globe's ~1,472-command land path
+ * re-rasterised, because an SVG whose own fill colour is still changing can
+ * never be cached as "rasterise once, then move".
+ *
+ * `steps()` cuts how often that cascade fires, and changes nothing about what
+ * the year looks like.
+ *
+ * THE STEP COUNT IS PER KEYFRAME INTERVAL, NOT PER CYCLE. This is the detail
+ * that makes the number look wrong at a glance, and it is worth being exact
+ * about because getting it backwards silently does nothing. An
+ * `animation-timing-function` on the element is applied BETWEEN EACH PAIR OF
+ * ADJACENT KEYFRAMES, so a count picked against the 24s year is applied to
+ * each ~2s interval instead - twelve times too fine, a step every few
+ * milliseconds, and a saving of precisely zero.
+ *
+ * So the count is set against the interval that actually matters. Only the
+ * blends do: across a hold the from- and to-values are identical, so the
+ * property does not change and there is nothing to skip. See `@keyframes
+ * year` - the holds are 17% and the blends are 8% of 24s, which is 1.92s.
+ *
+ *   steps(58) over 1.92s = ~33ms = a new palette every SECOND frame at 60Hz.
+ *
+ * Half the style invalidations, half the repaints, for the third of the cycle
+ * that is blending. And invisible rather than nearly-invisible: the widest
+ * single-channel jump in any blend here is the accent going spring green to
+ * summer amber, 160 of 255 on red, which over 58 steps is 2.8 units - about
+ * 1% - every 33ms.
+ *
+ * Two frames is the deliberate conservative choice. 50ms (steps(38)) is the
+ * usual rule of thumb for quantised motion reading as continuous and would
+ * save half again, but that rule is about MOTION, and this is a large flat
+ * area of colour where the eye is better at spotting a step than it is on
+ * something moving. There was a `steps(90)` on the globe's rotation once that
+ * shipped as a visible lurch for exactly this kind of reasoning-by-rule-of-
+ * thumb. If a recording ever shows 33ms is over-cautious here, 38 is the next
+ * value to try - but measure it, do not argue it.
+ *
+ * `--sun-tilt` is deliberately NOT in this animation - it is geometry, it does
+ * not survive quantisation at any count, and it runs `linear` on its own
+ * track. See the note above `@keyframes year-tilt`.
+ */
 .season-clock {
-  animation: year 24s linear infinite;
+  animation:
+    year 24s steps(58, end) infinite,
+    year-tilt 24s linear infinite;
 }
 
 /* --- Ambience stops while it is off screen -------------------------------
@@ -1535,6 +1638,102 @@ html:has(dialog[open]) {
   contain: layout paint style;
 }
 
+/* --- Globe: layers ------------------------------------------------------- */
+
+/**
+ * The four layers <Globe> renders, back to front. The reasoning for the shape
+ * of this - why the map is a div and not a `<g>` - is in the header comment of
+ * components/art/globe.tsx; what follows is only the geometry, all of it
+ * derived from the same 440-unit viewBox the shell SVG still uses.
+ */
+.globe {
+  position: relative;
+}
+
+/**
+ * Atmospheric halo. Was `<circle r="215">` filled with a radial gradient whose
+ * `r="50%"` of that circle's own box is 215 - so a square inset by
+ * (220-215)/440, with `closest-side`, is the same circle and the same radius.
+ * Stop offsets are unchanged; they are percentages of that radius either way.
+ */
+.globe-halo {
+  position: absolute;
+  inset: 1.1364%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle closest-side,
+    color-mix(in srgb, var(--season-accent) 0%, transparent) 74%,
+    color-mix(in srgb, var(--season-accent) 22%, transparent) 86%,
+    color-mix(in srgb, var(--season-accent) 7%, transparent) 94%,
+    color-mix(in srgb, var(--season-accent) 0%, transparent) 100%
+  );
+}
+
+/**
+ * The disc: the circular clip, and the deep ocean as its own background.
+ *
+ * `inset: 11.3636%` is (220-170)/440 - the same circle as the `globe-clip`
+ * path in the shell above it, which is why the rim still lands exactly on this
+ * element's edge.
+ *
+ * The ocean was `<radialGradient cx="34%" cy="28%" r="78%">` in
+ * objectBoundingBox units. That maps to CSS `78% 78% at 34% 28%` EXACTLY, and
+ * only because the box is square: objectBoundingBox normalises the box to a
+ * unit square and stretches back, so on a non-square box the two would differ.
+ * It is square here and always will be - it is a circle.
+ *
+ * `container-type: size` is what lets the Sri Lanka marker keep its geometry
+ * in `cqh`. It also makes this the containing block for `.globe-spin`, which
+ * is what we want anyway.
+ */
+.globe-disc {
+  position: absolute;
+  inset: 11.3636%;
+  border-radius: 50%;
+  overflow: hidden;
+  container-type: size;
+  background: radial-gradient(
+    78% 78% at 34% 28%,
+    var(--season-ocean) 0%,
+    var(--season-ground-2) 62%,
+    var(--season-ground) 100%
+  );
+}
+
+/**
+ * The turning surface, and the only thing on this page whose job is to be a
+ * GPU texture.
+ *
+ * `will-change` is deliberate here and deliberately absent elsewhere (see the
+ * note by `.particle`, which had it removed for the opposite reason). It only
+ * pays off when a layer's contents can be rasterised once and then moved, and
+ * that is precisely what this one is built to guarantee.
+ */
+.globe-spin {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 400%;
+  height: 100%;
+  will-change: transform;
+  animation: globe-spin 54s linear infinite;
+}
+
+/* 4:1 viewBox in a 4:1 box, so the default `preserveAspectRatio` fits it
+   exactly and the map keeps the scale it had inside the old single SVG. */
+.globe-map {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Night, sheen, limb and the rim - unchanged markup, over the top. */
+.globe-shell {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
 /* --- Globe: terminator and the Sri Lanka marker --------------------------- */
 
 /**
@@ -1555,10 +1754,51 @@ html:has(dialog[open]) {
   transform: rotate(var(--sun-tilt));
 }
 
+/**
+ * The marker is three stacked spans on a zero-sized grid, which centres each
+ * of them on the point without needing a `transform` to do it - leaving
+ * `transform` free for the pulse. Sizes come from <Globe> in `cqh`, so they are
+ * the original SVG radii and still scale with the globe.
+ *
+ * `transform-box`/`transform-origin` are gone with the SVG circles; an HTML
+ * box already scales about its own centre.
+ */
+.sl-marker {
+  position: absolute;
+  width: 0;
+  height: 0;
+  display: grid;
+  /* `grid-template`, and it is not redundant with the zero width above.
+     A zero-sized grid container does NOT imply zero-sized tracks: an implicit
+     track is `auto`, which sizes to its largest item, so the single cell came
+     out as wide as the pulse and `place-items: center` centred everything in
+     THAT - putting the whole marker half a pulse-width down and to the right
+     of Sri Lanka, concentric with itself and so easy to miss. Pinning the
+     track to 0 makes the cell the point it is supposed to be. */
+  grid-template: 0 / 0;
+  place-items: center;
+}
+
+.sl-marker > * {
+  grid-area: 1 / 1;
+  aspect-ratio: 1;
+  border-radius: 9999px;
+}
+
 .sl-pulse {
-  transform-box: fill-box;
-  transform-origin: center;
+  background: var(--season-accent);
+  opacity: 0.4;
   animation: sl-pulse 3.4s ease-out infinite;
+}
+
+.sl-ring {
+  border-style: solid;
+  border-color: var(--season-accent);
+  opacity: 0.8;
+}
+
+.sl-dot {
+  background: var(--season-accent);
 }
 
 @keyframes sl-pulse {
@@ -1833,7 +2073,11 @@ html:has(dialog[open]) {
  * one to take: the alternative on this hardware is a dissolve that stutters.
  */
 [data-perf="low"] .season-clock {
-  animation-timing-function: step-end;
+  /* Two values, one per animation in the shorthand above. A single value
+     would be repeated across both and mean the same thing, but writing it out
+     keeps the tilt's demotion a decision rather than a side effect - on this
+     tier the seasons are cuts, so there is no swing left for it to smooth. */
+  animation-timing-function: step-end, step-end;
 }
 
 /* ==========================================================================

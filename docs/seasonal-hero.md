@@ -223,6 +223,29 @@ Consequences worth understanding:
 - The globe, the header and the type cannot fall out of step. It is
   structurally impossible.
 
+**Two animations carry it, not one.** The seven colours run under
+`steps(58, end)`, because a changed *inherited* custom property re-resolves the
+whole subtree below it and repaints everything that paints with it: the sky
+gradient, the scrim's `color-mix()`, the particles, and the globe's land path.
+
+The count is **per keyframe interval, not per cycle** - an
+`animation-timing-function` on the element applies between each adjacent pair
+of keyframes. Only the blends matter (across a hold the from- and to-values are
+equal, so nothing changes and there is nothing to skip), and a blend is 8% of
+24s = 1.92s. `steps(58)` is therefore ~33ms: a new palette every second frame
+at 60Hz, so half the invalidations for the third of the cycle that is blending.
+Two frames rather than the usual 50ms rule of thumb because this is a large
+flat area of colour, where a step is easier to catch than it is on something
+moving.
+
+`--sun-tilt` is the exception and runs `linear` on its own `@keyframes
+year-tilt`, same duration and same percentages. It is geometry, not colour:
+23.4deg over 2s, applied at the globe's full on-screen radius, so the step
+interval that hides a colour change moves a soft edge several pixels at the
+limb and reads as ratcheting. Anything added to the palette belongs in `year`;
+anything that moves belongs in `year-tilt`, and in `CLOCKED` in
+`use-season.ts` so a manual jump keeps them together.
+
 ### 4.2 Hold, then blend
 
 Do not interpolate linearly across the whole cycle, or the colours are never

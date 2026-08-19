@@ -23,6 +23,65 @@ The root causes found, in cost order:
 
 Most of that is fixed. What follows is what is left.
 
+## Measured, 2026-08-19 — read this before picking the next item
+
+After items 1 (partly) and 2 landed, the hero was profiled properly rather than
+reasoned about. Several things in the list below turn out to be wrong. Numbers
+are `RasterTask` counts from a CDP trace over **one full 24-second year** on the
+landing page at 1600x1000, idle.
+
+**Window the trace to a whole year, or the numbers are noise.** Blends are a
+third of the cycle, so an 8-second window can contain anywhere from 1.3s to 4s
+of blending — a 3x swing that looks like a real effect. Every 24s baseline
+re-run came back 3286-3314; every 8s one was worth nothing.
+
+**Do not ablate by injecting `animation-timing-function`.** Overriding it
+restarts the animations and costs 2.6x on its own: injecting the value the page
+ALREADY HAS took raster from 3302 to 8626. Any conclusion drawn that way is
+about the injection, not the page. `display: none` and pinning custom properties
+inject cleanly; timing functions do not. To compare step rates, rebuild.
+
+| variant | raster tasks |
+|---|---|
+| baseline | ~3300 |
+| globe hidden | 3264 |
+| year clock frozen | 1337 |
+| hero text column removed | ~350 |
+| big painted areas (sky, scrim, ocean, halo, sweep, particles) pinned static | 3165 |
+| all 7 season properties pinned static ON the text column | 3190 |
+
+What that says:
+
+1. **Item 2 worked.** Hiding the globe entirely changes nothing (3264 vs 3300).
+   It is no longer a cost. Confirmed independently by the layer tree.
+2. **The year clock is now the whole remaining story** — freezing it is a 60%
+   cut, and nothing else moves the number at all.
+3. **The cost is not the gradients.** Pinning every large painted area static
+   bought 4%. Item 1's "stack one static layer per season and cross-fade the
+   opacity" would therefore deliver almost nothing on its own, which is the
+   opposite of what this document said. Do not start it expecting the win.
+4. **Chrome invalidates the clock's whole subtree, not the elements whose
+   values changed.** Pinning all seven properties static on the hero's text
+   column left the cost intact (3190); REMOVING that column dropped it to ~350.
+   The text repaints because it is *inside* the animated subtree, not because
+   its colour is animating.
+
+**So the only lever that works is the subtree, and it is item 1's blocked design
+call by another route.** Either the hero's copy stops being a descendant of the
+element carrying `@keyframes year` — which means it stops taking its colour from
+the animated properties — or it keeps repainting at the step rate whatever else
+is done. For reference, the four `--season-text` values differ by at most 19/255
+and are plausibly one colour; the four `--season-text-muted` values differ by up
+to 46/255 (warm sand vs cool blue) and are not.
+
+**Items 4 and 6 (the two `mix-blend-mode` layers) are not worth doing.** Also
+measured, below the hero: while SCROLLING, removing both changed nothing
+(1051 raster with them, 1231 without — the noise is the newly revealed content).
+While the cursor moves over a still page they cost ~12ms of raster per 8s, and
+only because the grain sits above the glow and has to re-read where it moved.
+That is real but it is not the 40-50% it was assumed to be. Leave them alone
+until something else is exhausted.
+
 ## How to measure
 
 Not LCP — the metric that matters here is **per-frame style recalc and paint
@@ -61,6 +120,12 @@ Clear it with `sessionStorage.removeItem('perf')` and reload.
 
 ### 1. Season colours → compositor-only opacity cross-fade
 
+> **Superseded in part — see "Measured, 2026-08-19" above before starting.**
+> The cross-fade described here was measured to be worth ~4%, not the win this
+> section claims: the repaint is driven by the subtree the clock sits on, not by
+> the gradients. The design call below is still the unblocker, but for a
+> different reason than the one given here.
+
 **The biggest item left.** Everything else on this list is worth a few percent;
 this one removes the remaining per-frame style recalc at its source rather than
 shrinking it.
@@ -96,6 +161,25 @@ partly on the main thread.
 **Fallback if this is never done:** the low tier already switches the clock to
 `step-end`, so weak machines get four colour changes a minute instead of sixty a
 second. This item is about the high tier.
+
+**Partly banked, 2026-08-19 — the full item is still open.** The clock now runs
+`steps(58, end)` on every tier, and `--sun-tilt` was split into its own `linear`
+`@keyframes year-tilt` so the terminator's swing does not get quantised with the
+colours. That halves the invalidations described above without touching the
+palette or needing the design call below, so it is an interim measure, not this
+item.
+
+Two things to keep straight before treating it as more than that:
+
+- **The step count is per keyframe interval, not per cycle.** A count picked
+  against the 24s year lands on each ~2s interval instead and quietly does
+  nothing. 58 is set against the 1.92s blend = ~33ms = every second frame.
+- **It only buys anything during the blends.** Across a hold the from- and
+  to-values are identical, so the properties were already not changing and
+  already not repainting. Blends are 8% × 4 = a third of the cycle, so this is a
+  2× cut on a third of the time — real, and much smaller than it first looks.
+  The other two thirds are the globe's own rotation (item 2), which is where the
+  idle cost actually is.
 
 ### 2. Globe spin as a DOM transform
 
@@ -134,6 +218,62 @@ is `fill="var(--season-land)"`, which the year animation changes every frame —
 so done alone, this would still re-raster every frame and would have taken the
 visual risk of rewriting the hero's centrepiece for a fraction of the benefit.
 
+### DONE, 2026-08-19 - with two corrections to the plan above
+
+Applied in a reduced scope, and the plan as written would have failed in one
+place and regressed in another. Both are worth keeping written down.
+
+**The plan would have defeated itself.** It said "Sri Lanka's marker stays
+inside the SVG, one per tile". `.sl-pulse` animates a transform, so an SVG
+marker inside the moving layer changes that layer's contents every frame - and
+a layer whose contents change every frame is re-rastered every frame, which is
+the exact cost the restructure exists to remove. The marker is now three HTML
+spans; its pulse composites separately and the map underneath stays cached.
+
+**The rim could not become a CSS border.** `stroke-width: 1` is in viewBox
+units, so it scales with the globe - about 3.6 real px at the desktop's 146vh.
+`border: 1px` is 1px at every size, so the rim would have thinned visibly on
+big screens. It stayed in SVG.
+
+**Only two gradients moved to CSS**, not five: the halo and the ocean. Night,
+sheen and limb do not move, so converting them would have been visual risk for
+no gain; they are the original markup under the original `clipPath`, in a
+`.globe-shell` SVG layered over the disc.
+
+**Verified:**
+
+- *Structurally*, which is the claim that matters and the one that is
+  measurable anywhere. Via CDP `LayerTree.compositingReasons`: the original has
+  NO layer for `g.globe-spin` at all, the rebuilt page has `div.globe-spin`
+  4513x1128 (5.09 MP) with reasons `ActiveTransformAnimation,
+  WillChangeTransform`. Total layer count is 59 either way, so nothing else got
+  promoted as a side effect.
+- *Visually*, by screenshot diff of both builds at six fixed points on the
+  animation timeline: ~1% of pixels differ by >2/255 and 0.00-0.01% by >20, all
+  of it antialiasing hairlines on coastline and marker edges. No structural or
+  positional difference.
+
+**What is NOT verified, and cannot be here:** the actual CPU saving. This
+machine's headless Chrome rasterises through llvmpipe - software - where
+compositing a 5MP texture costs about what painting it costs, so raster totals
+came out the same on both builds (~8,600 RasterTasks either way). The saving is
+a real-GPU effect and has to be confirmed on real hardware, by the recipe in
+"How to measure" above.
+
+**One number to keep an eye on:** the strip is 400% of the disc, so that layer
+is ~5MP at 1600x1000 and scales with the viewport - roughly 20MB of texture,
+more on a HiDPI display. Chrome tiles large layers and only keeps what is near
+the viewport, so this has not been a problem, but it is the thing that would
+show up as memory rather than as stutter.
+
+**A note on measuring this at all.** Two instruments gave a confidently wrong
+answer before the third gave a useful one, and the order matters if anyone
+repeats this. `Performance.getMetrics` reports the MAIN thread, and rasterising
+happens on the raster threads, so it showed no difference and would have shown
+none even on a real GPU. A trace's `RasterTask` totals see every thread but are
+meaningless under software rasterisation. Only the layer tree answers the
+question the change is actually about.
+
 ### 3. Take `motion` out of the hero
 
 `components/sections/hero.tsx` re-renders the entire hero every six seconds
@@ -165,6 +305,8 @@ would be the only consumer.
 
 ### 4. `CursorGlow` still blends on the high tier
 
+> **Measured 2026-08-19 as not worth doing — see the table above.**
+
 `mix-blend-mode: multiply` on a fixed 704px element is a backdrop read per
 frame. It is already hidden entirely on the low tier, and the expensive parts
 are gone (it moves by transform now, and the `blur(90px)` filter was replaced
@@ -190,6 +332,8 @@ viewport. This is the general fix for scroll cost across the whole page.
 sections are realised — measure each section's rendered height and use that.
 
 ### 6. Grain overlay still blends on the high tier
+
+> **Measured 2026-08-19 as not worth doing — see the table above.**
 
 `.grain-overlay` in `app/globals.css` is `position: fixed`, full viewport,
 `mix-blend-mode: multiply`, `z-index: 60`, over everything. Its backdrop changes
