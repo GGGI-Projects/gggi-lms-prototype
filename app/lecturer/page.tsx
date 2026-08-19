@@ -25,6 +25,7 @@ import {
   QueueCard,
   Section,
 } from "@/components/console/ui";
+import { ConfirmAction } from "@/components/console/actions";
 import { LECTURE_STATE_LABEL } from "@/components/console/status";
 import { StarFilledIcon } from "@/components/console/icons";
 
@@ -79,22 +80,39 @@ export default function LecturerDashboard() {
             : "Nothing has been assigned to you yet."
         }
         actions={
-          <Link href="/lecturer/lectures" className="btn-ripple btn-solid btn-sm">
-            <span aria-hidden="true" className="btn-wave" />
-            <span className="btn-label">Your lectures</span>
-          </Link>
+          <div className="flex flex-wrap items-center gap-4">
+            <div>
+
+              <ConfirmAction
+                label="Export data"
+                question="Export your teaching data?"
+                detail="A single file covering your modules, lectures and how their quizzes are doing - everything on this screen."
+                confirmLabel="Generate the export"
+                tone="info"
+                done="Prototype - no file was produced."
+              />
+            </div>
+            <div>
+              <Link href="/lecturer/lectures" className="link-wipe self-end text-lg font-semibold text-primary">
+                <span aria-hidden="true" className="btn-wave" />
+                <span className="btn-label">Your lectures</span>
+              </Link>
+            </div>
+          </div>
         }
       />
 
-      {!load.modules.length ? (
-        <div className={CONSOLE.stack}>
-          <Callout tone="info" title="Waiting for an assignment">
-            An administrator has to assign you a module before you can write
-            anything. Until then this console is empty, and that is the platform
-            working correctly rather than a fault.
-          </Callout>
-        </div>
-      ) : null}
+      {
+        !load.modules.length ? (
+          <div className={CONSOLE.stack}>
+            <Callout tone="info" title="Waiting for an assignment">
+              An administrator has to assign you a module before you can write
+              anything. Until then this console is empty, and that is the platform
+              working correctly rather than a fault.
+            </Callout>
+          </div>
+        ) : null
+      }
 
       {/* ---------------------------------------------------------- queues */}
       <section className={CONSOLE.stack} aria-labelledby="waiting-heading">
@@ -160,49 +178,51 @@ export default function LecturerDashboard() {
         </div>
       </section>
 
-      {outstanding.length ? (
-        <Section
-          title="What is waiting on you"
-          description="Everything of yours that is not yet in front of a learner."
-          className={CONSOLE.stack}
-          action={
-            <Link
-              href="/lecturer/lectures"
-              className="link-wipe text-lg font-semibold text-primary"
-            >
-              All lectures
-            </Link>
-          }
-        >
-          <ul className="divide-y divide-surface-deep rounded-sm border border-surface-deep bg-paper-raised">
-            {outstanding.map((mod) => (
-              <li key={`${mod.module.id}-${mod.id}`}>
-                <Link
-                  href={`/lecturer/modules/${mod.module.id}/lectures/${mod.id}`}
-                  className="flex flex-wrap items-center gap-4 px-5 py-4 transition-colors duration-200 hover:bg-surface/70"
-                >
-                  <span className="min-w-0 flex-1">
-                    <span className="block truncate text-lg font-semibold text-ink">
-                      <span className="link-wipe">
-                        {mod.number}. {mod.title}
+      {
+        outstanding.length ? (
+          <Section
+            title="What is waiting on you"
+            description="Everything of yours that is not yet in front of a learner."
+            className={CONSOLE.stack}
+            action={
+              <Link
+                href="/lecturer/lectures"
+                className="link-wipe text-lg font-semibold text-primary"
+              >
+                All lectures
+              </Link>
+            }
+          >
+            <ul className="divide-y divide-surface-deep rounded-sm border border-surface-deep bg-paper-raised">
+              {outstanding.map((mod) => (
+                <li key={`${mod.module.id}-${mod.id}`}>
+                  <Link
+                    href={`/lecturer/modules/${mod.module.id}/lectures/${mod.id}`}
+                    className="flex flex-wrap items-center gap-4 px-5 py-4 transition-colors duration-200 hover:bg-surface/70"
+                  >
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-lg font-semibold text-ink">
+                        <span className="link-wipe">
+                          {mod.number}. {mod.title}
+                        </span>
+                      </span>
+                      <span className={`block truncate ${META.base}`}>
+                        {mod.module.title}
+                        {mod.updatedOn
+                          ? ` · last edited ${formatDate(mod.updatedOn)}`
+                          : " · never edited"}
                       </span>
                     </span>
-                    <span className={`block truncate ${META.base}`}>
-                      {mod.module.title}
-                      {mod.updatedOn
-                        ? ` · last edited ${formatDate(mod.updatedOn)}`
-                        : " · never edited"}
-                    </span>
-                  </span>
-                  <Badge tone={mod.state === "in-review" ? "active" : "neutral"}>
-                    {LECTURE_STATE_LABEL[mod.state]}
-                  </Badge>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </Section>
-      ) : null}
+                    <Badge tone={mod.state === "in-review" ? "active" : "neutral"}>
+                      {LECTURE_STATE_LABEL[mod.state]}
+                    </Badge>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </Section>
+        ) : null
+      }
 
       {/* ------------------------------------------------------- modules */}
       <div className={`${CONSOLE.stack} grid gap-4 lg:grid-cols-3`}>
@@ -397,6 +417,6 @@ export default function LecturerDashboard() {
         You are seeing this console as {member.name}. Switch viewpoint at the
         foot of the navigation.
       </PrototypeNote>
-    </PageBody>
+    </PageBody >
   );
 }

@@ -375,13 +375,13 @@ export function DonutChart({
               aria-hidden="true"
               className={`mt-1.5 size-2.5 shrink-0 rounded-full ${SLICE_DOT[slice.tone]}`}
             />
-            <span className="min-w-0 flex-1 truncate text-lg text-ink">
+            <span className="min-w-0 flex-1 truncate text-md text-ink max-w-[100px]">
               {slice.label}
             </span>
-            <span className="shrink-0 font-display text-lg font-bold tabular-nums tracking-tight text-ink">
+            <span className="shrink-0 font-display text-md font-bold tabular-nums tracking-tight text-ink max-w-[50px]">
               {slice.percent}%
             </span>
-            <span className={`w-20 shrink-0 text-right tabular-nums ${META.base}`}>
+            <span className={`w-20 shrink-0 text-right tabular-nums max-w-[40px] ${META.base}`}>
               {slice.value.toLocaleString("en-GB")}
             </span>
           </li>

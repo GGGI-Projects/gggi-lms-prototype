@@ -28,6 +28,7 @@ import {
   QueueCard,
   Section,
 } from "@/components/console/ui";
+import { ConfirmAction } from "@/components/console/actions";
 import {
   AreaChart,
   BarChart,
@@ -63,12 +64,26 @@ export default function AdminDashboard() {
         title="Platform overview"
         lead={`Everything on ${BRAND.name} ${BRAND.suffix} since it opened on ${formatDate(PLATFORM.launchedOn)} - ${formatNumber(PLATFORM.learners)} learners across five published modules.`}
         actions={
-          <Link
-            href="/admin/modules"
-            className="link-wipe self-end text-lg font-semibold text-primary"
-          >
-            Manage modules
-          </Link>
+          <div className="flex flex-wrap items-center gap-4">
+            <div>
+              <ConfirmAction
+                label="Export data"
+                question="Export the platform's dashboard figures?"
+                detail="A single file with the numbers on this screen - learners, enrolments, certificates and monthly trends - as they stand right now."
+                confirmLabel="Generate the export"
+                tone="info"
+                done="Prototype - no file was produced."
+              />
+            </div>
+            <div>
+              <Link
+                href="/admin/modules"
+                className="link-wipe self-end text-lg font-semibold text-primary"
+              >
+                Manage modules
+              </Link>
+            </div>
+          </div>
         }
       />
 
@@ -146,7 +161,7 @@ export default function AdminDashboard() {
       </section>
 
       {/* ---------------------------------------------------------- charts */}
-      <div className={`${CONSOLE.stack} grid gap-4 xl:grid-cols-3`}>
+      <div className={`${CONSOLE.stack} grid gap-4 xl:grid-cols-4`}>
         <Panel className="xl:col-span-2">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
@@ -174,7 +189,7 @@ export default function AdminDashboard() {
           </div>
         </Panel>
 
-        <Panel>
+        <Panel className="xl:col-span-2">
           <h2 className="font-display text-2xl tracking-tight text-ink">
             Where enrolments stand
           </h2>
