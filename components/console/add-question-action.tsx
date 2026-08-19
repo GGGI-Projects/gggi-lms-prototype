@@ -279,7 +279,7 @@ export function RemoveQuestionAction({
  * THE MINIMUM IS NEVER "ALL OF THEM" BY DEFAULT. A real two-or-three-sentence
  * answer paraphrases; requiring every listed word back verbatim would fail an
  * answer a person reading it would pass. The field defaults to roughly half
- * the keywords, rounded up, and the instructor can still raise or lower it.
+ * the keywords, rounded up, and the lecturer can still raise or lower it.
  */
 function WrittenQuestionForm({
   formId,

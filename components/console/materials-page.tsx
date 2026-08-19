@@ -1,7 +1,7 @@
 /**
  * The three library screens, written once for both consoles.
  *
- * `/admin/materials` and `/instructor/materials` are the same shelf, so they
+ * `/admin/materials` and `/lecturer/materials` are the same shelf, so they
  * are the same components - see the note in `material-parts.tsx`. Each route
  * hands in its `area`, which decides two things and nothing else: where a
  * "used in" link points, and which capability the upload form is gated on.
@@ -52,7 +52,7 @@ function lectureHrefFor(area: ConsoleArea) {
   return (moduleId: string, lectureId: string) =>
     area === "admin"
       ? `/admin/modules/${moduleId}/lectures/${lectureId}`
-      : `/instructor/modules/${moduleId}/lectures/${lectureId}`;
+      : `/lecturer/modules/${moduleId}/lectures/${lectureId}`;
 }
 
 /* ----------------------------------------------------------------- library */
@@ -396,8 +396,8 @@ export function MaterialDetail({
                     uploadedBy && area === "admin" ? (
                       <Link
                         href={
-                          uploadedBy.role === "instructor"
-                            ? `/admin/instructors/${uploadedBy.id}`
+                          uploadedBy.role === "lecturer"
+                            ? `/admin/lecturers/${uploadedBy.id}`
                             : "/admin/team"
                         }
                         className="link-wipe text-primary"

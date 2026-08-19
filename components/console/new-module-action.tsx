@@ -9,19 +9,19 @@ import { PlusIcon } from "@/components/console/icons";
 
 /**
  * "New module" and the drawer it opens. Same recipe as
- * `<NewInstructorAction>` - see the notes there for the shape.
+ * `<NewLecturerAction>` - see the notes there for the shape.
  *
  * Unlike the administrators page, `/admin/modules` is not itself behind a
- * `<Restricted>` gate - an instructor viewpoint can open it (there is
+ * `<Restricted>` gate - a lecturer viewpoint can open it (there is
  * nothing on the page it should not see), just not create from it. So both
  * halves are gated independently here: the drawer's body falls back to
  * `<LockedNote>` in place of the form, and the footer's submit button is
  * withheld entirely rather than left pointing at a form that is not there.
  */
 export function NewModuleAction({
-  instructors,
+  lecturers,
 }: {
-  instructors: { id: string; name: string; initials: string }[];
+  lecturers: { id: string; name: string; initials: string }[];
 }) {
   const [open, setOpen] = useState(false);
   const formId = useId();
@@ -42,7 +42,7 @@ export function NewModuleAction({
         open={open}
         onClose={() => setOpen(false)}
         title="Start a module"
-        description="Both administrators and the super administrator can create one. Instructors cannot - they write lectures inside modules that already exist. It opens as a draft, invisible to learners until somebody publishes it."
+        description="Both administrators and the super administrator can create one. Lecturers cannot - they write lectures inside modules that already exist. It opens as a draft, invisible to learners until somebody publishes it."
         size="md"
         footer={
           <IfCan capability="manageModules">
@@ -56,7 +56,7 @@ export function NewModuleAction({
           capability="manageModules"
           fallback={<LockedNote capability="manageModules" />}
         >
-          <NewModuleForm instructors={instructors} formId={formId} />
+          <NewModuleForm lecturers={lecturers} formId={formId} />
         </IfCan>
       </Drawer>
     </>

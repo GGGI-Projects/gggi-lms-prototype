@@ -11,10 +11,10 @@ import type { Capability } from "@/lib/permissions";
 
 /**
  * "New material" and the drawer it opens. Same recipe as
- * `<NewInstructorAction>`.
+ * `<NewLecturerAction>`.
  *
  * The gate depends on which console is asking - an administrator uploads
- * under `manageModules`, an instructor under `authorLectures` - which is
+ * under `manageModules`, a lecturer under `authorLectures` - which is
  * the same split `<MaterialsLibrary>` already makes for the rest of the page,
  * kept here rather than duplicated as a second decision about who may add to
  * the shelf.

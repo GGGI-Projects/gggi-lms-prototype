@@ -24,7 +24,7 @@ import type { MaterialGroup } from "@/content/materials";
  *
  * The capability is derived from `area` rather than passed in, same as
  * `<NewMaterialAction>` beside this on the library page: an administrator
- * opens a shelf under `manageModules`, an instructor under
+ * opens a shelf under `manageModules`, a lecturer under
  * `authorLectures` - the same split the rest of this screen already makes.
  */
 function capabilityFor(area: ConsoleArea): Capability {

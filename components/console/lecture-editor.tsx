@@ -41,7 +41,7 @@ import { ExternalIcon, PlusIcon } from "@/components/console/icons";
  * Managing a lecture.
  *
  * ONE COMPONENT FOR TWO CONSOLES. An administrator opening a lecture and the
- * instructor who wrote it need the same screen; the only differences are which
+ * lecturer who wrote it need the same screen; the only differences are which
  * capability the controls are gated on and where the links go, and both arrive
  * as props. Two copies would have diverged by the second change.
  *
@@ -322,7 +322,7 @@ export function LectureEditor({
                     value: "in-review",
                     label: "In review",
                     description:
-                      "Finished, waiting for somebody else to read it before it goes live.",
+                      "Finished, flagged for a second pair of eyes. You can still publish it yourself whenever you're ready - this does not wait for anyone's approval.",
                   },
                   {
                     value: "draft",

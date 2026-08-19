@@ -2,7 +2,7 @@
  * Everything the console DERIVES, in one place.
  *
  * Same rule as `lib/portal.ts`: a screen never works out a total, a join or a
- * permission for itself. Three screens counting an instructor's lectures three
+ * permission for itself. Three screens counting a lecturer's lectures three
  * different ways is how a console ends up with a number that is right on the
  * list and wrong on the profile, and nobody can say which one to believe.
  *
@@ -89,7 +89,7 @@ export function consoleAccounts(): Record<
   return {
     "super-admin": entry("super-admin"),
     admin: entry("admin"),
-    instructor: entry("instructor"),
+    lecturer: entry("lecturer"),
   };
 }
 
@@ -99,8 +99,8 @@ export function admins(): StaffMember[] {
   );
 }
 
-export function instructors(): StaffMember[] {
-  return STAFF.filter((member) => member.role === "instructor");
+export function lecturers(): StaffMember[] {
+  return STAFF.filter((member) => member.role === "lecturer");
 }
 
 /* -------------------------------------------------------------- modules */
@@ -114,15 +114,29 @@ export function catalogueModule(id: string): Module | undefined {
   return MODULES.find((mdl) => mdl.id === id);
 }
 
+/**
+ * Modules a "which module" filter should offer.
+ *
+ * A draft has no learners, so a certificate, learner or review register can
+ * never have a row for one - listing it in that register's module filter is
+ * an option that always shows "nothing here". Assignment screens (appointing
+ * or reassigning a lecturer) are a different question with a different
+ * answer, and keep reading `MANAGED_MODULES` directly: a draft is exactly the
+ * kind of module an admin needs to assign someone to.
+ */
+export function publishedModules(): ManagedModule[] {
+  return MANAGED_MODULES.filter((mdl) => mdl.status === "published");
+}
+
 export function modulesFor(member: StaffMember): ManagedModule[] {
   const ids = member.moduleIds ?? [];
   return MANAGED_MODULES.filter((mdl) => ids.includes(mdl.id));
 }
 
-export function instructorsFor(moduleId: string): StaffMember[] {
+export function lecturersFor(moduleId: string): StaffMember[] {
   const mdl = managedModule(moduleId);
   if (!mdl) return [];
-  return mdl.instructorIds
+  return mdl.lecturerIds
     .map(staffById)
     .filter((member): member is StaffMember => Boolean(member));
 }
@@ -151,7 +165,7 @@ export type ConsoleLecture = {
 export function consoleLectures(moduleId: string): ConsoleLecture[] {
   const drafts = DRAFT_LECTURES[moduleId];
   const mdl = managedModule(moduleId);
-  const fallbackAuthor = mdl?.instructorIds[0] ?? null;
+  const fallbackAuthor = mdl?.lecturerIds[0] ?? null;
 
   if (drafts) {
     return drafts.map((mod) => ({
@@ -213,7 +227,7 @@ export function writtenStatsFor(lectureId: string): QuizStats | null {
 }
 
 /**
- * When a quiz is worth an instructor's attention.
+ * When a quiz is worth a lecturer's attention.
  *
  * ONE DEFINITION, used by the dashboard queue, the quizzes list, the lecture
  * screen and the quiz itself - four places that were each about to decide this
@@ -246,7 +260,7 @@ export function quizzesForModule(moduleId: string) {
   }));
 }
 
-/** Lectures an instructor is responsible for, across every assigned module. */
+/** Lectures a lecturer is responsible for, across every assigned module. */
 export function lectureLoad(member: StaffMember) {
   const modules = modulesFor(member);
   const lectures = modules.flatMap((mdl) =>
@@ -367,7 +381,7 @@ export function summarise(student: StudentRecord): StudentSummary {
   };
 }
 
-/** Learners on the modules one instructor is assigned to. */
+/** Learners on the modules one lecturer is assigned to. */
 export function learnersFor(member: StaffMember): StudentRecord[] {
   const ids = member.moduleIds ?? [];
   return students().filter((student) =>
@@ -504,16 +518,23 @@ export function completionSplit() {
   ];
 }
 
-/** Things waiting for somebody. The dashboard's first block. */
+/**
+ * Things waiting for somebody. The dashboard's first block.
+ *
+ * EVERY FIGURE HERE HAS TO BE SOMETHING THE VIEWER CAN ACT ON, or the block
+ * stops meaning "waiting for you" and starts meaning "here is a number". That
+ * is why there is no count of lectures in review: moving a lecture to "in
+ * review" is a lecturer flagging it for themselves or a colleague to revisit
+ * (see `lecture-editor.tsx`) - nobody holds an approval an administrator can
+ * open this dashboard and clear. A draft MODULE is the administrator's
+ * equivalent: it is genuinely waiting on them, since only they can publish it.
+ */
 export function queues() {
   const drafts = MANAGED_MODULES.filter(
     (mdl) => mdl.status === "draft",
   );
-  const unassigned = instructors().filter(
+  const unassigned = lecturers().filter(
     (member) => (member.moduleIds ?? []).length === 0,
-  );
-  const lecturesInReview = MANAGED_MODULES.flatMap((mdl) =>
-    consoleLectures(mdl.id).filter((mod) => mod.state === "in-review"),
   );
   const flagged = REVIEWS.filter(
     (review) => review.status === "pending" && review.flagged,
@@ -522,9 +543,8 @@ export function queues() {
   return {
     pendingReviews: pendingReviewCount(),
     flaggedReviews: flagged.length,
-    lecturesInReview: lecturesInReview.length,
     draftModules: drafts.length,
-    unassignedInstructors: unassigned.length,
+    unassignedLecturers: unassigned.length,
     suspendedLearners: students().filter(
       (student) => student.status === "suspended",
     ).length,
@@ -636,7 +656,7 @@ if (process.env.NODE_ENV !== "production") {
   }
 
   // The attempt-weighted mean of the per-lecture quiz averages has to match
-  // what the module declares, or the instructor console and the admin
+  // what the module declares, or the lecturer console and the admin
   // console disagree about the same module.
   const statLectures = Object.keys(QUIZ_STATS);
   if (statLectures.length) {

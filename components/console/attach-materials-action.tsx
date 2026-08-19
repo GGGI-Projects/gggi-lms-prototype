@@ -27,8 +27,8 @@ import type { Capability } from "@/lib/permissions";
  * TWO BUTTONS, NOT ONE, because attaching a shelf file and adding a new one
  * to the library are different acts with different endings - one closes
  * having gained a file on this lecture, the other closes having gained one on
- * the shelf, still unattached to anything. Naming both here is what tells an
- * instructor the second one exists at all.
+ * the shelf, still unattached to anything. Naming both here is what tells a
+ * lecturer the second one exists at all.
  */
 export function AttachLectureMaterials({
   materials,

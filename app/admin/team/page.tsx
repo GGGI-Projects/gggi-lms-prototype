@@ -165,7 +165,7 @@ function Team() {
             What each role can do
           </h2>
           <ul className="mt-5 space-y-5">
-            {(["super-admin", "admin", "instructor"] as StaffRole[]).map((role) => (
+            {(["super-admin", "admin", "lecturer"] as StaffRole[]).map((role) => (
               <li key={role}>
                 <p className="text-lg font-semibold text-ink">
                   {ROLE_LABEL[role]}

@@ -14,7 +14,7 @@
  * cannot claim a lecture that does not attach it. See the note on `usageOf`.
  *
  * GROUPS ARE SUBJECT SHELVES, not owners. Anybody on staff can use anything -
- * an energy instructor attaching the Sinhala glossary from the teaching kit is
+ * an energy lecturer attaching the Sinhala glossary from the teaching kit is
  * the whole point of the shelf being shared. What a group does is make the
  * library findable at 200 files, and let a lecture pick up a whole set at once.
  */

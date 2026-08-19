@@ -6,9 +6,9 @@
  *
  *   super-admin  Owns the platform. The only role that can create or remove an
  *                administrator, and the only one that reads the audit log.
- *   admin        Runs the day to day - modules, learners, instructors,
+ *   admin        Runs the day to day - modules, learners, lecturers,
  *                moderation, certificates. Cannot make another admin.
- *   instructor   Writes the material, and only for the modules they have
+ *   lecturer     Writes the material, and only for the modules they have
  *                been assigned. Sees learners as progress on their own
  *                modules, never as a directory to browse.
  *
@@ -19,7 +19,7 @@
  * console where nobody is responsible for it.
  *
  * Nothing here is computed - `lib/admin.ts` derives every count, join and
- * permission check, so no screen works out an instructor's workload twice and
+ * permission check, so no screen works out a lecturer's workload twice and
  * gets it slightly different the second time.
  */
 
@@ -59,8 +59,8 @@ export type StaffMember = {
   /** ISO date. "Never" is expressed as the account still being `invited`. */
   lastActive: string | null;
   /**
-   * Instructors only: the modules they may author lectures for. An empty
-   * array is a real and visible state - an instructor with nothing assigned
+   * Lecturers only: the modules they may author lectures for. An empty
+   * array is a real and visible state - a lecturer with nothing assigned
    * can sign in and has nothing to open, which is what the assignment screen
    * exists to fix.
    */
@@ -124,7 +124,7 @@ export const STAFF: StaffMember[] = [
     name: "Malika Ratnayake",
     initials: "MR",
     email: "malika.ratnayake@example.lk",
-    role: "instructor",
+    role: "lecturer",
     title: "Climate adaptation specialist",
     status: "active",
     createdOn: "2025-09-01",
@@ -137,7 +137,7 @@ export const STAFF: StaffMember[] = [
     name: "Suresh Kumaraswamy",
     initials: "SK",
     email: "suresh.kumaraswamy@example.lk",
-    role: "instructor",
+    role: "lecturer",
     title: "Provincial planning officer",
     status: "active",
     createdOn: "2025-09-01",
@@ -146,14 +146,14 @@ export const STAFF: StaffMember[] = [
     moduleIds: ["provincial-adaptation-plan"],
   },
   {
-    // Two modules, one of them the unpublished draft. The instructors list
+    // Two modules, one of them the unpublished draft. The lecturers list
     // needs a row where the workload is not one module, and the draft is
     // how the console shows work that is not public yet.
     id: "staff-inst-3",
     name: "Anoma Herath",
     initials: "AH",
     email: "anoma.herath@example.lk",
-    role: "instructor",
+    role: "lecturer",
     title: "Gender and social inclusion adviser",
     status: "active",
     createdOn: "2025-09-14",
@@ -166,7 +166,7 @@ export const STAFF: StaffMember[] = [
     name: "Nuwan de Silva",
     initials: "ND",
     email: "nuwan.desilva@example.lk",
-    role: "instructor",
+    role: "lecturer",
     title: "Development finance economist",
     status: "active",
     createdOn: "2025-10-02",
@@ -179,7 +179,7 @@ export const STAFF: StaffMember[] = [
     name: "Tharindu Bandara",
     initials: "TB",
     email: "tharindu.bandara@example.lk",
-    role: "instructor",
+    role: "lecturer",
     title: "Public finance specialist",
     status: "active",
     createdOn: "2026-01-19",
@@ -188,13 +188,13 @@ export const STAFF: StaffMember[] = [
     moduleIds: ["gender-responsive-budgeting"],
   },
   {
-    // Appointed, never assigned. The instructor console has to have something
+    // Appointed, never assigned. The lecturer console has to have something
     // honest to show someone in exactly this position.
     id: "staff-inst-6",
     name: "Fathima Rizwan",
     initials: "FR",
     email: "fathima.rizwan@example.lk",
-    role: "instructor",
+    role: "lecturer",
     title: "Social development researcher",
     status: "invited",
     createdOn: "2026-08-12",
@@ -215,12 +215,12 @@ export const STAFF: StaffMember[] = [
 export const SESSION: Record<StaffRole, string> = {
   "super-admin": "staff-super",
   admin: "staff-admin-1",
-  // Anoma Herath rather than one of the single-module instructors, because
+  // Anoma Herath rather than one of the single-module lecturers, because
   // this account exercises the console: two modules, one published and one
   // still a draft, a lecture in review, and material on the shelf that nothing
-  // uses yet. An instructor with one finished module shows a console where
+  // uses yet. A lecturer with one finished module shows a console where
   // every screen is already green.
-  instructor: "staff-inst-3",
+  lecturer: "staff-inst-3",
 };
 
 /* ------------------------------------------------------------- modules */
@@ -237,7 +237,7 @@ export type ManagedModule = {
   lectureCount: number;
   /** Of those, how many are published to learners. */
   publishedLectures: number;
-  instructorIds: string[];
+  lecturerIds: string[];
   enrolments: number;
   completions: number;
   /** Mean quiz score across the module, as a percentage. */
@@ -281,7 +281,7 @@ const catalogue = (
 export const MANAGED_MODULES: ManagedModule[] = [
   catalogue("climate-vulnerability-assessment", {
     publishedLectures: 8,
-    instructorIds: ["staff-inst-1"],
+    lecturerIds: ["staff-inst-1"],
     enrolments: 612,
     completions: 104,
     averageScore: 84,
@@ -292,7 +292,7 @@ export const MANAGED_MODULES: ManagedModule[] = [
   }),
   catalogue("provincial-adaptation-plan", {
     publishedLectures: 7,
-    instructorIds: ["staff-inst-2"],
+    lecturerIds: ["staff-inst-2"],
     enrolments: 468,
     completions: 87,
     averageScore: 86,
@@ -303,7 +303,7 @@ export const MANAGED_MODULES: ManagedModule[] = [
   }),
   catalogue("bankable-climate-finance-proposals", {
     publishedLectures: 8,
-    instructorIds: ["staff-inst-4"],
+    lecturerIds: ["staff-inst-4"],
     enrolments: 431,
     completions: 63,
     averageScore: 82,
@@ -314,7 +314,7 @@ export const MANAGED_MODULES: ManagedModule[] = [
   }),
   catalogue("gender-social-inclusion", {
     publishedLectures: 7,
-    instructorIds: ["staff-inst-3"],
+    lecturerIds: ["staff-inst-3"],
     enrolments: 342,
     // The attempt-weighted mean of `QUIZ_STATS` below rounds to 81 - this
     // field has to match it exactly, or the development console warns.
@@ -327,7 +327,7 @@ export const MANAGED_MODULES: ManagedModule[] = [
   }),
   catalogue("gender-responsive-budgeting", {
     publishedLectures: 7,
-    instructorIds: ["staff-inst-5"],
+    lecturerIds: ["staff-inst-5"],
     enrolments: 260,
     completions: 19,
     averageScore: 80,
@@ -346,7 +346,7 @@ export const MANAGED_MODULES: ManagedModule[] = [
     hours: 5,
     lectureCount: 6,
     publishedLectures: 0,
-    instructorIds: ["staff-inst-3"],
+    lecturerIds: ["staff-inst-3"],
     enrolments: 0,
     completions: 0,
     averageScore: 0,

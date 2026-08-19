@@ -136,7 +136,7 @@ export function libraryTotals() {
   };
 }
 
-/** Everything one person put on the shelf. Used on an instructor's own pages. */
+/** Everything one person put on the shelf. Used on a lecturer's own pages. */
 export function uploadsBy(staffId: string): LibraryEntry[] {
   return library().filter((entry) => entry.asset.uploadedBy === staffId);
 }

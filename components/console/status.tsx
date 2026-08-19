@@ -2,7 +2,7 @@
  * What every state on the platform is called, and what colour it is.
  *
  * ONE TABLE, because the same three learner statuses appear on the register,
- * the learner's own page, the instructor's learner list and two dashboards.
+ * the learner's own page, the lecturer's learner list and two dashboards.
  * Written at each call site, "dormant" becomes "inactive" on one of them
  * within a month, and an administrator has to work out whether those are the
  * same thing.

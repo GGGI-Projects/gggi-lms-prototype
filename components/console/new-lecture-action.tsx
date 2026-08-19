@@ -9,13 +9,13 @@ import { PlusIcon } from "@/components/console/icons";
 
 /**
  * "Add a lecture" and the drawer it opens. Same recipe as
- * `<NewModuleAction>` and `<NewInstructorAction>` - see the notes there
+ * `<NewModuleAction>` and `<NewLecturerAction>` - see the notes there
  * for the shape.
  *
  * GATED ON `authorLectures`, NOT `manageModules` - the one place in the
  * console this distinction is load-bearing rather than decorative. An
- * administrator creates the module; the instructors assigned to it create
- * everything inside it. This control only ever renders on an instructor's own
+ * administrator creates the module; the lecturers assigned to it create
+ * everything inside it. This control only ever renders on a lecturer's own
  * module page, but it is gated the same way every other "add" control in
  * the console is - shown, not hidden, with the reason underneath for a
  * viewpoint that reaches it without the capability.

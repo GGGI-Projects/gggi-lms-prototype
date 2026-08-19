@@ -256,21 +256,21 @@ export function ConfirmAction({
 /* -------------------------------------------------------------- assignment */
 
 /**
- * Which modules an instructor may author.
+ * Which modules a lecturer may author.
  *
  * Checkboxes and one save, not a drag-and-drop board: the list is five items
  * long and the question is "which of these", which is what a checkbox group
- * is. It shows the CONSEQUENCE of unticking a module the instructor has
+ * is. It shows the CONSEQUENCE of unticking a module the lecturer has
  * already written lectures for, because that is the mistake this screen exists
  * to prevent.
  */
 export function AssignModules({
-  instructor,
+  lecturer,
   modules,
   assigned,
   disabled = false,
 }: {
-  instructor: string;
+  lecturer: string;
   modules: { id: string; title: string; status: string; lectures: number }[];
   assigned: string[];
   disabled?: boolean;
@@ -329,7 +329,7 @@ export function AssignModules({
           <AlertIcon className="mt-1 size-5 shrink-0 text-clay" />
           <span>
             Removing {removed.length === 1 ? "a module" : "modules"} does
-            not delete anything {instructor} has written. They lose the ability
+            not delete anything {lecturer} has written. They lose the ability
             to edit it, and the lectures stay published.
           </span>
         </p>
@@ -347,7 +347,7 @@ export function AssignModules({
 
       {saved ? (
         <DoneNote>
-          Prototype - {instructor}&rsquo;s assignments are unchanged, and no
+          Prototype - {lecturer}&rsquo;s assignments are unchanged, and no
           notification was sent.
         </DoneNote>
       ) : null}
@@ -360,8 +360,8 @@ export function AssignModules({
 /**
  * Create an account for somebody.
  *
- * The same form for an administrator and an instructor, because it is the same
- * act - name, email, role, and for an instructor the modules they start
+ * The same form for an administrator and a lecturer, because it is the same
+ * act - name, email, role, and for a lecturer the modules they start
  * with. What differs is who is allowed to press it, and that is decided by the
  * page, not here.
  */
@@ -370,7 +370,7 @@ export function InviteForm({
   modules = [],
   formId,
 }: {
-  kind: "administrator" | "instructor";
+  kind: "administrator" | "lecturer";
   modules?: { id: string; title: string }[];
   /**
    * Set when the submit button lives OUTSIDE this form - a drawer's footer,
@@ -433,7 +433,7 @@ export function InviteForm({
         </label>
       </div>
 
-      {kind === "instructor" && modules.length ? (
+      {kind === "lecturer" && modules.length ? (
         <fieldset className="mt-7">
           <legend className="mb-3 text-lg font-semibold text-ink">
             Modules they may author
@@ -450,7 +450,7 @@ export function InviteForm({
             ))}
           </div>
           <p className={`mt-3 ${META.base}`}>
-            Can be changed at any time from the instructor&rsquo;s page.
+            Can be changed at any time from the lecturer&rsquo;s page.
           </p>
         </fieldset>
       ) : null}
@@ -485,10 +485,10 @@ export function InviteForm({
  * deliberate act on the module's own page, once it has lectures in it.
  */
 export function NewModuleForm({
-  instructors,
+  lecturers,
   formId,
 }: {
-  instructors: { id: string; name: string; initials: string }[];
+  lecturers: { id: string; name: string; initials: string }[];
   /** See the note on `InviteForm`'s `formId` - same device, same reason: a
    *  drawer's footer submits a form that lives in the scrollable body above
    *  it. Omit for a standalone form, which keeps its own inline button. */
@@ -537,30 +537,30 @@ export function NewModuleForm({
         </label>
       </div>
 
-      {instructors.length ? (
+      {lecturers.length ? (
         <fieldset className="mt-7">
           <legend className="mb-3 text-lg font-semibold text-ink">
-            Instructors
+            Lecturers
           </legend>
           <div className="flex flex-wrap gap-2">
-            {instructors.map((instructor) => (
+            {lecturers.map((lecturer) => (
               <label
-                key={instructor.id}
+                key={lecturer.id}
                 className="flex cursor-pointer items-center gap-2.5 rounded-full border border-surface-deep bg-paper py-1.5 pl-2 pr-4 text-lg text-ink-soft transition-colors hover:border-muted-light"
               >
                 <input type="checkbox" className="checkbox" />
                 <InitialsAvatar
-                  initials={instructor.initials}
+                  initials={lecturer.initials}
                   tone="light"
                   className="size-7 text-sm"
                 />
-                {instructor.name}
+                {lecturer.name}
               </label>
             ))}
           </div>
           <p className={`mt-3 ${META.base}`}>
             Optional, and not exclusive - a module can have more than one
-            instructor, and every one of them writes any lecture in it. Can be
+            lecturer, and every one of them writes any lecture in it. Can be
             changed at any time from the module&rsquo;s own page.
           </p>
         </fieldset>
@@ -591,7 +591,7 @@ export function NewModuleForm({
  *
  * ONLY WHAT A PLAN NEEDS: a title and roughly how long it runs. NOT A KIND -
  * a lecture is not "a video" or "a reading", it is whatever mix of video
- * blocks, written sections and attached materials its instructor builds it
+ * blocks, written sections and attached materials its lecturer builds it
  * from, one at a time, on the lecture's own page. Asking here which one this
  * lecture "is" would describe a shape the finished platform does not have.
  *

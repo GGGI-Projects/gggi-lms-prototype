@@ -89,14 +89,14 @@ export default function AdminDashboard() {
             urgent={waiting.flaggedReviews > 0}
           />
           <QueueCard
-            count={waiting.lecturesInReview}
-            label="Lectures awaiting review"
+            count={waiting.draftModules}
+            label="Draft modules"
             href="/admin/modules"
           />
           <QueueCard
-            count={waiting.unassignedInstructors}
-            label="Instructors with no module"
-            href="/admin/instructors"
+            count={waiting.unassignedLecturers}
+            label="Lecturers with no module"
+            href="/admin/lecturers"
           />
           <QueueCard
             count={waiting.suspendedLearners}

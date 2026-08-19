@@ -104,7 +104,7 @@ export function AuthShell({
                 is typing. See `<ConsoleLoginForm>`. */}
             {mode === "login" ? (
               <p className="mt-8 text-center text-sm text-muted">
-                Staff and instructors:{" "}
+                Staff and lecturers:{" "}
                 <Link
                   href={BRAND.routes.consoleLogin}
                   className="link-wipe font-semibold text-primary"

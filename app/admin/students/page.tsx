@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { CONSOLE, META } from "@/lib/theme";
 import { PLATFORM } from "@/content/operations";
-import { formatNumber, students, summarise } from "@/lib/admin";
+import { formatNumber, publishedModules, students, summarise } from "@/lib/admin";
 import { formatDate } from "@/lib/portal";
 import {
   Badge,
@@ -17,7 +17,6 @@ import {
 } from "@/components/console/ui";
 import { Register, type RegisterItem } from "@/components/console/register";
 import { STATUS_TONE, STATUS_LABEL } from "@/components/console/status";
-import { MANAGED_MODULES } from "@/content/staff";
 
 export const metadata: Metadata = { title: "Students" };
 
@@ -169,7 +168,7 @@ export default function StudentsPage() {
           selectFilter={{
             label: "Module",
             placeholder: "Every module",
-            options: MANAGED_MODULES.map((mdl) => ({
+            options: publishedModules().map((mdl) => ({
               value: mdl.id,
               label: mdl.title,
             })),

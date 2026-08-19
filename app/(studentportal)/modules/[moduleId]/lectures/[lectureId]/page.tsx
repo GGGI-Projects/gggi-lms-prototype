@@ -499,7 +499,7 @@ function ContentsPanel({
       {/* Capped and scrollable: a ten-lecture list at full height pushes the
           sticky panel past the viewport, and a sticky element taller than the
           screen stops sticking. */}
-      <ol className="mt-4 max-h-[26rem] overflow-y-auto pb-2">
+      <ol data-lenis-prevent className="mt-4 max-h-[26rem] overflow-y-auto pb-2">
         {lectures.map((lecture) => {
           const current = lecture.id === currentId;
           const done = completedIds.includes(lecture.id);

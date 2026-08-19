@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { BODY, CONSOLE, META } from "@/lib/theme";
 import { REVIEWS } from "@/content/operations";
-import { MANAGED_MODULES } from "@/content/staff";
 import {
   managedModule,
+  publishedModules,
   reviewsByStatus,
   staffName,
   studentById,
@@ -203,7 +203,7 @@ export default function ReviewsPage() {
               };
               return card;
             })}
-          modules={MANAGED_MODULES.map((mdl) => ({
+          modules={publishedModules().map((mdl) => ({
             id: mdl.id,
             title: mdl.title,
           }))}

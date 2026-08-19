@@ -71,13 +71,13 @@ export function ConsoleShell({
   const pathname = usePathname();
 
   /**
-   * The viewpoint. In the instructor area it is not a choice - there is one
-   * instructor role and nothing to switch between - so `setRole` is only
+   * The viewpoint. In the lecturer area it is not a choice - there is one
+   * lecturer role and nothing to switch between - so `setRole` is only
    * handed down in the admin area, and the switcher renders as a plain label
    * rather than a menu.
    */
   const [role, setRole] = useState<StaffRole>(
-    area === "instructor" ? "instructor" : "super-admin",
+    area === "lecturer" ? "lecturer" : "super-admin",
   );
 
   // The drawer's open state, tied to the route it was opened on, so any
@@ -158,7 +158,7 @@ function Rail({
   return (
     <RailShell
       className={className}
-      logoHref={area === "admin" ? "/admin" : "/instructor"}
+      logoHref={area === "admin" ? "/admin" : "/lecturer"}
       logoLabel={`${BRAND.name} ${BRAND.suffix} - console home`}
       navLabel="Console"
       logo={
@@ -174,7 +174,7 @@ function Rail({
                 "Academy" here; saying it again would leave the two products
                 indistinguishable at a glance in a screenshot. */}
             <span className="label-eyebrow mt-1 block text-primary-500">
-              {area === "admin" ? "Console" : "Instructor"}
+              {area === "admin" ? "Console" : "Lecturer"}
             </span>
           </span>
         </>
@@ -268,7 +268,7 @@ function RoleSwitcher({
   const [open, setOpen] = useState(false);
   const account = accounts[role];
 
-  // No switcher in the instructor area: there is one instructor role, and a
+  // No switcher in the lecturer area: there is one lecturer role, and a
   // menu with a single entry is a control that does nothing.
   if (!setRole) {
     return (
@@ -320,9 +320,9 @@ function RoleSwitcher({
                     setOpen(false);
                     setRole(viewpoint.role);
                     // Leaving the admin area is a navigation, not a state
-                    // change - the instructor console is a different set of
+                    // change - the lecturer console is a different set of
                     // screens, not the same ones with fewer buttons.
-                    if (viewpoint.area === "instructor") {
+                    if (viewpoint.area === "lecturer") {
                       router.push(viewpoint.home);
                     }
                   }}
@@ -381,7 +381,7 @@ function Topbar({
       searchAriaLabel="Search the console"
       mobileLogo={
         <Link
-          href={area === "admin" ? "/admin" : "/instructor"}
+          href={area === "admin" ? "/admin" : "/lecturer"}
           className="flex items-center gap-2.5 text-ink lg:hidden"
           aria-label={`${BRAND.name} ${BRAND.suffix} - console home`}
         >
@@ -401,7 +401,7 @@ function Topbar({
           </Link>
 
           <Link
-            href={area === "admin" ? "/admin/reviews" : "/instructor"}
+            href={area === "admin" ? "/admin/reviews" : "/lecturer"}
             aria-label={
               waiting
                 ? `Notifications - ${waiting} reviews waiting`
@@ -419,7 +419,7 @@ function Topbar({
           </Link>
 
           <Link
-            href={area === "admin" ? "/admin/profile" : "/instructor/profile"}
+            href={area === "admin" ? "/admin/profile" : "/lecturer/profile"}
             className="flex items-center gap-2.5 rounded-full py-1 pl-1 pr-1 transition-colors hover:bg-surface sm:pr-4"
           >
             <InitialsAvatar initials={account.initials} className="size-9 text-base" />

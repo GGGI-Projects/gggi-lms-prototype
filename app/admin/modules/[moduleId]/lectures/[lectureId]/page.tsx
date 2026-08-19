@@ -11,6 +11,7 @@ import {
   DraftLectureNotice,
   LectureEditor,
 } from "@/components/console/lecture-editor";
+import { RenameAction } from "@/components/console/rename-action";
 import {
   LECTURE_STATE_LABEL,
   LECTURE_STATE_TONE,
@@ -36,12 +37,12 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 /**
  * A lecture, opened by an administrator.
  *
- * The screen is `<LectureEditor>`, shared with the instructor console. An
+ * The screen is `<LectureEditor>`, shared with the lecturer console. An
  * administrator can SEE everything here - content, materials, quiz stats,
  * who wrote it - but not touch it: writing a lecture is `authorLectures`, a
  * capability administrators do not hold (see `lib/permissions.ts`). Gating on
  * `manageModules` here would let an administrator author lectures directly,
- * which is the instructor's job, not theirs. The back link goes to the
+ * which is the lecturer's job, not theirs. The back link goes to the
  * module rather than to "my modules", and the library links stay
  * inside `/admin`.
  */
@@ -77,6 +78,13 @@ export default async function AdminLecturePage({ params }: Params) {
             )}
             {mod.author ? <Badge>Written by {mod.author.name}</Badge> : null}
           </>
+        }
+        actions={
+          <RenameAction
+            subject="lecture"
+            title={mod.title}
+            capability="authorLectures"
+          />
         }
       />
 

@@ -183,7 +183,7 @@ export function UploadMaterial({
         <DoneNote>
           Prototype - {saved} was not uploaded and the library is unchanged. A
           real upload would appear on the shelf immediately and be available to
-          every instructor.
+          every lecturer.
         </DoneNote>
       ) : null}
     </form>
@@ -288,6 +288,7 @@ export function AttachMaterials({
       </div>
 
       <ul
+        data-lenis-prevent
         className={`${CARD} mt-4 max-h-96 divide-y divide-surface-deep overflow-y-auto`}
       >
         {shown.length ? (

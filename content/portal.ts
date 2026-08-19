@@ -59,7 +59,7 @@ export type Enrolment = {
   quizScores: Record<string, number>;
   /**
    * Percentage of a lecture's written questions answered well enough to pass,
-   * keyed by lecture id. Only lectures an instructor actually wrote written
+   * keyed by lecture id. Only lectures a lecturer actually wrote written
    * questions for appear here - see `WRITTEN_QUESTIONS` below. A lecture with
    * no entry and no written questions is not outstanding; a lecture with no
    * entry that DOES have written questions is - same shape as `quizScores`,
@@ -239,7 +239,7 @@ export type Question = {
   /** Index into `options`. */
   answer: number;
   /**
-   * Staff-facing only. Read by `<QuizManager>` in the instructor and admin
+   * Staff-facing only. Read by `<QuizManager>` in the lecturer and admin
    * consoles, alongside `answer` - never by anything in the student portal.
    * The question pool here is reused across lectures and across every
    * retake (see the note below), so a learner shown this once would have it
@@ -614,7 +614,7 @@ export type WrittenQuestion = {
    * The words and phrases an answer is checked for. Matching is a simple,
    * case-insensitive "does this phrase appear" test against the learner's
    * text - not a language model and not spelling-tolerant, which is exactly
-   * why an instructor is shown the checked words on the authoring page next
+   * why a lecturer is shown the checked words on the authoring page next
    * to the answer, rather than only a pass/fail mark. Staff-facing only -
    * see `modelAnswer` below.
    */
@@ -625,7 +625,7 @@ export type WrittenQuestion = {
   minMatches: number;
   /**
    * Staff-facing only, same rule as `Question.explanation`: read by
-   * `<WrittenQuestionsManager>` in the instructor and admin consoles, never
+   * `<WrittenQuestionsManager>` in the lecturer and admin consoles, never
    * by anything in the student portal. A learner is told only whether their
    * own answer passed, never what a correct one would have said.
    */
@@ -635,7 +635,7 @@ export type WrittenQuestion = {
 /**
  * Written questions, per LECTURE rather than per module.
  *
- * Unlike `QUESTION_POOL`, there is no rotation trick here: an instructor
+ * Unlike `QUESTION_POOL`, there is no rotation trick here: a lecturer
  * writes them one lecture at a time, and a lecture id with no entry below
  * simply has none - `hasWrittenQuestions()` in `lib/portal.ts` is the one
  * place that fact is read from. Written questions are a genuinely OPTIONAL
@@ -744,9 +744,9 @@ export const WRITTEN_QUESTIONS: Record<string, WrittenQuestion[]> = {
     },
   ],
 
-  // The instructor console's demo account is assigned to
-  // "gender-social-inclusion" (see `SESSION.instructor` in `content/staff.ts`),
-  // so this lecture is what a signed-in instructor sees when authoring written
+  // The lecturer console's demo account is assigned to
+  // "gender-social-inclusion" (see `SESSION.lecturer` in `content/staff.ts`),
+  // so this lecture is what a signed-in lecturer sees when authoring written
   // questions of their own, rather than only ever reading someone else's.
   "designing-an-inclusive-consultation": [
     {

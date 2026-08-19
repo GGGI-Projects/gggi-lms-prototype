@@ -64,7 +64,7 @@ function isCorrect(item: QuizItem, answer: Answer): boolean {
  * were right out of how many - never which ones, never what the right
  * option or model answer was. There is no route, link or button anywhere in
  * the student portal that shows a correct answer; that information exists
- * only in the instructor and admin consoles, where it belongs.
+ * only in the lecturer and admin consoles, where it belongs.
  *
  * Nothing is saved. The score is real for as long as the page is open, which
  * the result says plainly rather than implying a record was written.
@@ -360,6 +360,7 @@ function ResultDialog({
       onClick={(event) => {
         if (event.target === ref.current) onClose();
       }}
+      data-lenis-prevent
       className="modal-panel w-[min(30rem,calc(100vw-2rem))] overflow-y-auto rounded-sm border border-surface-deep bg-paper"
     >
       <div

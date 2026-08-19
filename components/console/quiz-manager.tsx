@@ -345,10 +345,10 @@ export function QuizHeaderMeta({
  * OPTIONAL, AND SAID SO. Every lecture has a multiple-choice quiz; only some
  * have written questions, and this section's empty state is the normal case
  * for most lectures, not a gap waiting to be filled - the wording says that
- * plainly rather than nagging an instructor to add questions their lecture
+ * plainly rather than nagging a lecturer to add questions their lecture
  * does not need.
  *
- * THE GATE IS EXPLAINED HERE TOO, because this is where an instructor decides
+ * THE GATE IS EXPLAINED HERE TOO, because this is where a lecturer decides
  * to add the thing that changes it: writing even one written question turns
  * on a second, mandatory step between this lecture's quiz and the next
  * lecture - see `lectureGateCleared()` in `lib/portal.ts`. That is worth

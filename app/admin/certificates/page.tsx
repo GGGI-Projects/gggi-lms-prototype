@@ -2,7 +2,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { BODY, CONSOLE, META } from "@/lib/theme";
 import { PLATFORM } from "@/content/operations";
-import { certificateRegister, formatNumber, staffName } from "@/lib/admin";
+import {
+  certificateRegister,
+  formatNumber,
+  publishedModules,
+  staffName,
+} from "@/lib/admin";
 import { formatDate, formatDateLong } from "@/lib/portal";
 import {
   Badge,
@@ -26,7 +31,6 @@ import {
   CERTIFICATE_STATUS_TONE,
 } from "@/components/console/status";
 import { PLATFORM_SETTINGS } from "@/content/operations";
-import { MANAGED_MODULES } from "@/content/staff";
 
 export const metadata: Metadata = { title: "Certificates" };
 
@@ -139,7 +143,7 @@ export default function CertificatesPage() {
           selectFilter={{
             label: "Module",
             placeholder: "Every module",
-            options: MANAGED_MODULES.map((mdl) => ({
+            options: publishedModules().map((mdl) => ({
               value: mdl.id,
               label: mdl.title,
             })),

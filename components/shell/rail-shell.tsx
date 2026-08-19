@@ -48,7 +48,11 @@ export function RailShell({
         </Link>
       </div>
 
-      <nav aria-label={navLabel} className="flex-1 overflow-y-auto px-4 pb-6 pt-4">
+      <nav
+        aria-label={navLabel}
+        data-lenis-prevent
+        className="scroll-rail flex-1 overflow-y-auto px-4 pb-6 pt-4"
+      >
         {children}
       </nav>
 

@@ -36,8 +36,8 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 /**
  * A quiz, opened by an administrator.
  *
- * Same screen as the instructor's, but read-only for this role: writing and
- * revising a quiz is `authorLectures`, which belongs to the instructor
+ * Same screen as the lecturer's, but read-only for this role: writing and
+ * revising a quiz is `authorLectures`, which belongs to the lecturer
  * assigned to the module, not to `manageModules`. An administrator can
  * read the questions and the results and follows the link to platform
  * settings, where the pass mark actually lives and where the super

@@ -41,8 +41,8 @@ export function StudentsIcon({ className }: IconProps) {
   );
 }
 
-/** Instructors. A person at a board - the one who writes the material. */
-export function InstructorIcon({ className }: IconProps) {
+/** Lecturers. A person at a board - the one who writes the material. */
+export function LecturerIcon({ className }: IconProps) {
   return (
     <svg {...base} className={className}>
       <rect x="3" y="3.5" width="18" height="12" rx="2" />

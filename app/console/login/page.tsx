@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 };
 
 /**
- * The door administrators and instructors use - not the one on `/login`.
+ * The door administrators and lecturers use - not the one on `/login`.
  *
  * Reuses `<AuthHeader>` for the wordmark, same as every other account route,
  * but does NOT reuse `<AuthShell>`. That shell's dark aside argues for
@@ -34,7 +34,7 @@ export default function ConsoleLoginPage() {
 
       <main className="flex flex-1 justify-center px-6 py-16 sm:px-10 lg:items-center lg:py-0">
         <div className="animate-rise w-full max-w-md lg:py-14">
-          <p className={EYEBROW.onLight}>Staff and instructors</p>
+          <p className={EYEBROW.onLight}>Staff and lecturers</p>
           <h1 className={HEADING.section}>Sign in to the console</h1>
           <p className={`mt-5 ${BODY.base}`}>
             Use the email and password your administrator set up for you.

@@ -16,8 +16,8 @@ import type { ConsoleArea } from "@/components/console/nav";
  * registers - because a material row is four fields and a link, and passing
  * thirty finished `ReactNode`s to filter client-side would send more markup
  * than the data it was made from. The rule the console follows is: hand the
- * server's rendering across when a row is a join (a learner's modules, an
- * instructor's workload), build it here when a row is a record.
+ * server's rendering across when a row is a join (a learner's modules, a
+ * lecturer's workload), build it here when a row is a record.
  *
  * FILTERS BY GROUP AND BY KIND, because those are the two questions asked of a
  * library: "where is the waste stuff" and "is there a spreadsheet for this".

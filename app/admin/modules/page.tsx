@@ -6,8 +6,8 @@ import { PLATFORM } from "@/content/operations";
 import {
   consoleLectures,
   formatNumber,
-  instructors,
-  instructorsFor,
+  lecturers,
+  lecturersFor,
 } from "@/lib/admin";
 import { formatDate } from "@/lib/portal";
 import {
@@ -36,7 +36,7 @@ const COLUMNS: Column[] = [
   { key: "module", head: "Module" },
   { key: "status", head: "Status" },
   { key: "lectures", head: "Lectures", numeric: true },
-  { key: "instructors", head: "Instructors", hideBelow: "lg" },
+  { key: "lecturers", head: "Lecturers", hideBelow: "lg" },
   { key: "enrolments", head: "Enrolments", numeric: true, hideBelow: "sm" },
   { key: "completed", head: "Completed", numeric: true, hideBelow: "md" },
   { key: "rating", head: "Rating", numeric: true, hideBelow: "xl" },
@@ -67,7 +67,7 @@ export default function ModulesPage() {
       <PageHeader
         eyebrow="Learning"
         title="Modules"
-        lead="Everything the platform teaches. A module is created as a draft, gets its lectures written by the instructors assigned to it, and only becomes visible to learners when somebody publishes it."
+        lead="Everything the platform teaches. A module is created as a draft, gets its lectures written by the lecturers assigned to it, and only becomes visible to learners when somebody publishes it."
       />
 
       <div className={`${CONSOLE.stack} grid gap-4 sm:grid-cols-2 xl:grid-cols-4`}>
@@ -90,7 +90,7 @@ export default function ModulesPage() {
             see the note on `<NewModuleAction>`. */}
         <div className="mb-4 flex justify-end">
           <NewModuleAction
-            instructors={instructors().map((member) => ({
+            lecturers={lecturers().map((member) => ({
               id: member.id,
               name: member.name,
               initials: member.initials,
@@ -101,7 +101,7 @@ export default function ModulesPage() {
         <TableFrame columns={COLUMNS} caption="Modules on the platform">
           {MANAGED_MODULES.map((mdl) => {
             const lectures = consoleLectures(mdl.id);
-            const team = instructorsFor(mdl.id);
+            const team = lecturersFor(mdl.id);
             const unpublished = lectures.filter(
               (mod) => mod.state !== "published",
             ).length;
@@ -133,7 +133,7 @@ export default function ModulesPage() {
                       {team.map((member) => (
                         <Link
                           key={member.id}
-                          href={`/admin/instructors/${member.id}`}
+                          href={`/admin/lecturers/${member.id}`}
                           className="link-wipe text-lg text-primary"
                         >
                           {member.name}

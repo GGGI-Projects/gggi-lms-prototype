@@ -1,8 +1,8 @@
 /**
  * The library's pieces, shared by both consoles.
  *
- * `/admin/materials` and `/instructor/materials` are THE SAME SHELF. The whole
- * point of a shared library is that an administrator and an instructor are
+ * `/admin/materials` and `/lecturer/materials` are THE SAME SHELF. The whole
+ * point of a shared library is that an administrator and a lecturer are
  * looking at one set of files, so they are one set of components too - two
  * implementations would be two libraries within a month, differing first in
  * how they sort and then in what they show.

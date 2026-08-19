@@ -61,7 +61,7 @@ The product has **four parts**, and this document covers all of them:
 
 1. A **public marketing website** — convinces a visitor to sign up.
 2. A **learner (student) portal** — where a signed-up learner studies, takes quizzes, and collects certificates.
-3. An **instructor console** — where a subject expert writes and keeps up to date the material for the module(s) they are assigned to.
+3. An **lecturer console** — where a subject expert writes and keeps up to date the material for the module(s) they are assigned to.
 4. An **administration console**, with two levels of access (*Administrator* and *Super Administrator*) — where the platform's people, modules, moderation, certificates, and settings are managed.
 
 The platform has no payment feature, no advertising, and no way of making money of any kind — this rule applies to every requirement below, and nothing should ever break it.
@@ -74,11 +74,11 @@ The platform has no payment feature, no advertising, and no way of making money 
 | **Lecture** | One lesson inside a module. It includes a short video and/or written material, files to download, and ends with a quiz and, optionally, written questions. |
 | **Content block** | One piece of a lecture's body: a *video* block, a *text* block, or a *materials* block. A lecture is simply an ordered list of these. |
 | **Quiz** | The four-question, multiple-choice test that closes a lecture. |
-| **Written questions** | An *optional* second, short-answer step an instructor may add to a lecture on top of its quiz — up to four questions, each answered in two or three sentences and checked automatically for required words and phrases (see §4.6a, §4.11a). Most lectures have none. |
+| **Written questions** | An *optional* second, short-answer step a lecturer may add to a lecture on top of its quiz — up to four questions, each answered in two or three sentences and checked automatically for required words and phrases (see §4.6a, §4.11a). Most lectures have none. |
 | **Certificate** | The proof of completion given automatically once a learner has finished every lecture and passed every quiz — and every lecture's written questions, where it has any — in a module. |
 | **Learner** | Anyone using the student portal to sign up and study. Not a "staff" role. |
-| **Staff** | A general word for the three console roles: Super Administrator, Administrator, Instructor. |
-| **Console** | Either staff-facing app (the Instructor console or the Admin console), as opposed to the learner portal. |
+| **Staff** | A general word for the three console roles: Super Administrator, Administrator, Lecturer. |
+| **Console** | Either staff-facing app (the Lecturer console or the Admin console), as opposed to the learner portal. |
 | **Capability** | One named permission (for example `manageModules`, `readAuditLog`) that is checked against a staff member's role before an action is allowed. |
 | **The Platform** | This product as a whole, covering all four parts. |
 | **MoSCoW priority** | **M**ust have / **S**hould have / **C**ould have — marks how important each requirement is to build. |
@@ -99,7 +99,7 @@ Section 2 describes the product at a high level. Section 3 describes its differe
 
 ### 2.1 Product Perspective
 
-This is a brand-new, stand-alone product — there is no earlier system it replaces, and it does not connect to any existing organisation's system at launch. It is built as a modern web app, delivered as a single responsive site that serves all four parts (marketing, learner portal, instructor console, admin console) from one codebase, with access controlled by sign-in and role rather than by separate apps.
+This is a brand-new, stand-alone product — there is no earlier system it replaces, and it does not connect to any existing organisation's system at launch. It is built as a modern web app, delivered as a single responsive site that serves all four parts (marketing, learner portal, lecturer console, admin console) from one codebase, with access controlled by sign-in and role rather than by separate apps.
 
 The current prototype is **front-end only**: every page, form, table, and chart is fully built and works on screen, but all the data is fixed sample data built into the app, and every action that would normally save something to a server (signing up, saving a profile, publishing a lecture, checking a review, cancelling a certificate, changing a setting…) is only pretend — the screen completes the action and clearly says that nothing was actually saved. Turning this into the real, live system means building the backend, sign-in, storage, and email/notification services described throughout this document, sitting behind a front end that, in most cases, does not need to change.
 
@@ -109,8 +109,8 @@ At a high level, the platform must:
 
 - Show the module catalogue and explain what the platform offers to a visitor who has not signed up yet, and turn them into a signed-up learner.
 - Let a learner create a free account, confirm their email, sign in, join any number of modules, work through lessons at their own pace, take quizzes with no limit on attempts, and get a certificate automatically — one that never expires and can be checked — as soon as they finish a module.
-- Let an **instructor** write and keep up to date the lessons and quizzes for the module(s) they are assigned to, use a shared, platform-wide library of files, and see how learners are doing on their own material — without being able to see anything outside their own assignment.
-- Let an **administrator** run the platform day to day: create and publish modules, appoint and assign instructors, manage the list of learners, check submitted reviews before they go public, and manage (specifically, cancel) certificates.
+- Let an **lecturer** write and keep up to date the lessons and quizzes for the module(s) they are assigned to, use a shared, platform-wide library of files, and see how learners are doing on their own material — without being able to see anything outside their own assignment.
+- Let an **administrator** run the platform day to day: create and publish modules, appoint and assign lecturers, manage the list of learners, check submitted reviews before they go public, and manage (specifically, cancel) certificates.
 - Let the **super administrator** — there is exactly one such account — do everything an administrator can do, plus add or remove other administrator accounts, read a permanent log of every important action taken on the platform, and set the platform-wide rules (pass mark, review policy, how long data is kept, and so on) that every other role can see but not change.
 
 ### 2.3 Operating Environment
@@ -123,7 +123,7 @@ A responsive web app, used through desktop, laptop, and mobile browsers, on a wi
 - **Free, always.** No requirement in this document, now or in future, should add billing, a paid tier, or lock any content behind payment. This is a core rule of the product, not just today's price.
 - **English at launch; Sinhala and Tamil are planned**, and the system (content structure, settings, footer/legal text) is built so all three languages can run side by side once the translated content exists (see §11).
 - **One shared visual design** (a light, magazine-style layout with a teal/amber colour scheme, one shared font for headings and body text, and a carefully chosen amount of motion) has already been approved by the client through the prototype and should be carried into the finished product largely as built, rather than redesigned.
-- **Every content record in the prototype is sample data only, not a requirement.** Module titles and subjects, lecture counts and lengths, quiz questions, and every learner/instructor/administrator record shown are sample data used to show how the platform behaves — they are not a description of what the real catalogue, content, or user base must contain. Wherever this document needs to describe such a screen, it describes the *mechanism* (for example, "a module has a title, a level, and a set of lectures") rather than the prototype's specific sample values. See the note at the start of §4.
+- **Every content record in the prototype is sample data only, not a requirement.** Module titles and subjects, lecture counts and lengths, quiz questions, and every learner/lecturer/administrator record shown are sample data used to show how the platform behaves — they are not a description of what the real catalogue, content, or user base must contain. Wherever this document needs to describe such a screen, it describes the *mechanism* (for example, "a module has a title, a level, and a set of lectures") rather than the prototype's specific sample values. See the note at the start of §4.
 
 ### 2.5 Assumptions and Dependencies
 
@@ -139,11 +139,11 @@ A responsive web app, used through desktop, laptop, and mobile browsers, on a wi
 |---|---|---|---|
 | **Visitor** | Anyone reaching the public site who has not signed up yet. | Understand what the platform offers and decide whether to join. | No account, no access beyond the marketing site. |
 | **Learner** | Any member of the public. No earlier qualification is assumed; they may be using a low-powered device or a slow connection. | Learn a subject at their own pace and come away with proof that they did. | Signs up alone; no approval step, no sponsor needed, no fee, ever. |
-| **Instructor** | A subject expert appointed by an administrator to write material. | Write, update, and maintain the lessons and quizzes of the module(s) they are assigned to; understand how well their own material is working. | Can never see learners, files, or modules outside their own assignment; cannot assign themselves to a module. |
-| **Administrator** | Runs the platform's day-to-day work. Appointed by someone else, not self-signed-up. | Publish modules, appoint instructors, manage the list of learners, check reviews, manage certificates. | Cannot appoint another administrator and cannot read the permanent action log — those two things belong to the super administrator alone. |
+| **Lecturer** | A subject expert appointed by an administrator to write material. | Write, update, and maintain the lessons and quizzes of the module(s) they are assigned to; understand how well their own material is working. | Can never see learners, files, or modules outside their own assignment; cannot assign themselves to a module. |
+| **Administrator** | Runs the platform's day-to-day work. Appointed by someone else, not self-signed-up. | Publish modules, appoint lecturers, manage the list of learners, check reviews, manage certificates. | Cannot appoint another administrator and cannot read the permanent action log — those two things belong to the super administrator alone. |
 | **Super Administrator** | Owns the platform. Exactly one account exists. | Everything an administrator can do, plus add/remove administrators, read the permanent action log, and set platform-wide rules. | This account is the platform's one final point of responsibility; it cannot be created or removed from inside the console itself. |
 
-One person may fairly hold more than one of these roles at once (for example, the platform's owner may also be an instructor on a module they wrote themselves); when staff sign in, the system must therefore ask **which portal** they want to enter, rather than guess (see FR-AUTH-050).
+One person may fairly hold more than one of these roles at once (for example, the platform's owner may also be a lecturer on a module they wrote themselves); when staff sign in, the system must therefore ask **which portal** they want to enter, rather than guess (see FR-AUTH-050).
 
 ---
 
@@ -151,7 +151,7 @@ One person may fairly hold more than one of these roles at once (for example, th
 
 Each requirement below has a stable ID (`FR-<area>-<number>`) and a priority (**M**ust / **S**hould / **C**ould). IDs are numbered in steps of ten so related requirements can be added later without renumbering everything that comes after them.
 
-> **Note on sample data.** The prototype this section is based on comes with sample content — specific module titles, lecture counts, hours, and sample learner/instructor/administrator records — used only to make the screens work for a demo. None of that *content* is a requirement, and no specific module, lecture, or user record from the prototype should be treated as confirmed. Every requirement below describes the *mechanism* a screen must offer, not the prototype's current sample values. (Quiz *rules* — the number of questions, the pass mark, and the attempt rules in §4.6 — are a different matter: they are settings the platform can be configured with, carefully chosen and explained in §6, not incidental sample content, so they are written here with their current default values.) The client's real curriculum and catalogue are expected to differ from the prototype and will be defined separately, as content.
+> **Note on sample data.** The prototype this section is based on comes with sample content — specific module titles, lecture counts, hours, and sample learner/lecturer/administrator records — used only to make the screens work for a demo. None of that *content* is a requirement, and no specific module, lecture, or user record from the prototype should be treated as confirmed. Every requirement below describes the *mechanism* a screen must offer, not the prototype's current sample values. (Quiz *rules* — the number of questions, the pass mark, and the attempt rules in §4.6 — are a different matter: they are settings the platform can be configured with, carefully chosen and explained in §6, not incidental sample content, so they are written here with their current default values.) The client's real curriculum and catalogue are expected to differ from the prototype and will be defined separately, as content.
 
 ### 4.1 Public Marketing Website
 
@@ -179,7 +179,7 @@ Each requirement below has a stable ID (`FR-<area>-<number>`) and a priority (**
 | FR-AUTH-050 | After sign-up, the learner shall be taken to an email-check screen that names the address a confirmation link was sent to, offers to resend it (with a 30-second wait between each send) with a link that stays valid for 24 hours, and offers a way to go back and correct the address. | M |
 | FR-AUTH-060 | Learner sign-in shall ask for exactly two things (email, password), offer the same one-tap Google option, offer "keep me signed in on this device", and offer a way to reset a forgotten password without help from anyone. | M |
 | FR-AUTH-070 | A separate sign-in screen, not aimed at learners, shall exist for staff to "sign in to the console". It shall not offer self-sign-up or a Google sign-in option, since staff accounts are set up by an administrator, not created by the person themselves; its password-recovery text shall tell the person to contact their administrator rather than offering a self-service reset link. | M |
-| FR-AUTH-080 | When a staff member signs in successfully, if their account holds more than one role (for example, both super-administrator **and** instructor on a module they wrote), the system shall ask which portal to enter, rather than guessing; the choices offered shall be limited to only the roles that account actually holds. | M |
+| FR-AUTH-080 | When a staff member signs in successfully, if their account holds more than one role (for example, both super-administrator **and** lecturer on a module they wrote), the system shall ask which portal to enter, rather than guessing; the choices offered shall be limited to only the roles that account actually holds. | M |
 | FR-AUTH-090 | Real terms-of-use and privacy-notice pages, linked from sign-up, shall be written and published (they are currently placeholder links — see §11). | M |
 
 ### 4.3 Learner Dashboard
@@ -224,20 +224,20 @@ Each requirement below has a stable ID (`FR-<area>-<number>`) and a priority (**
 | FR-STU-190 | The platform-wide pass mark shall be a single percentage that can be changed by the super administrator (currently 70%), applied the same way to every quiz on the platform — it shall never be set separately for one lecture or one module, so a certificate means the same thing no matter which lecture it passed through. | M |
 | FR-STU-200 | A learner shall have **no limit on the number of attempts** at any quiz, with **no time limit**, and their **highest score so far** shall be the score that counts towards earning the certificate. | M |
 | FR-STU-210 | A quiz shall show one question at a time with a progress indicator and previous/next buttons, and shall refuse to submit until every question has been answered, showing a clear message on screen explaining why. | M |
-| FR-STU-220 | On submitting, the learner shall immediately see their score and whether they passed or failed against the platform's pass mark, and how many questions were correct out of how many. **No correct answer, no chosen-option marking, and no explanation is ever shown to the learner** — not on the result screen, not anywhere else in the student portal, for any question, whether it was answered correctly or not. A question bank is reused across lectures and across every retake (see §5), so revealing one answer once would leak it permanently; explanations exist only for staff, in the instructor and admin consoles (FR-INS-120). | M |
+| FR-STU-220 | On submitting, the learner shall immediately see their score and whether they passed or failed against the platform's pass mark, and how many questions were correct out of how many. **No correct answer, no chosen-option marking, and no explanation is ever shown to the learner** — not on the result screen, not anywhere else in the student portal, for any question, whether it was answered correctly or not. A question bank is reused across lectures and across every retake (see §5), so revealing one answer once would leak it permanently; explanations exist only for staff, in the lecturer and admin consoles (FR-INS-120). | M |
 | FR-STU-230 | A learner shall be able to retake a quiz at any time from the result screen, the lecture page, or the quizzes list, with no penalty and no waiting period. | M |
 | FR-STU-240 | A dedicated "quizzes" list shall show every quiz across every module the learner has joined, grouped by module, showing for each one whether it is: passed; needs a retake (with the failing score shown against the pass mark); finished lecture but quiz never tried; or quiz available but lecture not yet finished — and every one of these shall stay clickable and able to be attempted (see FR-STU-130), plus a marker on any row whose lecture also carries written questions and whether those are passed. | M |
 | FR-STU-250 | Every quiz attempt and its resulting score must be saved against the learner's account on the server once the real system is built (the prototype clearly states that no attempt is currently saved). | M |
 
 ### 4.6a Written Questions Engine
 
-**Purpose:** an *optional* second, short-answer check on top of a lecture's quiz, for the lectures where an instructor judges that multiple choice cannot tell whether an explanation actually landed. Most lectures carry none of these.
+**Purpose:** an *optional* second, short-answer check on top of a lecture's quiz, for the lectures where a lecturer judges that multiple choice cannot tell whether an explanation actually landed. Most lectures carry none of these.
 
 | ID | Requirement | Pri. |
 |---|---|---|
 | FR-STU-201 | A lecture may carry zero to four written questions, each asking for a short, free-text explanation (two or three sentences — never an essay, and never graded as one). Where a lecture has none, nothing about it changes from today's quiz-only flow. | M |
 | FR-STU-202 | Written questions shall only be reachable after the same lecture's quiz has been passed — they are a second step, not an alternative one — and a learner who reaches the page directly without a passed quiz shall be shown why and offered the quiz, not a broken or empty screen. | M |
-| FR-STU-203 | Each written answer shall be checked **automatically, the instant it is submitted**, against the required words and phrases the instructor attached to that question (see FR-INS-121a) — there is no instructor review queue and no waiting period. | M |
+| FR-STU-203 | Each written answer shall be checked **automatically, the instant it is submitted**, against the required words and phrases the lecturer attached to that question (see FR-INS-121a) — there is no lecturer review queue and no waiting period. | M |
 | FR-STU-204 | On submitting, the learner shall immediately see the same kind of result as the quiz - a score, a pass/fail, and how many of the written questions passed. **No model answer and no per-question pass/fail is ever shown to the learner**, on the same rule as FR-STU-220; a model answer is a staff-facing fact (FR-INS-121a), not a learner-facing one. | M |
 | FR-STU-205 | The pass mark for written questions is the same single, platform-wide percentage used for the quiz (FR-STU-190) — the proportion of a lecture's written questions passed must reach it. There is no limit on attempts and no time limit, matching FR-STU-200. | M |
 | FR-STU-206 | Where a lecture has written questions, the "next lecture" gate described in FR-STU-130 is cleared only once **both** the quiz and the written questions are passed; the quiz result screen shall lead to the written questions rather than to the next lecture in that case. | M |
@@ -263,53 +263,53 @@ Each requirement below has a stable ID (`FR-<area>-<number>`) and a priority (**
 | FR-STU-350 | A separate **Settings** screen shall hold preferences about how the platform behaves, kept clearly apart from identity: email notification switches (progress/certificates, new modules, product news), how often study reminders are sent, a language choice (English now; Sinhala and Tamil marked "coming soon"), and a form to change password. None of these preferences shall affect what the learner has joined or already completed. | S |
 | FR-STU-360 | Settings shall offer account deletion behind a two-step confirmation, and shall state clearly and correctly that deleting the account removes the learner's memberships and progress, but **does not** cancel certificates already given — those stay valid under their reference number even though the former learner can no longer download them from a deleted account. | M |
 
-### 4.9 Instructor Console — Dashboard and Module Management
+### 4.9 Lecturer Console — Dashboard and Module Management
 
 | ID | Requirement | Pri. |
 |---|---|---|
-| FR-INS-010 | An instructor's console shall be limited entirely to the module(s) an administrator has directly assigned them to. An instructor with no assignment shall see a clear "nothing here yet" message, not an error, and shall have no way to assign themselves a module. | M |
-| FR-INS-020 | The instructor dashboard shall sum up, across their assigned modules only: lectures still to write, lectures waiting for review, quizzes worth a closer look (see FR-INS-070), uploaded files not yet used anywhere, lectures published, learners reached, and average module rating. | M |
-| FR-INS-030 | An instructor shall be able to list their assigned modules and open any one to see its lectures, each showing its state (Not started / Draft / In review / Published), files attached, a link to its quiz, its author, and when it was last updated. | M |
-| FR-INS-040 | Creating and publishing a module is **for administrators only**; an instructor may create, edit, and publish *lectures* by themselves within a module they are assigned to, but may never create a module or change whether a module itself is published or in draft. A draft module (no matter what state any of its lectures are in) is never visible to a learner. | M |
-| FR-INS-050 | An instructor shall be able to add a new lecture to an assigned module, giving it a title and an estimated study time; the lecture shall start out empty, in Draft state, numbered automatically as the next one in order — lecture numbers are never chosen by hand. | M |
+| FR-INS-010 | A lecturer's console shall be limited entirely to the module(s) an administrator has directly assigned them to. A lecturer with no assignment shall see a clear "nothing here yet" message, not an error, and shall have no way to assign themselves a module. | M |
+| FR-INS-020 | The lecturer dashboard shall sum up, across their assigned modules only: lectures still to write, lectures waiting for review, quizzes worth a closer look (see FR-INS-070), uploaded files not yet used anywhere, lectures published, learners reached, and average module rating. | M |
+| FR-INS-030 | A lecturer shall be able to list their assigned modules and open any one to see its lectures, each showing its state (Not started / Draft / In review / Published), files attached, a link to its quiz, its author, and when it was last updated. | M |
+| FR-INS-040 | Creating and publishing a module is **for administrators only**; a lecturer may create, edit, and publish *lectures* by themselves within a module they are assigned to, but may never create a module or change whether a module itself is published or in draft. A draft module (no matter what state any of its lectures are in) is never visible to a learner. | M |
+| FR-INS-050 | A lecturer shall be able to add a new lecture to an assigned module, giving it a title and an estimated study time; the lecture shall start out empty, in Draft state, numbered automatically as the next one in order — lecture numbers are never chosen by hand. | M |
 
-### 4.10 Instructor Console — Lecture Content Authoring
+### 4.10 Lecturer Console — Lecture Content Authoring
 
 | ID | Requirement | Pri. |
 |---|---|---|
-| FR-INS-060 | The lecture editor shall let an instructor add, edit, and remove content blocks of two kinds — a video block (title, the recording itself, its length, a short caption) and a written block (heading, body text) — and the order the blocks appear on screen is the order a learner will read them in. | M |
+| FR-INS-060 | The lecture editor shall let a lecturer add, edit, and remove content blocks of two kinds — a video block (title, the recording itself, its length, a short caption) and a written block (heading, body text) — and the order the blocks appear on screen is the order a learner will read them in. | M |
 | FR-INS-070 | Removing a content block, or deleting a lecture completely, shall require a clear two-step confirmation naming exactly what will be lost — never a plain "Are you sure?" — and shall correctly say that learners already past that point keep the progress they already made. | M |
-| FR-INS-080 | A lecture's publishing state (Draft / In review / Published) shall be changeable by the instructor themselves for their own material — an instructor does not need an administrator's approval to publish a lecture. Moving a lecture to "In review" is instead offered as an **optional** step for anything that makes a claim about policy or money, not something forced on every lecture. | M |
+| FR-INS-080 | A lecture's publishing state (Draft / In review / Published) shall be changeable by the lecturer themselves for their own material — a lecturer does not need an administrator's approval to publish a lecture. Moving a lecture to "In review" is instead offered as an **optional** step for anything that makes a claim about policy or money, not something forced on every lecture. | M |
 | FR-INS-090 | Deleting a lecture shall renumber the lectures that come after it and shall show up in the progress of every learner already part-way through the module; any files it used stay in the shared library either way. | M |
 | FR-INS-100 | Real tools for adding video and formatted text — real video upload/processing and a real text editor — must be built for the finished product; the prototype shows the screen these tools will live in, without a working uploader or editor behind it. | M |
 
-### 4.11 Instructor Console — Quiz Authoring
+### 4.11 Lecturer Console — Quiz Authoring
 
 | ID | Requirement | Pri. |
 |---|---|---|
 | FR-INS-110 | A quiz cannot be written until its lecture has content — writing the quiz is a separate step that comes after the content, not alongside it. | M |
-| FR-INS-120 | The quiz editor shall let an instructor add, edit, and remove questions; each question shall need a prompt, exactly four answer options, one of them marked correct with a single-choice control (not a checkbox), and a required explanation. A learner attempting the quiz sees the prompt and the four options, same as always, but never which option is marked correct and never the explanation - those stay visible to the instructor and to administrators only. See FR-STU-220. | M |
+| FR-INS-120 | The quiz editor shall let a lecturer add, edit, and remove questions; each question shall need a prompt, exactly four answer options, one of them marked correct with a single-choice control (not a checkbox), and a required explanation. A learner attempting the quiz sees the prompt and the four options, same as always, but never which option is marked correct and never the explanation - those stay visible to the lecturer and to administrators only. See FR-STU-220. | M |
 | FR-INS-130 | Removing a question shall need confirmation and shall state that learners who already answered it keep their earlier attempt — only future attempts see the changed set of questions. | S |
-| FR-INS-140 | Platform-wide quiz rules (number of questions, pass mark, no limit on attempts, no time limit) shall be shown to the instructor as read-only facts on the quiz screen, with a clear note that only the super administrator can change them — an instructor cannot set a different pass mark or attempt limit for their own quiz. | M |
-| FR-INS-150 | Any quiz whose pass rate falls below a set "needs attention" level, or whose average score falls below the platform pass mark, shall be clearly flagged to the instructor (and, as a combined figure, to administrators) as likely to have a wrong or unclear question, rather than reflecting a weak group of learners — since attempts are unlimited, a pass rate that stays low over time is a sign about the content, not the learners. | S |
-| FR-INS-160 | An instructor shall be able to clear (reset) recorded attempts for a quiz after fixing a question, with a clear statement that this clears scores but never takes back a certificate already given based on an earlier attempt. | S |
-| FR-INS-170 | A dedicated "quizzes" list shall show every quiz an instructor is responsible for, ranked with the weakest pass rate first, so the quiz that most needs attention is always the first thing seen, and shall mark which of those lectures also carry written questions. | S |
+| FR-INS-140 | Platform-wide quiz rules (number of questions, pass mark, no limit on attempts, no time limit) shall be shown to the lecturer as read-only facts on the quiz screen, with a clear note that only the super administrator can change them — a lecturer cannot set a different pass mark or attempt limit for their own quiz. | M |
+| FR-INS-150 | Any quiz whose pass rate falls below a set "needs attention" level, or whose average score falls below the platform pass mark, shall be clearly flagged to the lecturer (and, as a combined figure, to administrators) as likely to have a wrong or unclear question, rather than reflecting a weak group of learners — since attempts are unlimited, a pass rate that stays low over time is a sign about the content, not the learners. | S |
+| FR-INS-160 | A lecturer shall be able to clear (reset) recorded attempts for a quiz after fixing a question, with a clear statement that this clears scores but never takes back a certificate already given based on an earlier attempt. | S |
+| FR-INS-170 | A dedicated "quizzes" list shall show every quiz a lecturer is responsible for, ranked with the weakest pass rate first, so the quiz that most needs attention is always the first thing seen, and shall mark which of those lectures also carry written questions. | S |
 
-### 4.11a Instructor Console — Written Question Authoring
+### 4.11a Lecturer Console — Written Question Authoring
 
-**Purpose:** letting an instructor add the optional short-answer step described in §4.6a to a lecture they are responsible for, on the same screen as that lecture's quiz.
+**Purpose:** letting a lecturer add the optional short-answer step described in §4.6a to a lecture they are responsible for, on the same screen as that lecture's quiz.
 
 | ID | Requirement | Pri. |
 |---|---|---|
-| FR-INS-121 | Written questions are entirely **optional**, up to **four per lecture**, and shown in their own section of the quiz screen — a lecture with none shall show a plain empty state explaining that most lectures do not need them, never a prompt nagging an instructor to add some. | M |
-| FR-INS-121a | Each written question shall need: a prompt asking for a short (two-to-three-sentence) explanation; a list of the specific words and phrases a correct answer would use; how many of those must appear for an answer to pass (never all of them, since a real answer paraphrases); and a model answer. The model answer, and the required words and phrases, are visible to the instructor and to administrators only - a learner is told only whether their own answer passed, never what a correct one would have said. See FR-STU-204. | M |
-| FR-INS-121b | The instructor authoring screen shall state plainly, next to the "add a written question" control, that writing even one written question turns on a **mandatory second step** a learner must clear, alongside the quiz, before the next lecture opens (see FR-STU-206) — this consequence must be visible where the decision is made, not only in a policy document. | M |
-| FR-INS-122 | An instructor shall be able to edit and remove a written question the same way as a quiz question (FR-INS-120, FR-INS-130): removing one shall need confirmation, and shall state that learners who already passed it keep that pass. | S |
+| FR-INS-121 | Written questions are entirely **optional**, up to **four per lecture**, and shown in their own section of the quiz screen — a lecture with none shall show a plain empty state explaining that most lectures do not need them, never a prompt nagging a lecturer to add some. | M |
+| FR-INS-121a | Each written question shall need: a prompt asking for a short (two-to-three-sentence) explanation; a list of the specific words and phrases a correct answer would use; how many of those must appear for an answer to pass (never all of them, since a real answer paraphrases); and a model answer. The model answer, and the required words and phrases, are visible to the lecturer and to administrators only - a learner is told only whether their own answer passed, never what a correct one would have said. See FR-STU-204. | M |
+| FR-INS-121b | The lecturer authoring screen shall state plainly, next to the "add a written question" control, that writing even one written question turns on a **mandatory second step** a learner must clear, alongside the quiz, before the next lecture opens (see FR-STU-206) — this consequence must be visible where the decision is made, not only in a policy document. | M |
+| FR-INS-122 | A lecturer shall be able to edit and remove a written question the same way as a quiz question (FR-INS-120, FR-INS-130): removing one shall need confirmation, and shall state that learners who already passed it keep that pass. | S |
 | FR-INS-123 | The same platform-wide rules that apply to the quiz (one pass mark, no attempt limit, no time limit — FR-INS-140) apply to written questions too, shown as read-only facts on the same screen. | M |
 
 ### 4.12 Shared Materials Library
 
-**Purpose:** one platform-wide shelf of downloadable and reference files, used by instructors when writing lessons and by administrators when checking them. Works the same way in both the Instructor and Admin consoles.
+**Purpose:** one platform-wide shelf of downloadable and reference files, used by lecturers when writing lessons and by administrators when checking them. Works the same way in both the Lecturer and Admin consoles.
 
 | ID | Requirement | Pri. |
 |---|---|---|
@@ -321,28 +321,28 @@ Each requirement below has a stable ID (`FR-<area>-<number>`) and a priority (**
 | FR-LIB-060 | Linking a whole group ("shelf") of files to a lecture in one action shall copy in the group's current contents as they are at that moment — files added to the group afterwards shall not automatically appear on lectures that linked it earlier. | S |
 | FR-LIB-070 | The library's main page shall show totals (files, groups, total links, files never used, recently added) and let staff search and filter the whole library; a file uploaded but never linked to anything shall be clearly flagged so it can be linked or removed. | S |
 
-### 4.13 Instructor Console — Learner Progress Visibility
+### 4.13 Lecturer Console — Learner Progress Visibility
 
 | ID | Requirement | Pri. |
 |---|---|---|
-| FR-INS-180 | An instructor shall see the progress of every learner enrolled in their own **published** modules only — never learners of a draft module (since none exist yet), and never any learner or module outside their own assignment. A learner enrolled in two of an instructor's modules shall appear as two separate progress rows, not combined into one. | M |
-| FR-INS-190 | Instructor-facing learner views shall show only progress facts — name, module, percentage/lectures complete, average score, last active — and shall **never** show a learner's email address, employer, district, account status, or any admin action (suspend, reset, message). Those belong to an administrator alone to see and act on. | M |
-| FR-INS-200 | A single learner's detail view, where offered to an instructor, shall be limited to the instructor's own modules and shall be completely blocked (not just hidden) for any learner not enrolled in one of them. | M |
+| FR-INS-180 | A lecturer shall see the progress of every learner enrolled in their own **published** modules only — never learners of a draft module (since none exist yet), and never any learner or module outside their own assignment. A learner enrolled in two of a lecturer's modules shall appear as two separate progress rows, not combined into one. | M |
+| FR-INS-190 | Lecturer-facing learner views shall show only progress facts — name, module, percentage/lectures complete, average score, last active — plus a direct way to email the learner. They shall **never** show an employer, district, account status, or any admin action (suspend, reset). Those belong to an administrator alone to see and act on. | M |
+| FR-INS-200 | A single learner's detail view, where offered to a lecturer, shall be limited to the lecturer's own modules and shall be completely blocked (not just hidden) for any learner not enrolled in one of them. | M |
 
-### 4.14 Instructor Console — Profile and Settings
+### 4.14 Lecturer Console — Profile and Settings
 
 | ID | Requirement | Pri. |
 |---|---|---|
-| FR-INS-210 | An instructor's profile shall keep what a learner sees about them (display name, field/title, a short optional bio) separate from their private account settings (email, password, notification preferences, language, session controls) — as two separate screens. | S |
-| FR-INS-220 | Module assignment shall be shown to the instructor as **read-only**, naming who to contact (the administrator who assigned them) to ask for a change — an instructor can never assign themselves to, or remove themselves from, a module. | M |
-| FR-INS-230 | Instructor notification preferences shall cover only their own material: a learner leaves a review, a module assignment changes, one of their quizzes' average score drops below the pass mark, another instructor links their uploaded file, and a weekly progress summary. None of these shall send an email to a learner. | C |
-| FR-INS-240 | An instructor account is closed only by an administrator, never by the instructor themselves; lectures an instructor wrote stay published and keep their name on them after the account is closed. | S |
+| FR-INS-210 | A lecturer's profile shall keep what a learner sees about them (display name, field/title, a short optional bio) separate from their private account settings (email, password, notification preferences, language, session controls) — as two separate screens. | S |
+| FR-INS-220 | Module assignment shall be shown to the lecturer as **read-only**, naming who to contact (the administrator who assigned them) to ask for a change — a lecturer can never assign themselves to, or remove themselves from, a module. | M |
+| FR-INS-230 | Lecturer notification preferences shall cover only their own material: a learner leaves a review, a module assignment changes, one of their quizzes' average score drops below the pass mark, another lecturer links their uploaded file, and a weekly progress summary. None of these shall send an email to a learner. | C |
+| FR-INS-240 | A lecturer account is closed only by an administrator, never by the lecturer themselves; lectures a lecturer wrote stay published and keep their name on them after the account is closed. | S |
 
 ### 4.15 Admin Console — Dashboard and Analytics
 
 | ID | Requirement | Pri. |
 |---|---|---|
-| FR-ADM-010 | The admin dashboard shall show, in this order of importance — **things waiting for action first, then key numbers, then charts**: reviews waiting to be checked, lectures waiting for review, instructors with no module assigned, and suspended learner accounts — each one linking straight into the screen that fixes it. | M |
+| FR-ADM-010 | The admin dashboard shall show, in this order of importance — **things waiting for action first, then key numbers, then charts**: reviews waiting to be checked, lectures waiting for review, lecturers with no module assigned, and suspended learner accounts — each one linking straight into the screen that fixes it. | M |
 | FR-ADM-020 | Headline numbers shall include registered learners, learners active in the last 30 days, total sign-ups to modules, and total certificates given, each shown with how much it changed compared to last month. | M |
 | FR-ADM-030 | The dashboard shall chart monthly sign-ups and monthly completions over the platform's whole history, the state of all sign-ups across the platform (completed / in progress / not started), and sign-ups by module — with the current, not-yet-finished month clearly marked, so a normal mid-month dip is never mistaken for a real drop. | M |
 | FR-ADM-040 | The dashboard shall list the most recently registered learners and the most recently updated lectures across the whole platform, plus a breakdown of learners by the work sector they told us they belong to. | S |
@@ -352,20 +352,20 @@ Each requirement below has a stable ID (`FR-<area>-<number>`) and a priority (**
 
 | ID | Requirement | Pri. |
 |---|---|---|
-| FR-ADM-060 | An administrator (or super administrator) shall be able to create a new module — title, a short summary of its purpose, level, and optionally one or more instructors — which always starts out in **Draft** state, hidden from learners until it is directly published. | M |
-| FR-ADM-070 | A draft module's detail view shall leave out sign-up/completion/rating numbers (rather than showing zeroes, which could wrongly look like a live module that is failing) and shall clearly flag if it has no instructor assigned. | S |
+| FR-ADM-060 | An administrator (or super administrator) shall be able to create a new module — title, a short summary of its purpose, level, and optionally one or more lecturers — which always starts out in **Draft** state, hidden from learners until it is directly published. | M |
+| FR-ADM-070 | A draft module's detail view shall leave out sign-up/completion/rating numbers (rather than showing zeroes, which could wrongly look like a live module that is failing) and shall clearly flag if it has no lecturer assigned. | S |
 | FR-ADM-080 | An administrator shall be able to switch a module between Published (in the catalogue, open to sign-up) and Draft (hidden; learners already enrolled keep full access and their progress). | M |
 | FR-ADM-090 | An administrator shall be able to archive a module, behind a confirmation that clearly states what happens: archiving hides it from the catalogue for good, but **certificates already given for it stay valid** — something that has already happened stays true even after the module is later taken down. | M |
 | FR-ADM-100 | An administrator shall be able to view (but, per FR-INS-060/080, not write) every lecture's content, quiz, and written questions (where it has any) to check them, and shall be able to change a lecture's own publishing state where the platform's review process calls for an administrator's approval. | S |
 
-### 4.17 Admin Console — Instructor Management
+### 4.17 Admin Console — Lecturer Management
 
 | ID | Requirement | Pri. |
 |---|---|---|
-| FR-ADM-110 | An administrator shall be able to invite a new instructor (name, email, field, optionally one or more starting module assignments) — an invitation is the only way to create a new instructor account; instructors can never sign themselves up. | M |
-| FR-ADM-120 | An administrator shall be able to change which module(s) an instructor is assigned to at any time. Removing an assignment shall show a clear warning that it does not delete or unpublish anything the instructor already wrote — it only stops them from editing it further. | M |
-| FR-ADM-130 | An administrator shall be able to suspend an instructor's account; suspension blocks console sign-in but clearly does **not** unpublish lectures that instructor already published. | M |
-| FR-ADM-140 | The instructor list shall show, for each one: assigned modules (draft ones clearly marked), lectures published vs. still to do, learners reached, last active date, and account status (Active / Invited / Suspended), and shall be filterable by these states. | S |
+| FR-ADM-110 | An administrator shall be able to invite a new lecturer (name, email, field, optionally one or more starting module assignments) — an invitation is the only way to create a new lecturer account; lecturers can never sign themselves up. | M |
+| FR-ADM-120 | An administrator shall be able to change which module(s) a lecturer is assigned to at any time. Removing an assignment shall show a clear warning that it does not delete or unpublish anything the lecturer already wrote — it only stops them from editing it further. | M |
+| FR-ADM-130 | An administrator shall be able to suspend a lecturer's account; suspension blocks console sign-in but clearly does **not** unpublish lectures that lecturer already published. | M |
+| FR-ADM-140 | The lecturer list shall show, for each one: assigned modules (draft ones clearly marked), lectures published vs. still to do, learners reached, last active date, and account status (Active / Invited / Suspended), and shall be filterable by these states. | S |
 
 ### 4.18 Admin Console — Learner Management
 
@@ -409,7 +409,7 @@ Each requirement below has a stable ID (`FR-<area>-<number>`) and a priority (**
 |---|---|---|
 | FR-SA-040 | The platform shall keep a permanent log of important actions, readable **only** by the super administrator — the reasoning being that a log which the people it records about can read, filter, or argue with stops working as a real log. | M |
 | FR-SA-050 | Every entry shall record: the person who did it (an entry is never credited to "the system" alone — every important action has a named human behind it), the action taken, what it was done to, in plain words, an optional detail line (what changed, from what, to what), and a timestamp to the minute. | M |
-| FR-SA-060 | The kinds of action recorded shall include, at least: account creation/suspension/restoring, role changes, module creation/publishing/updates, lecture publishing, changes to instructor assignments, review approval/rejection, certificate withdrawal, settings changes, and data exports. Simply viewing a page shall **never** be logged — a log of every screen someone opened is watching people, not holding them accountable, and would bury the events that actually matter. | M |
+| FR-SA-060 | The kinds of action recorded shall include, at least: account creation/suspension/restoring, role changes, module creation/publishing/updates, lecture publishing, changes to lecturer assignments, review approval/rejection, certificate withdrawal, settings changes, and data exports. Simply viewing a page shall **never** be logged — a log of every screen someone opened is watching people, not holding them accountable, and would bury the events that actually matter. | M |
 | FR-SA-070 | **Log entries shall never be changeable — not edited, not deleted, by anyone, including the super administrator** — and shall be kept for a fixed seven years, a period that cannot be shortened from inside the console. | M |
 | FR-SA-080 | Exporting the action log for an investigation shall itself create a new log entry, so the export itself is tracked the same way as everything it contains. | S |
 
@@ -426,14 +426,14 @@ Each requirement below has a stable ID (`FR-<area>-<number>`) and a priority (**
 | FR-SA-130 | **Email** settings: whether a weekly learner progress summary is sent, whether new-module announcements are sent, and after how many days without activity a reminder email is sent (or never). | C |
 | FR-SA-140 | **How long data is kept** shall be shown as fixed, information-only values, not editable from the console: learner records kept for as long as the account exists plus two years after it closes (to keep certificates checkable), action log kept for seven years (see FR-SA-070). | M |
 
-### 4.24 Console Account: Profile and Sign-In (Instructor and Admin)
+### 4.24 Console Account: Profile and Sign-In (Lecturer and Admin)
 
 | ID | Requirement | Pri. |
 |---|---|---|
 | FR-ADM-260 | A staff (console) password shall require at least **12 characters** — stricter than a learner account's 8, on purpose, since the difference reflects how much each kind of account can reach and affect. | M |
 | FR-ADM-270 | Two-step sign-in (an extra code alongside the password) shall be available to every staff role and shall be **required** for the super administrator specifically. | S |
 | FR-ADM-280 | A console session shall time out after **8 hours with no activity** — shorter than a learner's session, reflecting the greater risk of a console left signed in and unattended. | S |
-| FR-ADM-290 | Each staff role's profile page shall show, in plain words, everything that role can and cannot do, so a new administrator or instructor can immediately see the limits of their own access without needing to ask. | C |
+| FR-ADM-290 | Each staff role's profile page shall show, in plain words, everything that role can and cannot do, so a new administrator or lecturer can immediately see the limits of their own access without needing to ask. | C |
 
 ---
 
@@ -464,14 +464,14 @@ The rules below repeat across many screens in the prototype and are brought toge
 6. **A certificate never expires, is exactly one per completed module, and stays valid even if**: the module it came from is later archived; the learner later changes their certificate-name preference; or the learner's account is later deleted. Only a clear, reasoned, permanently recorded withdrawal by an administrator can make one invalid.
 7. **Any file or group in the shared library may be linked to any lecture, by any staff member writing it, in any module, with no limit.** No file or group belongs only to one person or one module — this must never be blocked, or made to sound blocked, in code, on screen, or in any written message.
 8. **Files are linked, not copied.** Replacing a file's content updates every lecture that links to it; linking a whole group ("shelf") to a lecture copies its contents as they are at that moment, and does not stay updated afterward.
-9. **An instructor may only write for the module(s) an administrator has directly assigned them to** — never assumed, never chosen by the instructor, and always changed only by an administrator.
-10. **An instructor may publish their own lectures without an administrator's approval**; moving a lecture to "in review" is an optional request for a second opinion, not something forced — except that a module itself can only ever be published or archived by an administrator, never by an instructor.
+9. **A lecturer may only write for the module(s) an administrator has directly assigned them to** — never assumed, never chosen by the lecturer, and always changed only by an administrator.
+10. **A lecturer may publish their own lectures without an administrator's approval**; moving a lecture to "in review" is an optional request for a second opinion, not something forced — except that a module itself can only ever be published or archived by an administrator, never by a lecturer.
 11. **A draft module is completely hidden from learners**, no matter what state any of its individual lectures are in.
-12. **Suspending an account (learner, instructor, or administrator) only blocks sign-in** — it never deletes, hides, or unpublishes anything that account already made or earned, and it can always be undone.
+12. **Suspending an account (learner, lecturer, or administrator) only blocks sign-in** — it never deletes, hides, or unpublishes anything that account already made or earned, and it can always be undone.
 13. **Only the super administrator may create or remove another administrator account, and only the super administrator may read the action log.** Exactly one super-administrator account exists at any time, and it cannot be created or removed from inside the console.
 14. **The action log can only be added to, never changed or deleted** — no entry may ever be edited or removed by anyone, including the super administrator — and it never records simple browsing (page views), only actions that change something.
 15. **Reviews are checked before they go public.** Approving needs no reason; rejecting always needs a reason that is kept on record. The automatic check brings reviews that look like they might be a problem to the top, for closer attention, but never rejects one by itself.
-16. **Learner data shown to staff is kept to the minimum needed.** Instructors see combined progress on their own modules only, never contact details or admin controls. Administrators see progress and account status, but never quiz-answer-level detail, time spent on each lecture, or sign-in history.
+16. **Learner data shown to staff is kept to the minimum needed.** Lecturers see combined progress on their own modules, plus a direct way to email a learner, but no other contact details and no admin controls. Administrators see progress and account status, but never quiz-answer-level detail, time spent on each lecture, or sign-in history.
 17. **The platform has no way to charge money, at any level, ever** — "free" is a core rule of the product, not just today's price.
 18. **Nothing in the finished product may show who is behind it**, by name, logo, or brand colour — the platform's identity is a placeholder that can be swapped from one place.
 
@@ -479,15 +479,15 @@ The rules below repeat across many screens in the prototype and are brought toge
 
 ## 7. Roles and Permissions Matrix
 
-| Capability | Super Admin | Administrator | Instructor |
+| Capability | Super Admin | Administrator | Lecturer |
 |---|:---:|:---:|:---:|
 | Sign in to a console | ✓ | ✓ | ✓ |
 | Create / suspend administrator accounts | ✓ | — | — |
 | Read the action log | ✓ | — | — |
 | Change platform-wide settings | ✓ | (read-only) | (read-only, limited) |
 | Create, publish, or archive a module | ✓ | ✓ | — |
-| Appoint or suspend an instructor | ✓ | ✓ | — |
-| Change an instructor's module assignments | ✓ | ✓ | — |
+| Appoint or suspend a lecturer | ✓ | ✓ | — |
+| Change a lecturer's module assignments | ✓ | ✓ | — |
 | View the full learner list | ✓ | ✓ | — |
 | Suspend / reset / export a learner account | ✓ | ✓ | — |
 | Approve or reject a review | ✓ | ✓ | — |
@@ -506,7 +506,7 @@ The finished backend must, at minimum, store the following kinds of record and t
 | Record type | Main fields | Linked to |
 |---|---|---|
 | **Learner** | name, certificate name, email, password/sign-in details, sector, organisation, district, date joined, status (active/dormant/suspended), notification and language preferences | many Enrolments; many QuizAttempts; many WrittenAttempts; many Certificates; many Reviews |
-| **Module** | title, summary, level, topics, status (draft/published/archived), created/updated dates | many Lectures; many Enrolments; many Instructor assignments |
+| **Module** | title, summary, level, topics, status (draft/published/archived), created/updated dates | many Lectures; many Enrolments; many Lecturer assignments |
 | **Lecture** | number, title, type, study minutes, learning aims (3), content blocks, publishing state, author, last updated | belongs to one Module; has one Quiz; has zero or more WrittenQuestions; links to many Materials |
 | **Content Block** | type (video / text / materials), fields specific to that type, order number | belongs to one Lecture |
 | **Quiz / Question** | prompt, 4 options, which one is correct, explanation | belongs to one Lecture |
@@ -517,7 +517,7 @@ The finished backend must, at minimum, store the following kinds of record and t
 | **Certificate** | reference number (unique, in the form e.g. `[PREFIX]-[YEAR]-[MODULE CODE]-[NUMBER]`), learner, module, date given, average score, status (given/withdrawn), withdrawal reason/who/when if it applies | belongs to one Learner, one Module |
 | **MaterialAsset** | title (unique), description, type, size, language, group, who uploaded it, upload date | belongs to one MaterialGroup; linked to by many Lectures |
 | **MaterialGroup** | name, description, who created it, date created | has many MaterialAssets |
-| **StaffMember** | name, email, role (super-admin/admin/instructor), title, status, date created, who created them, last active, assigned modules (instructors) | — |
+| **StaffMember** | name, email, role (super-admin/admin/lecturer), title, status, date created, who created them, last active, assigned modules (lecturers) | — |
 | **Review** | learner, module, rating, text, status (pending/published/rejected), decided by, decided on, rejection reason, whether auto-flagged | belongs to one Learner, one Module |
 | **AuditEntry** (action log) | who did it, action type, what it applied to, detail, timestamp | can only be added to, never changed |
 | **PlatformSettings** | one record holding all the fields listed in §4.23 | there is only ever one of these |
@@ -529,7 +529,7 @@ The finished backend must, at minimum, store the following kinds of record and t
 ### 9.1 User Interfaces
 
 - One shared, responsive design serves all four parts of the product from one codebase, already agreed with the client through the prototype: a light, magazine-style look, a small set of named colour categories (rather than fixed colours written into every screen) so the colour scheme can be changed from one place, and one shared font for both headings and body text.
-- The learner portal, instructor console, and admin console share one navigation layout (a side menu plus a top bar) with content that matches the role signed in; the public marketing site uses a separate layout, designed to convince a visitor to sign up.
+- The learner portal, lecturer console, and admin console share one navigation layout (a side menu plus a top bar) with content that matches the role signed in; the public marketing site uses a separate layout, designed to convince a visitor to sign up.
 - Every staff action that is hard to undo or has a real effect (suspend, archive, withdraw, delete, remove) must use one consistent two-step confirmation, shown on the same screen, that states clearly in plain words what will happen — never a generic "Are you sure?" pop-up.
 
 ### 9.2 Software Interfaces (to be built for production)
@@ -602,7 +602,7 @@ The items below are clearly **not** built in the current prototype, but are eith
 | Real Google sign-in connection | Currently a button that does nothing, on purpose, rather than one that breaks. |
 | Public certificate lookup page | Promised directly in the platform's own certificate and marketing text; does not exist yet. |
 | Real video hosting/playback and real file delivery for materials | The lecture page's video player and download buttons work on screen but have no real file behind them. |
-| Real tools for instructors to add formatted text and video | The lecture editor shows the screen these tools will live in, but has no working uploader or text editor yet. |
+| Real tools for lecturers to add formatted text and video | The lecture editor shows the screen these tools will live in, but has no working uploader or text editor yet. |
 | Real terms-of-use and privacy-notice pages | Currently placeholder links from the sign-up form. |
 | A way for learners to reset a forgotten password themselves | Currently a placeholder link; staff password recovery is handled by an administrator on purpose instead. |
 | Separate, linkable pages for each module's details | The marketing site currently expands module details in place because no separate pages exist yet to link to. |
@@ -615,13 +615,13 @@ The items below are clearly **not** built in the current prototype, but are eith
 
 ## Appendix A — Note on Illustrative Sample Content
 
-The prototype this document is based on comes with a working demo catalogue — a small number of sample modules covering example green-growth subjects, each with sample lectures, sample quiz questions, and sample learner/instructor/administrator records — so that every screen in Sections 4–7 could be tried from start to finish while writing this document.
+The prototype this document is based on comes with a working demo catalogue — a small number of sample modules covering example green-growth subjects, each with sample lectures, sample quiz questions, and sample learner/lecturer/administrator records — so that every screen in Sections 4–7 could be tried from start to finish while writing this document.
 
 **None of that sample content is part of this specification**, and it is left out of this document on purpose:
 
 - The **number of modules**, their **titles and subjects**, and the **lecture count and length of each** are content decisions for the client to make. This document specifies that a module has a title, a level, a set of topics, and an ordered set of lectures (§5) — never how many modules or lectures there must be.
-- The **specific quiz questions, options, and explanations** are content to be written by the client's instructors, following the process set out in §4.11 — this document specifies the *shape* of a question (a prompt, four options, one correct answer, an explanation), not the actual wording of any question.
-- The **sample learner, instructor, and administrator records**, and any platform-wide totals worked out from them (registered learners, sign-ups, certificates given, and similar dashboard figures), are demo data only. The matching requirement in this document is always that the platform *works out and shows such a total live* from real records (see FR-ADM-050) — never a specific number.
+- The **specific quiz questions, options, and explanations** are content to be written by the client's lecturers, following the process set out in §4.11 — this document specifies the *shape* of a question (a prompt, four options, one correct answer, an explanation), not the actual wording of any question.
+- The **sample learner, lecturer, and administrator records**, and any platform-wide totals worked out from them (registered learners, sign-ups, certificates given, and similar dashboard figures), are demo data only. The matching requirement in this document is always that the platform *works out and shows such a total live* from real records (see FR-ADM-050) — never a specific number.
 
 Where a real example is useful elsewhere in this document (for instance, the certificate reference format in §8), it is given in a general, bracketed form rather than as one of the prototype's actual sample values, for the same reason.
 
@@ -647,17 +647,17 @@ Where a real example is useful elsewhere in this document (for instance, the cer
 | Learner portal | Certificate detail | §4.7 |
 | Learner portal | Profile | §4.8 |
 | Learner portal | Settings | §4.8 |
-| Instructor console | Dashboard | §4.9 |
-| Instructor console | My modules / Module detail | §4.9 |
-| Instructor console | Lecture editor | §4.10 |
-| Instructor console | Quiz editor (includes written questions) | §4.11, §4.11a |
-| Instructor console | Lectures list / Quizzes list | §4.10, §4.11 |
-| Instructor console | Materials library / group / file detail | §4.12 |
-| Instructor console | Learners list / learner detail | §4.13 |
-| Instructor console | Profile / Settings | §4.14 |
+| Lecturer console | Dashboard | §4.9 |
+| Lecturer console | My modules / Module detail | §4.9 |
+| Lecturer console | Lecture editor | §4.10 |
+| Lecturer console | Quiz editor (includes written questions) | §4.11, §4.11a |
+| Lecturer console | Lectures list / Quizzes list | §4.10, §4.11 |
+| Lecturer console | Materials library / group / file detail | §4.12 |
+| Lecturer console | Learners list / learner detail | §4.13 |
+| Lecturer console | Profile / Settings | §4.14 |
 | Admin console | Dashboard | §4.15 |
 | Admin console | Modules list / detail / lecture / quiz (includes written questions, read-only) | §4.16 |
-| Admin console | Instructors list / detail | §4.17 |
+| Admin console | Lecturers list / detail | §4.17 |
 | Admin console | Students (learners) list / detail | §4.18 |
 | Admin console | Materials library / group / file detail | §4.12 |
 | Admin console | Certificates | §4.19 |

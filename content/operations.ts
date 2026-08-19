@@ -119,10 +119,10 @@ export type QuizStats = {
 };
 
 /**
- * Per-lecture quiz results, for the module the demo instructor teaches.
+ * Per-lecture quiz results, for the module the demo lecturer teaches.
  *
  * ONE MODULE ONLY, and that is honest rather than lazy: the console screens
- * that need lecture-level figures are the instructor's, and inventing 37 sets
+ * that need lecture-level figures are the lecturer's, and inventing 37 sets
  * of plausible numbers would make every one of them equally unfalsifiable.
  * Everywhere else the interface says there is not enough data yet, which is
  * also what a real platform says about a module nobody has finished.
@@ -134,7 +134,7 @@ export type QuizStats = {
  *
  * The shape is a funnel, because that is what quizzes on a self-paced course
  * look like: 340 people take the first one and 118 take the last. The two low
- * pass rates are deliberate - they are what an instructor is supposed to
+ * pass rates are deliberate - they are what a lecturer is supposed to
  * notice, and a screen where every lecture reads 90% teaches nobody anything.
  */
 export const QUIZ_STATS: Record<string, QuizStats> = {
@@ -451,7 +451,7 @@ export const AUDIT: AuditEntry[] = [
     actorId: "staff-admin-1",
     action: "account.created",
     target: "Fathima Rizwan",
-    detail: "Lecture instructor · no modules assigned yet",
+    detail: "Lecturer · no modules assigned yet",
     at: "2026-08-12T10:22",
   },
   {
@@ -531,7 +531,7 @@ export const AUDIT: AuditEntry[] = [
     actorId: "staff-super",
     action: "role.changed",
     target: "Dilan Fernando",
-    detail: "Lecture instructor → Administrator",
+    detail: "Lecturer → Administrator",
     at: "2025-11-06T09:03",
   },
   {

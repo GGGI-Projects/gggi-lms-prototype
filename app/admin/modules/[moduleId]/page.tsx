@@ -7,7 +7,7 @@ import {
   catalogueModule,
   consoleLectures,
   formatNumber,
-  instructorsFor,
+  lecturersFor,
   managedModule,
   quizStatsFor,
   reviewsForModule,
@@ -31,6 +31,7 @@ import {
   type Column,
 } from "@/components/console/ui";
 import { ConfirmAction, StateControl } from "@/components/console/actions";
+import { RenameAction } from "@/components/console/rename-action";
 import { IfCan, LockedNote } from "@/components/console/permission";
 import {
   LECTURE_STATE_LABEL,
@@ -81,7 +82,7 @@ export default async function ModulePage({ params }: Params) {
   if (!mdl) notFound();
 
   const lectures = consoleLectures(mdl.id);
-  const team = instructorsFor(mdl.id);
+  const team = lecturersFor(mdl.id);
   const reviews = reviewsForModule(mdl.id);
   const pending = reviews.filter((review) => review.status === "pending").length;
   const isDraft = mdl.status === "draft";
@@ -112,18 +113,25 @@ export default async function ModulePage({ params }: Params) {
           </>
         }
         actions={
-          publicEntry ? (
-            <Link
-              href={`/modules/${mdl.id}`}
-              className="btn-ripple btn-solid btn-sm"
-            >
-              <span aria-hidden="true" className="btn-wave" />
-              <span className="btn-label">
-                <ExternalIcon className="size-4" />
-                View as a learner
-              </span>
-            </Link>
-          ) : undefined
+          <>
+            <RenameAction
+              subject="module"
+              title={mdl.title}
+              capability="manageModules"
+            />
+            {publicEntry ? (
+              <Link
+                href={`/modules/${mdl.id}`}
+                className="btn-ripple btn-solid btn-sm"
+              >
+                <span aria-hidden="true" className="btn-wave" />
+                <span className="btn-label">
+                  <ExternalIcon className="size-4" />
+                  View as a learner
+                </span>
+              </Link>
+            ) : null}
+          </>
         }
       />
 
@@ -139,11 +147,11 @@ export default async function ModulePage({ params }: Params) {
 
       {!team.length ? (
         <div className={CONSOLE.stack}>
-          <Callout title="No instructor is assigned">
+          <Callout title="No lecturer is assigned">
             Nobody can write or revise this module&rsquo;s lectures until
             somebody is.{" "}
-            <Link href="/admin/instructors" className="link-wipe font-semibold text-primary">
-              Assign an instructor
+            <Link href="/admin/lecturers" className="link-wipe font-semibold text-primary">
+              Assign a lecturer
             </Link>
             .
           </Callout>
@@ -179,7 +187,7 @@ export default async function ModulePage({ params }: Params) {
             title="Lectures"
             description={
               isDraft
-                ? "The plan. Each of these becomes a lecture when its instructor writes it."
+                ? "The plan. Each of these becomes a lecture when its lecturer writes it."
                 : "In the order a learner works through them."
             }
           >
@@ -205,7 +213,7 @@ export default async function ModulePage({ params }: Params) {
                   <Cell hideBelow="md">
                     {mod.author ? (
                       <Link
-                        href={`/admin/instructors/${mod.author.id}`}
+                        href={`/admin/lecturers/${mod.author.id}`}
                         className="link-wipe text-primary"
                       >
                         {mod.author.name}
@@ -342,14 +350,14 @@ export default async function ModulePage({ params }: Params) {
 
           <Panel>
             <h2 className="font-display text-2xl tracking-tight text-ink">
-              Instructors
+              Lecturers
             </h2>
             {team.length ? (
               <ul className="mt-5 space-y-3">
                 {team.map((member) => (
                   <li key={member.id}>
                     <Link
-                      href={`/admin/instructors/${member.id}`}
+                      href={`/admin/lecturers/${member.id}`}
                       className="flex items-center gap-3"
                     >
                       <span

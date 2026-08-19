@@ -11,7 +11,7 @@ import { PortalSelectDialog } from "@/components/auth/portal-select-dialog";
  *
  * TWO fields, and no Google button. A staff account is provisioned by an
  * administrator rather than self-served - see `manageAdmins` and
- * `manageInstructors` in `lib/permissions.ts` - so there is nothing here for
+ * `manageLecturers` in `lib/permissions.ts` - so there is nothing here for
  * a visitor to create, and one-tap Google would suggest otherwise.
  *
  * Nothing is wired up - see the note on `submitted` below. Where this

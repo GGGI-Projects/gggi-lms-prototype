@@ -290,7 +290,7 @@ export function allQuizzes(): QuizSummary[] {
 
 export type WrittenStatus = "passed" | "failed" | "not-attempted" | "not-required";
 
-/** Whether an instructor wrote any written questions for this lecture at all.
+/** Whether a lecturer wrote any written questions for this lecture at all.
  *  Most lectures have none - they are the exception, never the default. */
 export function hasWrittenQuestions(lectureId: string): boolean {
   return (WRITTEN_QUESTIONS[lectureId]?.length ?? 0) > 0;
@@ -308,8 +308,8 @@ export function writtenQuestionsFor(lectureId: string): WrittenQuestion[] {
  * `WrittenQuestion.keywords`. It is deliberately forgiving about HOW MANY of
  * the listed words are needed (`minMatches`, never all of them) because a
  * real two-sentence answer paraphrases; it is deliberately strict about
- * matching the words THEMSELVES, because that strictness is exactly what an
- * instructor is shown on the authoring screen, so nobody is surprised by
+ * matching the words THEMSELVES, because that strictness is exactly what a
+ * lecturer is shown on the authoring screen, so nobody is surprised by
  * what "passed" meant.
  */
 export function checkWrittenAnswer(

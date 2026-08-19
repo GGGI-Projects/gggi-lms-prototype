@@ -4,7 +4,7 @@ import { useEffect, useRef, type ComponentType } from "react";
 import Link from "next/link";
 import { ROLE_LABEL, ROLE_SUMMARY, type StaffRole } from "@/lib/permissions";
 import { VIEWPOINTS } from "@/components/console/nav";
-import { InstructorIcon, ShieldIcon, TeamIcon } from "@/components/console/icons";
+import { LecturerIcon, ShieldIcon, TeamIcon } from "@/components/console/icons";
 import { ChevronRightIcon } from "@/components/student-portal/icons";
 import { EYEBROW, HEADING } from "@/lib/theme";
 
@@ -13,7 +13,7 @@ import { EYEBROW, HEADING } from "@/lib/theme";
 const PORTAL_ICON: Record<StaffRole, ComponentType<{ className?: string }>> = {
   "super-admin": ShieldIcon,
   admin: TeamIcon,
-  instructor: InstructorIcon,
+  lecturer: LecturerIcon,
 };
 
 /**
@@ -25,8 +25,8 @@ const PORTAL_ICON: Record<StaffRole, ComponentType<{ className?: string }>> = {
  * overlay gets wrong in a different way every time it is rebuilt.
  *
  * WHY THIS EXISTS AT ALL: one email can hold more than one role - the same
- * person is sometimes the super administrator on this platform AND an
- * instructor for a module they wrote themselves. A sign-in cannot know
+ * person is sometimes the super administrator on this platform AND a
+ * lecturer for a module they wrote themselves. A sign-in cannot know
  * which hat the visitor wants to wear next, so it asks, once, right after the
  * password is accepted rather than guessing and making them find the switcher
  * buried in the rail afterwards.
@@ -61,6 +61,7 @@ export function PortalSelectDialog({
       onClick={(event) => {
         if (event.target === ref.current) onClose();
       }}
+      data-lenis-prevent
       className="modal-panel w-[min(36rem,calc(100vw-2rem))] overflow-y-auto rounded-sm border border-surface-deep bg-paper"
     >
       {/* Centred header block, sized and spaced like `<VerifyEmailPanel>` -

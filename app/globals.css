@@ -257,6 +257,68 @@ html.lenis body {
   transition-behavior: allow-discrete;
 }
 
+/* ==========================================================================
+   SCROLLBARS
+   --------------------------------------------------------------------------
+   The OS default - wide, square, drawn in whatever colour the platform feels
+   like that day - is the one piece of chrome on the page every browser
+   insists on rendering as itself rather than as this app. Thin, low-contrast
+   and toned to the surface it sits on, so a scrollbar reads as part of the
+   page rather than as a control bolted onto the side of it.
+
+   `scrollbar-color` is Firefox's (and now Chromium's) two-value standard;
+   the `::-webkit-scrollbar-*` pseudo-elements are Safari's, still needed
+   because Safari has not adopted the standard property. Declared together so
+   neither engine falls back to its own default.
+
+   The thumb's "border" is not a border - it is `background-clip: padding-box`
+   on a transparent border the width of the scrollbar track, which insets the
+   visible thumb inside the track instead of letting it fill it edge to edge.
+   That border has to be the colour of whatever sits BEHIND the scrollbar, so
+   `.scroll-rail` below repaints it for the dark rail rather than reusing the
+   page's own paper tone.
+   ========================================================================== */
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-surface-deep) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--color-surface-deep);
+  background-clip: padding-box;
+  border: 2px solid var(--color-paper);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-muted-light);
+}
+
+/* The console rail and its mobile drawer twin: teal ground, not paper - see
+   `components/shell/rail-shell.tsx`. */
+.scroll-rail {
+  scrollbar-color: var(--color-primary-600) transparent;
+}
+
+.scroll-rail::-webkit-scrollbar-thumb {
+  background-color: var(--color-primary-600);
+  border-color: var(--color-primary-950);
+}
+
+.scroll-rail::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-primary-500);
+}
+
 body {
   background-color: var(--color-paper);
   color: var(--color-ink);

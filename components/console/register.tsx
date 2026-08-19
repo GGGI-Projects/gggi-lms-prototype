@@ -16,7 +16,7 @@ import { FilterIcon } from "@/components/console/icons";
  *
  * THE ROWS ARE RENDERED ON THE SERVER and handed here as `ReactNode`s, the
  * same arrangement the portal's module filter uses. The page does the
- * joining - a learner's modules, an instructor's lecture counts - and this
+ * joining - a learner's modules, a lecturer's lecture counts - and this
  * component only decides which of the finished rows to show. Nothing about the
  * register's data crosses into the browser bundle except the two strings each
  * row is matched against.
@@ -79,7 +79,7 @@ export function Register({
    *  rather than chips: `filters` assumes a handful of short labels, and a
    *  module list is neither short nor few enough to read as a row of pills. */
   selectFilter?: RegisterSelectFilter;
-  /** The thing that adds to this register - "New instructor" and its like.
+  /** The thing that adds to this register - "New lecturer" and its like.
    *  Pinned to the right end of the search row, where the table starts. */
   action?: ReactNode;
   searchPlaceholder?: string;
@@ -110,7 +110,7 @@ export function Register({
           against the action button). Nesting meant the pills only ever had
           the LEFTOVER width after everything else in their row claimed
           space to wrap inside - which is how five short buttons ended up
-          squeezed into a narrow stacked column next to "New instructor"
+          squeezed into a narrow stacked column next to "New lecturer"
           rather than spreading across a line of their own. Flat, every
           piece - search, select, the pill group, the action - is a sibling
           that either fits on the current line or drops to a fresh one at

@@ -36,7 +36,7 @@ export type RoleContextValue = {
    * the whole data layer into the browser to do it.
    */
   account: { name: string; initials: string };
-  /** Absent in the instructor area, where the role is not a choice. */
+  /** Absent in the lecturer area, where the role is not a choice. */
   setRole?: (role: StaffRole) => void;
 };
 

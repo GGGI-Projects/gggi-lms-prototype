@@ -9,7 +9,7 @@ import { PlusIcon } from "@/components/console/icons";
 /**
  * "New administrator" and the drawer it opens.
  *
- * Same recipe as `<NewInstructorAction>` - see the notes there for why the
+ * Same recipe as `<NewLecturerAction>` - see the notes there for why the
  * button sits at the table's edge rather than in a panel below it, and why
  * the submit button lives in the drawer's footer rather than under the
  * fields. What is different here is what is NOT here: no `<IfCan>` wraps
