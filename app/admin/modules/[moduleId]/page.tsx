@@ -7,6 +7,7 @@ import {
   catalogueModule,
   consoleLectures,
   formatNumber,
+  lecturers,
   lecturersFor,
   managedModule,
   quizStatsFor,
@@ -32,6 +33,7 @@ import {
 } from "@/components/console/ui";
 import { ConfirmAction, StateControl } from "@/components/console/actions";
 import { RenameAction } from "@/components/console/rename-action";
+import { AssignModuleLecturers } from "@/components/console/assign-lecturers-action";
 import { IfCan, LockedNote } from "@/components/console/permission";
 import {
   LECTURE_STATE_LABEL,
@@ -349,9 +351,17 @@ export default async function ModulePage({ params }: Params) {
           </Panel>
 
           <Panel>
-            <h2 className="font-display text-2xl tracking-tight text-ink">
-              Lecturers
-            </h2>
+            <div className="flex items-start justify-between gap-4">
+              <h2 className="font-display text-2xl tracking-tight text-ink">
+                Lecturers
+              </h2>
+              <AssignModuleLecturers
+                moduleTitle={mdl.title}
+                lecturers={lecturers()}
+                assigned={team.map((member) => member.id)}
+                capability="manageModules"
+              />
+            </div>
             {team.length ? (
               <ul className="mt-5 space-y-3">
                 {team.map((member) => (
