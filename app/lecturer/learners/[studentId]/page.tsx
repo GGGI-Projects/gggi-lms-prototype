@@ -24,6 +24,8 @@ import {
   Section,
 } from "@/components/console/ui";
 import { CertificateIcon, ClockIcon } from "@/components/student-portal/icons";
+import { messageContactsForLecturer } from "@/lib/comms";
+import { ComposeMessageAction } from "@/components/notifications/compose-message";
 
 type Params = { params: Promise<{ studentId: string }> };
 
@@ -111,13 +113,21 @@ export default async function LecturerLearnerPage({ params }: Params) {
           </>
         }
         actions={
-          <a
-            href={`mailto:${student.email}`}
-            className="btn-ripple btn-solid btn-sm"
-          >
-            <span aria-hidden="true" className="btn-wave" />
-            <span className="btn-label">Email this learner</span>
-          </a>
+          <>
+            <ComposeMessageAction
+              contacts={messageContactsForLecturer(member)}
+              preselectedId={student.id}
+              buttonLabel="Send a message"
+              drawerTitle={`Message ${student.name}`}
+            />
+            <a
+              href={`mailto:${student.email}`}
+              className="btn-ripple btn-solid btn-sm"
+            >
+              <span aria-hidden="true" className="btn-wave" />
+              <span className="btn-label">Email this learner</span>
+            </a>
+          </>
         }
       />
 

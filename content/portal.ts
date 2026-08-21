@@ -19,14 +19,21 @@ import { LECTURES } from "@/content/curriculum";
 /* ------------------------------------------------------------------ learner */
 
 export const LEARNER = {
+  /** Matches the record `lib/admin.ts` derives for her - one id, so the
+   *  portal has an identity to message staff from without reaching into
+   *  console-only data for it. */
+  id: "stu-1904",
   name: "Nadeesha Perera",
   /** Shown on the certificate. Kept separate: a certificate carries the legal
    *  name, and the portal greets you by the name you go by. */
   certificateName: "K. A. Nadeesha Perera",
   email: "nadeesha.perera@example.lk",
-  /** Two letters, for the avatar. Drawn rather than uploaded - the prototype
-   *  ships no images. */
+  /** Two letters - the avatar's fallback if `avatarUrl` is ever missing. */
   initials: "NP",
+  /** A public headshot photo, sourced from Unsplash for this prototype - see
+   *  the note in `components/student-portal/ui.tsx`'s `Avatar`. */
+  avatarUrl:
+    "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=256&h=256&fit=crop&crop=faces&auto=format&q=80",
   role: "Assistant Director (Planning)",
   organisation: "District Secretariat, Galle",
   sector: "Government or public sector",
@@ -58,14 +65,14 @@ export type Enrolment = {
    */
   quizScores: Record<string, number>;
   /**
-   * Percentage of a lecture's written questions answered well enough to pass,
-   * keyed by lecture id. Only lectures a lecturer actually wrote written
-   * questions for appear here - see `WRITTEN_QUESTIONS` below. A lecture with
-   * no entry and no written questions is not outstanding; a lecture with no
-   * entry that DOES have written questions is - same shape as `quizScores`,
-   * same reason.
+   * Percentage of a lecture's fill-in-the-blank questions answered well
+   * enough to pass, keyed by lecture id. Only lectures a lecturer actually
+   * wrote fill-in-the-blank questions for appear here - see
+   * `FILL_IN_THE_BLANK_QUESTIONS` below. A lecture with no entry and no
+   * fill-in-the-blank questions is not outstanding; a lecture with no entry
+   * that DOES have them is - same shape as `quizScores`, same reason.
    */
-  writtenScores: Record<string, number>;
+  blankScores: Record<string, number>;
   /** Null once every lecture is done. */
   currentLectureId: string | null;
 };
@@ -90,9 +97,9 @@ export const ENROLMENTS: Enrolment[] = [
       "monitoring-a-localised-plan": 100,
     },
     // This module is fully finished and its certificate already issued, so
-    // every lecture's written questions are shown passed too - a module with
-    // a certificate cannot show a locked "next lecture" behind it.
-    writtenScores: {
+    // every lecture's fill-in-the-blank questions are shown passed too - a
+    // module with a certificate cannot show a locked "next lecture" behind it.
+    blankScores: {
       "what-the-nap-asks-of-a-province": 100,
       "reading-the-naps-sector-chapters": 100,
       "translating-priorities-into-provincial-action": 100,
@@ -121,11 +128,12 @@ export const ENROLMENTS: Enrolment[] = [
       // Lecture 04 is finished but its quiz has not been attempted - the case
       // the quizzes page is built around.
     },
-    // "reading-sri-lankas-climate-hazard-data" has written questions (see
-    // `WRITTEN_QUESTIONS`) and its quiz was passed, but no entry exists here -
-    // that lecture's gate is deliberately left uncleared, to show that a
-    // passed quiz alone is no longer enough where written questions exist.
-    writtenScores: {},
+    // "reading-sri-lankas-climate-hazard-data" has fill-in-the-blank
+    // questions (see `FILL_IN_THE_BLANK_QUESTIONS`) and its quiz was passed,
+    // but no entry exists here - that lecture's gate is deliberately left
+    // uncleared, to show that a passed quiz alone is no longer enough where
+    // fill-in-the-blank questions exist.
+    blankScores: {},
     currentLectureId: "assessing-adaptive-capacity",
   },
   {
@@ -135,10 +143,11 @@ export const ENROLMENTS: Enrolment[] = [
     quizScores: {
       "what-makes-a-project-bankable": 100,
     },
-    // This lecture's written questions were also passed, so its gate is fully
-    // cleared and "Next lecture" is unlocked - the positive case alongside
-    // "climate-vulnerability-assessment" above, which shows the blocked one.
-    writtenScores: {
+    // This lecture's fill-in-the-blank questions were also passed, so its
+    // gate is fully cleared and "Next lecture" is unlocked - the positive
+    // case alongside "climate-vulnerability-assessment" above, which shows
+    // the blocked one.
+    blankScores: {
       "what-makes-a-project-bankable": 100,
     },
     currentLectureId: "matching-a-project-to-a-source-of-finance",
@@ -603,877 +612,584 @@ export const QUESTION_POOL: Record<string, Question[]> = {
   ],
 };
 
-/* --------------------------------------------------------- written questions */
+/* ----------------------------------------------------- fill-in-the-blanks */
 
-export type WrittenQuestion = {
+export type Blank = {
   id: string;
-  /** Asks for two or three sentences, never an essay - see the drawer copy in
-   *  `<AddWrittenQuestionAction>`. */
-  prompt: string;
+  /** The word or phrase removed from the passage at this blank - the exact
+   *  text a learner has to pick from the option bank to fill it. Matching is
+   *  case-insensitive (see `checkBlankAnswers()` in `lib/portal.ts`), so this
+   *  is written however it reads best in the passage, not in any canonical
+   *  case. */
+  answer: string;
+};
+
+export type FillInTheBlankQuestion = {
+  id: string;
   /**
-   * The words and phrases an answer is checked for. Matching is a simple,
-   * case-insensitive "does this phrase appear" test against the learner's
-   * text - not a language model and not spelling-tolerant, which is exactly
-   * why a lecturer is shown the checked words on the authoring page next
-   * to the answer, rather than only a pass/fail mark. Staff-facing only -
-   * see `modelAnswer` below.
+   * The passage with each blank marked inline as `{{blankId}}`, split apart
+   * by `passageSegments()` in `lib/portal.ts` for both the authoring screen
+   * and the learner's runner - one parser, so the two never disagree about
+   * where a blank sits.
    */
-  keywords: string[];
-  /** How many of `keywords` have to appear for the answer to pass. Never all
-   *  of them - a real answer paraphrases, and requiring every listed word
-   *  back verbatim would fail an answer that a person reading it would pass. */
-  minMatches: number;
+  passage: string;
+  /** In passage order. */
+  blanks: Blank[];
   /**
-   * Staff-facing only, same rule as `Question.explanation`: read by
-   * `<WrittenQuestionsManager>` in the lecturer and admin consoles, never
-   * by anything in the student portal. A learner is told only whether their
-   * own answer passed, never what a correct one would have said.
+   * Extra wrong options shown in the word bank alongside every blank's own
+   * answer - see `optionBankFor()` in `lib/portal.ts`. Without at least a
+   * couple of these the correct pick is just "whichever option is left",
+   * which is not really an exercise.
    */
-  modelAnswer: string;
+  distractors: string[];
 };
 
 /**
- * Written questions, per LECTURE rather than per module.
+ * A lecture's fill-in-the-blank questions, per LECTURE rather than per
+ * module.
  *
- * Unlike `QUESTION_POOL`, there is no rotation trick here: a lecturer
- * writes them one lecture at a time, and a lecture id with no entry below
- * simply has none - `hasWrittenQuestions()` in `lib/portal.ts` is the one
- * place that fact is read from. Written questions are a genuinely OPTIONAL
- * feature (see FR-INS-121 in the SRS) and most real lectures are expected to
- * have none, the same way most quizzes will not need a rewrite.
+ * Unlike `QUESTION_POOL`, there is no rotation trick here: a lecturer writes
+ * a passage and marks its blanks one lecture at a time, and a lecture id with
+ * no entry below simply has none - `hasBlankQuestions()` in `lib/portal.ts`
+ * is the one place that fact is read from. Fill-in-the-blank questions are a
+ * genuinely OPTIONAL feature (see FR-INS-121 in the SRS) and most real
+ * lectures are expected to have none, the same way most quizzes will not
+ * need a rewrite.
  *
- * EVERY LECTURE CARRIES A SET HERE, which is a demo decision, not the
- * intended steady state: it means a client clicking into any lecture's quiz
- * sees the written-questions feature working, rather than having to be
- * pointed at the one lecture that has it. The four lectures written first -
- * `hazard-exposure-sensitivity`, `reading-sri-lankas-climate-hazard-data`,
- * `what-makes-a-project-bankable`, `designing-an-inclusive-consultation` -
- * still carry the three outcomes the feature needs to demonstrate (a failed
- * quiz, a passed quiz blocked by unattempted written questions, and a fully
- * cleared gate); every lecture after them carries two questions each, mainly
- * so the coverage is complete rather than to add a fourth outcome.
+ * EVERY LECTURE CARRIES ONE HERE, which is a demo decision, not the intended
+ * steady state: it means a client clicking into any lecture's quiz sees the
+ * feature working, rather than having to be pointed at the one lecture that
+ * has it. `hazard-exposure-sensitivity`, `reading-sri-lankas-climate-hazard-
+ * data`, `what-makes-a-project-bankable` and `designing-an-inclusive-
+ * consultation` still carry the three outcomes the feature needs to
+ * demonstrate (a failed quiz, a passed quiz blocked by an unattempted
+ * fill-in-the-blank question, and a fully cleared gate) - see `blankScores`
+ * on `ENROLMENTS` above.
+ *
+ * Every passage below is generated from the same subject-matter prose the
+ * old written-question model answers used, with three on-topic terms blanked
+ * out of each one and a couple of plausible wrong options added to the bank -
+ * a genuine lecturer would write these by hand and can vary blank count and
+ * distractor count freely; the shape here is simply what the generator was
+ * consistent about.
  */
-export const WRITTEN_QUESTIONS: Record<string, WrittenQuestion[]> = {
+export const FILL_IN_THE_BLANK_QUESTIONS: Record<string, FillInTheBlankQuestion[]> = {
   "hazard-exposure-sensitivity": [
     {
-      id: "hes-w1",
-      prompt:
-        "In two or three sentences: why can the same flood affect two equally exposed households very differently?",
-      keywords: ["sensitiv", "cope", "resource", "absorb"],
-      minMatches: 2,
-      modelAnswer:
-        "Exposure only says both households sit in the flood's path - it says nothing about their capacity to cope with it. Sensitivity, and the resources each household can call on, decide how much the same flood actually costs them.",
-    },
-    {
-      id: "hes-w2",
-      prompt:
-        "In two or three sentences: what is the difference between a hazard and a risk?",
-      keywords: ["expos", "vulnerab", "combin", "harm"],
-      minMatches: 2,
-      modelAnswer:
-        "A hazard is the event itself, such as a flood or a heatwave. Risk only exists once that hazard is combined with exposure and vulnerability - a hazard nothing is exposed to, or that nothing is vulnerable to, creates no risk at all.",
-    },
-    {
-      id: "hes-w3",
-      prompt:
-        "In two or three sentences: why does adaptive capacity change how much a hazard actually costs a community?",
-      keywords: ["adapt", "recover", "resource", "reduce"],
-      minMatches: 2,
-      modelAnswer:
-        "Adaptive capacity is what a community can draw on to reduce a hazard's impact or recover from it quickly - savings, infrastructure, institutions. Two communities facing an identical hazard end up with very different costs depending on how much of this capacity each one has.",
+      id: "hes-fb1",
+      passage:
+        "Exposure only says both {{hes-b1}} sit in the flood's path, it says nothing about their capacity to cope with it. {{hes-b2}}, and the {{hes-b3}} each household can call on, decide how much the same flood actually costs them.",
+      blanks: [
+        { id: "hes-b1", answer: "households" },
+        { id: "hes-b2", answer: "Sensitivity" },
+        { id: "hes-b3", answer: "resources" },
+      ],
+      distractors: ["upward", "avoided"],
     },
   ],
 
   "reading-sri-lankas-climate-hazard-data": [
     {
-      id: "rshd-w1",
-      prompt:
-        "In two or three sentences: why does a national hazard dataset need care when used at divisional scale?",
-      keywords: ["resolution", "scale", "compar", "precision"],
-      minMatches: 2,
-      modelAnswer:
-        "A national map is built to compare provinces at a coarse resolution, not to site a specific culvert. Using it at divisional or finer scale borrows a precision the data never had.",
-    },
-    {
-      id: "rshd-w2",
-      prompt:
-        "In two or three sentences: what is the purpose of a field verification visit, if the dataset has already been read?",
-      keywords: ["check", "reality", "desk", "hypothesis"],
-      minMatches: 2,
-      modelAnswer:
-        "A desk-based reading of the dataset is a hypothesis about a place, not a confirmed fact. A short, structured field visit checks that hypothesis against reality before anyone acts on it.",
-    },
-    {
-      id: "rshd-w3",
-      prompt:
-        "In two or three sentences: what should you do when a hazard layer disagrees with what local knowledge says about a specific site?",
-      keywords: ["local", "verify", "resolution", "trust"],
-      minMatches: 2,
-      modelAnswer:
-        "Treat the disagreement as a resolution problem before assuming either source is wrong, and verify on the ground where practical. Local knowledge often reflects site detail a coarse national layer was never built to capture.",
+      id: "rshd-fb1",
+      passage:
+        "A national map is built to compare {{rshd-b1}} at a coarse {{rshd-b2}}, not to site a specific culvert. Using it at {{rshd-b3}} or finer scale borrows a precision the data never had.",
+      blanks: [
+        { id: "rshd-b1", answer: "provinces" },
+        { id: "rshd-b2", answer: "resolution" },
+        { id: "rshd-b3", answer: "divisional" },
+      ],
+      distractors: ["places", "savings"],
     },
   ],
 
   "what-makes-a-project-bankable": [
     {
-      id: "wmpb-w1",
-      prompt:
-        "In two or three sentences: what makes a project 'bankable' rather than simply worthwhile?",
-      keywords: ["measurable", "return", "cash flow", "fund"],
-      minMatches: 2,
-      modelAnswer:
-        "A worthwhile project is one that is worth doing on its merits. A bankable one goes further - it produces a measurable return, saving, or cash flow that a funder can point to and underwrite, not just a good outcome.",
-    },
-    {
-      id: "wmpb-w2",
-      prompt:
-        "In two or three sentences: why does matching the finance type to the project matter before a proposal is drafted?",
-      keywords: ["revenue", "grant", "match", "cash flow"],
-      minMatches: 2,
-      modelAnswer:
-        "A revenue-generating project pitched only for grant funding wastes the strongest thing it has - a repayable cash flow that could unlock a loan or blended finance instead. Getting this match wrong before drafting means rewriting the whole proposal later.",
-    },
-    {
-      id: "wmpb-w3",
-      prompt:
-        "In two or three sentences: what does a strong climate rationale have to do that a list of co-benefits does not?",
-      keywords: ["connect", "step", "check", "outcome"],
-      minMatches: 2,
-      modelAnswer:
-        "A strong rationale connects the intervention to a climate outcome through steps a reader can follow and check, not just a list of claimed co-benefits. A rationale that asserts a benefit without a checkable chain of steps does not survive review.",
+      id: "wmpb-fb1",
+      passage:
+        "A {{wmpb-b1}} project is one that is worth doing on its merits. A bankable one goes further, it produces a {{wmpb-b2}} return, saving, or cash flow that a funder can point to and {{wmpb-b3}}, not just a good outcome.",
+      blanks: [
+        { id: "wmpb-b1", answer: "worthwhile" },
+        { id: "wmpb-b2", answer: "measurable" },
+        { id: "wmpb-b3", answer: "underwrite" },
+      ],
+      distractors: ["examining", "wording"],
     },
   ],
 
-  // The lecturer console's demo account is assigned to
-  // "gender-social-inclusion" (see `SESSION.lecturer` in `content/staff.ts`),
-  // so this lecture is what a signed-in lecturer sees when authoring written
-  // questions of their own, rather than only ever reading someone else's.
   "designing-an-inclusive-consultation": [
     {
-      id: "diac-w1",
-      prompt:
-        "In two or three sentences: why is a single, centrally held public meeting often exclusionary?",
-      keywords: ["assum", "time", "access", "care"],
-      minMatches: 2,
-      modelAnswer:
-        "A single meeting at a fixed time and place assumes the attendee is free then and can travel there, which is an unexamined assumption rather than a deliberate choice. It quietly excludes anyone with paid or unpaid care responsibilities, or without transport, at that hour.",
-    },
-    {
-      id: "diac-w2",
-      prompt:
-        "In two or three sentences: what makes a consultation format genuinely inclusive rather than just larger?",
-      keywords: ["barrier", "format", "different", "reach"],
-      minMatches: 2,
-      modelAnswer:
-        "A genuinely inclusive consultation removes the specific barriers - time, place, language, format - that stop a particular group from taking part, rather than simply inviting more people to the same format. Reaching a wider group usually means running more than one format, not one bigger meeting.",
-    },
-    {
-      id: "diac-w3",
-      prompt:
-        "In two or three sentences: why should a consultation plan name who is expected NOT to attend before it is run?",
-      keywords: ["identify", "before", "design", "exclude"],
-      minMatches: 2,
-      modelAnswer:
-        "Naming who is likely to be missed before the consultation is designed turns exclusion into something the plan can address - a different time, a home visit, a translated format. Discovering it afterwards only explains a result that could have been prevented.",
+      id: "diac-fb1",
+      passage:
+        "A single meeting at a fixed time and place assumes the attendee is free then and can travel there, which is an {{diac-b1}} {{diac-b2}} rather than a deliberate choice. It quietly excludes anyone with care {{diac-b3}}, or without transport, at that hour.",
+      blanks: [
+        { id: "diac-b1", answer: "unexamined" },
+        { id: "diac-b2", answer: "assumption" },
+        { id: "diac-b3", answer: "responsibilities" },
+      ],
+      distractors: ["changes", "requirements"],
     },
   ],
-
-  // Every remaining lecture below carries two written questions, so every
-  // quiz on the platform demonstrates the feature - useful for a client demo,
-  // where the alternative is hunting for the one lecture that has any. In a
-  // real deployment this is still expected to be the exception rather than
-  // the rule; see the note at the top of this const.
 
   "why-vulnerability-is-not-risk": [
     {
-      id: "wvnr-w1",
-      prompt:
-        "In two or three sentences: why is a hazard alone not enough to create risk?",
-      keywords: ["hazard", "exposure", "vulnerab", "absorb"],
-      minMatches: 2,
-      modelAnswer:
-        "A hazard on its own creates no risk. Risk only appears once something is exposed to that hazard and unable to absorb its effect - the combination of hazard, exposure and vulnerability together, not any one term alone.",
-    },
-    {
-      id: "wvnr-w2",
-      prompt:
-        "In two or three sentences: why is vulnerability the part of the risk equation policy can change fastest?",
-      keywords: ["policy", "intervention", "given", "fastest"],
-      minMatches: 2,
-      modelAnswer:
-        "Hazard and exposure are largely given - a department cannot move a coastline or cancel a monsoon. Vulnerability is where an assessment earns its budget fastest, because it is the part most open to a policy intervention such as a title deed or an early-warning system.",
+      id: "wvnr-fb1",
+      passage:
+        "A hazard on its own creates no risk. Risk only appears once something is exposed to that hazard and unable to absorb its effect, the {{wvnr-b1}} of hazard, {{wvnr-b2}} and {{wvnr-b3}} together, not any one term alone.",
+      blanks: [
+        { id: "wvnr-b1", answer: "combination" },
+        { id: "wvnr-b2", answer: "exposure" },
+        { id: "wvnr-b3", answer: "vulnerability" },
+      ],
+      distractors: ["captioned", "misconception"],
     },
   ],
 
   "building-a-vulnerability-index": [
     {
-      id: "bavi-w1",
-      prompt:
-        "In two or three sentences: why is a composite vulnerability index a compression rather than a discovery?",
-      keywords: ["compress", "indicator", "rank", "honestly"],
-      minMatches: 2,
-      modelAnswer:
-        "A composite index compresses information on purpose, in exchange for something that can rank places against each other. Whether that compression was done honestly depends on indicators that do not double-count the same condition, and weights that are stated rather than hidden.",
-    },
-    {
-      id: "bavi-w2",
-      prompt:
-        "In two or three sentences: why should an index always be published alongside its component indicators?",
-      keywords: ["component", "opposite", "driving", "publish"],
-      minMatches: 2,
-      modelAnswer:
-        "Two districts can score identically on an index for opposite reasons - one driven by income, the other by distance from a hospital. Publishing the components alongside the score lets a planner see which condition is actually driving the number.",
+      id: "bavi-fb1",
+      passage:
+        "A composite index compresses {{bavi-b1}} on purpose, in exchange for something that can rank places against each other. Whether that {{bavi-b2}} was done honestly depends on indicators that do not {{bavi-b3}} the same condition.",
+      blanks: [
+        { id: "bavi-b1", answer: "information" },
+        { id: "bavi-b2", answer: "compression" },
+        { id: "bavi-b3", answer: "double-count" },
+      ],
+      distractors: ["unexamined", "transport"],
     },
   ],
 
   "assessing-adaptive-capacity": [
     {
-      id: "aac-w1",
-      prompt:
-        "In two or three sentences: why is income alone a weak proxy for adaptive capacity?",
-      keywords: ["information", "institution", "access", "savings"],
-      minMatches: 2,
-      modelAnswer:
-        "A household with savings can still fail to adapt if it has no information about the hazard or no access to the institutions that could help it. Adaptive capacity depends on these non-financial factors as much as income.",
-    },
-    {
-      id: "aac-w2",
-      prompt:
-        "In two or three sentences: why does an assessment need to measure institutional capacity, not just household capacity?",
-      keywords: ["institution", "secretariat", "staffing", "boundary"],
-      minMatches: 2,
-      modelAnswer:
-        "A divisional secretariat's own capacity - its staffing, its early-warning links, its access to contingency funds - shapes every household's outcome inside its boundary. An assessment that measures only households and never the institution around them misses half the picture.",
+      id: "aac-fb1",
+      passage:
+        "A household with savings can still fail to adapt if it has no {{aac-b1}} about the hazard or no access to the {{aac-b2}} that could help it. Adaptive capacity depends on these {{aac-b3}} factors as much as income.",
+      blanks: [
+        { id: "aac-b1", answer: "information" },
+        { id: "aac-b2", answer: "institutions" },
+        { id: "aac-b3", answer: "non-financial" },
+      ],
+      distractors: ["disaggregation", "tagged"],
     },
   ],
 
   "ground-truthing-a-desk-assessment": [
     {
-      id: "gtda-w1",
-      prompt:
-        "In two or three sentences: why is desk-based vulnerability data described as a hypothesis rather than a description of a place?",
-      keywords: ["hypothesis", "field visit", "reality", "desk"],
-      minMatches: 2,
-      modelAnswer:
-        "A desk-based vulnerability index is a hypothesis about a place, not a description of it. A short field visit - a walk-through, a few household conversations, a look at what has already flooded - turns that hypothesis into something checked against reality.",
-    },
-    {
-      id: "gtda-w2",
-      prompt:
-        "In two or three sentences: why can a short, structured field visit be enough, rather than a full re-survey?",
-      keywords: ["structured", "half-day", "confident", "divergence"],
-      minMatches: 2,
-      modelAnswer:
-        "A verification visit does not need to be exhaustive to be useful. A structured half-day per ward, checking the indicators the desk data was least confident about, catches most of the divergence a full re-survey would find.",
+      id: "gtda-fb1",
+      passage:
+        "A desk-based {{gtda-b1}} index is a hypothesis about a place, not a description of it. A short field visit, a {{gtda-b2}}, a few household {{gtda-b3}}, a look at what has already flooded, turns that hypothesis into something checked against reality.",
+      blanks: [
+        { id: "gtda-b1", answer: "vulnerability" },
+        { id: "gtda-b2", answer: "walk-through" },
+        { id: "gtda-b3", answer: "conversations" },
+      ],
+      distractors: ["capital", "claimed"],
     },
   ],
 
   "presenting-findings-to-decision-makers": [
     {
-      id: "pftdm-w1",
-      prompt:
-        "In two or three sentences: why should a briefing lead with the decision, not the method?",
-      keywords: ["map", "appendix", "decision", "four minutes"],
-      minMatches: 2,
-      modelAnswer:
-        "Most vulnerability assessments are read by exactly one person, once, for about four minutes. Leading a briefing with the map and the decision it supports, and holding the method to an appendix, is what gets it actually read.",
-    },
-    {
-      id: "pftdm-w2",
-      prompt:
-        "In two or three sentences: why does stating a confidence level plainly make a briefing more trusted, not less?",
-      keywords: ["confidence", "measured", "modelled", "trusted"],
-      minMatches: 2,
-      modelAnswer:
-        "A briefing that states plainly which figures are measured and which are modelled is trusted more than one presenting everything with equal confidence. Decision-makers have usually seen at least one report that overclaimed, and they read for the tell.",
+      id: "pftdm-fb1",
+      passage:
+        "Most {{pftdm-b1}} {{pftdm-b2}} are read by exactly one person, once, for about four minutes. Leading a {{pftdm-b3}} with the map and the decision it supports, and holding the method to an appendix, is what gets it actually read.",
+      blanks: [
+        { id: "pftdm-b1", answer: "vulnerability" },
+        { id: "pftdm-b2", answer: "assessments" },
+        { id: "pftdm-b3", answer: "briefing" },
+      ],
+      distractors: ["photographs", "persistent"],
     },
   ],
 
   "from-assessment-to-action": [
     {
-      id: "fata-w1",
-      prompt:
-        "In two or three sentences: why is an assessment commissioned with no named receiving process considered wasted?",
-      keywords: ["receiving process", "named", "planning", "wasted"],
-      minMatches: 2,
-      modelAnswer:
-        "A vulnerability assessment commissioned without a named planning process to feed - a provincial plan, a budget cycle, a zoning review - is written once and read never, which wastes the whole exercise. Naming the receiving process should happen before the fieldwork even starts.",
-    },
-    {
-      id: "fata-w2",
-      prompt:
-        "In two or three sentences: why does an assessment need a stated review date?",
-      keywords: ["review date", "horizon", "living", "snapshot"],
-      minMatches: 2,
-      modelAnswer:
-        "Conditions the index measures move over a three-to-five-year horizon. An assessment with a stated review date stays a living input to planning; one without it becomes a snapshot nobody remembers to retake.",
+      id: "fata-fb1",
+      passage:
+        "A {{fata-b1}} {{fata-b2}} {{fata-b3}} without a named planning process to feed, a provincial plan, a budget cycle, a zoning review, is written once and read never, which wastes the whole exercise.",
+      blanks: [
+        { id: "fata-b1", answer: "vulnerability" },
+        { id: "fata-b2", answer: "assessment" },
+        { id: "fata-b3", answer: "commissioned" },
+      ],
+      distractors: ["defensible", "localised"],
     },
   ],
 
   "what-the-nap-asks-of-a-province": [
     {
-      id: "wtnaop-w1",
-      prompt:
-        "In two or three sentences: why is the gap between a national NAP commitment and provincial delivery usually administrative rather than technical?",
-      keywords: ["administrative", "told", "owner", "technical"],
-      minMatches: 2,
-      modelAnswer:
-        "Most localisation failures are administrative rather than technical - the action simply was never routed to a province and nobody there was told it exists. Fixing that starts with finding the action and naming an owner.",
-    },
-    {
-      id: "wtnaop-w2",
-      prompt:
-        "In two or three sentences: why is almost every NAP action actually delivered at provincial or divisional level, even though the plan is written nationally?",
-      keywords: ["national scale", "delivered", "provincial", "divisional"],
-      minMatches: 2,
-      modelAnswer:
-        "The NAP sets direction at a national scale, but almost every action inside it is actually delivered by a provincial or divisional office. A province can be responsible for a national action without realising it until someone traces it down.",
+      id: "wtnaop-fb1",
+      passage:
+        "Most {{wtnaop-b1}} failures are {{wtnaop-b2}} rather than {{wtnaop-b3}}, the action simply was never routed to a province and nobody there was told it exists. Fixing that starts with finding the action and naming an owner.",
+      blanks: [
+        { id: "wtnaop-b1", answer: "localisation" },
+        { id: "wtnaop-b2", answer: "administrative" },
+        { id: "wtnaop-b3", answer: "technical" },
+      ],
+      distractors: ["missing", "counted"],
     },
   ],
 
   "reading-the-naps-sector-chapters": [
     {
-      id: "rtnsc-w1",
-      prompt:
-        "In two or three sentences: why does a NAP sector chapter need a provincial reading before it can be acted on?",
-      keywords: ["translat", "province", "dry zone", "reads differently"],
-      minMatches: 2,
-      modelAnswer:
-        "A sector chapter written for a national ministry still needs translating to a specific province - an irrigation action reads differently in the dry zone than on the wet southwest coast. The chapter itself rarely makes that translation.",
-    },
-    {
-      id: "rtnsc-w2",
-      prompt:
-        "In two or three sentences: what is the most common finding of a first localisation read-through of a NAP chapter?",
-      keywords: ["ownership", "department", "budget line", "attached"],
-      minMatches: 2,
-      modelAnswer:
-        "The most common finding of a first localisation read-through is not a ready list of actions - it is a list of actions with no province, department or budget line clearly attached yet. Naming that unclear ownership is itself useful work.",
+      id: "rtnsc-fb1",
+      passage:
+        "A sector chapter written for a national ministry still needs {{rtnsc-b1}} to a specific province, an irrigation action reads {{rtnsc-b2}} in the dry zone than on the wet southwest coast. The chapter itself rarely makes that {{rtnsc-b3}}.",
+      blanks: [
+        { id: "rtnsc-b1", answer: "translating" },
+        { id: "rtnsc-b2", answer: "differently" },
+        { id: "rtnsc-b3", answer: "translation" },
+      ],
+      distractors: ["costing", "questions"],
     },
   ],
 
   "translating-priorities-into-provincial-action": [
     {
-      id: "tpipa-w1",
-      prompt:
-        "In two or three sentences: why does specificity matter when translating a national priority into a provincial action?",
-      keywords: ["specific", "fundable", "cost", "budget officer"],
-      minMatches: 2,
-      modelAnswer:
-        "A vague provincial action attracts no budget because nobody can cost it. Made specific - a named site with an estimated cost - the same priority becomes fundable, something a budget officer can act on.",
-    },
-    {
-      id: "tpipa-w2",
-      prompt:
-        "In two or three sentences: what does 'translating a priority into action' actually mean, using the culvert example?",
-      keywords: ["named", "rainfall", "deliverable", "strengthen"],
-      minMatches: 2,
-      modelAnswer:
-        "A priority stated as 'strengthen drainage resilience' means nothing until it becomes a named culvert on a named road, sized against a stated rainfall figure. That translation from priority to deliverable action is the step most exercises skip.",
+      id: "tpipa-fb1",
+      passage:
+        "A vague {{tpipa-b1}} action {{tpipa-b2}} no budget because nobody can cost it. Made specific, a named site with an {{tpipa-b3}} cost, the same priority becomes fundable, something a budget officer can act on.",
+      blanks: [
+        { id: "tpipa-b1", answer: "provincial" },
+        { id: "tpipa-b2", answer: "attracts" },
+        { id: "tpipa-b3", answer: "estimated" },
+      ],
+      distractors: ["spending", "registers"],
     },
   ],
 
   "consulting-divisional-secretariats": [
     {
-      id: "cds-w1",
-      prompt:
-        "In two or three sentences: why does a localisation exercise need to consult divisional secretariats directly?",
-      keywords: ["local knowledge", "flood", "tried", "dataset"],
-      minMatches: 2,
-      modelAnswer:
-        "Divisional secretariats hold local knowledge no national dataset carries - which roads actually flood, which measures were tried and abandoned. Skipping this consultation means rediscovering slowly what a two-hour meeting would have surfaced.",
-    },
-    {
-      id: "cds-w2",
-      prompt:
-        "In two or three sentences: why does one well-prepared consultation session beat several token ones?",
-      keywords: ["fatigue", "fourth", "prepared", "follow-through"],
-      minMatches: 2,
-      modelAnswer:
-        "Local officials asked to attend a fourth consultation on the same plan give a fourth-rate answer, a sign of consultation fatigue. One well-prepared session with clear follow-through earns better input than several token visits.",
+      id: "cds-fb1",
+      passage:
+        "Divisional {{cds-b1}} hold local knowledge no national dataset carries, which roads actually flood, which measures were tried and abandoned. Skipping this {{cds-b2}} means {{cds-b3}} slowly what a meeting would have surfaced.",
+      blanks: [
+        { id: "cds-b1", answer: "secretariats" },
+        { id: "cds-b2", answer: "consultation" },
+        { id: "cds-b3", answer: "rediscovering" },
+      ],
+      distractors: ["technical", "finding"],
     },
   ],
 
   "costing-a-localised-adaptation-action": [
     {
-      id: "claa-w1",
-      prompt:
-        "In two or three sentences: why should a localised action's cost include operation and maintenance, not just construction?",
-      keywords: ["maintenance", "bottom-up", "leave out", "operation"],
-      minMatches: 2,
-      modelAnswer:
-        "National plans frequently cost a priority at a national scale or not at all, and provincial submissions often leave out the operation and maintenance line. A bottom-up cost that includes maintenance is far more defensible.",
-    },
-    {
-      id: "claa-w2",
-      prompt:
-        "In two or three sentences: why does presenting a cost as a range, rather than a single figure, help it survive review?",
-      keywords: ["range", "assumption", "bounded", "survives"],
-      minMatches: 2,
-      modelAnswer:
-        "A single costed figure invites challenge the moment ground conditions differ from its assumption. A cost presented as a bounded range survives review because it has already admitted where it could be wrong.",
+      id: "claa-fb1",
+      passage:
+        "National plans frequently cost a priority at a national scale or not at all, and {{claa-b1}} {{claa-b2}} often leave out the operation and maintenance line. A bottom-up cost that includes maintenance is far more {{claa-b3}}.",
+      blanks: [
+        { id: "claa-b1", answer: "provincial" },
+        { id: "claa-b2", answer: "submissions" },
+        { id: "claa-b3", answer: "defensible" },
+      ],
+      distractors: ["locate", "visible"],
     },
   ],
 
   "sequencing-across-the-budget-cycle": [
     {
-      id: "satbc-w1",
-      prompt:
-        "In two or three sentences: why does sequencing start with knowing the budget calendar rather than the actions themselves?",
-      keywords: ["calendar", "call for bids", "timing", "waits"],
-      minMatches: 2,
-      modelAnswer:
-        "A provincial budget cycle runs on its own calendar, and an action submitted after the relevant call for bids waits a full year for nothing but timing. Sequencing starts with knowing the calendar, not the actions.",
-    },
-    {
-      id: "satbc-w2",
-      prompt:
-        "In two or three sentences: why does a smaller, sequenced submission survive a tight budget round better than an ambitious one submitted whole?",
-      keywords: ["sequenced", "cut", "unlock", "ambitious"],
-      minMatches: 2,
-      modelAnswer:
-        "A submission asking for every action in one year is the easiest one to cut in full. A sequenced submission - a smaller first-year ask that unlocks a larger second one - survives better than an ambitious one submitted whole.",
+      id: "satbc-fb1",
+      passage:
+        "A {{satbc-b1}} budget cycle runs on its own calendar, and an action {{satbc-b2}} after the relevant call for bids waits a full year for nothing but timing. {{satbc-b3}} starts with knowing the calendar, not the actions.",
+      blanks: [
+        { id: "satbc-b1", answer: "provincial" },
+        { id: "satbc-b2", answer: "submitted" },
+        { id: "satbc-b3", answer: "Sequencing" },
+      ],
+      distractors: ["community", "captioned"],
     },
   ],
 
   "monitoring-a-localised-plan": [
     {
-      id: "malp-w1",
-      prompt:
-        "In two or three sentences: why does a localised plan need to report upward to the national NAP cycle, not just outward to the province it serves?",
-      keywords: ["upward", "disconnect", "visibility", "national"],
-      minMatches: 2,
-      modelAnswer:
-        "A localised plan that only reports outward to its own province quietly disconnects from the national NAP cycle. Reporting upward too keeps the national plan's visibility of the delivery it depends on.",
-    },
-    {
-      id: "malp-w2",
-      prompt:
-        "In two or three sentences: why does an indicator need to be assigned to a named post rather than a target alone?",
-      keywords: ["named post", "turnover", "target", "responsible"],
-      minMatches: 2,
-      modelAnswer:
-        "A target with nobody named to report against it drifts unmeasured within a year. Monitoring survives staff turnover only when a specific named post, not a person, is made responsible for it.",
+      id: "malp-fb1",
+      passage:
+        "A {{malp-b1}} plan that only reports outward to its own province quietly {{malp-b2}} from the national NAP cycle. Reporting upward too keeps the national plan's {{malp-b3}} of the delivery it depends on.",
+      blanks: [
+        { id: "malp-b1", answer: "localised" },
+        { id: "malp-b2", answer: "disconnects" },
+        { id: "malp-b3", answer: "visibility" },
+      ],
+      distractors: ["operation", "sequencing"],
     },
   ],
 
   "matching-a-project-to-a-source-of-finance": [
     {
-      id: "mapsf-w1",
-      prompt:
-        "In two or three sentences: why does every source of climate finance need to be read for the objective it is accountable for?",
-      keywords: ["objective", "accountable", "lead with", "fund"],
-      minMatches: 2,
-      modelAnswer:
-        "A climate fund is not a bank and is accountable for its own objective - emissions avoided, adaptation benefit, private capital mobilised. Reading that objective tells you which parts of a project to lead with.",
-    },
-    {
-      id: "mapsf-w2",
-      prompt:
-        "In two or three sentences: why is matching a project's finance type to its cash flow decided before the proposal is drafted, not during review?",
-      keywords: ["grant", "commercial", "cash flow", "wastes"],
-      minMatches: 2,
-      modelAnswer:
-        "A grant-appropriate project pitched to a commercial lender reads as unbankable, and a revenue-generating project pitched only for grant funding wastes its strongest asset. Matching finance type to cash flow is decided before the proposal is drafted.",
+      id: "mapsf-fb1",
+      passage:
+        "A climate fund is not a bank and is {{mapsf-b1}} for its own objective, {{mapsf-b2}} avoided, {{mapsf-b3}} benefit, private capital mobilised. Reading that objective tells you which parts of a project to lead with.",
+      blanks: [
+        { id: "mapsf-b1", answer: "accountable" },
+        { id: "mapsf-b2", answer: "emissions" },
+        { id: "mapsf-b3", answer: "adaptation" },
+      ],
+      distractors: ["measurable", "meeting"],
     },
   ],
 
   "building-the-climate-rationale": [
     {
-      id: "btcr-w1",
-      prompt:
-        "In two or three sentences: what does a climate rationale have to do that a bare assertion of benefit does not?",
-      keywords: ["chain", "steps", "check", "assert"],
-      minMatches: 2,
-      modelAnswer:
-        "A climate rationale has to connect an intervention to a climate outcome through a chain of steps someone else can check, not simply assert. A claimed benefit with no checkable chain does not survive review.",
-    },
-    {
-      id: "btcr-w2",
-      prompt:
-        "In two or three sentences: what is the 'increment' a climate rationale actually has to defend, for a project that would have happened anyway?",
-      keywords: ["increment", "beyond", "regardless", "specifically"],
-      minMatches: 2,
-      modelAnswer:
-        "A project is not disqualified for being worth doing on its own merits. The rationale has to defend the increment - what the finance specifically buys beyond what would have happened regardless.",
+      id: "btcr-fb1",
+      passage:
+        "A climate {{btcr-b1}} has to connect an {{btcr-b2}} to a climate outcome through a chain of steps someone else can check, not simply assert. A claimed benefit with no {{btcr-b3}} chain does not survive review.",
+      blanks: [
+        { id: "btcr-b1", answer: "rationale" },
+        { id: "btcr-b2", answer: "intervention" },
+        { id: "btcr-b3", answer: "checkable" },
+      ],
+      distractors: ["connect", "dozens"],
     },
   ],
 
   "structuring-a-concept-note": [
     {
-      id: "scn-w1",
-      prompt:
-        "In two or three sentences: why does following the expected structure of a concept note help it, rather than restrict it?",
-      keywords: ["compare", "expected order", "fairly", "locate"],
-      minMatches: 2,
-      modelAnswer:
-        "A reviewer compares dozens of concept notes against each other, and a note in the expected order is compared fairly. A note that reorders itself for effect makes the reviewer work to locate what they need.",
-    },
-    {
-      id: "scn-w2",
-      prompt:
-        "In two or three sentences: why should the funding ask be stated early rather than in a final paragraph?",
-      keywords: ["ask", "early", "unsure", "first page"],
-      minMatches: 2,
-      modelAnswer:
-        "A concept note that buries its funding ask in a final paragraph reads as unsure of itself. Stating the ask early, on the first page, and justifying it afterward, reads with far more confidence.",
+      id: "scn-fb1",
+      passage:
+        "A reviewer {{scn-b1}} dozens of concept notes against each other, and a note in the {{scn-b2}} order is {{scn-b3}} fairly. A note that reorders itself for effect makes the reviewer work to locate what they need.",
+      blanks: [
+        { id: "scn-b1", answer: "compares" },
+        { id: "scn-b2", answer: "expected" },
+        { id: "scn-b3", answer: "compared" },
+      ],
+      distractors: ["measures", "submissions"],
     },
   ],
 
   "modelling-the-financial-case": [
     {
-      id: "mtfc-w1",
-      prompt:
-        "In two or three sentences: why is a financial model only useful if someone else can follow it?",
-      keywords: ["follow", "assumption", "visible", "check"],
-      minMatches: 2,
-      modelAnswer:
-        "A financial model's purpose is to let someone else follow and check the reasoning behind it. Keeping every assumption visible on one sheet, rather than buried in a formula, is what makes a model evidence.",
-    },
-    {
-      id: "mtfc-w2",
-      prompt:
-        "In two or three sentences: why does showing a project's downside case build trust rather than weaken the proposal?",
-      keywords: ["downside", "fails", "viable", "trust"],
-      minMatches: 2,
-      modelAnswer:
-        "Appraisers trust a proposal that names the conditions under which it fails. Stating the point a project stops being viable earns more trust than withholding the downside case, because an appraiser will find it anyway.",
+      id: "mtfc-fb1",
+      passage:
+        "A {{mtfc-b1}} model's purpose is to let someone else follow and check the {{mtfc-b2}} behind it. Keeping every {{mtfc-b3}} visible on one sheet, rather than buried in a formula, is what makes a model evidence.",
+      blanks: [
+        { id: "mtfc-b1", answer: "financial" },
+        { id: "mtfc-b2", answer: "reasoning" },
+        { id: "mtfc-b3", answer: "assumption" },
+      ],
+      distractors: ["borrows", "produces"],
     },
   ],
 
   "allocating-risk-correctly": [
     {
-      id: "arc-w1",
-      prompt:
-        "In two or three sentences: why should a project risk be allocated to whoever can manage it, rather than to whoever has the deepest balance sheet?",
-      keywords: ["manage", "priced heavily", "control", "refused"],
-      minMatches: 2,
-      modelAnswer:
-        "Risk should sit with whoever is best able to manage it. Demand risk placed on a contractor who cannot control demand is priced heavily or refused outright, while the party that can manage it may price it far lower.",
-    },
-    {
-      id: "arc-w2",
-      prompt:
-        "In two or three sentences: why should some risks, like land acquisition delay, deliberately stay with government?",
-      keywords: ["land acquisition", "resolve", "cheaper", "transfer"],
-      minMatches: 2,
-      modelAnswer:
-        "Land acquisition delay and permitting risk are usually cheaper for government to hold than to transfer, because government is the party that can actually resolve them. Transferring them anyway is an expensive way to look prudent.",
+      id: "arc-fb1",
+      passage:
+        "Risk should sit with {{arc-b1}} is best able to manage it. Demand risk placed on a {{arc-b2}} who cannot control demand is priced heavily or refused {{arc-b3}}, while the party that can manage it may price it far lower.",
+      blanks: [
+        { id: "arc-b1", answer: "whoever" },
+        { id: "arc-b2", answer: "contractor" },
+        { id: "arc-b3", answer: "outright" },
+      ],
+      distractors: ["placed", "reviewers"],
     },
   ],
 
   "writing-the-proposal-that-survives-review": [
     {
-      id: "wtptsr-w1",
-      prompt:
-        "In two or three sentences: why do the first two pages of a proposal matter so much to a reviewer?",
-      keywords: ["early", "confirm", "overturn", "opening"],
-      minMatches: 2,
-      modelAnswer:
-        "Reviewers form a view early and read the rest of a proposal to confirm or overturn it. The opening pages - problem, rationale, intervention - carry more weight than their length suggests.",
-    },
-    {
-      id: "wtptsr-w2",
-      prompt:
-        "In two or three sentences: what is the sustainability question actually asking a proposal to answer?",
-      keywords: ["after funding", "institution", "revenue stream", "continues"],
-      minMatches: 2,
-      modelAnswer:
-        "The sustainability question asks what happens after the funded period ends. A vague answer is one of the most common reasons a note is not advanced; naming a specific institution or revenue stream that continues the work is what it wants.",
+      id: "wtptsr-fb1",
+      passage:
+        "{{wtptsr-b1}} form a view early and read the rest of a proposal to confirm or overturn it. The opening pages, problem, {{wtptsr-b2}}, {{wtptsr-b3}}, carry more weight than their length suggests.",
+      blanks: [
+        { id: "wtptsr-b1", answer: "Reviewers" },
+        { id: "wtptsr-b2", answer: "rationale" },
+        { id: "wtptsr-b3", answer: "intervention" },
+      ],
+      distractors: ["rarely", "officer"],
     },
   ],
 
   "reporting-once-finance-is-approved": [
     {
-      id: "rofia-w1",
-      prompt:
-        "In two or three sentences: why should compliance and verification be budgeted as a line item rather than treated as an afterthought?",
-      keywords: ["verification", "budget", "obligations", "line item"],
-      minMatches: 2,
-      modelAnswer:
-        "Monitoring, verification and annual reporting consume a real share of a facility's budget, and a proposal that omits this cost funds the project but not its obligations. Costing compliance as a line item is expected, not optional.",
-    },
-    {
-      id: "rofia-w2",
-      prompt:
-        "In two or three sentences: why does data collection need to start on the day an agreement is signed?",
-      keywords: ["baseline", "day one", "reconstructed", "estimate"],
-      minMatches: 2,
-      modelAnswer:
-        "Impact reporting asks for baselines that cannot be reconstructed later. Setting up data collection on day one, rather than when the first report is due, avoids handing over an estimate instead of real data.",
+      id: "rofia-fb1",
+      passage:
+        "{{rofia-b1}}, {{rofia-b2}} and annual reporting consume a real share of a facility's budget, and a proposal that omits this cost funds the project but not its {{rofia-b3}}. Costing compliance as a line item is expected.",
+      blanks: [
+        { id: "rofia-b1", answer: "Monitoring" },
+        { id: "rofia-b2", answer: "verification" },
+        { id: "rofia-b3", answer: "obligations" },
+      ],
+      distractors: ["suggests", "costing"],
     },
   ],
 
   "gsi-as-a-planning-discipline": [
     {
-      id: "gapd-w1",
-      prompt:
-        "In two or three sentences: why does a GSI annex added after a plan is written change so little?",
-      keywords: ["annex", "after", "consultation", "decisions"],
-      minMatches: 2,
-      modelAnswer:
-        "A GSI annex added after a plan is written rarely changes what the plan actually does, because the decisions that mattered were made already. Applying the same lens from the first consultation changes what the plan does, not just what it says.",
-    },
-    {
-      id: "gapd-w2",
-      prompt:
-        "In two or three sentences: why is GSI wider than a focus on gender alone?",
-      keywords: ["disability", "ethnicity", "axis", "exclusion"],
-      minMatches: 2,
-      modelAnswer:
-        "Gender is the most visible axis of exclusion, but disability, age, ethnicity, language and poverty routinely decide who benefits from a plan just as much. An approach that only asks about women misses most of who GSI is meant to include.",
+      id: "gapd-fb1",
+      passage:
+        "A GSI annex added after a plan is written rarely changes what the plan actually does, because the {{gapd-b1}} that {{gapd-b2}} were made already. Applying the same lens from the first {{gapd-b3}} changes what the plan does.",
+      blanks: [
+        { id: "gapd-b1", answer: "decisions" },
+        { id: "gapd-b2", answer: "mattered" },
+        { id: "gapd-b3", answer: "consultation" },
+      ],
+      distractors: ["timing", "disconnects"],
     },
   ],
 
   "reading-a-situation-through-a-gsi-lens": [
     {
-      id: "rastgl-w1",
-      prompt:
-        "In two or three sentences: why are 'who is affected' and 'who had a say' two different questions a GSI reading has to ask separately?",
-      keywords: ["affected", "voice", "diverge", "separately"],
-      minMatches: 2,
-      modelAnswer:
-        "Who is affected by a decision and who had a voice in it are two separate questions, and a plan can score well on one while failing the other. Reading a plan through a GSI lens means asking both and naming where they diverge.",
-    },
-    {
-      id: "rastgl-w2",
-      prompt:
-        "In two or three sentences: why is an unstated assumption often the real cause of exclusion in planning?",
-      keywords: ["assumption", "weekday", "typical", "unexamined"],
-      minMatches: 2,
-      modelAnswer:
-        "A consultation scheduled for a weekday afternoon assumes the attendee has no paid or unpaid care work at that hour. Most exclusion is not a deliberate decision, it is an unexamined assumption about who the typical participant is.",
+      id: "rastgl-fb1",
+      passage:
+        "Who is {{rastgl-b1}} by a {{rastgl-b2}} and who had a voice in it are two separate {{rastgl-b3}}, and a plan can score well on one while failing the other. Reading a plan through a GSI lens means asking both.",
+      blanks: [
+        { id: "rastgl-b1", answer: "affected" },
+        { id: "rastgl-b2", answer: "decision" },
+        { id: "rastgl-b3", answer: "questions" },
+      ],
+      distractors: ["outright", "weight"],
     },
   ],
 
   "setting-gsi-indicators-that-mean-something": [
     {
-      id: "sgitms-w1",
-      prompt:
-        "In two or three sentences: why is 'number of women attending' a weak GSI indicator even though it is easy to measure?",
-      keywords: ["attend", "showed up", "access", "decision-making"],
-      minMatches: 2,
-      modelAnswer:
-        "'Number of women who attend' is easy to count and measures almost nothing about whether anything changed for them. A meaningful indicator tracks access, decision-making role or resource control, not who simply showed up.",
-    },
-    {
-      id: "sgitms-w2",
-      prompt:
-        "In two or three sentences: why is setting a baseline before an intervention starts the most important and most skipped step?",
-      keywords: ["baseline", "before", "defensible", "skipped"],
-      minMatches: 2,
-      modelAnswer:
-        "An indicator without a baseline can only ever report a number, never a change. Setting the baseline before the intervention starts is the most commonly skipped step, and the one that makes every later report defensible.",
+      id: "sgitms-fb1",
+      passage:
+        "Number of women who attend is easy to count and measures almost nothing about whether anything changed for them. A {{sgitms-b1}} {{sgitms-b2}} tracks access, {{sgitms-b3}} role or resource control, not who simply showed up.",
+      blanks: [
+        { id: "sgitms-b1", answer: "meaningful" },
+        { id: "sgitms-b2", answer: "indicator" },
+        { id: "sgitms-b3", answer: "decision-making" },
+      ],
+      distractors: ["savings", "income"],
     },
   ],
 
   "mainstreaming-gsi-into-a-sector-plan": [
     {
-      id: "mgisp-w1",
-      prompt:
-        "In two or three sentences: why does mainstreaming succeed or fail at specific decision points rather than in a plan's introduction?",
-      keywords: ["decision points", "subsidy", "procurement", "panel"],
-      minMatches: 2,
-      modelAnswer:
-        "Mainstreaming succeeds or fails at specific decision points - who qualifies for a subsidy, what a procurement scores on, who sits on a panel - not in a plan's introductory language. Finding those points is what makes GSI operational.",
-    },
-    {
-      id: "mgisp-w2",
-      prompt:
-        "In two or three sentences: what turns a GSI requirement from a wish into something that actually changes a plan?",
-      keywords: ["checkable", "commits", "consequence", "wish"],
-      minMatches: 2,
-      modelAnswer:
-        "'Gender considerations will be taken into account' commits nobody to anything - it is a wish, not a requirement. A checkable statement attached to a specific decision is what actually changes what a plan does.",
+      id: "mgisp-fb1",
+      passage:
+        "{{mgisp-b1}} succeeds or fails at specific decision points, who qualifies for a subsidy, what a {{mgisp-b2}} scores on, who sits on a panel, not in a plan's {{mgisp-b3}} language. Finding those points is what makes GSI operational.",
+      blanks: [
+        { id: "mgisp-b1", answer: "Mainstreaming" },
+        { id: "mgisp-b2", answer: "procurement" },
+        { id: "mgisp-b3", answer: "introductory" },
+      ],
+      distractors: ["sector", "rarely"],
     },
   ],
 
   "handling-exclusion-when-you-find-it": [
     {
-      id: "hewyfi-w1",
-      prompt:
-        "In two or three sentences: why does a finding without a response train people not to speak up again?",
-      keywords: ["visible response", "trains", "raises", "waste"],
-      minMatches: 2,
-      modelAnswer:
-        "A community that raises an exclusion finding and sees no visible response learns that raising it again is a waste of their time. The response does not need to be complete, but it has to be visible.",
-    },
-    {
-      id: "hewyfi-w2",
-      prompt:
-        "In two or three sentences: why is closing the loop with even a partial answer important?",
-      keywords: ["close the loop", "partial", "silence", "next round"],
-      minMatches: 2,
-      modelAnswer:
-        "Reporting back, even to explain that an issue could not be funded this cycle, closes the loop and keeps the consultation channel usable. Silence after a finding, not the budget itself, is what ends participation.",
+      id: "hewyfi-fb1",
+      passage:
+        "A {{hewyfi-b1}} that raises an {{hewyfi-b2}} finding and sees no visible response learns that raising it again is a waste of their time. The response does not need to be {{hewyfi-b3}}, but it has to be visible.",
+      blanks: [
+        { id: "hewyfi-b1", answer: "community" },
+        { id: "hewyfi-b2", answer: "exclusion" },
+        { id: "hewyfi-b3", answer: "complete" },
+      ],
+      distractors: ["participants", "setting"],
     },
   ],
 
   "reporting-on-gsi-without-tokenism": [
     {
-      id: "rogwt-w1",
-      prompt:
-        "In two or three sentences: why is a page of photographs captioned 'women participants' considered a weak form of GSI reporting?",
-      keywords: ["photograph", "optics", "outcome", "informative"],
-      minMatches: 2,
-      modelAnswer:
-        "A page of photographs captioned 'women participants' is the most common and least informative form GSI reporting takes, because it shows optics rather than outcome. Reporting built around outcome indicators actually says whether anything worked.",
-    },
-    {
-      id: "rogwt-w2",
-      prompt:
-        "In two or three sentences: why should a GSI report sit inside a sector's main results rather than beside them?",
-      keywords: ["inside", "compliance exercise", "sector result", "judging"],
-      minMatches: 2,
-      modelAnswer:
-        "A GSI report filed separately from a sector's main results reads as a compliance exercise. Presented inside the same report, it becomes part of judging whether the scheme worked at all, which is the point of collecting it.",
+      id: "rogwt-fb1",
+      passage:
+        "A page of {{rogwt-b1}} captioned women {{rogwt-b2}} is the most common and least {{rogwt-b3}} form GSI reporting takes, because it shows optics rather than outcome. Reporting built around outcome indicators actually says whether anything worked.",
+      blanks: [
+        { id: "rogwt-b1", answer: "photographs" },
+        { id: "rogwt-b2", answer: "participants" },
+        { id: "rogwt-b3", answer: "informative" },
+      ],
+      distractors: ["underwrite", "unexamined"],
     },
   ],
 
   "what-grb-actually-changes": [
     {
-      id: "wgac-w1",
-      prompt:
-        "In two or three sentences: what is the most common misunderstanding about gender-responsive budgeting?",
-      keywords: ["separate fund", "misconception", "earmarked", "whole budget"],
-      minMatches: 2,
-      modelAnswer:
-        "The most persistent misconception about GRB is that it means setting aside a fund earmarked for women. It is instead a method for examining and adjusting the whole budget - every vote, not a new one - for who it reaches.",
-    },
-    {
-      id: "wgac-w2",
-      prompt:
-        "In two or three sentences: how can a gender-neutral-looking budget line, like road maintenance, still have an unequal effect?",
-      keywords: ["footpath", "carriageway", "unpaid care", "reads differently"],
-      minMatches: 2,
-      modelAnswer:
-        "A road maintenance line looks gender-neutral until read against who walks, who drives, and whose unpaid care journeys depend on the footpath rather than the carriageway - the same rupee reads differently depending who is asking.",
+      id: "wgac-fb1",
+      passage:
+        "The most {{wgac-b1}} {{wgac-b2}} about GRB is that it means setting aside a fund {{wgac-b3}} for women. It is instead a method for examining and adjusting the whole budget, every vote, not a new one, for who it reaches.",
+      blanks: [
+        { id: "wgac-b1", answer: "persistent" },
+        { id: "wgac-b2", answer: "misconception" },
+        { id: "wgac-b3", answer: "earmarked" },
+      ],
+      distractors: ["process", "exercise"],
     },
   ],
 
   "reading-a-budget-for-who-it-reaches": [
     {
-      id: "rabfwir-w1",
-      prompt:
-        "In two or three sentences: why can a budget line written in gender-neutral language still reach men and women very unevenly?",
-      keywords: ["neutral in wording", "hours", "channels", "proportions"],
-      minMatches: 2,
-      modelAnswer:
-        "A line like 'agricultural extension services' is neutral in wording, but if officers visit during hours or channels only one group can access, it reaches men and women in very different proportions.",
-    },
-    {
-      id: "rabfwir-w2",
-      prompt:
-        "In two or three sentences: why is checking who used a line last year better than assuming neutrality from its wording?",
-      keywords: ["check", "disaggregated", "assuming", "common error"],
-      minMatches: 2,
-      modelAnswer:
-        "The only way to know whether a line is genuinely neutral in effect is to check who used it last year, disaggregated by sex. Assuming neutrality from the wording alone is the single most common error in a first read-through.",
+      id: "rabfwir-fb1",
+      passage:
+        "A line like {{rabfwir-b1}} {{rabfwir-b2}} services is neutral in wording, but if officers visit during hours or channels only one group can access, it reaches men and women in very different {{rabfwir-b3}}.",
+      blanks: [
+        { id: "rabfwir-b1", answer: "agricultural" },
+        { id: "rabfwir-b2", answer: "extension" },
+        { id: "rabfwir-b3", answer: "proportions" },
+      ],
+      distractors: ["fairly", "behind"],
     },
   ],
 
   "gender-budget-statements": [
     {
-      id: "gbs-w1",
-      prompt:
-        "In two or three sentences: why is a gender budget statement that only lists spending by ministry likely to be rejected?",
-      keywords: ["restates", "analysis", "rejected", "list"],
-      minMatches: 2,
-      modelAnswer:
-        "A gender budget statement that only lists spending by ministry without analysing who it reaches is rejected as often as it is approved. Reviewers check for analysis, not a restated budget.",
-    },
-    {
-      id: "gbs-w2",
-      prompt:
-        "In two or three sentences: why does every claim in a gender budget statement need a number behind it?",
-      keywords: ["number", "evidence", "target", "checked"],
-      minMatches: 2,
-      modelAnswer:
-        "'This programme benefits women and men equally' is a claim, not evidence. A statement giving a specific number against a stated target gives a reviewer something checked, and something that survives scrutiny.",
+      id: "gbs-fb1",
+      passage:
+        "A gender budget {{gbs-b1}} that only lists spending by ministry without {{gbs-b2}} who it reaches is rejected as often as it is approved. {{gbs-b3}} check for analysis, not a restated budget.",
+      blanks: [
+        { id: "gbs-b1", answer: "statement" },
+        { id: "gbs-b2", answer: "analysing" },
+        { id: "gbs-b3", answer: "Reviewers" },
+      ],
+      distractors: ["places", "savings"],
     },
   ],
 
   "sex-disaggregated-data": [
     {
-      id: "sdd-w1",
-      prompt:
-        "In two or three sentences: why is commissioning new data collection rarely the right first step for sex-disaggregated data?",
-      keywords: ["already collected", "registers", "attendance", "existing"],
-      minMatches: 2,
-      modelAnswer:
-        "Beneficiary registers and attendance sheets are frequently already collected by sex, even where nobody has analysed them that way. The first step is rarely new data collection - it is checking what already exists in an existing register.",
-    },
-    {
-      id: "sdd-w2",
-      prompt:
-        "In two or three sentences: why is a partial dataset, used honestly, more credible than waiting for a complete one?",
-      keywords: ["coverage", "limitation", "stated", "credible"],
-      minMatches: 2,
-      modelAnswer:
-        "Where disaggregated data covers only part of a programme, using it with the coverage and its limitation clearly stated is more credible than waiting for a complete dataset that may never arrive.",
+      id: "sdd-fb1",
+      passage:
+        "{{sdd-b1}} registers and {{sdd-b2}} sheets are frequently already collected by sex, even where nobody has analysed them that way. The first step is rarely new data {{sdd-b3}}, it is checking what already exists.",
+      blanks: [
+        { id: "sdd-b1", answer: "Beneficiary" },
+        { id: "sdd-b2", answer: "attendance" },
+        { id: "sdd-b3", answer: "collection" },
+      ],
+      distractors: ["disconnects", "accountable"],
     },
   ],
 
   "costing-a-gender-responsive-intervention": [
     {
-      id: "cgri-w1",
-      prompt:
-        "In two or three sentences: why are gender-responsive adjustments usually marginal design changes rather than new spending?",
-      keywords: ["marginal", "design change", "schedule", "budget line"],
-      minMatches: 2,
-      modelAnswer:
-        "Shifting a visit schedule or adding a second consultation time are typically marginal design changes rather than new budget lines. Costing them against a real programme usually shows the increment is far smaller than expected.",
-    },
-    {
-      id: "cgri-w2",
-      prompt:
-        "In two or three sentences: why should a costed adjustment be presented beside the participation gap it targets?",
-      keywords: ["participation gap", "return", "approve", "spend"],
-      minMatches: 2,
-      modelAnswer:
-        "A costed adjustment presented beside the participation gap it is meant to close, rather than as an abstract inclusion cost, is easier for a budget officer to approve, because the return on the spend is stated alongside the spend itself.",
+      id: "cgri-fb1",
+      passage:
+        "Shifting a visit schedule or adding a second {{cgri-b1}} time are {{cgri-b2}} marginal design changes rather than new budget lines. Costing them against a real {{cgri-b3}} usually shows the increment is far smaller than expected.",
+      blanks: [
+        { id: "cgri-b1", answer: "consultation" },
+        { id: "cgri-b2", answer: "typically" },
+        { id: "cgri-b3", answer: "programme" },
+      ],
+      distractors: ["honestly", "access"],
     },
   ],
 
   "auditing-a-budget-circular-for-gsi-compliance": [
     {
-      id: "abcfgc-w1",
-      prompt:
-        "In two or three sentences: why is missing a stated GSI requirement in a budget circular an avoidable rejection?",
-      keywords: ["stated requirement", "avoidable", "checklist", "directly"],
-      minMatches: 2,
-      modelAnswer:
-        "Budget circulars increasingly state their gender-responsive requirements directly - a disaggregation requirement, a mandatory statement, a specific annex. Missing a stated requirement is an avoidable rejection, not a judgment call.",
-    },
-    {
-      id: "abcfgc-w2",
-      prompt:
-        "In two or three sentences: what are the three most common reasons a GRB submission is returned?",
-      keywords: ["no baseline", "no evidence", "restates", "three reasons"],
-      minMatches: 2,
-      modelAnswer:
-        "Most GRB submissions are returned for one of three reasons: no baseline data, a claim with no evidence, or a statement that restates the budget without analysis. Checking a draft against these three clears most review cycles.",
+      id: "abcfgc-fb1",
+      passage:
+        "Budget circulars {{abcfgc-b1}} state their {{abcfgc-b2}} requirements directly, a {{abcfgc-b3}} requirement, a mandatory statement, a specific annex. Missing a stated requirement is an avoidable rejection, not a judgment call.",
+      blanks: [
+        { id: "abcfgc-b1", answer: "increasingly" },
+        { id: "abcfgc-b2", answer: "gender-responsive" },
+        { id: "abcfgc-b3", answer: "disaggregation" },
+      ],
+      distractors: ["adjusting", "officers"],
     },
   ],
 
   "reporting-gender-responsive-spending-upward": [
     {
-      id: "rgrsu-w1",
-      prompt:
-        "In two or three sentences: why can spending that is not tagged and reported as gender-responsive not be counted at the national level?",
-      keywords: ["tagged", "counted", "national level", "weak position"],
-      minMatches: 2,
-      modelAnswer:
-        "Spending that is not tagged and reported as gender-responsive cannot be counted at the national level. An institution that cannot demonstrate its own record is in a weak position at the next budget negotiation.",
-    },
-    {
-      id: "rgrsu-w2",
-      prompt:
-        "In two or three sentences: why is last year's completed report the strongest argument for next year's allocation?",
-      keywords: ["evidence", "proof", "previous investment", "trusted"],
-      minMatches: 2,
-      modelAnswer:
-        "A completed, well-evidenced report is proof the previous investment worked, not just a promise the next one will. Institutions that report consistently tend to be trusted with larger allocations over time.",
+      id: "rgrsu-fb1",
+      passage:
+        "Spending that is not tagged and reported as {{rgrsu-b1}} cannot be counted at the national level. An {{rgrsu-b2}} that cannot {{rgrsu-b3}} its own record is in a weak position at the next budget negotiation.",
+      blanks: [
+        { id: "rgrsu-b1", answer: "gender-responsive" },
+        { id: "rgrsu-b2", answer: "institution" },
+        { id: "rgrsu-b3", answer: "demonstrate" },
+      ],
+      distractors: ["resource", "scores"],
     },
   ],
+
 };

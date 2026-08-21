@@ -34,6 +34,7 @@ import {
   LecturerIcon,
   LibraryIcon,
   LogIcon,
+  MegaphoneIcon,
   StarIcon,
   StudentsIcon,
   TeamIcon,
@@ -97,6 +98,12 @@ const ADMIN_NAV: NavGroup[] = [
     ],
   },
   {
+    label: "Communications",
+    items: [
+      { href: "/admin/communications", label: "Communications", icon: MegaphoneIcon },
+    ],
+  },
+  {
     label: "Platform",
     items: [
       {
@@ -133,6 +140,12 @@ const LECTURER_NAV: NavGroup[] = [
     label: "Learners",
     items: [
       { href: "/lecturer/learners", label: "Enrolled students", icon: StudentsIcon },
+    ],
+  },
+  {
+    label: "Communications",
+    items: [
+      { href: "/lecturer/communications", label: "Communications", icon: MegaphoneIcon },
     ],
   },
   {

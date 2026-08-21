@@ -69,6 +69,7 @@ export default function LecturersPage() {
           <NameCell
             href={`/admin/lecturers/${member.id}`}
             initials={member.initials}
+            avatarUrl={member.avatarUrl}
             title={member.name}
             subtitle={member.email}
           />

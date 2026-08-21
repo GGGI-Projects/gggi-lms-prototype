@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Fragment } from "react";
 import Link from "next/link";
 import { BODY, CONSOLE, META } from "@/lib/theme";
 import { SESSION } from "@/content/staff";
@@ -19,6 +20,20 @@ import {
 import { SettingsGroup } from "@/components/console/actions";
 import { AccountIdentity, CapabilityList } from "@/components/console/account";
 import { KindMark } from "@/components/console/material-parts";
+import {
+  AddEntryAction,
+  EditEntryAction,
+  EntryManagedList,
+  RemoveEntryAction,
+} from "@/components/console/profile-entries";
+import {
+  ACHIEVEMENT_FIELDS,
+  EXPERIENCE_FIELDS,
+  PUBLICATION_FIELDS,
+  QUALIFICATION_FIELDS,
+  toEntryValues,
+  type EntryField,
+} from "@/lib/profile-fields";
 
 export const metadata: Metadata = { title: "Your profile" };
 
@@ -106,18 +121,68 @@ export default function LecturerProfilePage() {
             </label>
             <label className="block">
               <span className="mb-2 block text-lg font-semibold text-ink">
-                A short biography
+                Bio
               </span>
               <textarea
                 rows={3}
-                placeholder="Two sentences. What you work on, and where."
+                defaultValue={member.profile?.bio}
+                placeholder="What you work on, and where."
                 className="field"
               />
               <span className={`mt-2 block ${META.base}`}>
-                Optional. Shown on the module page beneath the contents list.
+                Required. The opening line of your public profile page - see
+                below for the rest of it.
               </span>
             </label>
           </SettingsGroup>
+
+          <Section
+            title="Your public profile"
+            description="Qualifications, experience, publications and achievements - what a learner reads before deciding to trust you on a subject. All of this was set when you were appointed and is entirely yours to keep current."
+            action={
+              <Link
+                href={`/lecturers/${member.id}`}
+                className="link-wipe text-lg font-semibold text-primary"
+              >
+                View it as a learner does
+              </Link>
+            }
+          >
+            <div className="space-y-8">
+              <ProfileEntrySection
+                title="Qualifications"
+                singular="qualification"
+                fields={QUALIFICATION_FIELDS}
+                entries={member.profile?.qualifications ?? []}
+                emptyLabel="None recorded."
+                addLabel="Add a qualification"
+              />
+              <ProfileEntrySection
+                title="Experience"
+                singular="experience entry"
+                fields={EXPERIENCE_FIELDS}
+                entries={member.profile?.experience ?? []}
+                emptyLabel="None recorded."
+                addLabel="Add an experience entry"
+              />
+              <ProfileEntrySection
+                title="Publications"
+                singular="publication"
+                fields={PUBLICATION_FIELDS}
+                entries={member.profile?.publications ?? []}
+                emptyLabel="None recorded."
+                addLabel="Add a publication"
+              />
+              <ProfileEntrySection
+                title="Achievements"
+                singular="achievement"
+                fields={ACHIEVEMENT_FIELDS}
+                entries={member.profile?.achievements ?? []}
+                emptyLabel="None recorded yet."
+                addLabel="Add an achievement"
+              />
+            </div>
+          </Section>
 
           <Section title="What you have put on the shelf">
             {uploads.length ? (
@@ -231,5 +296,71 @@ export default function LecturerProfilePage() {
         </aside>
       </div>
     </PageBody>
+  );
+}
+
+/* ------------------------------------------------------- profile sections */
+
+/**
+ * One category of the public profile - qualifications, experience,
+ * publications, achievements - with full control over it: add one, edit one,
+ * remove one. Unlike the read-only version of this same list on the admin's
+ * lecturer detail page, this is the one place these entries can actually be
+ * changed, because it is the lecturer's own account.
+ */
+function ProfileEntrySection({
+  title,
+  singular,
+  fields,
+  entries,
+  emptyLabel,
+  addLabel,
+}: {
+  title: string;
+  /** "qualification", "experience entry", ... - used in the confirmation
+   *  and drawer copy so a lecturer knows exactly which entry they are
+   *  changing. */
+  singular: string;
+  fields: EntryField[];
+  entries: Record<string, unknown>[];
+  emptyLabel: string;
+  addLabel: string;
+}) {
+  const values = entries.map(toEntryValues);
+  // Built here, not as a callback passed down: this page is a server
+  // component, and a server component can hand a client component finished
+  // JSX but not a plain function - see the note on `EntryManagedList`.
+  const actions = values.map((entry, i) => (
+    <Fragment key={i}>
+      <EditEntryAction
+        fields={fields}
+        initial={entry}
+        drawerTitle={`Edit this ${singular}`}
+        drawerDescription="Change any field and save - this only affects your own profile, and takes effect immediately once it is real."
+      />
+      <RemoveEntryAction question={`Remove this ${singular}?`} />
+    </Fragment>
+  ));
+
+  return (
+    <div>
+      <h3 className="text-lg font-semibold text-ink">{title}</h3>
+      <div className="mt-3">
+        <EntryManagedList
+          fields={fields}
+          entries={values}
+          emptyLabel={emptyLabel}
+          actions={actions}
+        />
+      </div>
+      <div className="mt-4">
+        <AddEntryAction
+          fields={fields}
+          drawerTitle={addLabel}
+          drawerDescription="Added to the end of the list on your public profile."
+          buttonLabel={addLabel}
+        />
+      </div>
+    </div>
   );
 }

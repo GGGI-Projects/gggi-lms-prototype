@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { BODY, CONSOLE, META } from "@/lib/theme";
-import { REVIEWS } from "@/content/operations";
+import { REVIEWS, type Review } from "@/content/operations";
 import {
+  lecturers,
   managedModule,
   publishedModules,
   reviewsByStatus,
+  staffById,
   staffName,
   studentById,
 } from "@/lib/admin";
@@ -20,7 +22,11 @@ import {
 } from "@/components/console/ui";
 import { ModerationActions } from "@/components/console/actions";
 import { IfCan } from "@/components/console/permission";
-import { ReviewsBoard, type ReviewCard } from "@/components/console/reviews-board";
+import {
+  ReviewsBoard,
+  type ReviewCard,
+  type ReviewFilter,
+} from "@/components/console/reviews-board";
 import {
   REVIEW_STATUS_LABEL,
   REVIEW_STATUS_TONE,
@@ -42,6 +48,27 @@ export const metadata: Metadata = { title: "Reviews" };
  * FLAGGED REVIEWS COME FIRST inside the queue. Not because they matter more,
  * but because they are the ones where leaving it until tomorrow has a cost.
  */
+/** Where a review's subject links to, what it is called, and the value the
+ *  board's filter narrows on - the one place that reads `review.subject` so
+ *  every card below agrees on what a module review and a lecturer review
+ *  each look like. */
+function subjectInfo(review: Review) {
+  if (review.subject.kind === "module") {
+    const mdl = managedModule(review.subject.moduleId);
+    return {
+      label: mdl?.title ?? review.subject.moduleId,
+      href: `/admin/modules/${review.subject.moduleId}`,
+      filterKey: `module:${review.subject.moduleId}`,
+    };
+  }
+  const lecturer = staffById(review.subject.lecturerId);
+  return {
+    label: lecturer?.name ?? review.subject.lecturerId,
+    href: `/admin/lecturers/${review.subject.lecturerId}`,
+    filterKey: `lecturer:${review.subject.lecturerId}`,
+  };
+}
+
 export default function ReviewsPage() {
   const pending = [...reviewsByStatus("pending")].sort(
     (a, b) => Number(Boolean(b.flagged)) - Number(Boolean(a.flagged)),
@@ -57,7 +84,7 @@ export default function ReviewsPage() {
       <PageHeader
         eyebrow="Learning"
         title="Reviews"
-        lead="Learners can review a module once they have finished a lecture of it. Nothing appears on a public page until somebody here has read it."
+        lead="Learners can review a module once they have finished a lecture of it, and a lecturer once they have finished one of their lectures. Nothing appears on a public page until somebody here has read it."
       />
 
       <div className={`${CONSOLE.stack} grid gap-4 sm:grid-cols-2 xl:grid-cols-4`}>
@@ -74,7 +101,7 @@ export default function ReviewsPage() {
         <MetricCard
           label="Published"
           value={published.length}
-          hint="on module pages"
+          hint="on module and lecturer pages"
         />
         <MetricCard label="Rejected" value={rejected.length} hint="with a reason recorded" />
         <MetricCard
@@ -87,12 +114,12 @@ export default function ReviewsPage() {
       <div className={CONSOLE.stack}>
         <ReviewsBoard
           pending={pending.map((review) => {
-            const mdl = managedModule(review.moduleId);
+            const subject = subjectInfo(review);
             const student = studentById(review.studentId);
 
             const card: ReviewCard = {
               id: review.id,
-              moduleId: review.moduleId,
+              filterKey: subject.filterKey,
               row: (
                 <li
                   key={review.id}
@@ -115,8 +142,10 @@ export default function ReviewsPage() {
                         )}
                       </p>
                       <p className={`mt-0.5 ${META.base}`}>
-                        {mdl?.title} · submitted{" "}
-                        {formatDateLong(review.submittedOn)}
+                        <Link href={subject.href} className="link-wipe">
+                          {subject.label}
+                        </Link>{" "}
+                        · submitted {formatDateLong(review.submittedOn)}
                       </p>
                     </div>
 
@@ -168,9 +197,10 @@ export default function ReviewsPage() {
           decided={[...published, ...rejected]
             .sort((a, b) => b.submittedOn.localeCompare(a.submittedOn))
             .map((review) => {
+              const subject = subjectInfo(review);
               const card: ReviewCard = {
                 id: review.id,
-                moduleId: review.moduleId,
+                filterKey: subject.filterKey,
                 row: (
                   <li key={review.id} className="px-5 py-5 sm:px-6">
                     <div className="flex flex-wrap items-start justify-between gap-3">
@@ -178,7 +208,7 @@ export default function ReviewsPage() {
                         <p className="text-lg font-semibold text-ink">
                           {review.studentName}
                           <span className={`ml-2 font-normal ${META.base}`}>
-                            {managedModule(review.moduleId)?.title}
+                            {subject.label}
                           </span>
                         </p>
                         <p className={`mt-2 ${BODY.base}`}>{review.body}</p>
@@ -203,10 +233,22 @@ export default function ReviewsPage() {
               };
               return card;
             })}
-          modules={publishedModules().map((mdl) => ({
-            id: mdl.id,
-            title: mdl.title,
-          }))}
+          filters={[
+            ...publishedModules().map(
+              (mdl): ReviewFilter => ({
+                value: `module:${mdl.id}`,
+                label: mdl.title,
+                group: "Modules",
+              }),
+            ),
+            ...lecturers().map(
+              (member): ReviewFilter => ({
+                value: `lecturer:${member.id}`,
+                label: member.name,
+                group: "Lecturers",
+              }),
+            ),
+          ]}
         />
       </div>
 

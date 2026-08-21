@@ -9,7 +9,7 @@ import {
   quizStatsFor,
   staffById,
 } from "@/lib/admin";
-import { PASS_MARK, QUIZ_LENGTH, hasWrittenQuestions } from "@/lib/portal";
+import { PASS_MARK, QUIZ_LENGTH, hasBlankQuestions } from "@/lib/portal";
 import {
   Badge,
   Callout,
@@ -86,7 +86,7 @@ export default function LecturerQuizzesPage() {
         back={{ href: "/lecturer", label: "Dashboard" }}
         eyebrow="Teaching"
         title="Quizzes"
-        lead={`One quiz closes each lecture: ${QUIZ_LENGTH} multiple-choice questions, plus written questions on the lectures that carry them, ${PASS_MARK}% to pass, unlimited attempts. This is where you find out which of them is working.`}
+        lead={`One quiz closes each lecture: ${QUIZ_LENGTH} multiple-choice questions, plus fill-in-the-blank questions on the lectures that carry them, ${PASS_MARK}% to pass, unlimited attempts. This is where you find out which of them is working.`}
       />
 
       {quizzes.length ? (
@@ -164,7 +164,7 @@ export default function LecturerQuizzesPage() {
                             title={`${mod.number}. ${mod.title}`}
                             subtitle={[
                               stats ? null : "No attempts recorded in this prototype",
-                              hasWrittenQuestions(mod.id) ? "has written questions" : null,
+                              hasBlankQuestions(mod.id) ? "has fill-in-the-blank questions" : null,
                             ]
                               .filter(Boolean)
                               .join(" · ") || undefined}
@@ -244,9 +244,9 @@ export default function LecturerQuizzesPage() {
               <p className={`mt-3 ${BODY.base}`}>
                 {QUIZ_LENGTH} questions, {PASS_MARK}% to pass, unlimited
                 attempts, no timer - the same for every quiz on the platform,
-                and for the written questions attached to any of them, so a
-                certificate means one thing. Only the super administrator can
-                change them.
+                and for the fill-in-the-blank questions attached to any of
+                them, so a certificate means one thing. Only the super
+                administrator can change them.
               </p>
               <PrototypeNote className="mt-5">
                 Figures are carried for one module in this prototype;

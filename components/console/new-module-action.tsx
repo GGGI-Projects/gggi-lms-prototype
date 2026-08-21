@@ -21,7 +21,7 @@ import { PlusIcon } from "@/components/console/icons";
 export function NewModuleAction({
   lecturers,
 }: {
-  lecturers: { id: string; name: string; initials: string }[];
+  lecturers: { id: string; name: string; initials: string; avatarUrl: string }[];
 }) {
   const [open, setOpen] = useState(false);
   const formId = useId();

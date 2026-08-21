@@ -35,14 +35,14 @@ export type RoleContextValue = {
    * because a client component reading a name out of `lib/admin` would pull
    * the whole data layer into the browser to do it.
    */
-  account: { name: string; initials: string };
+  account: { name: string; initials: string; avatarUrl: string };
   /** Absent in the lecturer area, where the role is not a choice. */
   setRole?: (role: StaffRole) => void;
 };
 
 const RoleContext = createContext<RoleContextValue>({
   role: "super-admin",
-  account: { name: "", initials: "" },
+  account: { name: "", initials: "", avatarUrl: "" },
 });
 
 export const RoleProvider = RoleContext.Provider;

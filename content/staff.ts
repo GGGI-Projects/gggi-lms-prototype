@@ -40,11 +40,69 @@ export type { StaffRole };
 
 export type StaffStatus = "active" | "invited" | "suspended";
 
+/* ------------------------------------------------------------ credentials */
+
+export type QualificationEntry = {
+  id: string;
+  qualification: string;
+  institution: string;
+  year: string;
+};
+
+export type ExperienceEntry = {
+  id: string;
+  role: string;
+  organisation: string;
+  /** Free text rather than two ISO dates - a CV entry is "2019-present", not
+   *  a date range a picker would produce. */
+  period: string;
+  description?: string;
+};
+
+export type PublicationEntry = {
+  id: string;
+  title: string;
+  publisher: string;
+  year: string;
+  /** A link to the piece itself, where one exists. */
+  url?: string;
+};
+
+export type AchievementEntry = {
+  id: string;
+  title: string;
+  year?: string;
+  description?: string;
+};
+
+/**
+ * A lecturer's credentials - what a learner reads on their public profile
+ * page to judge whether this is someone worth learning from.
+ *
+ * FOUR LISTS, NOT ONE LONG BIO. A bio is the one paragraph everyone reads;
+ * the lists are the evidence for it, and a learner scanning for "has this
+ * person actually done the work" reads the lists, not the prose. Each list
+ * can be empty - see `staff-inst-6` below for a lecturer with no achievements
+ * recorded yet, which is a real and early-career state, not a gap to hide.
+ */
+export type LecturerProfile = {
+  bio: string;
+  qualifications: QualificationEntry[];
+  experience: ExperienceEntry[];
+  publications: PublicationEntry[];
+  achievements: AchievementEntry[];
+};
+
 export type StaffMember = {
   id: string;
   name: string;
-  /** Two letters for the avatar - the prototype ships no photographs. */
+  /** Two letters - the fallback the avatar draws if `avatarUrl` is ever
+   *  missing, which no record below actually leaves it as. */
   initials: string;
+  /** A public headshot photo, sourced from Unsplash for this prototype (see
+   *  the note in `components/student-portal/ui.tsx`'s `Avatar`) - a real
+   *  build would swap these for the person's own uploaded photo. */
+  avatarUrl: string;
   email: string;
   role: StaffRole;
   /** What they do, in their own organisation's words. */
@@ -65,6 +123,14 @@ export type StaffMember = {
    * exists to fix.
    */
   moduleIds?: string[];
+  /**
+   * Lecturers only: their public profile, set by an administrator when the
+   * account is appointed (see FR-INS-201 in the SRS) and managed by the
+   * lecturer themselves from then on. Every lecturer below carries one,
+   * because it is mandatory at creation - there is no lecturer account on
+   * this platform without one.
+   */
+  profile?: LecturerProfile;
 };
 
 export const STAFF: StaffMember[] = [
@@ -72,6 +138,8 @@ export const STAFF: StaffMember[] = [
     id: "staff-super",
     name: "Ruwan Jayasuriya",
     initials: "RJ",
+    avatarUrl:
+      "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=256&h=256&fit=crop&crop=faces&auto=format&q=80",
     email: "ruwan.jayasuriya@example.lk",
     role: "super-admin",
     title: "Platform owner",
@@ -84,6 +152,8 @@ export const STAFF: StaffMember[] = [
     id: "staff-admin-1",
     name: "Chathuri Wijesinghe",
     initials: "CW",
+    avatarUrl:
+      "https://images.unsplash.com/photo-1541101767792-f9b2b1c4f127?w=256&h=256&fit=crop&crop=faces&auto=format&q=80",
     email: "chathuri.wijesinghe@example.lk",
     role: "admin",
     title: "Module operations lead",
@@ -96,6 +166,8 @@ export const STAFF: StaffMember[] = [
     id: "staff-admin-2",
     name: "Dilan Fernando",
     initials: "DF",
+    avatarUrl:
+      "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=256&h=256&fit=crop&crop=faces&auto=format&q=80",
     email: "dilan.fernando@example.lk",
     role: "admin",
     title: "Learner support",
@@ -111,6 +183,8 @@ export const STAFF: StaffMember[] = [
     id: "staff-admin-3",
     name: "Ayesha Nazeer",
     initials: "AN",
+    avatarUrl:
+      "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=256&h=256&fit=crop&crop=faces&auto=format&q=80",
     email: "ayesha.nazeer@example.lk",
     role: "admin",
     title: "Monitoring & evaluation",
@@ -123,6 +197,8 @@ export const STAFF: StaffMember[] = [
     id: "staff-inst-1",
     name: "Malika Ratnayake",
     initials: "MR",
+    avatarUrl:
+      "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=256&h=256&fit=crop&crop=faces&auto=format&q=80",
     email: "malika.ratnayake@example.lk",
     role: "lecturer",
     title: "Climate adaptation specialist",
@@ -131,11 +207,31 @@ export const STAFF: StaffMember[] = [
     createdBy: "staff-super",
     lastActive: "2026-08-15",
     moduleIds: ["climate-vulnerability-assessment"],
+    profile: {
+      bio: "Malika has spent twelve years working on climate risk assessment across Sri Lanka's coastal and dry-zone districts, most recently leading the technical team behind the National Adaptation Plan's vulnerability baseline. She trained as a hydrologist before moving into policy-facing advisory work.",
+      qualifications: [
+        { id: "mr-q1", qualification: "MSc, Water Resources Engineering", institution: "University of Moratuwa", year: "2013" },
+        { id: "mr-q2", qualification: "BSc (Hons), Civil Engineering", institution: "University of Peradeniya", year: "2010" },
+      ],
+      experience: [
+        { id: "mr-e1", role: "Senior Technical Adviser, Climate Risk", organisation: "Ministry of Environment", period: "2019-present", description: "Leads the technical working group behind the National Adaptation Plan's vulnerability assessments." },
+        { id: "mr-e2", role: "Hydrologist", organisation: "Irrigation Department", period: "2013-2019", description: "Flood modelling and hazard mapping for six river basins." },
+      ],
+      publications: [
+        { id: "mr-p1", title: "Composite Vulnerability Indices for Divisional-Scale Planning in Sri Lanka", publisher: "Journal of South Asian Climate Policy", year: "2022" },
+        { id: "mr-p2", title: "Field Verification Protocols for Desk-Based Hazard Data", publisher: "National Adaptation Plan Technical Series", year: "2020" },
+      ],
+      achievements: [
+        { id: "mr-a1", title: "Lead author, Sri Lanka's second National Communication vulnerability chapter", year: "2021" },
+      ],
+    },
   },
   {
     id: "staff-inst-2",
     name: "Suresh Kumaraswamy",
     initials: "SK",
+    avatarUrl:
+      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=256&h=256&fit=crop&crop=faces&auto=format&q=80",
     email: "suresh.kumaraswamy@example.lk",
     role: "lecturer",
     title: "Provincial planning officer",
@@ -144,6 +240,23 @@ export const STAFF: StaffMember[] = [
     createdBy: "staff-super",
     lastActive: "2026-08-13",
     moduleIds: ["provincial-adaptation-plan"],
+    profile: {
+      bio: "Suresh has worked inside provincial administration for over fifteen years, most of that time translating national policy into budgets a divisional secretariat can actually act on. He teaches from the inside of the process he describes.",
+      qualifications: [
+        { id: "sk-q1", qualification: "MPA, Public Administration", institution: "University of Sri Jayewardenepura", year: "2011" },
+        { id: "sk-q2", qualification: "BA (Hons), Economics", institution: "University of Colombo", year: "2007" },
+      ],
+      experience: [
+        { id: "sk-e1", role: "Assistant Director, Provincial Planning", organisation: "Southern Provincial Council", period: "2016-present" },
+        { id: "sk-e2", role: "Planning Officer", organisation: "Galle District Secretariat", period: "2009-2016" },
+      ],
+      publications: [
+        { id: "sk-p1", title: "Sequencing Provincial Adaptation Budgets Across the Fiscal Cycle", publisher: "Provincial Governance Review", year: "2023" },
+      ],
+      achievements: [
+        { id: "sk-a1", title: "Designed the localisation template now used by four provincial councils", year: "2021" },
+      ],
+    },
   },
   {
     // Two modules, one of them the unpublished draft. The lecturers list
@@ -152,6 +265,8 @@ export const STAFF: StaffMember[] = [
     id: "staff-inst-3",
     name: "Anoma Herath",
     initials: "AH",
+    avatarUrl:
+      "https://images.unsplash.com/photo-1541823709867-1b206113eafd?w=256&h=256&fit=crop&crop=faces&auto=format&q=80",
     email: "anoma.herath@example.lk",
     role: "lecturer",
     title: "Gender and social inclusion adviser",
@@ -160,11 +275,32 @@ export const STAFF: StaffMember[] = [
     createdBy: "staff-admin-1",
     lastActive: "2026-08-15",
     moduleIds: ["gender-social-inclusion", "green-buildings"],
+    profile: {
+      bio: "Anoma has advised on gender and social inclusion for national ministries, provincial councils and two multilateral-funded programmes over a fourteen-year career. Her work focuses on turning inclusion requirements into decisions a budget officer or a procurement panel can actually check.",
+      qualifications: [
+        { id: "ah-q1", qualification: "MSc, Gender and Development", institution: "University of Colombo", year: "2012" },
+        { id: "ah-q2", qualification: "BA (Hons), Sociology", institution: "University of Kelaniya", year: "2009" },
+      ],
+      experience: [
+        { id: "ah-e1", role: "Gender and Social Inclusion Adviser", organisation: "Ministry of Women and Child Affairs", period: "2020-present" },
+        { id: "ah-e2", role: "GSI Focal Point", organisation: "UNDP Sri Lanka", period: "2015-2020", description: "Led GSI mainstreaming across three provincial adaptation programmes." },
+      ],
+      publications: [
+        { id: "ah-p1", title: "From Annex to Decision Point: Making GSI Requirements Operational", publisher: "Journal of Inclusive Development Practice", year: "2023" },
+        { id: "ah-p2", title: "Reading a Budget for Who It Reaches", publisher: "Gender-Responsive Budgeting Practice Notes", year: "2021" },
+      ],
+      achievements: [
+        { id: "ah-a1", title: "Designed the consultation-format guidance used across the Ministry's provincial programmes", year: "2022" },
+        { id: "ah-a2", title: "Shortlisted, Public Service Innovation Awards", year: "2020" },
+      ],
+    },
   },
   {
     id: "staff-inst-4",
     name: "Nuwan de Silva",
     initials: "ND",
+    avatarUrl:
+      "https://images.unsplash.com/photo-1552058544-f2b08422138a?w=256&h=256&fit=crop&crop=faces&auto=format&q=80",
     email: "nuwan.desilva@example.lk",
     role: "lecturer",
     title: "Development finance economist",
@@ -173,11 +309,30 @@ export const STAFF: StaffMember[] = [
     createdBy: "staff-admin-1",
     lastActive: "2026-08-09",
     moduleIds: ["bankable-climate-finance-proposals"],
+    profile: {
+      bio: "Nuwan structures climate finance proposals for government agencies and moves them through appraisal at multilateral funds. He has sat on both sides of the reviewer's desk, which shapes how he teaches what actually gets a proposal declined.",
+      qualifications: [
+        { id: "nd-q1", qualification: "MSc, Development Finance", institution: "SOAS University of London", year: "2014" },
+        { id: "nd-q2", qualification: "BSc (Hons), Economics", institution: "University of Colombo", year: "2010" },
+      ],
+      experience: [
+        { id: "nd-e1", role: "Development Finance Economist", organisation: "Department of National Planning", period: "2018-present" },
+        { id: "nd-e2", role: "Investment Officer", organisation: "Development Finance Corporation of Ceylon", period: "2014-2018" },
+      ],
+      publications: [
+        { id: "nd-p1", title: "What Makes a Climate Project Bankable, Not Just Worthwhile", publisher: "Climate Finance Quarterly", year: "2022" },
+      ],
+      achievements: [
+        { id: "nd-a1", title: "Structured financing for three approved GCF-funded proposals", year: "2023" },
+      ],
+    },
   },
   {
     id: "staff-inst-5",
     name: "Tharindu Bandara",
     initials: "TB",
+    avatarUrl:
+      "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=256&h=256&fit=crop&crop=faces&auto=format&q=80",
     email: "tharindu.bandara@example.lk",
     role: "lecturer",
     title: "Public finance specialist",
@@ -186,6 +341,23 @@ export const STAFF: StaffMember[] = [
     createdBy: "staff-admin-1",
     lastActive: "2026-07-30",
     moduleIds: ["gender-responsive-budgeting"],
+    profile: {
+      bio: "Tharindu has audited and advised on gender-responsive budgeting for provincial and national budget circulars for close to a decade, and reads a budget line the way most people read a balance sheet.",
+      qualifications: [
+        { id: "tb-q1", qualification: "MSc, Public Finance", institution: "University of Colombo", year: "2015" },
+        { id: "tb-q2", qualification: "BSc (Hons), Business Administration", institution: "University of Sri Jayewardenepura", year: "2012" },
+      ],
+      experience: [
+        { id: "tb-e1", role: "Public Finance Specialist", organisation: "Ministry of Finance", period: "2019-present" },
+        { id: "tb-e2", role: "Budget Analyst", organisation: "National Budget Department", period: "2015-2019" },
+      ],
+      publications: [
+        { id: "tb-p1", title: "Three Reasons a Gender-Responsive Budget Submission Gets Returned", publisher: "Public Finance Practice Notes", year: "2022" },
+      ],
+      achievements: [
+        { id: "tb-a1", title: "Co-authored the GSI compliance checklist now used in the national budget circular", year: "2021" },
+      ],
+    },
   },
   {
     // Appointed, never assigned. The lecturer console has to have something
@@ -193,6 +365,8 @@ export const STAFF: StaffMember[] = [
     id: "staff-inst-6",
     name: "Fathima Rizwan",
     initials: "FR",
+    avatarUrl:
+      "https://images.unsplash.com/photo-1601412436009-d964bd02edbc?w=256&h=256&fit=crop&crop=faces&auto=format&q=80",
     email: "fathima.rizwan@example.lk",
     role: "lecturer",
     title: "Social development researcher",
@@ -201,6 +375,23 @@ export const STAFF: StaffMember[] = [
     createdBy: "staff-admin-1",
     lastActive: null,
     moduleIds: [],
+    profile: {
+      bio: "Fathima researches social development outcomes across rural service delivery programmes, with a particular interest in how monitoring data is collected and used.",
+      qualifications: [
+        { id: "fr-q1", qualification: "MSc, Social Policy and Development", institution: "London School of Economics", year: "2021" },
+        { id: "fr-q2", qualification: "BA (Hons), Development Studies", institution: "University of Colombo", year: "2018" },
+      ],
+      experience: [
+        { id: "fr-e1", role: "Research Associate", organisation: "Centre for Poverty Analysis", period: "2021-present" },
+      ],
+      publications: [
+        { id: "fr-p1", title: "Sex-Disaggregated Data in Rural Service Delivery: What Already Exists", publisher: "Centre for Poverty Analysis Working Paper Series", year: "2023" },
+      ],
+      // Newly appointed, never active - a lecturer this early in their console
+      // life genuinely has no recorded achievements yet, which is why this
+      // list is the one left empty rather than padded to match the others.
+      achievements: [],
+    },
   },
 ];
 

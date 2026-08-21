@@ -24,11 +24,12 @@ export const metadata: Metadata = { title: "Platform settings" };
  * beside them - see `<SettingsGate>`.
  *
  * The order is the order these get asked about: what the platform is called,
- * who may join, what a certificate means, what happens to a review, and what
- * lands in somebody's inbox.
+ * who may join, what a certificate means, what happens to a review, what
+ * lands in somebody's inbox, and last, what the floating assistant is
+ * allowed to tell a learner.
  */
 export default function SettingsPage() {
-  const { general, enrolment, certificates, moderation, email } =
+  const { general, enrolment, certificates, moderation, email, chatbot } =
     PLATFORM_SETTINGS;
 
   return (
@@ -132,15 +133,15 @@ export default function SettingsPage() {
               </select>
               <span className={`mt-2 block ${META.base}`}>
                 One number for every quiz on the platform, and for the
-                written questions attached to any of them. Raising it does
-                not withdraw certificates already issued.
+                fill-in-the-blank questions attached to any of them. Raising
+                it does not withdraw certificates already issued.
               </span>
             </label>
 
             <Toggle
               name="issue-on-completion"
               label="Issue automatically on completion"
-              description="The certificate appears the moment the last quiz - and any written questions with it - is passed. Switching this off means somebody has to approve each one, and that queue is nobody's job."
+              description="The certificate appears the moment the last quiz - and any fill-in-the-blank questions with it - is passed. Switching this off means somebody has to approve each one, and that queue is nobody's job."
               defaultChecked={certificates.issueOnCompletion}
             />
             <Toggle
@@ -222,6 +223,33 @@ export default function SettingsPage() {
               <span className={`mt-2 block ${META.base}`}>
                 One message, once. A platform that emails somebody weekly about
                 a course they abandoned is a platform they filter.
+              </span>
+            </label>
+          </SettingsGroup>
+        </SettingsGate>
+
+        <SettingsGate>
+          <SettingsGroup
+            title="Chatbot"
+            description="What the floating assistant on the learner portal is allowed to tell somebody who asks it a question."
+          >
+            <label className="block">
+              <span className="mb-2 block text-lg font-semibold text-ink">
+                Knowledge base
+              </span>
+              <textarea
+                rows={10}
+                defaultValue={chatbot.knowledgeBase}
+                className="field"
+              />
+              <span className={`mt-2 block ${META.base}`}>
+                One paragraph, in plain words. The assistant answers by
+                finding the sentence here that best matches a learner&rsquo;s
+                question - it never reaches any other part of the platform,
+                so anything a learner should be able to ask about needs to be
+                written into this paragraph. A question nothing here answers
+                gets an honest &ldquo;I don&rsquo;t know&rdquo; that points
+                the learner at messaging a lecturer instead, never a guess.
               </span>
             </label>
           </SettingsGroup>

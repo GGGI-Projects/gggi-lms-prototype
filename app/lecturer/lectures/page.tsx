@@ -177,7 +177,7 @@ export default function LecturerLecturesPage() {
                 {[
                   "A video or a piece of reading, and the argument written out.",
                   "Whatever the learner takes away - attached from the library rather than uploaded twice.",
-                  "Four questions, each with the correct answer marked and an explanation for staff - written questions are optional on top.",
+                  "Four questions, each with the correct answer marked and an explanation for staff - fill-in-the-blank questions are optional on top.",
                   "A study time that keeps the module's total honest.",
                 ].map((line) => (
                   <li key={line} className="flex items-start gap-3">

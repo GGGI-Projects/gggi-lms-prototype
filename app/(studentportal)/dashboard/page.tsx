@@ -62,9 +62,10 @@ export default function DashboardPage() {
   const activity = recentActivity();
 
   // Lectures finished whose gate is still not cleared - quiz unpassed, or
-  // (where the lecture has any) written questions unpassed. This is the one
-  // thing on the platform that is genuinely outstanding - everything else is
-  // optional - so it gets a panel rather than a line in the activity feed.
+  // (where the lecture has any) fill-in-the-blank questions unpassed. This is
+  // the one thing on the platform that is genuinely outstanding - everything
+  // else is optional - so it gets a panel rather than a line in the activity
+  // feed.
   const outstanding = allQuizzes().filter(
     (quiz) => quiz.lectureCompleted && !quiz.gateCleared,
   );
@@ -304,8 +305,8 @@ function OutstandingQuizzes({
               </span>
               <p className={BODY.base}>
                 Nothing outstanding. Every lecture you have finished has a
-                passed quiz - and any written questions it carries - behind
-                it.
+                passed quiz - and any fill-in-the-blank questions it carries -
+                behind it.
               </p>
             </div>
           </Panel>

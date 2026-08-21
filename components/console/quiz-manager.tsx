@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { BODY, CONSOLE, META } from "@/lib/theme";
-import type { Question, WrittenQuestion } from "@/content/portal";
+import type { FillInTheBlankQuestion, Question } from "@/content/portal";
 import type { QuizStats } from "@/content/operations";
+import { optionBankFor, passageSegments } from "@/lib/portal";
 import {
   PASS_RATE_FLOOR,
   quizNeedsAttention,
@@ -18,12 +19,12 @@ import {
 } from "@/components/console/ui";
 import { ConfirmAction } from "@/components/console/actions";
 import {
+  AddBlankQuestionAction,
   AddQuestionAction,
-  AddWrittenQuestionAction,
+  EditBlankQuestionAction,
   EditQuestionAction,
-  EditWrittenQuestionAction,
+  RemoveBlankQuestionAction,
   RemoveQuestionAction,
-  RemoveWrittenQuestionAction,
 } from "@/components/console/add-question-action";
 import { IfCan, LockedNote } from "@/components/console/permission";
 import { ExternalIcon } from "@/components/console/icons";
@@ -248,10 +249,10 @@ export function QuizManager({
             </h2>
             <p className={`mt-3 ${BODY.base}`}>
               Pass mark, attempt limit and time limit are one set of rules for
-              every quiz on the platform - and for any written questions
-              attached to one. A quiz that could set its own would make a
-              certificate mean something different depending on which lecture
-              it came through.
+              every quiz on the platform - and for any fill-in-the-blank
+              questions attached to one. A quiz that could set its own would
+              make a certificate mean something different depending on which
+              lecture it came through.
             </p>
             {hrefs.settings ? (
               <Link
@@ -306,15 +307,15 @@ export function QuizHeaderMeta({
   questions,
   passMark,
   stats,
-  writtenCount,
+  blankCount,
 }: {
   questions: number;
   passMark: number;
   stats: QuizStats | null;
-  /** Chip is left out entirely when a lecture has no written questions -
-   *  most do not, and a "0 written questions" badge on every other quiz
-   *  screen would train people to stop reading that row. */
-  writtenCount?: number;
+  /** Chip is left out entirely when a lecture has no fill-in-the-blank
+   *  questions - most do not, and a "0 fill-in-the-blank questions" badge on
+   *  every other quiz screen would train people to stop reading that row. */
+  blankCount?: number;
 }) {
   return (
     <>
@@ -327,41 +328,47 @@ export function QuizHeaderMeta({
       ) : (
         <Badge tone="neutral">No results recorded</Badge>
       )}
-      {writtenCount ? (
+      {blankCount ? (
         <Badge tone="active">
-          + {writtenCount} written question{writtenCount === 1 ? "" : "s"}
+          + {blankCount} fill-in-the-blank question{blankCount === 1 ? "" : "s"}
         </Badge>
       ) : null}
     </>
   );
 }
 
-/* ============================================== written questions manager */
+/* ========================================= fill-in-the-blank questions manager */
 
 /**
- * A lecture's written questions - its own section, not folded into
+ * A lecture's fill-in-the-blank questions - its own section, not folded into
  * `<QuizManager>` above.
  *
  * OPTIONAL, AND SAID SO. Every lecture has a multiple-choice quiz; only some
- * have written questions, and this section's empty state is the normal case
- * for most lectures, not a gap waiting to be filled - the wording says that
- * plainly rather than nagging a lecturer to add questions their lecture
- * does not need.
+ * have fill-in-the-blank questions, and this section's empty state is the
+ * normal case for most lectures, not a gap waiting to be filled - the
+ * wording says that plainly rather than nagging a lecturer to add questions
+ * their lecture does not need.
  *
  * THE GATE IS EXPLAINED HERE TOO, because this is where a lecturer decides
- * to add the thing that changes it: writing even one written question turns
- * on a second, mandatory step between this lecture's quiz and the next
- * lecture - see `lectureGateCleared()` in `lib/portal.ts`. That is worth
- * saying next to the button that causes it, not only in a document nobody
- * writing a question that afternoon has open.
+ * to add the thing that changes it: writing even one fill-in-the-blank
+ * question turns on a second, mandatory step between this lecture's quiz and
+ * the next lecture - see `lectureGateCleared()` in `lib/portal.ts`. That is
+ * worth saying next to the button that causes it, not only in a document
+ * nobody writing a question that afternoon has open.
+ *
+ * THE PASSAGE IS SHOWN WITH ITS BLANKS HIGHLIGHTED, the correct word or
+ * sentence visible in place, same rule as the multiple-choice answer above -
+ * staff-facing only, so a lecturer can check a blank makes sense without
+ * hunting for it in the authoring drawer. The word bank underneath is
+ * exactly what a learner sees, correct answers and distractors together.
  */
-export function WrittenQuestionsManager({
+export function FillInTheBlankQuestionsManager({
   questions,
   stats,
   passMark,
   capability,
 }: {
-  questions: WrittenQuestion[];
+  questions: FillInTheBlankQuestion[];
   stats: QuizStats | null;
   passMark: number;
   capability: Capability;
@@ -370,8 +377,8 @@ export function WrittenQuestionsManager({
 
   return (
     <Section
-      title="Written questions"
-      description={`Optional - a lecture is complete without any. Add two-to-three sentence explanation questions where the multiple-choice quiz cannot tell whether an idea actually landed - as soon as one exists, a learner must pass it at ${passMark}%, the same platform-wide mark as the quiz, before the next lecture opens.`}
+      title="Fill-in-the-blank questions"
+      description={`Optional - a lecture is complete without any. Write a short passage and pick out which words or sentences are blanked - as soon as one exists, a learner must pass it at ${passMark}%, the same platform-wide mark as the quiz, before the next lecture opens.`}
     >
       {questions.length ? (
         <>
@@ -395,10 +402,10 @@ export function WrittenQuestionsManager({
           {struggling && stats ? (
             <div className="mb-4">
               <Callout title="These are sending people back too">
-                {stats.passRate}% pass at the first attempt. The keywords
-                checked are shown below each question - a low pass rate here
-                usually means the required words are stricter than the
-                explanation actually needs, not that the answers are wrong.
+                {stats.passRate}% pass at the first attempt. Every blank has
+                to be filled correctly to pass the question - a low pass rate
+                here usually means a distractor is too close to a real
+                answer, not that the passage is too hard.
               </Callout>
             </div>
           ) : null}
@@ -409,39 +416,44 @@ export function WrittenQuestionsManager({
                 key={question.id}
                 className="rounded-sm border border-surface-deep bg-paper-raised p-6"
               >
-                <p className="text-lg font-semibold leading-snug text-ink">
-                  {index + 1}. {question.prompt}
+                <p className="text-lg leading-loose text-ink">
+                  {index + 1}.{" "}
+                  {passageSegments(question).map((segment, i) =>
+                    segment.kind === "text" ? (
+                      <span key={i}>{segment.text}</span>
+                    ) : (
+                      <span
+                        key={i}
+                        className="mx-0.5 rounded-sm bg-tint-mist px-1.5 py-0.5 font-semibold text-primary"
+                      >
+                        {segment.blank.answer}
+                      </span>
+                    ),
+                  )}
                 </p>
 
-                <div className="mt-4 flex flex-wrap items-center gap-2">
-                  {question.keywords.map((keyword) => (
+                <p className={`mt-4 border-t border-surface-deep pt-3 ${META.base}`}>
+                  Word bank shown to the learner:
+                </p>
+                <div className="mt-2 flex flex-wrap items-center gap-2">
+                  {optionBankFor(question).map((option, i) => (
                     <span
-                      key={keyword}
+                      key={`${option}-${i}`}
                       className="rounded-full bg-tint-mist px-3 py-1 text-sm font-medium text-ink"
                     >
-                      {keyword}
+                      {option}
                     </span>
                   ))}
                 </div>
-                <p className={`mt-2 ${META.base}`}>
-                  {question.minMatches} of {question.keywords.length} have to
-                  appear to pass.
-                </p>
-
-                <p
-                  className={`mt-4 border-t border-surface-deep pt-3 ${META.base}`}
-                >
-                  Model answer: {question.modelAnswer}
-                </p>
 
                 <IfCan capability={capability}>
                   <div className="mt-4 flex flex-wrap items-center gap-3 border-t border-surface-deep pt-4">
-                    <EditWrittenQuestionAction
+                    <EditBlankQuestionAction
                       question={question}
                       number={index + 1}
                       capability={capability}
                     />
-                    <RemoveWrittenQuestionAction
+                    <RemoveBlankQuestionAction
                       number={index + 1}
                       capability={capability}
                     />
@@ -455,23 +467,23 @@ export function WrittenQuestionsManager({
         <p
           className={`rounded-sm border border-dashed border-muted-light bg-paper-raised px-6 py-12 text-center ${BODY.base}`}
         >
-          No written questions on this lecture - that is the normal case.
-          Add some only where a multiple-choice question cannot tell whether
-          the idea actually landed.
+          No fill-in-the-blank questions on this lecture - that is the normal
+          case. Add one only where a multiple-choice question cannot tell
+          whether the idea actually landed.
         </p>
       )}
 
       {questions.length < 4 ? (
         <div className="mt-4">
-          <AddWrittenQuestionAction
+          <AddBlankQuestionAction
             capability={capability}
             nextNumber={questions.length + 1}
           />
         </div>
       ) : (
         <p className={`mt-4 ${META.base}`}>
-          Four written questions is the limit - this stays a short check, not
-          a second quiz.
+          Four fill-in-the-blank questions is the limit - this stays a short
+          check, not a second quiz.
         </p>
       )}
     </Section>

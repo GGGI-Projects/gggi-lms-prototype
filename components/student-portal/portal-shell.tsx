@@ -7,12 +7,15 @@ import { BRAND } from "@/lib/brand";
 import { LeafMark } from "@/components/art/scenes";
 import { LEARNER } from "@/content/portal";
 import { PORTAL_NAV, isActive } from "@/components/student-portal/nav";
-import { InitialsAvatar } from "@/components/student-portal/ui";
-import { BellIcon, SignOutIcon } from "@/components/student-portal/icons";
+import { Avatar } from "@/components/student-portal/ui";
+import { SignOutIcon } from "@/components/student-portal/icons";
 import { RailShell, RailGroup } from "@/components/shell/rail-shell";
 import { RailLink } from "@/components/shell/rail-link";
 import { MobileNavDrawer } from "@/components/shell/mobile-nav-drawer";
 import { TopbarShell } from "@/components/shell/topbar-shell";
+import { NotificationBell } from "@/components/notifications/notification-bell";
+import { ChatbotWidget } from "@/components/student-portal/chatbot-widget";
+import type { NotificationSummary } from "@/lib/comms";
 
 /**
  * The frame every signed-in screen sits in.
@@ -38,7 +41,21 @@ import { TopbarShell } from "@/components/shell/topbar-shell";
  * and the drawer has to open - both of which are state. The pages it wraps stay
  * server components; `children` passes straight through.
  */
-export function PortalShell({ children }: { children: ReactNode }) {
+export function PortalShell({
+  notifications,
+  chatbotKnowledgeBase,
+  children,
+}: {
+  /** Read on the server - see `feedForStudent` and `summariseFeed` in
+   *  `lib/comms.ts` - and handed down, same reason as everything else this
+   *  shell is given rather than looking up itself. */
+  notifications: NotificationSummary[];
+  /** The floating assistant's entire knowledge, read server-side from
+   *  `PLATFORM_SETTINGS.chatbot` and handed down for the same reason as
+   *  `notifications` above - see `ChatbotWidget`. */
+  chatbotKnowledgeBase: string;
+  children: ReactNode;
+}) {
   const pathname = usePathname();
 
   /**
@@ -81,7 +98,10 @@ export function PortalShell({ children }: { children: ReactNode }) {
       </MobileNavDrawer>
 
       <div className="flex flex-1 flex-col lg:pl-(--rail)">
-        <Topbar onMenu={() => setMenu({ open: true, path: pathname })} />
+        <Topbar
+          notifications={notifications}
+          onMenu={() => setMenu({ open: true, path: pathname })}
+        />
 
         {/* `min-w-0` is load-bearing: without it a wide child - the lecture
             page's materials table, a long reference number - stretches the
@@ -89,6 +109,8 @@ export function PortalShell({ children }: { children: ReactNode }) {
             page gains a horizontal scrollbar. */}
         <main className="min-w-0 flex-1 pb-24">{children}</main>
       </div>
+
+      <ChatbotWidget knowledgeBase={chatbotKnowledgeBase} />
     </div>
   );
 }
@@ -144,7 +166,11 @@ function LearnerCard() {
   return (
     <div className="shrink-0 border-t border-primary-800/80 px-4 py-4">
       <div className="flex items-center gap-3 rounded-sm px-3 py-2">
-        <InitialsAvatar initials={LEARNER.initials} className="size-10 text-lg" />
+        <Avatar
+          src={LEARNER.avatarUrl}
+          initials={LEARNER.initials}
+          className="size-10 text-lg"
+        />
         <div className="min-w-0 flex-1">
           <p className="truncate font-semibold text-paper">{LEARNER.name}</p>
           <p className="truncate text-sm text-primary-500">{LEARNER.role}</p>
@@ -166,7 +192,13 @@ function LearnerCard() {
 
 /* ------------------------------------------------------------------ topbar */
 
-function Topbar({ onMenu }: { onMenu: () => void }) {
+function Topbar({
+  notifications,
+  onMenu,
+}: {
+  notifications: NotificationSummary[];
+  onMenu: () => void;
+}) {
   return (
     <TopbarShell
       onMenu={onMenu}
@@ -190,25 +222,17 @@ function Topbar({ onMenu }: { onMenu: () => void }) {
       }
       actions={
         <>
-          {/* Decorative in the prototype - it has no index behind it - but
-              the portal is unreadable as a design without it. */}
-          <button
-            type="button"
-            aria-label="Notifications"
-            className="relative grid size-10 place-items-center rounded-sm text-ink-soft transition-colors hover:bg-surface hover:text-ink"
-          >
-            <BellIcon className="size-5" />
-            <span
-              aria-hidden="true"
-              className="absolute right-2 top-2 size-2 rounded-full bg-accent ring-2 ring-paper"
-            />
-          </button>
+          <NotificationBell items={notifications} seeAllHref="/notifications" />
 
           <Link
             href="/profile"
             className="flex items-center gap-2.5 rounded-full py-1 pl-1 pr-1 transition-colors hover:bg-surface sm:pr-4"
           >
-            <InitialsAvatar initials={LEARNER.initials} className="size-9 text-base" />
+            <Avatar
+              src={LEARNER.avatarUrl}
+              initials={LEARNER.initials}
+              className="size-9 text-base"
+            />
             <span className="hidden text-lg font-semibold text-ink sm:inline">
               {LEARNER.name.split(" ")[0]}
             </span>

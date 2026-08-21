@@ -3,17 +3,17 @@ import { notFound } from "next/navigation";
 import { MANAGED_MODULES } from "@/content/staff";
 import { LECTURES } from "@/content/curriculum";
 import {
+  blankStatsFor,
   consoleLectures,
   managedModule,
   quizStatsFor,
-  writtenStatsFor,
 } from "@/lib/admin";
-import { PASS_MARK, quizFor, writtenQuestionsFor } from "@/lib/portal";
+import { PASS_MARK, quizFor, blankQuestionsFor } from "@/lib/portal";
 import { PageBody, PageHeader } from "@/components/console/ui";
 import {
+  FillInTheBlankQuestionsManager,
   QuizHeaderMeta,
   QuizManager,
-  WrittenQuestionsManager,
 } from "@/components/console/quiz-manager";
 
 type Params = { params: Promise<{ moduleId: string; lectureId: string }> };
@@ -53,9 +53,9 @@ export default async function AdminQuizPage({ params }: Params) {
     LECTURES[moduleId]?.find((entry) => entry.id === lectureId),
   );
   const questions = hasContent ? quizFor(moduleId, lectureId) : [];
-  const written = hasContent ? writtenQuestionsFor(lectureId) : [];
+  const blanks = hasContent ? blankQuestionsFor(lectureId) : [];
   const stats = quizStatsFor(lectureId);
-  const writtenStats = writtenStatsFor(lectureId);
+  const blankStats = blankStatsFor(lectureId);
   const live = mdl.status === "published" && mod.state === "published";
   const base = `/admin/modules/${mdl.id}`;
 
@@ -68,13 +68,13 @@ export default async function AdminQuizPage({ params }: Params) {
         }}
         eyebrow="Lecture quiz"
         title={`Quiz - ${mod.title}`}
-        lead={`${mdl.title}. Unlimited attempts, no timer, and one pass mark for the whole platform${written.length ? ` - applied the same way to the ${written.length} written question${written.length === 1 ? "" : "s"} below the multiple choice` : ""}.`}
+        lead={`${mdl.title}. Unlimited attempts, no timer, and one pass mark for the whole platform${blanks.length ? ` - applied the same way to the ${blanks.length} fill-in-the-blank question${blanks.length === 1 ? "" : "s"} below the multiple choice` : ""}.`}
         meta={
           <QuizHeaderMeta
             questions={questions.length}
             passMark={PASS_MARK}
             stats={stats}
-            writtenCount={written.length}
+            blankCount={blanks.length}
           />
         }
       />
@@ -97,9 +97,9 @@ export default async function AdminQuizPage({ params }: Params) {
       />
 
       <div className="mt-12">
-        <WrittenQuestionsManager
-          questions={written}
-          stats={writtenStats}
+        <FillInTheBlankQuestionsManager
+          questions={blanks}
+          stats={blankStats}
           passMark={PASS_MARK}
           capability="authorLectures"
         />

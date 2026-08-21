@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { ConsoleShell } from "@/components/console/console-shell";
 import { consoleAccounts } from "@/lib/admin";
-import { pendingReviewCount } from "@/lib/admin";
+import { sessionNotifications } from "@/lib/comms";
 
 /**
  * The administration console.
@@ -31,7 +31,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
     <ConsoleShell
       area="admin"
       accounts={consoleAccounts()}
-      pendingReviews={pendingReviewCount()}
+      notifications={sessionNotifications()}
     >
       {children}
     </ConsoleShell>

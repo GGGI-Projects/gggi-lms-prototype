@@ -4,9 +4,17 @@ import { useState, type ReactNode } from "react";
 import { ActionButton } from "@/components/ui/action-button";
 import { BODY, HEADING, META } from "@/lib/theme";
 import { CheckIcon, CloseIcon } from "@/components/student-portal/icons";
-import { InitialsAvatar } from "@/components/student-portal/ui";
+import { Avatar } from "@/components/student-portal/ui";
 import { AlertIcon, LockIcon } from "@/components/console/icons";
 import { useLockedGroup } from "@/components/console/locked-context";
+import { EntryListBuilder } from "@/components/console/profile-entries";
+import {
+  ACHIEVEMENT_FIELDS,
+  EXPERIENCE_FIELDS,
+  PUBLICATION_FIELDS,
+  QUALIFICATION_FIELDS,
+  type EntryValues,
+} from "@/lib/profile-fields";
 
 /**
  * The console's verbs.
@@ -364,6 +372,15 @@ export function AssignModules({
  * act - name, email, role, and for a lecturer the modules they start
  * with. What differs is who is allowed to press it, and that is decided by the
  * page, not here.
+ *
+ * A LECTURER ALSO CARRIES A FULL PROFILE, MANDATORY AT CREATION - bio,
+ * qualifications, experience, publications, achievements - because this is
+ * a public-facing appointment, not an internal account: a learner reads this
+ * profile from the lecturer's own page before the account exists in any
+ * other sense (see FR-INS-201). THE BUTTON STAYS CLICKABLE EITHER WAY, same
+ * device as the quiz runner's "answer every question first": submitting
+ * with a category still empty does not silently fail, it explains exactly
+ * which ones are missing, right next to the button that failed.
  */
 export function InviteForm({
   kind,
@@ -382,13 +399,35 @@ export function InviteForm({
   formId?: string;
 }) {
   const [sent, setSent] = useState<string | null>(null);
+  const [blocked, setBlocked] = useState(false);
   const [name, setName] = useState("");
+  const [bio, setBio] = useState("");
+  const [qualifications, setQualifications] = useState<EntryValues[]>([]);
+  const [experience, setExperience] = useState<EntryValues[]>([]);
+  const [publications, setPublications] = useState<EntryValues[]>([]);
+  const [achievements, setAchievements] = useState<EntryValues[]>([]);
+
+  const missing =
+    kind === "lecturer"
+      ? [
+          !bio.trim() && "a bio",
+          !qualifications.length && "a qualification",
+          !experience.length && "an experience entry",
+          !publications.length && "a publication",
+          !achievements.length && "an achievement",
+        ].filter((entry): entry is string => Boolean(entry))
+      : [];
 
   return (
     <form
       id={formId}
       onSubmit={(event) => {
         event.preventDefault();
+        if (missing.length) {
+          setBlocked(true);
+          return;
+        }
+        setBlocked(false);
         setSent(name.trim() || `the new ${kind}`);
       }}
     >
@@ -455,12 +494,93 @@ export function InviteForm({
         </fieldset>
       ) : null}
 
+      {kind === "lecturer" ? (
+        <div className="mt-9 space-y-8 border-t border-surface-deep pt-8">
+          <div>
+            <h3 className="text-lg font-semibold text-ink">Public profile</h3>
+            <p className={`mt-1 ${META.base}`}>
+              What a learner reads on this lecturer&rsquo;s own page. Required
+              now, and theirs to keep up to date afterwards.
+            </p>
+          </div>
+
+          <label className="block">
+            <span className="mb-2 block text-lg font-semibold text-ink">Bio</span>
+            <textarea
+              rows={3}
+              value={bio}
+              onChange={(event) => setBio(event.target.value)}
+              placeholder="A short paragraph introducing them - background, what they specialise in, and why."
+              className="field"
+            />
+          </label>
+
+          <div>
+            <h4 className="text-lg font-semibold text-ink">Qualifications</h4>
+            <div className="mt-3">
+              <EntryListBuilder
+                fields={QUALIFICATION_FIELDS}
+                entries={qualifications}
+                onChange={setQualifications}
+                addLabel="Add a qualification"
+              />
+            </div>
+          </div>
+
+          <div>
+            <h4 className="text-lg font-semibold text-ink">Experience</h4>
+            <div className="mt-3">
+              <EntryListBuilder
+                fields={EXPERIENCE_FIELDS}
+                entries={experience}
+                onChange={setExperience}
+                addLabel="Add an experience entry"
+              />
+            </div>
+          </div>
+
+          <div>
+            <h4 className="text-lg font-semibold text-ink">Publications</h4>
+            <div className="mt-3">
+              <EntryListBuilder
+                fields={PUBLICATION_FIELDS}
+                entries={publications}
+                onChange={setPublications}
+                addLabel="Add a publication"
+              />
+            </div>
+          </div>
+
+          <div>
+            <h4 className="text-lg font-semibold text-ink">Achievements</h4>
+            <div className="mt-3">
+              <EntryListBuilder
+                fields={ACHIEVEMENT_FIELDS}
+                entries={achievements}
+                onChange={setAchievements}
+                addLabel="Add an achievement"
+              />
+            </div>
+          </div>
+        </div>
+      ) : null}
+
       {!formId ? (
         <div className="mt-7">
           <ActionButton type="submit" variant="solid" size="sm">
             Send the invitation
           </ActionButton>
         </div>
+      ) : null}
+
+      {blocked ? (
+        <p
+          role="alert"
+          className="mt-6 rounded-sm border border-clay/35 bg-clay-pale px-5 py-4 text-lg leading-relaxed text-clay"
+        >
+          Still missing: {missing.join(", ")}. A lecturer&rsquo;s profile is
+          part of appointing them, not an afterthought.
+        </p>
       ) : null}
 
       {sent ? (
@@ -488,7 +608,7 @@ export function NewModuleForm({
   lecturers,
   formId,
 }: {
-  lecturers: { id: string; name: string; initials: string }[];
+  lecturers: { id: string; name: string; initials: string; avatarUrl: string }[];
   /** See the note on `InviteForm`'s `formId` - same device, same reason: a
    *  drawer's footer submits a form that lives in the scrollable body above
    *  it. Omit for a standalone form, which keeps its own inline button. */
@@ -549,7 +669,8 @@ export function NewModuleForm({
                 className="flex cursor-pointer items-center gap-2.5 rounded-full border border-surface-deep bg-paper py-1.5 pl-2 pr-4 text-lg text-ink-soft transition-colors hover:border-muted-light"
               >
                 <input type="checkbox" className="checkbox" />
-                <InitialsAvatar
+                <Avatar
+                  src={lecturer.avatarUrl}
                   initials={lecturer.initials}
                   tone="light"
                   className="size-7 text-sm"

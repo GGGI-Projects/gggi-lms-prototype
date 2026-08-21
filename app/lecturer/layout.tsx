@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { ConsoleShell } from "@/components/console/console-shell";
-import { consoleAccounts, pendingReviewCount } from "@/lib/admin";
+import { consoleAccounts } from "@/lib/admin";
+import { sessionNotifications } from "@/lib/comms";
 
 /**
  * The lecturer console.
@@ -26,7 +27,7 @@ export default function LecturerLayout({ children }: { children: ReactNode }) {
     <ConsoleShell
       area="lecturer"
       accounts={consoleAccounts()}
-      pendingReviews={pendingReviewCount()}
+      notifications={sessionNotifications()}
     >
       {children}
     </ConsoleShell>

@@ -3,7 +3,7 @@
 import { useId, useState } from "react";
 import { ActionButton } from "@/components/ui/action-button";
 import { Drawer } from "@/components/console/drawer";
-import { InitialsAvatar } from "@/components/student-portal/ui";
+import { Avatar } from "@/components/student-portal/ui";
 import { IfCan, LockedNote } from "@/components/console/permission";
 import { META } from "@/lib/theme";
 import type { Capability } from "@/lib/permissions";
@@ -30,7 +30,13 @@ export function AssignModuleLecturers({
   capability,
 }: {
   moduleTitle: string;
-  lecturers: { id: string; name: string; initials: string; title: string }[];
+  lecturers: {
+    id: string;
+    name: string;
+    initials: string;
+    avatarUrl: string;
+    title: string;
+  }[];
   /** Ids of the lecturers already on this module. */
   assigned: string[];
   capability: Capability;
@@ -107,7 +113,8 @@ export function AssignModuleLecturers({
                       onChange={() => toggle(lecturer.id)}
                       className="checkbox"
                     />
-                    <InitialsAvatar
+                    <Avatar
+                      src={lecturer.avatarUrl}
                       initials={lecturer.initials}
                       tone="light"
                       className="size-9 text-sm"

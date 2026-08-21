@@ -33,6 +33,9 @@ export type StudentRecord = {
   id: string;
   name: string;
   initials: string;
+  /** A public headshot photo, sourced from Unsplash for this prototype - see
+   *  the note in `components/student-portal/ui.tsx`'s `Avatar`. */
+  avatarUrl: string;
   email: string;
   district: string;
   sector: string;
@@ -62,6 +65,8 @@ export const STUDENTS: StudentRecord[] = [
     id: "stu-2041",
     name: "Ishara Wickramasinghe",
     initials: "IW",
+    avatarUrl:
+      "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=256&h=256&fit=crop&crop=faces&auto=format&q=80",
     email: "ishara.w@example.lk",
     district: "Colombo",
     sector: "Government or public sector",
@@ -82,6 +87,8 @@ export const STUDENTS: StudentRecord[] = [
     id: "stu-2040",
     name: "Kasun Ekanayake",
     initials: "KE",
+    avatarUrl:
+      "https://images.unsplash.com/photo-1519345182560-3f2917c472ef?w=256&h=256&fit=crop&crop=faces&auto=format&q=80",
     email: "kasun.ekanayake@example.lk",
     district: "Kandy",
     sector: "Provincial or local authority",
@@ -108,6 +115,8 @@ export const STUDENTS: StudentRecord[] = [
     id: "stu-2039",
     name: "Fathima Ashraff",
     initials: "FA",
+    avatarUrl:
+      "https://images.unsplash.com/photo-1607746882042-944635dfe10e?w=256&h=256&fit=crop&crop=faces&auto=format&q=80",
     email: "fathima.ashraff@example.lk",
     district: "Batticaloa",
     sector: "NGO or development organisation",
@@ -128,6 +137,8 @@ export const STUDENTS: StudentRecord[] = [
     id: "stu-2038",
     name: "Dinesh Rajapaksha",
     initials: "DR",
+    avatarUrl:
+      "https://images.unsplash.com/photo-1517070208541-6ddc4d3efbcb?w=256&h=256&fit=crop&crop=faces&auto=format&q=80",
     email: "dinesh.rajapaksha@example.lk",
     district: "Gampaha",
     sector: "Private sector",
@@ -148,6 +159,8 @@ export const STUDENTS: StudentRecord[] = [
     id: "stu-2037",
     name: "Sanduni Alwis",
     initials: "SA",
+    avatarUrl:
+      "https://images.unsplash.com/photo-1520813792240-56fc4a3765a7?w=256&h=256&fit=crop&crop=faces&auto=format&q=80",
     email: "sanduni.alwis@example.lk",
     district: "Colombo",
     sector: "University or school",
@@ -174,6 +187,8 @@ export const STUDENTS: StudentRecord[] = [
     id: "stu-2036",
     name: "Mohamed Rizvi",
     initials: "MR",
+    avatarUrl:
+      "https://images.unsplash.com/photo-1544723795-3fb6469f5b39?w=256&h=256&fit=crop&crop=faces&auto=format&q=80",
     email: "mohamed.rizvi@example.lk",
     district: "Puttalam",
     sector: "Provincial or local authority",
@@ -194,6 +209,8 @@ export const STUDENTS: StudentRecord[] = [
     id: "stu-2035",
     name: "Piyumi Gunasekara",
     initials: "PG",
+    avatarUrl:
+      "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=256&h=256&fit=crop&crop=faces&auto=format&q=80",
     email: "piyumi.g@example.lk",
     district: "Galle",
     sector: "Government or public sector",
@@ -221,6 +238,8 @@ export const STUDENTS: StudentRecord[] = [
     id: "stu-2034",
     name: "Thilina Perera",
     initials: "TP",
+    avatarUrl:
+      "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=256&h=256&fit=crop&crop=faces&auto=format&q=80",
     email: "thilina.perera@example.lk",
     district: "Kurunegala",
     sector: "Government or public sector",
@@ -241,6 +260,8 @@ export const STUDENTS: StudentRecord[] = [
     id: "stu-2033",
     name: "Nirosha Silva",
     initials: "NS",
+    avatarUrl:
+      "https://images.unsplash.com/photo-1500917293891-ef795e70e1f6?w=256&h=256&fit=crop&crop=faces&auto=format&q=80",
     email: "nirosha.silva@example.lk",
     district: "Matara",
     sector: "University or school",
@@ -262,6 +283,8 @@ export const STUDENTS: StudentRecord[] = [
     id: "stu-2032",
     name: "Ahamed Naushad",
     initials: "AN",
+    avatarUrl:
+      "https://images.unsplash.com/photo-1489980557514-251d61e3eeb6?w=256&h=256&fit=crop&crop=faces&auto=format&q=80",
     email: "ahamed.naushad@example.lk",
     district: "Ampara",
     sector: "Provincial or local authority",
@@ -282,6 +305,8 @@ export const STUDENTS: StudentRecord[] = [
     id: "stu-2031",
     name: "Chamodi Jayawardena",
     initials: "CJ",
+    avatarUrl:
+      "https://images.unsplash.com/photo-1554151228-14d9def656e4?w=256&h=256&fit=crop&crop=faces&auto=format&q=80",
     email: "chamodi.j@example.lk",
     district: "Colombo",
     sector: "Private sector",
@@ -308,6 +333,8 @@ export const STUDENTS: StudentRecord[] = [
     id: "stu-2030",
     name: "Ruwanthi Dias",
     initials: "RD",
+    avatarUrl:
+      "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=256&h=256&fit=crop&crop=faces&auto=format&q=80",
     email: "ruwanthi.dias@example.lk",
     district: "Nuwara Eliya",
     sector: "NGO or development organisation",
@@ -328,6 +355,8 @@ export const STUDENTS: StudentRecord[] = [
     id: "stu-2029",
     name: "Buddhika Senanayake",
     initials: "BS",
+    avatarUrl:
+      "https://images.unsplash.com/photo-1542178243-bc20204b769f?w=256&h=256&fit=crop&crop=faces&auto=format&q=80",
     email: "buddhika.s@example.lk",
     district: "Anuradhapura",
     sector: "Government or public sector",
@@ -348,6 +377,8 @@ export const STUDENTS: StudentRecord[] = [
     id: "stu-2028",
     name: "Shanika Rodrigo",
     initials: "SR",
+    avatarUrl:
+      "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=256&h=256&fit=crop&crop=faces&auto=format&q=80",
     email: "shanika.rodrigo@example.lk",
     district: "Gampaha",
     sector: "Private sector",
@@ -375,6 +406,8 @@ export const STUDENTS: StudentRecord[] = [
     id: "stu-2027",
     name: "Janaka Bandaranayake",
     initials: "JB",
+    avatarUrl:
+      "https://images.unsplash.com/photo-1618077360395-f3068be8e001?w=256&h=256&fit=crop&crop=faces&auto=format&q=80",
     email: "janaka.b@example.lk",
     district: "Badulla",
     sector: "Provincial or local authority",
@@ -388,6 +421,8 @@ export const STUDENTS: StudentRecord[] = [
     id: "stu-2026",
     name: "Vithya Sivanathan",
     initials: "VS",
+    avatarUrl:
+      "https://images.unsplash.com/photo-1567532939604-b6b5b0db2604?w=256&h=256&fit=crop&crop=faces&auto=format&q=80",
     email: "vithya.s@example.lk",
     district: "Jaffna",
     sector: "University or school",
@@ -414,6 +449,8 @@ export const STUDENTS: StudentRecord[] = [
     id: "stu-2025",
     name: "Roshan Peiris",
     initials: "RP",
+    avatarUrl:
+      "https://images.unsplash.com/photo-1607990281513-2c110a25bd8c?w=256&h=256&fit=crop&crop=faces&auto=format&q=80",
     email: "roshan.peiris@example.lk",
     district: "Colombo",
     sector: "Government or public sector",
@@ -434,6 +471,8 @@ export const STUDENTS: StudentRecord[] = [
     id: "stu-2024",
     name: "Amali Fonseka",
     initials: "AF",
+    avatarUrl:
+      "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=256&h=256&fit=crop&crop=faces&auto=format&q=80",
     email: "amali.fonseka@example.lk",
     district: "Kalutara",
     sector: "NGO or development organisation",
@@ -461,6 +500,8 @@ export const STUDENTS: StudentRecord[] = [
     id: "stu-2023",
     name: "Sajith Weerakoon",
     initials: "SW",
+    avatarUrl:
+      "https://images.unsplash.com/photo-1552374196-c4e7ffc6e126?w=256&h=256&fit=crop&crop=faces&auto=format&q=80",
     email: "sajith.weerakoon@example.lk",
     district: "Ratnapura",
     sector: "Something else",
@@ -481,6 +522,8 @@ export const STUDENTS: StudentRecord[] = [
     id: "stu-2022",
     name: "Hasini Abeywardena",
     initials: "HA",
+    avatarUrl:
+      "https://images.unsplash.com/photo-1602233158242-3ba0ac4d2167?w=256&h=256&fit=crop&crop=faces&auto=format&q=80",
     email: "hasini.a@example.lk",
     district: "Kandy",
     sector: "Government or public sector",
@@ -508,6 +551,8 @@ export const STUDENTS: StudentRecord[] = [
     id: "stu-2021",
     name: "Nimal Karunaratne",
     initials: "NK",
+    avatarUrl:
+      "https://images.unsplash.com/photo-1508341591423-4347099e1f19?w=256&h=256&fit=crop&crop=faces&auto=format&q=80",
     email: "nimal.k@example.lk",
     district: "Polonnaruwa",
     sector: "Government or public sector",
@@ -528,6 +573,8 @@ export const STUDENTS: StudentRecord[] = [
     id: "stu-2020",
     name: "Dulmini Herath",
     initials: "DH",
+    avatarUrl:
+      "https://images.unsplash.com/photo-1614283233556-f35b0c801ef1?w=256&h=256&fit=crop&crop=faces&auto=format&q=80",
     email: "dulmini.herath@example.lk",
     district: "Colombo",
     sector: "Private sector",
@@ -555,6 +602,8 @@ export const STUDENTS: StudentRecord[] = [
     id: "stu-2019",
     name: "Aravinth Thevarajah",
     initials: "AT",
+    avatarUrl:
+      "https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=256&h=256&fit=crop&crop=faces&auto=format&q=80",
     email: "aravinth.t@example.lk",
     district: "Trincomalee",
     sector: "Provincial or local authority",
@@ -575,6 +624,8 @@ export const STUDENTS: StudentRecord[] = [
     id: "stu-2018",
     name: "Menaka Liyanage",
     initials: "ML",
+    avatarUrl:
+      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=256&h=256&fit=crop&crop=faces&auto=format&q=80",
     email: "menaka.liyanage@example.lk",
     district: "Galle",
     sector: "University or school",
@@ -596,6 +647,8 @@ export const STUDENTS: StudentRecord[] = [
     id: "stu-2017",
     name: "Chathura Ranasinghe",
     initials: "CR",
+    avatarUrl:
+      "https://images.unsplash.com/photo-1519244703995-f4e0f30006d5?w=256&h=256&fit=crop&crop=faces&auto=format&q=80",
     email: "chathura.r@example.lk",
     district: "Hambantota",
     sector: "Government or public sector",
@@ -616,6 +669,8 @@ export const STUDENTS: StudentRecord[] = [
     id: "stu-2016",
     name: "Iresha Kumari",
     initials: "IK",
+    avatarUrl:
+      "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=256&h=256&fit=crop&crop=faces&auto=format&q=80",
     email: "iresha.kumari@example.lk",
     district: "Monaragala",
     sector: "NGO or development organisation",

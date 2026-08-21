@@ -23,11 +23,11 @@ import { MODULES } from "@/content/site";
 import {
   formatDate,
   formatDuration,
-  hasWrittenQuestions,
+  blankStatus,
+  hasBlankQuestions,
   lectureState,
   progressFor,
   quizStatus,
-  writtenStatus,
 } from "@/lib/portal";
 import { BODY, EYEBROW, HEADING, META } from "@/lib/theme";
 
@@ -135,8 +135,8 @@ export default async function ModulePage({ params }: Params) {
                     state={lectureState(progress, lecture.id)}
                     quiz={quizStatus(mdl.id, lecture.id)}
                     score={enrolment?.quizScores[lecture.id]}
-                    hasWritten={hasWrittenQuestions(lecture.id)}
-                    written={writtenStatus(mdl.id, lecture.id)}
+                    hasBlanks={hasBlankQuestions(lecture.id)}
+                    blanks={blankStatus(mdl.id, lecture.id)}
                   />
                 ))}
               </div>
@@ -267,8 +267,8 @@ function CertificatePanel({
       <article className="relative isolate overflow-hidden rounded-sm bg-primary-950 px-7 py-7 text-tint">
         <p className={EYEBROW.onDark}>Certificate earned</p>
         <p className="mt-4 text-lg leading-relaxed">
-          You completed {moduleTitle} - every quiz, and every written question
-          along with it, passed.
+          You completed {moduleTitle} - every quiz, and every
+          fill-in-the-blank question along with it, passed.
         </p>
         <p className="mt-4 font-display text-lg tracking-tight text-paper">
           {reference}
@@ -298,9 +298,9 @@ function CertificatePanel({
             Certificate on completion
           </p>
           <p className={`mt-2 ${BODY.base}`}>
-            Finish every lecture and pass every quiz - and any written
-            questions a lecture carries - and it issues immediately, carrying
-            a reference anyone can check.
+            Finish every lecture and pass every quiz - and any
+            fill-in-the-blank questions a lecture carries - and it issues
+            immediately, carrying a reference anyone can check.
           </p>
         </div>
       </div>

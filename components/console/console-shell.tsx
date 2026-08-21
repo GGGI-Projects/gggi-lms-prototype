@@ -19,8 +19,8 @@ import {
   type NavItem,
 } from "@/components/console/nav";
 import { RoleProvider, useRole } from "@/components/console/role-context";
-import { InitialsAvatar } from "@/components/student-portal/ui";
-import { BellIcon, SignOutIcon } from "@/components/student-portal/icons";
+import { Avatar } from "@/components/student-portal/ui";
+import { SignOutIcon } from "@/components/student-portal/icons";
 import {
   ChevronDownIcon,
   ExternalIcon,
@@ -30,6 +30,8 @@ import { RailShell, RailGroup } from "@/components/shell/rail-shell";
 import { RailLink } from "@/components/shell/rail-link";
 import { MobileNavDrawer } from "@/components/shell/mobile-nav-drawer";
 import { TopbarShell } from "@/components/shell/topbar-shell";
+import { NotificationBell } from "@/components/notifications/notification-bell";
+import type { NotificationSummary } from "@/lib/comms";
 
 /**
  * The frame every staff screen sits in.
@@ -48,24 +50,29 @@ import { TopbarShell } from "@/components/shell/topbar-shell";
  * column for registers and charts (`CONSOLE.container`), navigation that knows
  * about permissions, and a header that says which role you are looking as.
  */
-export type ConsoleAccount = { name: string; initials: string };
+export type ConsoleAccount = { name: string; initials: string; avatarUrl: string };
 
 export function ConsoleShell({
   area,
   accounts,
-  pendingReviews,
+  notifications,
   children,
 }: {
   area: ConsoleArea;
   /**
-   * Who you are in each viewpoint, and how many reviews are waiting - both
-   * READ ON THE SERVER and handed down. The shell is a client component
-   * because it holds the viewpoint and the drawer; importing `lib/admin` to
-   * look up a name would send the whole curriculum and every register to the
-   * browser to draw an avatar.
+   * Who you are in each viewpoint - READ ON THE SERVER and handed down. The
+   * shell is a client component because it holds the viewpoint and the
+   * drawer; importing `lib/admin` to look up a name would send the whole
+   * curriculum and every register to the browser to draw an avatar.
    */
   accounts: Record<StaffRole, ConsoleAccount>;
-  pendingReviews: number;
+  /** Same reason as `accounts` - the bell's own feed for every viewpoint,
+   *  computed once on the server (see `sessionNotifications` in
+   *  `lib/comms.ts`) rather than fetched again per role switch. Pending
+   *  reviews are not folded in here - that queue already has its own home
+   *  on the dashboard and the Reviews screen, and is a moderation to-do
+   *  rather than something anyone sent anyone. */
+  notifications: Record<StaffRole, NotificationSummary[]>;
   children: ReactNode;
 }) {
   const pathname = usePathname();
@@ -126,7 +133,7 @@ export function ConsoleShell({
             area={area}
             role={role}
             account={accounts[role]}
-            pendingReviews={pendingReviews}
+            notifications={notifications[role]}
             onMenu={() => setMenu({ open: true, path: pathname })}
           />
 
@@ -273,7 +280,11 @@ function RoleSwitcher({
   if (!setRole) {
     return (
       <div className="flex items-center gap-3 rounded-sm px-3 py-2">
-        <InitialsAvatar initials={account.initials} className="size-10 text-lg" />
+        <Avatar
+          src={account.avatarUrl}
+          initials={account.initials}
+          className="size-10 text-lg"
+        />
         <div className="min-w-0 flex-1">
           <p className="truncate font-semibold text-paper">{account.name}</p>
           <p className="truncate text-sm text-primary-500">{ROLE_LABEL[role]}</p>
@@ -290,7 +301,11 @@ function RoleSwitcher({
         aria-expanded={open}
         className="flex w-full items-center gap-3 rounded-sm px-3 py-2 text-left transition-colors duration-300 hover:bg-primary-900/70"
       >
-        <InitialsAvatar initials={account.initials} className="size-10 text-lg" />
+        <Avatar
+          src={account.avatarUrl}
+          initials={account.initials}
+          className="size-10 text-lg"
+        />
         <span className="min-w-0 flex-1">
           <span className="block truncate font-semibold text-paper">
             {account.name}
@@ -359,17 +374,15 @@ function Topbar({
   area,
   role,
   account,
-  pendingReviews,
+  notifications,
   onMenu,
 }: {
   area: ConsoleArea;
   role: StaffRole;
   account: ConsoleAccount;
-  pendingReviews: number;
+  notifications: NotificationSummary[];
   onMenu: () => void;
 }) {
-  const waiting = can(role, "moderateReviews") ? pendingReviews : 0;
-
   return (
     <TopbarShell
       onMenu={onMenu}
@@ -400,29 +413,20 @@ function Topbar({
             Public site
           </Link>
 
-          <Link
-            href={area === "admin" ? "/admin/reviews" : "/lecturer"}
-            aria-label={
-              waiting
-                ? `Notifications - ${waiting} reviews waiting`
-                : "Notifications"
-            }
-            className="relative grid size-10 place-items-center rounded-sm text-ink-soft transition-colors hover:bg-surface hover:text-ink"
-          >
-            <BellIcon className="size-5" />
-            {waiting ? (
-              <span
-                aria-hidden="true"
-                className="absolute right-2 top-2 size-2 rounded-full bg-accent ring-2 ring-paper"
-              />
-            ) : null}
-          </Link>
+          <NotificationBell
+            items={notifications}
+            seeAllHref={area === "admin" ? "/admin/notifications" : "/lecturer/notifications"}
+          />
 
           <Link
             href={area === "admin" ? "/admin/profile" : "/lecturer/profile"}
             className="flex items-center gap-2.5 rounded-full py-1 pl-1 pr-1 transition-colors hover:bg-surface sm:pr-4"
           >
-            <InitialsAvatar initials={account.initials} className="size-9 text-base" />
+            <Avatar
+              src={account.avatarUrl}
+              initials={account.initials}
+              className="size-9 text-base"
+            />
             <span className="hidden min-w-0 sm:block">
               <span className="block truncate text-lg font-semibold leading-tight text-ink">
                 {account.name.split(" ")[0]}

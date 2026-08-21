@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type { Question, WrittenQuestion } from "@/content/portal";
-import { checkWrittenAnswer } from "@/lib/portal";
+import type { FillInTheBlankQuestion, Question } from "@/content/portal";
+import { checkBlankAnswers, optionBankFor, passageSegments } from "@/lib/portal";
 import { ActionButton } from "@/components/ui/action-button";
 import { ProgressBar, ProgressRing } from "@/components/student-portal/ui";
 import {
@@ -13,42 +13,48 @@ import {
 } from "@/components/student-portal/icons";
 import { BODY, EYEBROW, HEADING, META } from "@/lib/theme";
 
-/** One step of the combined quiz - a multiple-choice question or a written
- *  one, told apart by `kind` so the runner can render and grade either. */
+/** One step of the combined quiz - a multiple-choice question or a
+ *  fill-in-the-blank one, told apart by `kind` so the runner can render and
+ *  grade either. */
 type QuizItem =
   | { kind: "mcq"; question: Question }
-  | { kind: "written"; question: WrittenQuestion };
+  | { kind: "blank"; question: FillInTheBlankQuestion };
 
-/** An mcq item is answered with the chosen option's index; a written item
- *  with the text typed. `null` is "not answered yet" for either kind. */
-type Answer = number | string | null;
+/** An mcq item is answered with the chosen option's index; a blank item with
+ *  the learner's picks so far, keyed by blank id. `null` is "not answered
+ *  yet" for either kind. */
+type Answer = number | Record<string, string> | null;
 
 function isAnswered(item: QuizItem, answer: Answer): boolean {
-  return item.kind === "mcq" ? answer !== null : Boolean((answer as string | null)?.trim());
+  if (item.kind === "mcq") return answer !== null;
+  const picks = (answer as Record<string, string> | null) ?? {};
+  return item.question.blanks.every((blank) => Boolean(picks[blank.id]));
 }
 
 function isCorrect(item: QuizItem, answer: Answer): boolean {
   return item.kind === "mcq"
     ? answer === item.question.answer
-    : checkWrittenAnswer(item.question, (answer as string | null) ?? "");
+    : checkBlankAnswers(item.question, (answer as Record<string, string> | null) ?? {});
 }
 
 /**
- * Taking a quiz - and, where the lecture has any, its written questions too.
+ * Taking a quiz - and, where the lecture has any, its fill-in-the-blank
+ * questions too.
  *
- * ONE FLOW, WRITTEN QUESTIONS AT THE END. A lecture's written questions are
- * not a separate screen reached after the quiz is passed - they are simply
- * the last few steps of the same one-question-at-a-time sequence, told apart
- * by an answer box instead of four options. A learner who has just found the
- * quiz should not have to go looking for the written questions somewhere
- * else; appending them here is the one place they cannot be missed.
+ * ONE FLOW, FILL-IN-THE-BLANK QUESTIONS AT THE END. A lecture's
+ * fill-in-the-blank questions are not a separate screen reached after the
+ * quiz is passed - they are simply the last few steps of the same
+ * one-question-at-a-time sequence, told apart by a passage and a word bank
+ * instead of four options. A learner who has just found the quiz should not
+ * have to go looking for them somewhere else; appending them here is the one
+ * place they cannot be missed.
  *
  * ONE QUESTION AT A TIME, not a page of everything. The quiz closes a lecture
  * and confirms the ideas landed; a single list of questions with one submit
  * turns that into a form, and people fill in forms by scanning for the
  * shortest answer. One question on screen with a progress bar above it is the
  * shape that says "think about this one" - and it works the same way whether
- * the question in front of you is four options or a blank box.
+ * the question in front of you is four options or a passage with blanks.
  *
  * NOTHING IS TIMED AND NOTHING IS LIMITED. The landing page promises unlimited
  * attempts and calls this "a foundation, not a filter", so there is no timer,
@@ -62,7 +68,7 @@ function isCorrect(item: QuizItem, answer: Answer): boolean {
  * so revealing an answer once leaks it for good. What is shown after
  * submitting is only ever the aggregate - a score, a pass/fail, how many
  * were right out of how many - never which ones, never what the right
- * option or model answer was. There is no route, link or button anywhere in
+ * option or blank answers were. There is no route, link or button anywhere in
  * the student portal that shows a correct answer; that information exists
  * only in the lecturer and admin consoles, where it belongs.
  *
@@ -81,16 +87,16 @@ function isCorrect(item: QuizItem, answer: Answer): boolean {
  */
 export function QuizRunner({
   questions,
-  written = [],
+  blanks = [],
   passMark,
   lectureHref,
   advance,
 }: {
   questions: Question[];
-  /** The lecture's written questions, appended after the multiple-choice
-   *  ones - most lectures pass none, and the flow below simply has nothing
-   *  extra to show. */
-  written?: WrittenQuestion[];
+  /** The lecture's fill-in-the-blank questions, appended after the
+   *  multiple-choice ones - most lectures pass none, and the flow below
+   *  simply has nothing extra to show. */
+  blanks?: FillInTheBlankQuestion[];
   passMark: number;
   /** Back to the lecture the quiz belongs to. */
   lectureHref: string;
@@ -100,7 +106,7 @@ export function QuizRunner({
 }) {
   const [items] = useState<QuizItem[]>(() => [
     ...questions.map((question): QuizItem => ({ kind: "mcq", question })),
-    ...written.map((question): QuizItem => ({ kind: "written", question })),
+    ...blanks.map((question): QuizItem => ({ kind: "blank", question })),
   ]);
   const [answers, setAnswers] = useState<Answer[]>(() => items.map(() => null));
   const [index, setIndex] = useState(0);
@@ -221,26 +227,25 @@ export function QuizRunner({
         </fieldset>
       ) : (
         <div className="mt-9">
-          <label className="block">
-            <span className="font-display text-2xl leading-snug tracking-tight text-ink text-balance">
-              {item.question.prompt}
-            </span>
-            <textarea
-              rows={4}
-              value={(chosen as string | null) ?? ""}
-              onChange={(event) =>
+          <p className="font-display text-2xl leading-snug tracking-tight text-ink text-balance">
+            Fill in the blanks
+          </p>
+          <p className={`mt-2 ${META.base}`}>
+            Click a blank, then click a word below to fill it. Click a filled
+            blank to clear it and pick again.
+          </p>
+          <div className="mt-6">
+            <BlankItem
+              key={item.question.id}
+              question={item.question}
+              picks={(chosen as Record<string, string> | null) ?? {}}
+              onChange={(next) =>
                 setAnswers((current) =>
-                  current.map((value, i) => (i === index ? event.target.value : value)),
+                  current.map((value, i) => (i === index ? next : value)),
                 )
               }
-              placeholder="Two or three sentences is enough."
-              className="field mt-5"
             />
-          </label>
-          <p className={`mt-2 ${META.base}`}>
-            A written question - checked for the words a correct explanation
-            would use, not multiple choice.
-          </p>
+          </div>
         </div>
       )}
 
@@ -287,6 +292,109 @@ export function QuizRunner({
           Answer every question before submitting.
         </p>
       ) : null}
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ blank */
+
+/**
+ * One fill-in-the-blank passage, with its word bank underneath.
+ *
+ * ITS OWN COMPONENT, MOUNTED WITH `key={question.id}`, so which blank is
+ * "active" resets cleanly whenever the learner moves to a different
+ * question - `<QuizRunner>` still owns the actual picks, in `answers`, so
+ * navigating away and back never loses them.
+ *
+ * CLICK A BLANK, THEN CLICK A WORD - the flow the client asked for. Clicking
+ * an already-filled blank clears it and leaves it active, so the freed word
+ * goes straight back into the bank ready to be picked for this blank or a
+ * different one; clicking a word with no blank active fills the first empty
+ * one, so a learner who skips picking a blank first still makes progress one
+ * click at a time.
+ */
+function BlankItem({
+  question,
+  picks,
+  onChange,
+}: {
+  question: FillInTheBlankQuestion;
+  picks: Record<string, string>;
+  onChange: (next: Record<string, string>) => void;
+}) {
+  const [activeBlankId, setActiveBlankId] = useState<string | null>(null);
+  const segments = passageSegments(question);
+  const options = optionBankFor(question);
+  const used = new Set(Object.values(picks).filter(Boolean));
+
+  function selectBlank(blankId: string) {
+    if (picks[blankId]) {
+      const next = { ...picks };
+      delete next[blankId];
+      onChange(next);
+    }
+    setActiveBlankId(blankId);
+  }
+
+  function pickOption(option: string) {
+    if (used.has(option)) return;
+    const target =
+      activeBlankId ?? question.blanks.find((blank) => !picks[blank.id])?.id;
+    if (!target) return;
+
+    onChange({ ...picks, [target]: option });
+    const nextEmpty = question.blanks.find(
+      (blank) => blank.id !== target && !picks[blank.id],
+    );
+    setActiveBlankId(nextEmpty?.id ?? null);
+  }
+
+  return (
+    <div>
+      <p className="rounded-sm border border-surface-deep bg-paper-raised px-5 py-5 text-lg leading-loose text-ink-soft">
+        {segments.map((segment, i) => {
+          if (segment.kind === "text") return <span key={i}>{segment.text}</span>;
+
+          const filled = picks[segment.blank.id];
+          const active = activeBlankId === segment.blank.id;
+
+          return (
+            <button
+              key={i}
+              type="button"
+              onClick={() => selectBlank(segment.blank.id)}
+              className={`mx-1 inline-block min-w-24 rounded-sm border px-2 py-0.5 text-center align-baseline font-medium transition-colors duration-200 ${filled
+                  ? "border-primary bg-tint-mist text-ink"
+                  : active
+                    ? "border-primary border-dashed text-primary"
+                    : "border-muted-light border-dashed text-muted hover:border-ink-soft"
+                }`}
+            >
+              {filled ?? " "}
+            </button>
+          );
+        })}
+      </p>
+
+      <div className="mt-5 flex flex-wrap gap-2.5">
+        {options.map((option) => {
+          const isUsed = used.has(option);
+          return (
+            <button
+              key={option}
+              type="button"
+              disabled={isUsed}
+              onClick={() => pickOption(option)}
+              className={`rounded-full border px-4 py-2 text-lg transition-colors duration-200 ${isUsed
+                  ? "cursor-not-allowed border-surface-deep text-muted-light line-through"
+                  : "border-surface-deep bg-paper-raised text-ink hover:border-primary hover:bg-tint-mist"
+                }`}
+            >
+              {option}
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -432,8 +540,8 @@ function ResultDialog({
           )}
 
           {/* No "see the answers" here or anywhere else in the portal - a
-              learner is never shown which option, or whose written answer,
-              was correct. The only other thing on offer is closing the
+              learner is never shown which option, or which blank answers,
+              were correct. The only other thing on offer is closing the
               dialog onto the same score, already summarised underneath. */}
           <div className="mt-6 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-lg font-semibold text-primary">
             {passed ? (

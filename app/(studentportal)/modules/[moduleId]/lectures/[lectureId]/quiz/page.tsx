@@ -7,11 +7,11 @@ import { LECTURES } from "@/content/curriculum";
 import { MODULES } from "@/content/site";
 import {
   PASS_MARK,
+  blankQuestionsFor,
   lectureNeighbours,
   progressFor,
   quizFor,
   quizStatus,
-  writtenQuestionsFor,
 } from "@/lib/portal";
 import { META } from "@/lib/theme";
 
@@ -35,8 +35,8 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 }
 
 /**
- * The lecture quiz - and, where the lecture has any, its written questions,
- * appended to the end of the same flow (see `<QuizRunner>`).
+ * The lecture quiz - and, where the lecture has any, its fill-in-the-blank
+ * questions, appended to the end of the same flow (see `<QuizRunner>`).
  *
  * Its own route rather than a panel on the lecture page, and that is a design
  * decision rather than a routing one: a quiz taken in a drawer over the
@@ -57,7 +57,7 @@ export default async function QuizPage({ params }: Params) {
 
   const questions = quizFor(moduleId, lectureId);
   if (!questions.length) notFound();
-  const written = writtenQuestionsFor(lectureId);
+  const blanks = blankQuestionsFor(lectureId);
 
   const { next } = lectureNeighbours(moduleId, lectureId);
   const previous = quizStatus(moduleId, lectureId);
@@ -75,8 +75,8 @@ export default async function QuizPage({ params }: Params) {
         eyebrow="Lecture quiz"
         title={mod.title}
         lead={
-          written.length
-            ? "Answer each question, then submit - the written questions at the end are checked for the words a correct answer would use. You'll see your score straight away."
+          blanks.length
+            ? "Answer each question, then submit - the fill-in-the-blank questions at the end are filled from a word bank, not typed. You'll see your score straight away."
             : "Answer each question, then submit. You'll see your score straight away."
         }
       />
@@ -85,9 +85,9 @@ export default async function QuizPage({ params }: Params) {
         <Badge icon={<QuizIcon className="size-3.5" />}>
           {questions.length} questions
         </Badge>
-        {written.length ? (
+        {blanks.length ? (
           <Badge tone="active">
-            + {written.length} written question{written.length === 1 ? "" : "s"}
+            + {blanks.length} fill-in-the-blank question{blanks.length === 1 ? "" : "s"}
           </Badge>
         ) : null}
         <Badge icon={<ClockIcon className="size-3.5" />}>No time limit</Badge>
@@ -105,7 +105,7 @@ export default async function QuizPage({ params }: Params) {
       <div className="mt-10 max-w-3xl">
         <QuizRunner
           questions={questions}
-          written={written}
+          blanks={blanks}
           passMark={PASS_MARK}
           lectureHref={lectureHref}
           advance={advance}

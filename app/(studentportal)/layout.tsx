@@ -1,5 +1,8 @@
 import type { ReactNode } from "react";
 import { PortalShell } from "@/components/student-portal/portal-shell";
+import { LEARNER, ENROLMENTS } from "@/content/portal";
+import { feedForStudent, summariseFeed } from "@/lib/comms";
+import { PLATFORM_SETTINGS } from "@/content/operations";
 
 /**
  * The signed-in area.
@@ -15,5 +18,18 @@ import { PortalShell } from "@/components/student-portal/portal-shell";
  * client be shown any screen without walking through a login first.
  */
 export default function PortalLayout({ children }: { children: ReactNode }) {
-  return <PortalShell>{children}</PortalShell>;
+  const enrolledModuleIds = ENROLMENTS.map((enrolment) => enrolment.moduleId);
+  const notifications = summariseFeed(
+    feedForStudent(LEARNER.id, enrolledModuleIds),
+    LEARNER.id,
+  );
+
+  return (
+    <PortalShell
+      notifications={notifications}
+      chatbotKnowledgeBase={PLATFORM_SETTINGS.chatbot.knowledgeBase}
+    >
+      {children}
+    </PortalShell>
+  );
 }

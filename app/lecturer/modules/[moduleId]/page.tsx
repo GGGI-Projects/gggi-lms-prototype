@@ -14,7 +14,7 @@ import {
   staffById,
 } from "@/lib/admin";
 import { attachmentsFor } from "@/lib/materials";
-import { formatDate, formatDateLong, hasWrittenQuestions } from "@/lib/portal";
+import { formatDate, formatDateLong, hasBlankQuestions } from "@/lib/portal";
 import {
   Badge,
   Callout,
@@ -206,8 +206,8 @@ export default async function LecturerModulePage({ params }: Params) {
                             ? `${quizStatsFor(mod.id)?.passRate}% pass`
                             : "Manage"}
                         </Link>
-                        {hasWrittenQuestions(mod.id) ? (
-                          <Badge tone="active">+ written</Badge>
+                        {hasBlankQuestions(mod.id) ? (
+                          <Badge tone="active">+ blanks</Badge>
                         ) : null}
                       </span>
                     ) : (

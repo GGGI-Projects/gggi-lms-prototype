@@ -70,6 +70,7 @@ export default function StudentsPage() {
           <NameCell
             href={`/admin/students/${student.id}`}
             initials={student.initials}
+            avatarUrl={student.avatarUrl}
             title={student.name}
             subtitle={student.email}
           />

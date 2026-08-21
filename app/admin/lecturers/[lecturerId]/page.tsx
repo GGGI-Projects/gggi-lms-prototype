@@ -25,7 +25,17 @@ import {
   Section,
 } from "@/components/console/ui";
 import { AssignModules, ConfirmAction } from "@/components/console/actions";
+import { EntryManagedList } from "@/components/console/profile-entries";
+import {
+  ACHIEVEMENT_FIELDS,
+  EXPERIENCE_FIELDS,
+  PUBLICATION_FIELDS,
+  QUALIFICATION_FIELDS,
+  toEntryValues,
+} from "@/lib/profile-fields";
 import { IfCan, LockedNote } from "@/components/console/permission";
+import { messageContactsForAdmin } from "@/lib/comms";
+import { ComposeMessageAction } from "@/components/notifications/compose-message";
 import {
   LECTURE_STATE_LABEL,
   LECTURE_STATE_TONE,
@@ -84,13 +94,21 @@ export default async function LecturerPage({ params }: Params) {
           </>
         }
         actions={
-          <a href={`mailto:${member.email}`} className="btn-ripple btn-solid btn-sm">
-            <span aria-hidden="true" className="btn-wave" />
-            <span className="btn-label">
-              <MailIcon className="size-4" />
-              Email
-            </span>
-          </a>
+          <>
+            <ComposeMessageAction
+              contacts={messageContactsForAdmin()}
+              preselectedId={member.id}
+              buttonLabel="Message"
+              drawerTitle={`Message ${member.name}`}
+            />
+            <a href={`mailto:${member.email}`} className="btn-ripple btn-solid btn-sm">
+              <span aria-hidden="true" className="btn-wave" />
+              <span className="btn-label">
+                <MailIcon className="size-4" />
+                Email
+              </span>
+            </a>
+          </>
         }
       />
 
@@ -158,6 +176,74 @@ export default async function LecturerPage({ params }: Params) {
                 }))}
               />
             </IfCan>
+          </Section>
+
+          <Section
+            title="Public profile"
+            description="Set when this lecturer was appointed and kept up to date by them since - read-only here, same rule as their lecture content. A learner reads this on their public profile page."
+            action={
+              <Link
+                href={`/lecturers/${member.id}`}
+                className="link-wipe text-lg font-semibold text-primary"
+              >
+                View the public page
+              </Link>
+            }
+          >
+            {member.profile ? (
+              <div className="space-y-6">
+                <p className={BODY.base}>{member.profile.bio}</p>
+
+                <div>
+                  <h3 className="text-lg font-semibold text-ink">Qualifications</h3>
+                  <div className="mt-3">
+                    <EntryManagedList
+                      fields={QUALIFICATION_FIELDS}
+                      entries={member.profile.qualifications.map(toEntryValues)}
+                      emptyLabel="None recorded."
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="text-lg font-semibold text-ink">Experience</h3>
+                  <div className="mt-3">
+                    <EntryManagedList
+                      fields={EXPERIENCE_FIELDS}
+                      entries={member.profile.experience.map(toEntryValues)}
+                      emptyLabel="None recorded."
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="text-lg font-semibold text-ink">Publications</h3>
+                  <div className="mt-3">
+                    <EntryManagedList
+                      fields={PUBLICATION_FIELDS}
+                      entries={member.profile.publications.map(toEntryValues)}
+                      emptyLabel="None recorded."
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="text-lg font-semibold text-ink">Achievements</h3>
+                  <div className="mt-3">
+                    <EntryManagedList
+                      fields={ACHIEVEMENT_FIELDS}
+                      entries={member.profile.achievements.map(toEntryValues)}
+                      emptyLabel="None recorded yet."
+                    />
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <p className={`rounded-sm border border-dashed border-muted-light bg-paper-raised px-6 py-10 text-center ${BODY.base}`}>
+                No profile on record - every lecturer appointed since this
+                became required has one; this account predates it.
+              </p>
+            )}
           </Section>
 
           <Section

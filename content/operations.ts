@@ -174,15 +174,16 @@ export const QUIZ_STATS: Record<string, QuizStats> = {
 };
 
 /**
- * Written-question results, same shape as `QUIZ_STATS` and carried for the
- * same one module, but for only the lectures that actually have written
- * questions - see `WRITTEN_QUESTIONS` in `content/portal.ts`. Unlike
- * `QUIZ_STATS` these are illustrative only and are not weighted into
- * `MANAGED_MODULES.averageScore`: written questions are optional per lecture,
- * so folding them into one platform-wide average would make that number mean
- * a different thing depending on which lectures happened to have them.
+ * Fill-in-the-blank results, same shape as `QUIZ_STATS` and carried for the
+ * same one module, but for only the lectures that actually have fill-in-the-
+ * blank questions - see `FILL_IN_THE_BLANK_QUESTIONS` in `content/portal.ts`.
+ * Unlike `QUIZ_STATS` these are illustrative only and are not weighted into
+ * `MANAGED_MODULES.averageScore`: fill-in-the-blank questions are optional
+ * per lecture, so folding them into one platform-wide average would make
+ * that number mean a different thing depending on which lectures happened to
+ * have them.
  */
-export const WRITTEN_STATS: Record<string, QuizStats> = {
+export const BLANK_STATS: Record<string, QuizStats> = {
   "designing-an-inclusive-consultation": {
     attempts: 204,
     passRate: 71,
@@ -194,12 +195,26 @@ export const WRITTEN_STATS: Record<string, QuizStats> = {
 
 export type ReviewStatus = "pending" | "published" | "rejected";
 
+/**
+ * What a review is about - a module, or a lecturer.
+ *
+ * ONE QUEUE, TWO SUBJECTS. A learner reviews a module from its certificate
+ * page once they have earned it, and reviews a lecturer from that lecturer's
+ * public profile once they have completed one of their lectures - see
+ * `ReviewForm` and `LecturerReviewForm` in the student portal. Both land in
+ * the same `REVIEWS` array and go through the same admin moderation screen;
+ * `kind` is what lets that one screen say which is which.
+ */
+export type ReviewSubject =
+  | { kind: "module"; moduleId: string }
+  | { kind: "lecturer"; lecturerId: string };
+
 export type Review = {
   id: string;
   studentId: string;
   /** Kept on the record so a rejected review still says what it was about. */
   studentName: string;
-  moduleId: string;
+  subject: ReviewSubject;
   rating: number;
   body: string;
   submittedOn: string;
@@ -225,7 +240,7 @@ export const REVIEWS: Review[] = [
     id: "rev-118",
     studentId: "stu-2037",
     studentName: "Sanduni Alwis",
-    moduleId: "bankable-climate-finance-proposals",
+    subject: { kind: "module", moduleId: "bankable-climate-finance-proposals" },
     rating: 5,
     body: "The concept note structure lecture is the first thing I've read that explains why our last two submissions were returned without a second look. Rewrote our draft the same week using the template.",
     submittedOn: "2026-08-14",
@@ -235,7 +250,7 @@ export const REVIEWS: Review[] = [
     id: "rev-117",
     studentId: "stu-2023",
     studentName: "Sajith Weerakoon",
-    moduleId: "bankable-climate-finance-proposals",
+    subject: { kind: "module", moduleId: "bankable-climate-finance-proposals" },
     rating: 1,
     body: "Useless. Whoever wrote this has never worked in this country. Contact me on 07X XXX XXXX if you want to argue about it.",
     submittedOn: "2026-08-13",
@@ -246,7 +261,7 @@ export const REVIEWS: Review[] = [
     id: "rev-116",
     studentId: "stu-2028",
     studentName: "Shanika Rodrigo",
-    moduleId: "provincial-adaptation-plan",
+    subject: { kind: "module", moduleId: "provincial-adaptation-plan" },
     rating: 4,
     body: "Strong on reading the NAP chapters, thinner on what happens when the divisional secretariat disagrees with the province. One more worked example of that would help.",
     submittedOn: "2026-08-12",
@@ -256,7 +271,7 @@ export const REVIEWS: Review[] = [
     id: "rev-115",
     studentId: "stu-2019",
     studentName: "Aravinth Thevarajah",
-    moduleId: "gender-social-inclusion",
+    subject: { kind: "module", moduleId: "gender-social-inclusion" },
     rating: 5,
     body: "We used the stakeholder mapping worksheet in a project meeting and it settled an argument about who we'd actually consulted. Wish I'd had this two projects ago.",
     submittedOn: "2026-08-10",
@@ -266,7 +281,7 @@ export const REVIEWS: Review[] = [
     id: "rev-114",
     studentId: "stu-2020",
     studentName: "Dulmini Herath",
-    moduleId: "bankable-climate-finance-proposals",
+    subject: { kind: "module", moduleId: "bankable-climate-finance-proposals" },
     rating: 5,
     body: "Clear, and mercifully free of jargon. The bankability lecture alone is worth the whole module.",
     submittedOn: "2026-08-07",
@@ -278,7 +293,7 @@ export const REVIEWS: Review[] = [
     id: "rev-113",
     studentId: "stu-2018",
     studentName: "Menaka Liyanage",
-    moduleId: "gender-responsive-budgeting",
+    subject: { kind: "module", moduleId: "gender-responsive-budgeting" },
     rating: 5,
     body: "I review budget circulars for a living and I still learned how to read a gender budget statement properly.",
     submittedOn: "2026-08-05",
@@ -290,7 +305,7 @@ export const REVIEWS: Review[] = [
     id: "rev-112",
     studentId: "stu-2022",
     studentName: "Hasini Abeywardena",
-    moduleId: "climate-vulnerability-assessment",
+    subject: { kind: "module", moduleId: "climate-vulnerability-assessment" },
     rating: 4,
     body: "Strong on building the index. The ground-truthing lecture moves fast if you've never run a field verification before.",
     submittedOn: "2026-08-01",
@@ -302,7 +317,7 @@ export const REVIEWS: Review[] = [
     id: "rev-111",
     studentId: "stu-2016",
     studentName: "Iresha Kumari",
-    moduleId: "provincial-adaptation-plan",
+    subject: { kind: "module", moduleId: "provincial-adaptation-plan" },
     rating: 5,
     body: "Watched most of it on a phone between field visits. It held up, which I did not expect.",
     submittedOn: "2026-07-28",
@@ -314,7 +329,7 @@ export const REVIEWS: Review[] = [
     id: "rev-110",
     studentId: "stu-2025",
     studentName: "Roshan Peiris",
-    moduleId: "gender-social-inclusion",
+    subject: { kind: "module", moduleId: "gender-social-inclusion" },
     rating: 4,
     body: "The mainstreaming lecture changed how I read our own sector plan's procurement criteria. More case studies from smaller departments, please.",
     submittedOn: "2026-07-24",
@@ -326,7 +341,7 @@ export const REVIEWS: Review[] = [
     id: "rev-109",
     studentId: "stu-2029",
     studentName: "Buddhika Senanayake",
-    moduleId: "gender-responsive-budgeting",
+    subject: { kind: "module", moduleId: "gender-responsive-budgeting" },
     rating: 3,
     body: "Solid material, but the sex-disaggregated data lecture assumes registers exist that nobody in a rural office actually keeps.",
     submittedOn: "2026-07-20",
@@ -338,7 +353,7 @@ export const REVIEWS: Review[] = [
     id: "rev-108",
     studentId: "stu-2021",
     studentName: "Nimal Karunaratne",
-    moduleId: "climate-vulnerability-assessment",
+    subject: { kind: "module", moduleId: "climate-vulnerability-assessment" },
     rating: 2,
     body: "Sharing my login with three colleagues since the department will not pay for separate accounts. Works fine.",
     submittedOn: "2026-07-16",
@@ -351,7 +366,7 @@ export const REVIEWS: Review[] = [
     id: "rev-107",
     studentId: "stu-2017",
     studentName: "Chathura Ranasinghe",
-    moduleId: "gender-responsive-budgeting",
+    subject: { kind: "module", moduleId: "gender-responsive-budgeting" },
     rating: 5,
     body: "Best courses in Sri Lanka!! Visit my site for cheap certificates and training discounts - link in my profile.",
     submittedOn: "2026-07-09",
@@ -359,6 +374,44 @@ export const REVIEWS: Review[] = [
     decidedBy: "staff-admin-2",
     decidedOn: "2026-07-09",
     reason: "Advertising.",
+  },
+
+  // Lecturer reviews - same queue, same statuses, `subject.kind` the only
+  // difference. See the note on `ReviewSubject`.
+  {
+    id: "rev-201",
+    studentId: "stu-2019",
+    studentName: "Aravinth Thevarajah",
+    subject: { kind: "lecturer", lecturerId: "staff-inst-3" },
+    rating: 5,
+    body: "Anoma clearly writes from having actually run these consultations herself - the bit about naming who is expected not to attend, before the consultation is even designed, changed how I plan mine.",
+    submittedOn: "2026-08-15",
+    status: "pending",
+  },
+  {
+    id: "rev-202",
+    studentId: "stu-2022",
+    studentName: "Hasini Abeywardena",
+    subject: { kind: "lecturer", lecturerId: "staff-inst-1" },
+    rating: 5,
+    body: "Malika's field verification lecture is the only training I've seen that admits a desk-based index is a hypothesis, not a fact. Practical and honest about the limits of the data.",
+    submittedOn: "2026-08-02",
+    status: "published",
+    decidedBy: "staff-admin-2",
+    decidedOn: "2026-08-03",
+  },
+  {
+    id: "rev-203",
+    studentId: "stu-2029",
+    studentName: "Buddhika Senanayake",
+    subject: { kind: "lecturer", lecturerId: "staff-inst-5" },
+    rating: 3,
+    body: "Solid on the compliance checklist, but a lot of the examples assume a national-level budget office rather than a provincial one.",
+    submittedOn: "2026-07-22",
+    status: "rejected",
+    decidedBy: "staff-admin-1",
+    decidedOn: "2026-07-23",
+    reason: "Duplicate of rev-109, submitted twice by the same learner.",
   },
 ];
 
@@ -623,5 +676,18 @@ export const PLATFORM_SETTINGS = {
     weeklyProgressDigest: true,
     newModuleAnnouncements: true,
     inactivityNudgeAfter: "21 days",
+  },
+  /**
+   * The learner-facing chatbot's entire knowledge, as one paragraph the super
+   * administrator writes and keeps current - see `lib/chatbot.ts` for what
+   * "answers from" means (a plain keyword-overlap search over its sentences,
+   * run in the browser, never a real model). Nothing the assistant tells a
+   * learner can come from anywhere else, which is the whole point: an
+   * administrator who wants the assistant to know something new writes it in
+   * here, in plain words, rather than filing a request to change some model.
+   */
+  chatbot: {
+    knowledgeBase:
+      "GreenFin Academy is a free, self-paced online learning platform for Sri Lanka's corporate sustainability and finance teams, open to anyone who wants to learn - there is no charge for anything, ever. It currently offers five modules: Climate Vulnerability Assessment, Localising the Provincial Adaptation Plan, Developing Bankable Climate Finance Proposals, Maintaining Gender Equality and Social Inclusion (GSI), and Gender-Responsive Budgeting. Climate Vulnerability Assessment covers who and what is exposed to a changing climate and how to build a vulnerability index from that. Localising the Provincial Adaptation Plan covers turning a national adaptation plan into action a province can actually deliver, including costing and sequencing it against a real budget cycle. Developing Bankable Climate Finance Proposals covers matching a project to the right source of climate finance and writing a proposal that survives review. Maintaining Gender Equality and Social Inclusion (GSI) covers reading a plan or a project through a GSI lens, from designing an inclusive consultation to writing indicators that actually measure whether anyone was left out. Gender-Responsive Budgeting covers reading a budget for who it actually reaches and building a gender budget statement that changes it. A module is made up of several lectures, and each lecture combines a short video, a reading and a short multiple-choice quiz, with some lectures also including an optional fill-in-the-blank passage. A learner can join as many modules as they like and works through them at their own pace, picking up exactly where they left off between visits. Every lecture is written and published by a named lecturer who is a specialist in that subject, and every lecturer has a public profile listing their qualifications, experience and publications, reachable from the byline of anything they have written. A learner earns a verifiable certificate automatically once they pass the quiz - and any fill-in-the-blank passage - on every lecture in a module; the pass mark is 70%, there is no limit on how many times a quiz can be retaken, and a certificate never expires. Every certificate carries a reference number that anyone can check on the public verification page without signing in. A learner who wants to reach a real person rather than this assistant can message their lecturer directly, or write to hello@greenfin.lk.",
   },
 } as const;

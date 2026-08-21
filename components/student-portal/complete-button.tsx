@@ -10,8 +10,8 @@ import { CheckIcon, LockIcon } from "@/components/student-portal/icons";
  *
  * MARKING COMPLETE IS A CLAIM, so it is checked. A lecture is not "complete"
  * because a learner says so - it is complete once its own gate is cleared,
- * the same quiz-and-written-questions pass that unlocks the next lecture
- * (see `lectureGateCleared()` in `lib/portal.ts`). Pressing this button
+ * the same quiz-and-fill-in-the-blank-questions pass that unlocks the next
+ * lecture (see `lectureGateCleared()` in `lib/portal.ts`). Pressing this button
  * before that is true does not quietly no-op or silently untick itself
  * later; it explains exactly what is still outstanding and links straight to
  * it, so the one click that failed is also the click that fixes it.
@@ -29,9 +29,9 @@ import { CheckIcon, LockIcon } from "@/components/student-portal/icons";
 export function CompleteButton({
   /** True when the mock data already has this lecture finished. */
   initiallyComplete,
-  /** Whether this lecture's quiz - and its written questions, if it has any -
-   *  are already passed. The one thing that decides whether "complete" can be
-   *  claimed. */
+  /** Whether this lecture's quiz - and its fill-in-the-blank questions, if
+   *  it has any - are already passed. The one thing that decides whether
+   *  "complete" can be claimed. */
   gateCleared,
   /** What is still outstanding, shown only when a mark-complete attempt is
    *  blocked. Absent whenever `gateCleared` is true. */

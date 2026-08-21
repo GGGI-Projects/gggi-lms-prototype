@@ -4,7 +4,7 @@
  * Same line as the portal's `ui.tsx`: anything on three or more screens lives
  * here. What is NOT here is anything the portal already solved - `Badge`,
  * `ProgressBar`, `ProgressRing`, `EmptyState`, `DefinitionList`, `Panel` and
- * `InitialsAvatar` are imported from `components/student-portal/ui.tsx` and
+ * `Avatar` are imported from `components/student-portal/ui.tsx` and
  * re-exported at the bottom, so a console page has one import and the two
  * products cannot drift into two chip designs.
  *
@@ -22,10 +22,10 @@ import { AlertIcon, TrendDownIcon, TrendUpIcon } from "@/components/console/icon
 import { formatDelta } from "@/lib/admin";
 
 export {
+  Avatar,
   Badge,
   DefinitionList,
   EmptyState,
-  InitialsAvatar,
   Panel,
   ProgressBar,
   ProgressRing,

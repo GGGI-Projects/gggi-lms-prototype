@@ -71,11 +71,16 @@ The platform has no payment feature, no advertising, and no way of making money 
 | Term | Meaning |
 |---|---|
 | **Module** | One of the platform's top-level courses. It stands on its own — a learner does not need to finish any other module first. How many modules exist, what they cover, and their content are decisions for the client to make, not fixed by this document. |
-| **Lecture** | One lesson inside a module. It includes a short video and/or written material, files to download, and ends with a quiz and, optionally, written questions. |
+| **Lecture** | One lesson inside a module. It includes a short video and/or written material, files to download, and ends with a quiz and, optionally, fill-in-the-blank questions. |
 | **Content block** | One piece of a lecture's body: a *video* block, a *text* block, or a *materials* block. A lecture is simply an ordered list of these. |
 | **Quiz** | The four-question, multiple-choice test that closes a lecture. |
-| **Written questions** | An *optional* second, short-answer step a lecturer may add to a lecture on top of its quiz — up to four questions, each answered in two or three sentences and checked automatically for required words and phrases (see §4.6a, §4.11a). Most lectures have none. |
-| **Certificate** | The proof of completion given automatically once a learner has finished every lecture and passed every quiz — and every lecture's written questions, where it has any — in a module. |
+| **Fill-in-the-blank questions** | An *optional* second step a lecturer may add to a lecture on top of its quiz — up to four passages, each a short paragraph with specific words or sentences picked out as blanks. A learner fills every blank by choosing from a word bank shown below the passage, never by typing, and the attempt is checked automatically against the original words (see §4.6a, §4.11a). Most lectures have none. |
+| **Certificate** | The proof of completion given automatically once a learner has finished every lecture and passed every quiz — and every lecture's fill-in-the-blank questions, where it has any — in a module. |
+| **Lecturer profile** | A lecturer's public page — bio, qualifications, experience, publications, achievements, the lectures they have written, and their reviews. Set in full when the lecturer is appointed (see §4.17) and kept current by the lecturer from then on (see §4.14); read by a learner from a byline on any lecture they wrote (see §4.5a). |
+| **Announcement** | A one-way notice from a member of staff to a group — every lecturer, every student, one or more named people, or everyone enrolled in a module. Cannot be replied to (see §4.25). |
+| **Message** | A private, two-way conversation between exactly two people — always one of administrator/lecturer/learner talking to a permitted counterpart (see §4.25) — which either of them may reply to. |
+| **Notifications** | The announcements addressed to a user, and every message thread they are part of, reached from a bell in the header — see §4.25. |
+| **Learner assistant / chatbot** | A floating, always-on button on the learner portal that answers a question immediately from one plain-text paragraph the super administrator keeps in Platform Settings — see §4.26. It never reaches a real person and never invents an answer it does not have. |
 | **Learner** | Anyone using the student portal to sign up and study. Not a "staff" role. |
 | **Staff** | A general word for the three console roles: Super Administrator, Administrator, Lecturer. |
 | **Console** | Either staff-facing app (the Lecturer console or the Admin console), as opposed to the learner portal. |
@@ -208,11 +213,23 @@ Each requirement below has a stable ID (`FR-<area>-<number>`) and a priority (**
 | ID | Requirement | Pri. |
 |---|---|---|
 | FR-STU-120 | A lecture page shall show its content as an ordered set of blocks of three possible kinds — a video lesson, a piece of writing, or a set of files to download — in whatever order the lecture's own content sets, and shall always show exactly three learning aims for the lecture. | M |
-| FR-STU-130 | **Opening a lecture is never locked.** A learner may open any lecture of any module they have joined, at any time, in any order, no matter what else has or has not been finished — there is no padlock on the module contents list. **Advancing past a lecture is the one exception**: the "next lecture" action on a lecture's own page is withheld until that lecture's own quiz is passed and, where the lecture has any, its written questions are passed too (see §4.6, §4.6a). This is a deliberate, narrow gate — it blocks one button, not the platform's browsing — and no future requirement should extend it into locking the contents list itself. | M |
+| FR-STU-130 | **Opening a lecture is never locked.** A learner may open any lecture of any module they have joined, at any time, in any order, no matter what else has or has not been finished — there is no padlock on the module contents list. **Advancing past a lecture is the one exception**: the "next lecture" action on a lecture's own page is withheld until that lecture's own quiz is passed and, where the lecture has any, its fill-in-the-blank questions are passed too (see §4.6, §4.6a). This is a deliberate, narrow gate — it blocks one button, not the platform's browsing — and no future requirement should extend it into locking the contents list itself. | M |
 | FR-STU-140 | A lecture page shall let the learner mark the lecture as finished, and this shall be reversible (a learner may un-mark a lecture they finished by mistake). This marker is informational only and is never what the "next lecture" gate in FR-STU-130 checks. | S |
-| FR-STU-150 | A lecture page shall show, and let the learner go directly to, the previous and next lecture in the module, and shall show every lecture in the module in a list that stays visible, with each one's completion, quiz, and (where it has any) written-question state marked. When the "next lecture" gate (FR-STU-130) is not yet cleared, the next-lecture control shall say so plainly rather than simply being absent. | M |
-| FR-STU-160 | Marking a lecture as finished is completely separate from passing its quiz (or its written questions) — a lecture can be "done" even though its quiz has not been tried, or was failed — and this state must be visible and clickable, both on the lecture page and in the still-to-do panel described in FR-STU-040. | M |
+| FR-STU-150 | A lecture page shall show, and let the learner go directly to, the previous and next lecture in the module, and shall show every lecture in the module in a list that stays visible, with each one's completion, quiz, and (where it has any) fill-in-the-blank state marked. When the "next lecture" gate (FR-STU-130) is not yet cleared, the next-lecture control shall say so plainly rather than simply being absent. | M |
+| FR-STU-160 | Marking a lecture as finished is completely separate from passing its quiz (or its fill-in-the-blank questions) — a lecture can be "done" even though its quiz has not been tried, or was failed — and this state must be visible and clickable, both on the lecture page and in the still-to-do panel described in FR-STU-040. | M |
 | FR-STU-170 | Real video hosting/playback and real delivery of downloadable files shall be built for the finished product (the prototype has a working video player with no real video file behind it, and download buttons that do nothing — see §11). | M |
+
+### 4.5a Lecturer Profiles (Learner-Facing)
+
+**Purpose:** who wrote what a learner is reading, and why that person is worth listening to. Reached from the lecture, never from a directory — the platform introduces a learner to a lecturer once they are already reading something that lecturer wrote, the way a byline works in print.
+
+| ID | Requirement | Pri. |
+|---|---|---|
+| FR-STU-401 | A lecture page shall credit its author by name, linking to that lecturer's own public profile page. There is no separate list of lecturers to browse — this byline is the only route in. | M |
+| FR-STU-402 | A lecturer's public profile page shall show their bio, qualifications, experience, publications and achievements — the same content the administrator set when appointing them (see FR-ADM-110) and the lecturer has kept up to date since (see FR-INS-215) — along with every lecture they have published, grouped by module. | M |
+| FR-STU-403 | A lecturer's profile page shall show their average rating and every published review of them, in the same style as a module's reviews. Where nobody has reviewed them yet, the page shall say so plainly rather than showing a blank space or a zero. | M |
+| FR-STU-404 | A learner may rate and review a lecturer (1–5 stars, required; free text, optional) only once they have finished at least one lecture that lecturer wrote — the same completion-gated rule a module review follows from holding its certificate (FR-STU-320), applied to the person rather than the module. A learner who does not yet qualify shall be shown plainly what is missing, not a hidden or absent form. | M |
+| FR-STU-405 | A lecturer review, once submitted, goes into the same moderation queue as a module review (see FR-ADM-210) and is not shown on the lecturer's page until an administrator has approved it. | M |
 
 ### 4.6 Quiz Engine
 
@@ -226,27 +243,28 @@ Each requirement below has a stable ID (`FR-<area>-<number>`) and a priority (**
 | FR-STU-210 | A quiz shall show one question at a time with a progress indicator and previous/next buttons, and shall refuse to submit until every question has been answered, showing a clear message on screen explaining why. | M |
 | FR-STU-220 | On submitting, the learner shall immediately see their score and whether they passed or failed against the platform's pass mark, and how many questions were correct out of how many. **No correct answer, no chosen-option marking, and no explanation is ever shown to the learner** — not on the result screen, not anywhere else in the student portal, for any question, whether it was answered correctly or not. A question bank is reused across lectures and across every retake (see §5), so revealing one answer once would leak it permanently; explanations exist only for staff, in the lecturer and admin consoles (FR-INS-120). | M |
 | FR-STU-230 | A learner shall be able to retake a quiz at any time from the result screen, the lecture page, or the quizzes list, with no penalty and no waiting period. | M |
-| FR-STU-240 | A dedicated "quizzes" list shall show every quiz across every module the learner has joined, grouped by module, showing for each one whether it is: passed; needs a retake (with the failing score shown against the pass mark); finished lecture but quiz never tried; or quiz available but lecture not yet finished — and every one of these shall stay clickable and able to be attempted (see FR-STU-130), plus a marker on any row whose lecture also carries written questions and whether those are passed. | M |
+| FR-STU-240 | A dedicated "quizzes" list shall show every quiz across every module the learner has joined, grouped by module, showing for each one whether it is: passed; needs a retake (with the failing score shown against the pass mark); finished lecture but quiz never tried; or quiz available but lecture not yet finished — and every one of these shall stay clickable and able to be attempted (see FR-STU-130), plus a marker on any row whose lecture also carries fill-in-the-blank questions and whether those are passed. | M |
 | FR-STU-250 | Every quiz attempt and its resulting score must be saved against the learner's account on the server once the real system is built (the prototype clearly states that no attempt is currently saved). | M |
 
-### 4.6a Written Questions Engine
+### 4.6a Fill-in-the-Blank Questions Engine
 
-**Purpose:** an *optional* second, short-answer check on top of a lecture's quiz, for the lectures where a lecturer judges that multiple choice cannot tell whether an explanation actually landed. Most lectures carry none of these.
+**Purpose:** an *optional* second check on top of a lecture's quiz, for the lectures where a lecturer judges that multiple choice cannot tell whether an idea actually landed. A lecturer writes a short passage and picks out specific words or sentences as blanks; a learner fills every blank by choosing from a word bank shown below the passage, never by typing, and the attempt is checked against the words actually removed. Most lectures carry none of these.
 
 | ID | Requirement | Pri. |
 |---|---|---|
-| FR-STU-201 | A lecture may carry zero to four written questions, each asking for a short, free-text explanation (two or three sentences — never an essay, and never graded as one). Where a lecture has none, nothing about it changes from today's quiz-only flow. | M |
-| FR-STU-202 | Written questions shall only be reachable after the same lecture's quiz has been passed — they are a second step, not an alternative one — and a learner who reaches the page directly without a passed quiz shall be shown why and offered the quiz, not a broken or empty screen. | M |
-| FR-STU-203 | Each written answer shall be checked **automatically, the instant it is submitted**, against the required words and phrases the lecturer attached to that question (see FR-INS-121a) — there is no lecturer review queue and no waiting period. | M |
-| FR-STU-204 | On submitting, the learner shall immediately see the same kind of result as the quiz - a score, a pass/fail, and how many of the written questions passed. **No model answer and no per-question pass/fail is ever shown to the learner**, on the same rule as FR-STU-220; a model answer is a staff-facing fact (FR-INS-121a), not a learner-facing one. | M |
-| FR-STU-205 | The pass mark for written questions is the same single, platform-wide percentage used for the quiz (FR-STU-190) — the proportion of a lecture's written questions passed must reach it. There is no limit on attempts and no time limit, matching FR-STU-200. | M |
-| FR-STU-206 | Where a lecture has written questions, the "next lecture" gate described in FR-STU-130 is cleared only once **both** the quiz and the written questions are passed; the quiz result screen shall lead to the written questions rather than to the next lecture in that case. | M |
+| FR-STU-201 | A lecture may carry zero to four fill-in-the-blank questions, each a short passage (a sentence or two, never a full page) with two or more of its own words or sentences picked out as blanks. Where a lecture has none, nothing about it changes from today's quiz-only flow. | M |
+| FR-STU-202 | Fill-in-the-blank questions shall only be reachable after the same lecture's quiz has been passed — they are a second step, not an alternative one — and a learner who reaches the page directly without a passed quiz shall be shown why and offered the quiz, not a broken or empty screen. | M |
+| FR-STU-203 | A learner fills a blank by choosing one option from a word bank shown below the passage, never by typing free text. The bank holds every blank's own correct word or sentence together with a lecturer-set list of wrong options, shown in one fixed order (not reshuffled per attempt). Choosing an option assigns it to whichever blank the learner has selected — or, if none is selected, the first blank still empty — and it is removed from the bank as available to assign elsewhere; selecting an already-filled blank clears that blank's pick and returns the option to the bank, from where it may be assigned to any blank, including a different one. | M |
+| FR-STU-204 | Each attempt shall be checked **automatically, the instant it is submitted**, against the words and phrases actually removed from the passage (see FR-INS-121a) — there is no lecturer review queue and no waiting period. A passage counts as correct only once every one of its blanks is filled with its own matching word or sentence; a partially correct passage does not partially pass. | M |
+| FR-STU-205 | On submitting, the learner shall immediately see the same kind of result as the quiz - a score, a pass/fail, and how many of the fill-in-the-blank questions passed. **No correct word, no per-blank marking and no per-question pass/fail is ever shown to the learner**, on the same rule as FR-STU-220; the passage's own answers are a staff-facing fact (FR-INS-121a), not a learner-facing one. | M |
+| FR-STU-206 | The pass mark for fill-in-the-blank questions is the same single, platform-wide percentage used for the quiz (FR-STU-190) — the proportion of a lecture's fill-in-the-blank questions passed must reach it. There is no limit on attempts and no time limit, matching FR-STU-200. | M |
+| FR-STU-207 | Where a lecture has fill-in-the-blank questions, the "next lecture" gate described in FR-STU-130 is cleared only once **both** the quiz and the fill-in-the-blank questions are passed; the quiz result screen shall lead to the fill-in-the-blank questions rather than to the next lecture in that case. | M |
 
 ### 4.7 Certificates (Learner-Facing)
 
 | ID | Requirement | Pri. |
 |---|---|---|
-| FR-STU-260 | A certificate for a module shall be **given automatically, straight away**, the moment a learner has finished every lecture and passed every lecture's quiz — and, for any lecture that has them, its written questions — in that module. There is no request, approval, or manual step for the learner to take. | M |
+| FR-STU-260 | A certificate for a module shall be **given automatically, straight away**, the moment a learner has finished every lecture and passed every lecture's quiz — and, for any lecture that has them, its fill-in-the-blank questions — in that module. There is no request, approval, or manual step for the learner to take. | M |
 | FR-STU-270 | Each certificate shall show: the holder's name **as entered separately for certificates** (different from the display name used elsewhere in the portal), the module title, lectures completed, average quiz score, hours of material, the date it was given, and a unique reference number that is easy to read. | M |
 | FR-STU-280 | A certificate shall never expire, shall be exactly one per completed module, and shall stay downloadable — and re-downloadable — by the learner at any later date. | M |
 | FR-STU-290 | Changing the "name on certificates" field after a certificate has already been given shall not change that certificate after the fact — only certificates given after the change shall show the new name. | M |
@@ -293,19 +311,19 @@ Each requirement below has a stable ID (`FR-<area>-<number>`) and a priority (**
 | FR-INS-140 | Platform-wide quiz rules (number of questions, pass mark, no limit on attempts, no time limit) shall be shown to the lecturer as read-only facts on the quiz screen, with a clear note that only the super administrator can change them — a lecturer cannot set a different pass mark or attempt limit for their own quiz. | M |
 | FR-INS-150 | Any quiz whose pass rate falls below a set "needs attention" level, or whose average score falls below the platform pass mark, shall be clearly flagged to the lecturer (and, as a combined figure, to administrators) as likely to have a wrong or unclear question, rather than reflecting a weak group of learners — since attempts are unlimited, a pass rate that stays low over time is a sign about the content, not the learners. | S |
 | FR-INS-160 | A lecturer shall be able to clear (reset) recorded attempts for a quiz after fixing a question, with a clear statement that this clears scores but never takes back a certificate already given based on an earlier attempt. | S |
-| FR-INS-170 | A dedicated "quizzes" list shall show every quiz a lecturer is responsible for, ranked with the weakest pass rate first, so the quiz that most needs attention is always the first thing seen, and shall mark which of those lectures also carry written questions. | S |
+| FR-INS-170 | A dedicated "quizzes" list shall show every quiz a lecturer is responsible for, ranked with the weakest pass rate first, so the quiz that most needs attention is always the first thing seen, and shall mark which of those lectures also carry fill-in-the-blank questions. | S |
 
-### 4.11a Lecturer Console — Written Question Authoring
+### 4.11a Lecturer Console — Fill-in-the-Blank Question Authoring
 
-**Purpose:** letting a lecturer add the optional short-answer step described in §4.6a to a lecture they are responsible for, on the same screen as that lecture's quiz.
+**Purpose:** letting a lecturer add the optional second check described in §4.6a to a lecture they are responsible for, on the same screen as that lecture's quiz.
 
 | ID | Requirement | Pri. |
 |---|---|---|
-| FR-INS-121 | Written questions are entirely **optional**, up to **four per lecture**, and shown in their own section of the quiz screen — a lecture with none shall show a plain empty state explaining that most lectures do not need them, never a prompt nagging a lecturer to add some. | M |
-| FR-INS-121a | Each written question shall need: a prompt asking for a short (two-to-three-sentence) explanation; a list of the specific words and phrases a correct answer would use; how many of those must appear for an answer to pass (never all of them, since a real answer paraphrases); and a model answer. The model answer, and the required words and phrases, are visible to the lecturer and to administrators only - a learner is told only whether their own answer passed, never what a correct one would have said. See FR-STU-204. | M |
-| FR-INS-121b | The lecturer authoring screen shall state plainly, next to the "add a written question" control, that writing even one written question turns on a **mandatory second step** a learner must clear, alongside the quiz, before the next lecture opens (see FR-STU-206) — this consequence must be visible where the decision is made, not only in a policy document. | M |
-| FR-INS-122 | A lecturer shall be able to edit and remove a written question the same way as a quiz question (FR-INS-120, FR-INS-130): removing one shall need confirmation, and shall state that learners who already passed it keep that pass. | S |
-| FR-INS-123 | The same platform-wide rules that apply to the quiz (one pass mark, no attempt limit, no time limit — FR-INS-140) apply to written questions too, shown as read-only facts on the same screen. | M |
+| FR-INS-121 | Fill-in-the-blank questions are entirely **optional**, up to **four per lecture**, and shown in their own section of the quiz screen — a lecture with none shall show a plain empty state explaining that most lectures do not need them, never a prompt nagging a lecturer to add some. | M |
+| FR-INS-121a | Writing one shall be a two-step process: first the passage itself (short or long, written freely); then picking which of its own words or sentences are blanks, by selecting them directly in the passage rather than retyping them elsewhere. Every blank picked this way automatically becomes one of the correct options in that question's word bank; the lecturer additionally enters any number of wrong options to sit alongside them in the bank. The full word bank, and which option is correct for which blank, is visible to the lecturer and to administrators only - a learner is told only whether their own attempt passed, never which word belonged in which blank. See FR-STU-205. | M |
+| FR-INS-121b | The lecturer authoring screen shall state plainly, next to the "add a fill-in-the-blank question" control, that adding even one such question turns on a **mandatory second step** a learner must clear, alongside the quiz, before the next lecture opens (see FR-STU-207) — this consequence must be visible where the decision is made, not only in a policy document. | M |
+| FR-INS-122 | A lecturer shall be able to edit and remove a fill-in-the-blank question the same way as a quiz question (FR-INS-120, FR-INS-130): editing shall reopen the passage with its existing blanks already picked out, ready to change; removing one shall need confirmation, and shall state that learners who already passed it keep that pass. | S |
+| FR-INS-123 | The same platform-wide rules that apply to the quiz (one pass mark, no attempt limit, no time limit — FR-INS-140) apply to fill-in-the-blank questions too, shown as read-only facts on the same screen. | M |
 
 ### 4.12 Shared Materials Library
 
@@ -333,7 +351,8 @@ Each requirement below has a stable ID (`FR-<area>-<number>`) and a priority (**
 
 | ID | Requirement | Pri. |
 |---|---|---|
-| FR-INS-210 | A lecturer's profile shall keep what a learner sees about them (display name, field/title, a short optional bio) separate from their private account settings (email, password, notification preferences, language, session controls) — as two separate screens. | S |
+| FR-INS-210 | A lecturer's profile shall keep what a learner sees about them (display name, field/title, and their public profile - see FR-INS-215) separate from their private account settings (email, password, notification preferences, language, session controls) — as two separate screens. | S |
+| FR-INS-215 | A lecturer shall have full, ongoing control of their own public profile — bio, qualifications, experience, publications, achievements — set to begin with by the administrator who appointed them (see FR-ADM-110) and editable by the lecturer from that point on: adding an entry to any of the four lists, editing one, or removing one, with no administrator approval needed for any of it. | M |
 | FR-INS-220 | Module assignment shall be shown to the lecturer as **read-only**, naming who to contact (the administrator who assigned them) to ask for a change — a lecturer can never assign themselves to, or remove themselves from, a module. | M |
 | FR-INS-230 | Lecturer notification preferences shall cover only their own material: a learner leaves a review, a module assignment changes, one of their quizzes' average score drops below the pass mark, another lecturer links their uploaded file, and a weekly progress summary. None of these shall send an email to a learner. | C |
 | FR-INS-240 | A lecturer account is closed only by an administrator, never by the lecturer themselves; lectures a lecturer wrote stay published and keep their name on them after the account is closed. | S |
@@ -356,13 +375,14 @@ Each requirement below has a stable ID (`FR-<area>-<number>`) and a priority (**
 | FR-ADM-070 | A draft module's detail view shall leave out sign-up/completion/rating numbers (rather than showing zeroes, which could wrongly look like a live module that is failing) and shall clearly flag if it has no lecturer assigned. | S |
 | FR-ADM-080 | An administrator shall be able to switch a module between Published (in the catalogue, open to sign-up) and Draft (hidden; learners already enrolled keep full access and their progress). | M |
 | FR-ADM-090 | An administrator shall be able to archive a module, behind a confirmation that clearly states what happens: archiving hides it from the catalogue for good, but **certificates already given for it stay valid** — something that has already happened stays true even after the module is later taken down. | M |
-| FR-ADM-100 | An administrator shall be able to view (but, per FR-INS-060/080, not write) every lecture's content, quiz, and written questions (where it has any) to check them, and shall be able to change a lecture's own publishing state where the platform's review process calls for an administrator's approval. | S |
+| FR-ADM-100 | An administrator shall be able to view (but, per FR-INS-060/080, not write) every lecture's content, quiz, and fill-in-the-blank questions (where it has any) to check them, and shall be able to change a lecture's own publishing state where the platform's review process calls for an administrator's approval. | S |
 
 ### 4.17 Admin Console — Lecturer Management
 
 | ID | Requirement | Pri. |
 |---|---|---|
-| FR-ADM-110 | An administrator shall be able to invite a new lecturer (name, email, field, optionally one or more starting module assignments) — an invitation is the only way to create a new lecturer account; lecturers can never sign themselves up. | M |
+| FR-ADM-110 | An administrator shall be able to invite a new lecturer — name, email, field, optionally one or more starting module assignments — an invitation is the only way to create a new lecturer account; lecturers can never sign themselves up. **A full public profile is required at the same time, not added later**: a bio, and at least one entry in each of qualifications, experience, publications and achievements. The account cannot be created until all of it is filled in — this is a public appointment, and a learner reads this profile from the lecturer's own page, so it is part of appointing them rather than an afterthought. | M |
+| FR-ADM-115 | An administrator shall be able to view a lecturer's full public profile from their detail page — read-only, the same rule as their lecture content (FR-INS-060/080): a lecturer's profile is theirs to keep current (see FR-INS-215) once appointed, and an administrator's role from that point on is to check it, not write it. | S |
 | FR-ADM-120 | An administrator shall be able to change which module(s) a lecturer is assigned to at any time. Removing an assignment shall show a clear warning that it does not delete or unpublish anything the lecturer already wrote — it only stops them from editing it further. | M |
 | FR-ADM-130 | An administrator shall be able to suspend a lecturer's account; suspension blocks console sign-in but clearly does **not** unpublish lectures that lecturer already published. | M |
 | FR-ADM-140 | The lecturer list shall show, for each one: assigned modules (draft ones clearly marked), lectures published vs. still to do, learners reached, last active date, and account status (Active / Invited / Suspended), and shall be filterable by these states. | S |
@@ -387,7 +407,7 @@ Each requirement below has a stable ID (`FR-<area>-<number>`) and a priority (**
 
 | ID | Requirement | Pri. |
 |---|---|---|
-| FR-ADM-210 | Reviews submitted by learners shall go into a review queue and shall not appear anywhere public until an administrator approves them (this is the default behaviour; it can be turned off — see FR-SA-060). | M |
+| FR-ADM-210 | Reviews submitted by learners — of a module, or of a lecturer (see FR-STU-404) — shall go into **one shared queue** and shall not appear anywhere public until an administrator approves them (this is the default behaviour; it can be turned off — see FR-SA-060). The queue shall be filterable by module or by lecturer, but not split into two separate screens - moderating one is the same act regardless of which it is about. | M |
 | FR-ADM-220 | The queue shall run an automatic check (contact details, links, offensive language) that **flags** a review for closer attention but never rejects it automatically — a person must always make the final decision. Flagged reviews shall be shown at the top of the queue, ahead of everything else. | S |
 | FR-ADM-230 | Approving a review shall need no reason given; **rejecting** one shall always require a written reason, which is recorded against the review and kept after the decision is made — approving simply agrees with what was already written, while rejecting is a decision someone may have to explain later, and this difference in treatment is deliberate. | M |
 | FR-ADM-240 | A rejected review's reason is not shown to the learner who wrote it — they are only told that it was not published. | S |
@@ -435,6 +455,42 @@ Each requirement below has a stable ID (`FR-<area>-<number>`) and a priority (**
 | FR-ADM-280 | A console session shall time out after **8 hours with no activity** — shorter than a learner's session, reflecting the greater risk of a console left signed in and unattended. | S |
 | FR-ADM-290 | Each staff role's profile page shall show, in plain words, everything that role can and cannot do, so a new administrator or lecturer can immediately see the limits of their own access without needing to ask. | C |
 
+### 4.25 Communications — Announcements and Messages
+
+**Purpose:** a deliberate, in-platform way for staff to reach a learner or another member of staff, and to be reached back. Two different things share this section rather than one, and the difference between them is never blurred: an **announcement** is one-way, addressed to a group, and cannot be replied to; a **message** is a two-way conversation between exactly two people, either of whom may have started it. A user's notifications — announcements addressed to them, and every message thread they are part of — are reached from a bell in the header, which opens a small preview panel; a "See all" action in that panel is the only way into the full notifications page. Opening the bell has never, in this section, been a shortcut to some other, unrelated screen.
+
+**Who may talk to whom.** Sending is a hierarchy, not a mesh: an administrator (or super administrator) may address any lecturer or any student; a lecturer may address only their own students, or the administrator who appointed them; a learner may message only a lecturer who teaches a module they are enrolled in, or reply to an administrator who has messaged them. Lecturer-to-lecturer, learner-to-learner and administrator-to-administrator conversations do not exist anywhere in this section.
+
+| ID | Requirement | Pri. |
+|---|---|---|
+| FR-ADM-300 | An administrator (or super administrator) shall be able to send an announcement to **all lecturers**, to **one or more named lecturers**, to **all students**, to **one or more named students**, or to **every student enrolled in one named module**. An announcement always has a title and a body, and cannot be replied to. | M |
+| FR-ADM-310 | An administrator (or super administrator) shall be able to start a message with any one lecturer or any one student, and to reply to a message thread that lecturer or student started with them. A message is a private, two-way conversation between exactly the two of them. | M |
+| FR-ADM-320 | Every announcement an administrator has sent shall be kept in a log of its own, on the same screen the compose actions live on — showing its title, body, audience and date — separate from the notifications page, which is for what has come *to* that administrator, not what they sent. | S |
+| FR-INS-250 | A lecturer shall be able to send an announcement to **all of their own students**, to **students enrolled in one of their own modules**, or to **one or more of their own students by name** — never to a lecturer, and never to a student who is not enrolled in a module they teach. | M |
+| FR-INS-260 | A lecturer shall be able to start a message with the administrator who appointed them, or with any one of their own students, and to reply to a message thread either of those started with them. | M |
+| FR-STU-410 | A learner shall receive, in their notifications, every announcement addressed to all students, to them by name, or to a module they are enrolled in — from an administrator or from a lecturer of that module. | M |
+| FR-STU-420 | A learner shall be able to message any lecturer teaching a module they are enrolled in, and any administrator who has messaged them, and to reply to either — a learner may start this conversation themselves; it does not require staff to have written first. | M |
+| FR-ADM-330 / FR-INS-270 / FR-STU-430 | For every role, a bell in the header shall open a preview panel of the most recent notifications (announcements and messages, newest first, unread ones marked); a "See all" action in that panel, and only that action, shall lead to a full notifications page. That page shall group what it shows into two sections, **Announcements** then **Messages**, each newest first; opening a message thread there shall show every message in it in order and offer a reply box. | M |
+
+**Nothing here is checked twice.** A lecturer's audience for an announcement or a message is always derived from their own module assignments (FR-INS-220) and its enrolled learners — never a second, separately maintained list of "who this lecturer may talk to".
+
+### 4.26 Learner Assistant (Chatbot)
+
+**Purpose:** an always-available, automatic way for a learner to ask a plain-language question about the platform — what a module covers, what happens after a quiz, who a lecturer is — and get an answer immediately, with no member of staff involved. It exists alongside messaging a lecturer (§4.25), not instead of it: a question this cannot answer is exactly the kind of question worth putting to a real person.
+
+**Where it lives:** a single floating button, reachable from every signed-in learner screen — chosen over a header icon because the header itself scrolls out of view while reading a lecture, which is exactly where a learner is most likely to have a question. Opening it shows a small chat panel over the current page, never a full-screen takeover.
+
+**What it knows:** one paragraph of plain text, written and kept up to date by the super administrator on the Platform Settings page (§4.23), under the same read-only-for-Administrators rule as every other platform-wide setting — no new capability is introduced for this. The assistant answers a question by finding the sentence or sentences in that paragraph that best match it; if nothing matches closely enough, it says so plainly rather than guessing, and points the learner at messaging a lecturer instead.
+
+| ID | Requirement | Pri. |
+|---|---|---|
+| FR-STU-440 | A floating assistant button shall be reachable from every signed-in learner screen; opening it shall show a chat panel with a short greeting, a handful of suggested questions, and a field to type a question of the learner's own. | M |
+| FR-STU-450 | Submitting a question shall return an answer immediately, computed from the platform's stored knowledge-base text, with no request to any member of staff and no wait on one. | M |
+| FR-STU-460 | If no part of the knowledge-base text is a reasonable match for the question asked, the assistant shall say plainly that it does not have that information, rather than inventing an answer, and shall suggest messaging a lecturer (§4.25) as the next step. | M |
+| FR-SA-150 | The Platform Settings page shall offer a single free-text paragraph — the assistant's entire knowledge base — editable by the super administrator and readable, read-only, by an administrator, on the same terms as every other setting in §4.23. | M |
+
+**Not a real language model.** In the prototype, "finding the best match" means a plain keyword-overlap search over the sentences in the paragraph, run entirely in the learner's browser — no request leaves the device. A production build may replace this with a real model, but must keep both guarantees above: an answer drawn only from platform-approved text, and an honest "I don't know" rather than an invented one (see §11).
+
 ---
 
 ## 5. The Curriculum — Content Model
@@ -447,7 +503,7 @@ The shape of the curriculum is itself a requirement, not just content, because i
 | A **lecture** | belongs to exactly one module, and has a number in sequence, a title, a type label (*video* or *reading* — describing what the lecture mostly is, not a strict category), a total estimated study time, a short, consistent list of learning aims (the prototype's sample content uses three per lecture, as a style choice, not a fixed system limit), and an ordered list of **content blocks**. |
 | A **content block** | is one of: a **video** block (title, length, caption text standing in for the opening of the video); a **text** block (one heading, one passage — never a long, unbroken wall of text); or a **materials** block (a set of files/links taken from the shared library). |
 | The **quiz** | belonging to a lecture is a fixed set of exactly four multiple-choice questions (see §4.6); it is written once the lecture has content, never before. |
-| The **written questions** | belonging to a lecture are an *optional* set of zero to four short-answer questions (see §4.6a, §4.11a) — a lecture is complete without any, and most have none. |
+| The **fill-in-the-blank questions** | belonging to a lecture are an *optional* set of zero to four passages, each with its own words or sentences picked out as blanks and filled from a word bank (see §4.6a, §4.11a) — a lecture is complete without any, and most have none. |
 | **Consistency rule** | the lecture count and total study hours a module advertises publicly must always match what its actual lectures add up to — this must be checked automatically as part of the finished product's content system, the same way it is checked automatically in the current codebase while it is being built. |
 
 ---
@@ -456,11 +512,11 @@ The shape of the curriculum is itself a requirement, not just content, because i
 
 The rules below repeat across many screens in the prototype and are brought together here as one final list. Every functional requirement above that touches one of these rules must stay consistent with it.
 
-1. **Opening any lecture or module is never locked; advancing past one is, exactly once.** A learner may open any lecture of any joined module at any time, in any order (see FR-STU-130) — but the "next lecture" action on a lecture's own page is withheld until that lecture's quiz, and any written questions it has, are passed. This is the one gate on the platform, it blocks one button, and no future requirement may extend it into locking the module contents list itself.
-2. **Every quiz on the platform shares one pass mark, one question count, no limit on attempts, and no time limit** — set once, for the whole platform, by the super administrator. No single quiz, lecture, or module may set its own different version of these. Written questions, where a lecture has them, share the same pass mark, attempt, and time rules (see FR-STU-190, FR-STU-205, FR-SA-110).
+1. **Opening any lecture or module is never locked; advancing past one is, exactly once.** A learner may open any lecture of any joined module at any time, in any order (see FR-STU-130) — but the "next lecture" action on a lecture's own page is withheld until that lecture's quiz, and any fill-in-the-blank questions it has, are passed. This is the one gate on the platform, it blocks one button, and no future requirement may extend it into locking the module contents list itself.
+2. **Every quiz on the platform shares one pass mark, one question count, no limit on attempts, and no time limit** — set once, for the whole platform, by the super administrator. No single quiz, lecture, or module may set its own different version of these. Fill-in-the-blank questions, where a lecture has them, share the same pass mark, attempt, and time rules (see FR-STU-190, FR-STU-206, FR-SA-110).
 3. **The highest score ever reached on a quiz, not the most recent one, is the score that counts** towards earning the certificate.
-4. **Finishing a lecture and passing its quiz (or written questions) are separate facts.** A lecture can be marked finished without its quiz being passed, and a quiz can be tried and passed even if the lecture has not been marked as read. The dashboard's "quizzes to take" panel exists specifically to show this gap.
-5. **A certificate is given automatically, and only, by finishing a whole module** — every lecture finished, every quiz passed, and every written question set (where a lecture has one) passed. There is, and must always be, no manual "give certificate" button anywhere in the product.
+4. **Finishing a lecture and passing its quiz (or fill-in-the-blank questions) are separate facts.** A lecture can be marked finished without its quiz being passed, and a quiz can be tried and passed even if the lecture has not been marked as read. The dashboard's "quizzes to take" panel exists specifically to show this gap.
+5. **A certificate is given automatically, and only, by finishing a whole module** — every lecture finished, every quiz passed, and every fill-in-the-blank question set (where a lecture has one) passed. There is, and must always be, no manual "give certificate" button anywhere in the product.
 6. **A certificate never expires, is exactly one per completed module, and stays valid even if**: the module it came from is later archived; the learner later changes their certificate-name preference; or the learner's account is later deleted. Only a clear, reasoned, permanently recorded withdrawal by an administrator can make one invalid.
 7. **Any file or group in the shared library may be linked to any lecture, by any staff member writing it, in any module, with no limit.** No file or group belongs only to one person or one module — this must never be blocked, or made to sound blocked, in code, on screen, or in any written message.
 8. **Files are linked, not copied.** Replacing a file's content updates every lecture that links to it; linking a whole group ("shelf") to a lecture copies its contents as they are at that moment, and does not stay updated afterward.
@@ -474,6 +530,13 @@ The rules below repeat across many screens in the prototype and are brought toge
 16. **Learner data shown to staff is kept to the minimum needed.** Lecturers see combined progress on their own modules, plus a direct way to email a learner, but no other contact details and no admin controls. Administrators see progress and account status, but never quiz-answer-level detail, time spent on each lecture, or sign-in history.
 17. **The platform has no way to charge money, at any level, ever** — "free" is a core rule of the product, not just today's price.
 18. **Nothing in the finished product may show who is behind it**, by name, logo, or brand colour — the platform's identity is a placeholder that can be swapped from one place.
+19. **A lecturer's public profile is set in full when they are appointed, not afterward.** An administrator cannot create a lecturer account without a bio and at least one entry in each of qualifications, experience and publications and achievements — a public appointment carries its evidence with it from the start.
+20. **Once appointed, a lecturer's profile belongs to the lecturer, not the administrator who set it.** An administrator may view it (same rule as lecture content) but never edit it; adding, changing or removing an entry is the lecturer's alone to do, with no approval step.
+21. **A learner may review a lecturer only once they have finished a lecture that lecturer wrote** — the same completion-gated rule a module review follows from a certificate, applied to the person who taught it rather than the module they taught it in. Both kinds of review go through the same moderation queue.
+22. **An announcement is always one-way and a message is always two-way — the two are never merged into one kind of notification with an optional reply.** Whoever receives an announcement cannot reply to it; whoever is part of a message thread can always reply to it.
+23. **Who may talk to whom is a hierarchy, not a mesh, and it is fixed:** administrator↔lecturer, administrator↔student, lecturer↔student. A lecturer's reach is always their own assigned students, never the whole platform and never another lecturer; a learner's reach is always a lecturer teaching a module they are enrolled in. Either side of a valid pair may start a conversation.
+24. **A notification bell opens a preview panel, never a page directly.** Every role's bell shows the same shape of thing — recent announcements and messages, unread ones marked — and "See all" is the only way from that panel into the full notifications page, which groups what it shows into Announcements and Messages.
+25. **The learner assistant answers only from the one paragraph of text the super administrator keeps in Platform Settings, never from anywhere else on the platform and never from a real language model.** A question that paragraph does not cover gets a plain "I don't have that" and a pointer to messaging a lecturer — never a guess presented as fact.
 
 ---
 
@@ -494,6 +557,8 @@ The rules below repeat across many screens in the prototype and are brought toge
 | Withdraw a certificate | ✓ | ✓ | — |
 | View own assigned learners' progress | ✓ | ✓ | ✓ |
 | Write (add/edit/publish) lectures and quizzes | — | (view-only) | ✓ (assigned modules only) |
+| Send an announcement | ✓ (any lecturer or student) | ✓ (any lecturer or student) | ✓ (own students only) |
+| Start or reply to a message | ✓ (with any lecturer or student) | ✓ (with any lecturer or student) | ✓ (with own students, or the administrator who appointed them) |
 
 *A capability that a role does not have is always shown in that role's console — greyed out, with the reason written next to it — rather than hidden completely, so a permission can be asked about, not just never discovered.*
 
@@ -505,22 +570,27 @@ The finished backend must, at minimum, store the following kinds of record and t
 
 | Record type | Main fields | Linked to |
 |---|---|---|
-| **Learner** | name, certificate name, email, password/sign-in details, sector, organisation, district, date joined, status (active/dormant/suspended), notification and language preferences | many Enrolments; many QuizAttempts; many WrittenAttempts; many Certificates; many Reviews |
+| **Learner** | name, certificate name, email, password/sign-in details, sector, organisation, district, date joined, status (active/dormant/suspended), notification and language preferences | many Enrolments; many QuizAttempts; many BlankAttempts; many Certificates; many Reviews |
 | **Module** | title, summary, level, topics, status (draft/published/archived), created/updated dates | many Lectures; many Enrolments; many Lecturer assignments |
-| **Lecture** | number, title, type, study minutes, learning aims (3), content blocks, publishing state, author, last updated | belongs to one Module; has one Quiz; has zero or more WrittenQuestions; links to many Materials |
+| **Lecture** | number, title, type, study minutes, learning aims (3), content blocks, publishing state, author, last updated | belongs to one Module; has one Quiz; has zero or more FillInTheBlankQuestions; links to many Materials |
 | **Content Block** | type (video / text / materials), fields specific to that type, order number | belongs to one Lecture |
 | **Quiz / Question** | prompt, 4 options, which one is correct, explanation | belongs to one Lecture |
-| **WrittenQuestion** | prompt, required keywords/phrases, minimum keywords needed to pass, model answer | belongs to one Lecture (zero to four per lecture) |
+| **FillInTheBlankQuestion** | passage text with blanks marked, each blank's correct word/sentence, wrong options shown alongside them in the word bank | belongs to one Lecture (zero to four per lecture) |
 | **Enrolment** | learner, module, date joined, current lecture, list of completed lectures | links a Learner to a Module |
 | **QuizAttempt** | learner, lecture, score, pass/fail, timestamp | belongs to one Learner, one Lecture |
-| **WrittenAttempt** | learner, lecture, per-question answer text and pass/fail, overall score, timestamp | belongs to one Learner, one Lecture (only where that lecture has WrittenQuestions) |
+| **BlankAttempt** | learner, lecture, per-blank pick and whether it matched, overall score, pass/fail, timestamp | belongs to one Learner, one Lecture (only where that lecture has FillInTheBlankQuestions) |
 | **Certificate** | reference number (unique, in the form e.g. `[PREFIX]-[YEAR]-[MODULE CODE]-[NUMBER]`), learner, module, date given, average score, status (given/withdrawn), withdrawal reason/who/when if it applies | belongs to one Learner, one Module |
 | **MaterialAsset** | title (unique), description, type, size, language, group, who uploaded it, upload date | belongs to one MaterialGroup; linked to by many Lectures |
 | **MaterialGroup** | name, description, who created it, date created | has many MaterialAssets |
-| **StaffMember** | name, email, role (super-admin/admin/lecturer), title, status, date created, who created them, last active, assigned modules (lecturers) | — |
-| **Review** | learner, module, rating, text, status (pending/published/rejected), decided by, decided on, rejection reason, whether auto-flagged | belongs to one Learner, one Module |
+| **StaffMember** | name, email, role (super-admin/admin/lecturer), title, status, date created, who created them, last active, assigned modules (lecturers) | — ; lecturers additionally have one LecturerProfile |
+| **LecturerProfile** | bio | belongs to one StaffMember (lecturer); has many QualificationEntries, ExperienceEntries, PublicationEntries, AchievementEntries |
+| **QualificationEntry / ExperienceEntry / PublicationEntry / AchievementEntry** | qualification/institution/year; role/organisation/period/description; title/publisher/year/link; title/year/description (respectively) | each belongs to one LecturerProfile |
+| **Review** | learner, **subject (a Module OR a Lecturer, never both)**, rating, text, status (pending/published/rejected), decided by, decided on, rejection reason, whether auto-flagged | belongs to one Learner, and to one Module or one StaffMember (lecturer) |
+| **Announcement** | sender, **audience** (all lecturers / named lecturers / all students / named students / everyone enrolled in one module), title, body, sent date | sent by one StaffMember; read by everyone the audience matches |
+| **MessageThread** | its two participants (each either a StaffMember or a Learner, from a permitted pair — see §4.25), who currently has something unread | has many ThreadMessages |
+| **ThreadMessage** | which participant sent it, body, sent date | belongs to one MessageThread |
 | **AuditEntry** (action log) | who did it, action type, what it applied to, detail, timestamp | can only be added to, never changed |
-| **PlatformSettings** | one record holding all the fields listed in §4.23 | there is only ever one of these |
+| **PlatformSettings** | one record holding all the fields listed in §4.23, plus the learner assistant's knowledge-base paragraph (§4.26) | there is only ever one of these |
 
 ---
 
@@ -610,6 +680,7 @@ The items below are clearly **not** built in the current prototype, but are eith
 | Sinhala and Tamil translations of all learner-facing content | The system is built to support all three languages; the translated content itself does not exist yet. |
 | Final certificate design | The prototype shows a labelled placeholder frame on purpose, rather than a finished design nobody has approved yet. |
 | Final brand name, and updating it everywhere from one file | Placeholder brand in place until the client decides. |
+| A real language-model-backed assistant, connected to live platform data | The prototype's assistant is a plain keyword search over one hand-written paragraph kept in Settings — enough to demonstrate the feature and prove the two rules that must survive into production (§4.26): answers only from approved text, and an honest "I don't know" instead of a guess. A production build would likely want a real model reading the live catalogue directly, rather than a paragraph someone has to remember to update by hand. |
 
 ---
 
@@ -640,23 +711,27 @@ Where a real example is useful elsewhere in this document (for instance, the cer
 | Learner portal | Module catalogue | §4.4 |
 | Learner portal | Module detail | §4.4 |
 | Learner portal | Lecture page | §4.5 |
+| Learner portal | Lecturer profile | §4.5a |
 | Learner portal | Quiz | §4.6 |
-| Learner portal | Written questions | §4.6a |
+| Learner portal | Fill-in-the-blank questions | §4.6a |
 | Learner portal | Quizzes list | §4.6 |
 | Learner portal | Certificates list | §4.7 |
 | Learner portal | Certificate detail | §4.7 |
 | Learner portal | Profile | §4.8 |
 | Learner portal | Settings | §4.8 |
+| Learner portal | Notifications | §4.25 |
+| Learner portal | Assistant (chatbot, floating on every screen) | §4.26 |
 | Lecturer console | Dashboard | §4.9 |
 | Lecturer console | My modules / Module detail | §4.9 |
 | Lecturer console | Lecture editor | §4.10 |
-| Lecturer console | Quiz editor (includes written questions) | §4.11, §4.11a |
+| Lecturer console | Quiz editor (includes fill-in-the-blank questions) | §4.11, §4.11a |
 | Lecturer console | Lectures list / Quizzes list | §4.10, §4.11 |
 | Lecturer console | Materials library / group / file detail | §4.12 |
 | Lecturer console | Learners list / learner detail | §4.13 |
 | Lecturer console | Profile / Settings | §4.14 |
+| Lecturer console | Communications (compose) / Notifications | §4.25 |
 | Admin console | Dashboard | §4.15 |
-| Admin console | Modules list / detail / lecture / quiz (includes written questions, read-only) | §4.16 |
+| Admin console | Modules list / detail / lecture / quiz (includes fill-in-the-blank questions, read-only) | §4.16 |
 | Admin console | Lecturers list / detail | §4.17 |
 | Admin console | Students (learners) list / detail | §4.18 |
 | Admin console | Materials library / group / file detail | §4.12 |
@@ -664,8 +739,9 @@ Where a real example is useful elsewhere in this document (for instance, the cer
 | Admin console | Reviews | §4.20 |
 | Admin console | Action log (super admin only) | §4.22 |
 | Admin console | Team / administrators (super admin only) | §4.21 |
-| Admin console | Settings | §4.23 |
+| Admin console | Settings (includes the assistant's knowledge base) | §4.23, §4.26 |
 | Admin console | Profile | §4.24 |
+| Admin console | Communications (compose) / Notifications | §4.25 |
 
 ---
 

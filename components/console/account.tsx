@@ -9,6 +9,7 @@ import {
 import { useRole } from "@/components/console/role-context";
 import { BODY, CARD, META } from "@/lib/theme";
 import { CheckIcon, CloseIcon } from "@/components/student-portal/icons";
+import { Avatar } from "@/components/student-portal/ui";
 
 /**
  * Your own account, on your own profile page.
@@ -29,12 +30,11 @@ export function AccountIdentity() {
   return (
     <div className={`${CARD} p-6 sm:p-8`}>
       <div className="flex flex-wrap items-center gap-5">
-        <span
-          aria-hidden="true"
-          className="grid size-16 shrink-0 place-items-center rounded-full bg-accent font-display text-2xl font-bold tracking-tight text-primary-950"
-        >
-          {account.initials}
-        </span>
+        <Avatar
+          src={account.avatarUrl}
+          initials={account.initials}
+          className="size-16 text-2xl"
+        />
         <div className="min-w-0">
           <p className="font-display text-2xl tracking-tight text-ink">
             {account.name}

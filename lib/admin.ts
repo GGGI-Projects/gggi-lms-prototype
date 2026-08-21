@@ -15,7 +15,7 @@
 import { MODULES, type Module } from "@/content/site";
 import { LECTURES } from "@/content/curriculum";
 import { LEARNER, ENROLMENTS, CERTIFICATES } from "@/content/portal";
-import { PASS_MARK, QUIZ_LENGTH, hasWrittenQuestions } from "@/lib/portal";
+import { PASS_MARK, QUIZ_LENGTH, hasBlankQuestions } from "@/lib/portal";
 import {
   DRAFT_LECTURES,
   MANAGED_MODULES,
@@ -38,7 +38,7 @@ import {
   QUIZ_STATS,
   REVIEWS,
   REVOCATIONS,
-  WRITTEN_STATS,
+  BLANK_STATS,
   type QuizStats,
   type Review,
 } from "@/content/operations";
@@ -79,11 +79,15 @@ export function sessionFor(role: StaffRole): StaffMember {
  */
 export function consoleAccounts(): Record<
   StaffRole,
-  { name: string; initials: string }
+  { name: string; initials: string; avatarUrl: string }
 > {
   const entry = (role: StaffRole) => {
     const member = sessionFor(role);
-    return { name: member.name, initials: member.initials };
+    return {
+      name: member.name,
+      initials: member.initials,
+      avatarUrl: member.avatarUrl,
+    };
   };
 
   return {
@@ -219,11 +223,11 @@ export function quizStatsFor(lectureId: string): QuizStats | null {
   return QUIZ_STATS[lectureId] ?? null;
 }
 
-/** Same idea as `quizStatsFor()`, for a lecture's written questions - null
- *  both when there are no written questions and when there are no figures
- *  for them yet, which the caller tells apart with `hasWrittenQuestions()`. */
-export function writtenStatsFor(lectureId: string): QuizStats | null {
-  return WRITTEN_STATS[lectureId] ?? null;
+/** Same idea as `quizStatsFor()`, for a lecture's fill-in-the-blank questions
+ *  - null both when there are none and when there are no figures for them
+ *  yet, which the caller tells apart with `hasBlankQuestions()`. */
+export function blankStatsFor(lectureId: string): QuizStats | null {
+  return BLANK_STATS[lectureId] ?? null;
 }
 
 /**
@@ -255,8 +259,8 @@ export function quizzesForModule(moduleId: string) {
     module: managedModule(moduleId),
     stats: quizStatsFor(mod.id),
     questions: mod.hasContent ? QUIZ_LENGTH : 0,
-    hasWritten: mod.hasContent && hasWrittenQuestions(mod.id),
-    writtenStats: writtenStatsFor(mod.id),
+    hasBlanks: mod.hasContent && hasBlankQuestions(mod.id),
+    blankStats: blankStatsFor(mod.id),
   }));
 }
 
@@ -282,6 +286,44 @@ export function lectureLoad(member: StaffMember) {
   };
 }
 
+/**
+ * What a learner sees when they click through to a lecturer's public
+ * profile: only published modules, and only that lecturer's own published
+ * lectures within them - never a draft, never a lecture still in review,
+ * unlike `lectureLoad()` above which is the lecturer's own console view of
+ * everything including work not yet public.
+ *
+ * The one place the student portal reads from this file rather than
+ * `lib/portal.ts` - lecture authorship lives in the console's own data
+ * (`LECTURE_EDITS`), and re-deriving it a second way in the portal layer is
+ * exactly the kind of drift this file exists to prevent.
+ */
+export function publishedLecturesBy(
+  lecturerId: string,
+): { module: ManagedModule; lecture: ConsoleLecture }[] {
+  return publishedModules().flatMap((mdl) =>
+    consoleLectures(mdl.id)
+      .filter((mod) => mod.state === "published" && mod.author?.id === lecturerId)
+      .map((mod) => ({ module: mdl, lecture: mod })),
+  );
+}
+
+/**
+ * Whether the demo learner has completed at least one lecture this lecturer
+ * wrote - the one thing that decides whether they may review this lecturer,
+ * the same completion gate a certificate sits behind for a module review
+ * (FR-STU-320).
+ */
+export function learnerCompletedLectureBy(lecturerId: string): boolean {
+  return publishedLecturesBy(lecturerId).some((entry) =>
+    ENROLMENTS.some(
+      (enrolment) =>
+        enrolment.moduleId === entry.module.id &&
+        enrolment.completedLectureIds.includes(entry.lecture.id),
+    ),
+  );
+}
+
 /* ---------------------------------------------------------------- students */
 
 /**
@@ -295,9 +337,10 @@ export function lectureLoad(member: StaffMember) {
  */
 function demoLearnerRecord(): StudentRecord {
   return {
-    id: "stu-1904",
+    id: LEARNER.id,
     name: LEARNER.name,
     initials: LEARNER.initials,
+    avatarUrl: LEARNER.avatarUrl,
     email: LEARNER.email,
     district: LEARNER.district,
     sector: LEARNER.sector,
@@ -427,7 +470,14 @@ export function certificateRegister(): CertificateRecord[] {
         return {
           reference,
           studentId: student.id,
-          studentName: student.name,
+          // The one exception to "the register shows what the console
+          // shows": a certificate carries the name on record, which for the
+          // demo learner is `certificateName`, not the name she goes by -
+          // see the note on `LEARNER` in `content/portal.ts`. The other 26
+          // students have no such split, so `student.name` is already their
+          // certificate name too.
+          studentName:
+            student.id === LEARNER.id ? LEARNER.certificateName : student.name,
           moduleId: enrolment.moduleId,
           moduleTitle:
             managedModule(enrolment.moduleId)?.title ??
@@ -443,6 +493,25 @@ export function certificateRegister(): CertificateRecord[] {
   return issued.sort((a, b) => b.issuedOn.localeCompare(a.issuedOn));
 }
 
+/**
+ * Looks a certificate up by its printed reference, for `/verify` - the
+ * public page anyone a certificate is shown to can check it against.
+ *
+ * Same register the console reads, on purpose: a credential that verifies
+ * against one list in public and a different one in the console is worse
+ * than not verifying at all. The match tolerates case and stray whitespace -
+ * "gp-2026-pa-04817 " typed on a phone keyboard should find the same row as
+ * the reference printed on the certificate - but nothing looser than that;
+ * a reference either matches exactly once normalised, or it does not exist.
+ */
+export function findCertificate(reference: string): CertificateRecord | undefined {
+  const normalised = reference.trim().toUpperCase();
+  if (!normalised) return undefined;
+  return certificateRegister().find(
+    (record) => record.reference.toUpperCase() === normalised,
+  );
+}
+
 /* -------------------------------------------------------------- moderation */
 
 export function reviewsByStatus(status: Review["status"]): Review[] {
@@ -454,7 +523,38 @@ export function pendingReviewCount(): number {
 }
 
 export function reviewsForModule(moduleId: string): Review[] {
-  return REVIEWS.filter((review) => review.moduleId === moduleId);
+  return REVIEWS.filter(
+    (review) => review.subject.kind === "module" && review.subject.moduleId === moduleId,
+  );
+}
+
+/** Same idea, for a lecturer's own reviews rather than a module's. */
+export function reviewsForLecturer(lecturerId: string): Review[] {
+  return REVIEWS.filter(
+    (review) => review.subject.kind === "lecturer" && review.subject.lecturerId === lecturerId,
+  );
+}
+
+/**
+ * A lecturer's published rating, out of 5 - undefined rather than 0 when
+ * nobody has reviewed them yet, same reason `quizStatsFor()` returns null
+ * rather than a zero: "no reviews" and "reviewed badly" must never look the
+ * same on screen.
+ */
+export function lecturerRating(
+  lecturerId: string,
+): { average: number; count: number } | undefined {
+  const published = reviewsForLecturer(lecturerId).filter(
+    (review) => review.status === "published",
+  );
+  if (!published.length) return undefined;
+  return {
+    average:
+      Math.round(
+        (published.reduce((sum, review) => sum + review.rating, 0) / published.length) * 10,
+      ) / 10,
+    count: published.length,
+  };
 }
 
 /* ------------------------------------------------------------------ audit */

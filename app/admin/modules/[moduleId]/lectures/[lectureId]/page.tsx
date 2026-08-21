@@ -5,7 +5,7 @@ import { MANAGED_MODULES } from "@/content/staff";
 import { LECTURES } from "@/content/curriculum";
 import { consoleLectures, managedModule, quizStatsFor } from "@/lib/admin";
 import { attachmentsFor, pickerData } from "@/lib/materials";
-import { PASS_MARK, quizFor, writtenQuestionsFor } from "@/lib/portal";
+import { PASS_MARK, quizFor, blankQuestionsFor } from "@/lib/portal";
 import { Badge, PageBody, PageHeader } from "@/components/console/ui";
 import {
   DraftLectureNotice,
@@ -104,7 +104,7 @@ export default async function AdminLecturePage({ params }: Params) {
           questions: questions.length,
           stats: quizStatsFor(lectureId),
           passMark: PASS_MARK,
-          writtenCount: content ? writtenQuestionsFor(lectureId).length : 0,
+          blankCount: content ? blankQuestionsFor(lectureId).length : 0,
         }}
         hrefs={{
           module: base,

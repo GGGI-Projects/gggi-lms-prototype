@@ -32,6 +32,8 @@ export const BRAND = {
     signup: "/signup",
     login: "/login",
     verifyEmail: "/verify-email",
+    /** The one route here that is not a prototype stand-in - see `/verify`. */
+    verifyCertificate: "/verify",
     consoleLogin: "/console/login",
     modules: "#modules",
     dashboard: "/dashboard",

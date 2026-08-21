@@ -60,7 +60,7 @@ export default function QuizzesPage() {
       <PageHeader
         eyebrow="Quizzes"
         title="A short quiz closes every lecture."
-        lead={`It confirms the ideas landed - nothing more. Some lectures add a few short written questions to the end of the quiz. The pass mark is ${PASS_MARK}% either way, there is no limit on attempts, and the highest score is the one that counts.`}
+        lead={`It confirms the ideas landed - nothing more. Some lectures add a fill-in-the-blank passage to the end of the quiz. The pass mark is ${PASS_MARK}% either way, there is no limit on attempts, and the highest score is the one that counts.`}
       />
 
       <dl className="mt-10 grid gap-4 sm:grid-cols-3">
@@ -186,13 +186,13 @@ function QuizRow({ quiz }: { quiz: QuizSummary }) {
           ) : (
             <Badge>Not yet</Badge>
           )}
-          {quiz.hasWritten ? (
-            quiz.writtenStatus === "passed" ? (
-              <Badge tone="done">Written passed</Badge>
-            ) : quiz.writtenStatus === "failed" ? (
-              <Badge tone="warn">Written retake</Badge>
+          {quiz.hasBlanks ? (
+            quiz.blankStatus === "passed" ? (
+              <Badge tone="done">Fill-in-the-blank passed</Badge>
+            ) : quiz.blankStatus === "failed" ? (
+              <Badge tone="warn">Fill-in-the-blank retake</Badge>
             ) : passed ? (
-              <Badge tone="active">Written to do</Badge>
+              <Badge tone="active">Fill-in-the-blank to do</Badge>
             ) : null
           ) : null}
         </span>

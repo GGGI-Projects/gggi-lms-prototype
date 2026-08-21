@@ -22,6 +22,7 @@ const COLUMNS = [
     heading: "Support",
     links: [
       { label: "Questions", href: "#faq" },
+      { label: "Verify a certificate", href: BRAND.routes.verifyCertificate },
       { label: BRAND.email, href: `mailto:${BRAND.email}` },
     ],
   },

@@ -14,8 +14,9 @@ import {
   reviewsForModule,
 } from "@/lib/admin";
 import { attachmentsFor } from "@/lib/materials";
-import { formatDate, formatDateLong, hasWrittenQuestions } from "@/lib/portal";
+import { formatDate, formatDateLong, hasBlankQuestions } from "@/lib/portal";
 import {
+  Avatar,
   Badge,
   Callout,
   Cell,
@@ -240,8 +241,8 @@ export default async function ModulePage({ params }: Params) {
                             ? `${quizStatsFor(mod.id)?.passRate}% pass`
                             : "Manage"}
                         </Link>
-                        {hasWrittenQuestions(mod.id) ? (
-                          <Badge tone="active">+ written</Badge>
+                        {hasBlankQuestions(mod.id) ? (
+                          <Badge tone="active">+ blanks</Badge>
                         ) : null}
                       </span>
                     ) : (
@@ -370,12 +371,12 @@ export default async function ModulePage({ params }: Params) {
                       href={`/admin/lecturers/${member.id}`}
                       className="flex items-center gap-3"
                     >
-                      <span
-                        aria-hidden="true"
-                        className="grid size-10 shrink-0 place-items-center rounded-full bg-tint-mist font-display text-sm font-bold tracking-tight text-primary"
-                      >
-                        {member.initials}
-                      </span>
+                      <Avatar
+                        src={member.avatarUrl}
+                        initials={member.initials}
+                        tone="light"
+                        className="size-10"
+                      />
                       <span className="min-w-0">
                         <span className="block truncate text-lg font-semibold text-ink">
                           <span className="link-wipe">{member.name}</span>

@@ -85,6 +85,7 @@ export default function LecturerLearnersPage() {
           <NameCell
             href={`/lecturer/learners/${student.id}`}
             initials={student.initials}
+            avatarUrl={student.avatarUrl}
             title={student.name}
           />
           <Cell>{mdl?.title}</Cell>

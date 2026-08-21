@@ -25,16 +25,17 @@ import {
 } from "@/components/student-portal/icons";
 import { LECTURES, type ContentBlock } from "@/content/curriculum";
 import { MODULES } from "@/content/site";
+import { consoleLectures } from "@/lib/admin";
 import {
   QUIZ_LENGTH,
+  blankQuestionsFor,
+  blankStatus,
   formatDuration,
-  hasWrittenQuestions,
+  hasBlankQuestions,
   lectureGateCleared,
   lectureNeighbours,
   progressFor,
   quizStatus,
-  writtenQuestionsFor,
-  writtenStatus,
 } from "@/lib/portal";
 import { BODY, EYEBROW, HEADING, META } from "@/lib/theme";
 
@@ -84,15 +85,21 @@ export default async function LecturePage({ params }: Params) {
   if (!progress || !mod) notFound();
 
   const { module: mdl, lectures, enrolment } = progress;
+  // Who wrote this specific lecture - the console's own author lookup, read
+  // rather than re-derived, so the byline below can never disagree with what
+  // the lecturer and admin consoles already show. See the note on
+  // `publishedLecturesBy()` in `lib/admin.ts` for why the student portal
+  // reads this file at all.
+  const author = consoleLectures(moduleId).find((entry) => entry.id === mod.id)?.author;
   const { index, previous, next } = lectureNeighbours(moduleId, lectureId);
   const completed = Boolean(enrolment?.completedLectureIds.includes(mod.id));
   const quiz = quizStatus(moduleId, mod.id);
   const score = enrolment?.quizScores[mod.id];
-  const hasWritten = hasWrittenQuestions(mod.id);
-  const written = writtenStatus(moduleId, mod.id);
-  const writtenScore = enrolment?.writtenScores[mod.id];
+  const hasBlanks = hasBlankQuestions(mod.id);
+  const blankState = blankStatus(moduleId, mod.id);
+  const blankScore = enrolment?.blankScores[mod.id];
   // The one gate on the platform: cleared once the quiz is passed and, where
-  // this lecture has any, its written questions are too. See
+  // this lecture has any, its fill-in-the-blank questions are too. See
   // `lectureGateCleared()` in `lib/portal.ts`.
   const gateCleared = lectureGateCleared(moduleId, mod.id);
   const quizHref = `/modules/${mdl.id}/lectures/${mod.id}/quiz`;
@@ -103,8 +110,8 @@ export default async function LecturePage({ params }: Params) {
   const completionBlockedReason =
     quiz !== "passed"
       ? "This lecture can't be marked complete until its quiz is passed."
-      : hasWritten && written !== "passed"
-        ? "This lecture can't be marked complete until its written questions are passed too."
+      : hasBlanks && blankState !== "passed"
+        ? "This lecture can't be marked complete until its fill-in-the-blank questions are passed too."
         : undefined;
   const KindIcon = mod.kind === "video" ? VideoIcon : ReadingIcon;
 
@@ -134,18 +141,30 @@ export default async function LecturePage({ params }: Params) {
         ) : quiz === "failed" ? (
           <Badge tone="warn">Quiz not passed · {score}%</Badge>
         ) : null}
-        {hasWritten ? (
-          written === "passed" ? (
-            <Badge tone="done">Written questions passed · {writtenScore}%</Badge>
-          ) : written === "failed" ? (
+        {hasBlanks ? (
+          blankState === "passed" ? (
+            <Badge tone="done">Fill-in-the-blank passed · {blankScore}%</Badge>
+          ) : blankState === "failed" ? (
             <Badge tone="warn">
-              Written questions not passed · {writtenScore}%
+              Fill-in-the-blank not passed · {blankScore}%
             </Badge>
           ) : (
-            <Badge>Written questions to do</Badge>
+            <Badge>Fill-in-the-blank to do</Badge>
           )
         ) : null}
       </div>
+
+      {author ? (
+        <p className={`mt-4 ${META.base}`}>
+          Written by{" "}
+          <Link
+            href={`/lecturers/${author.id}`}
+            className="link-wipe font-semibold text-primary"
+          >
+            {author.name}
+          </Link>
+        </p>
+      ) : null}
 
       <div className="mt-10 grid gap-10 lg:grid-cols-12">
         {/* ------------------------------------------------------- main */}
@@ -179,7 +198,7 @@ export default async function LecturePage({ params }: Params) {
             href={`/modules/${mdl.id}/lectures/${mod.id}/quiz`}
             status={quiz}
             score={score}
-            writtenCount={hasWritten ? writtenQuestionsFor(mod.id).length : 0}
+            blankCount={hasBlanks ? blankQuestionsFor(mod.id).length : 0}
             gateCleared={gateCleared}
           />
 
@@ -188,7 +207,7 @@ export default async function LecturePage({ params }: Params) {
             previous={previous}
             next={next}
             gateCleared={gateCleared}
-            hasWritten={hasWritten}
+            hasBlanks={hasBlanks}
             index={index}
             total={lectures.length}
           />
@@ -238,8 +257,8 @@ export default async function LecturePage({ params }: Params) {
                         Next lecture
                       </span>
                       <p className={`mt-2 ${META.base}`}>
-                        {hasWritten
-                          ? "Pass the quiz, including its written questions, to unlock this."
+                        {hasBlanks
+                          ? "Pass the quiz, including its fill-in-the-blank questions, to unlock this."
                           : "Pass the quiz to unlock this."}
                       </p>
                     </>
@@ -330,24 +349,24 @@ function Block({
  * certificate without knowing it. What it says changes with the state: an
  * invitation, a retake, or a result.
  *
- * WRITTEN QUESTIONS ARE PART OF THIS SAME CALLOUT, not a second one below it
- * - where a lecture has any, they are simply the last few steps inside the
- * one quiz a learner opens from here (see `<QuizRunner>`), so there is only
- * ever one button to press and one gate to clear.
+ * FILL-IN-THE-BLANK QUESTIONS ARE PART OF THIS SAME CALLOUT, not a second one
+ * below it - where a lecture has any, they are simply the last few steps
+ * inside the one quiz a learner opens from here (see `<QuizRunner>`), so
+ * there is only ever one button to press and one gate to clear.
  */
 function QuizCallout({
   href,
   status,
   score,
-  writtenCount,
+  blankCount,
   gateCleared,
 }: {
   href: string;
   status: ReturnType<typeof quizStatus>;
   score?: number;
-  /** How many written questions are appended to the end of this quiz - 0 for
-   *  most lectures. */
-  writtenCount: number;
+  /** How many fill-in-the-blank questions are appended to the end of this
+   *  quiz - 0 for most lectures. */
+  blankCount: number;
   gateCleared: boolean;
 }) {
   return (
@@ -378,8 +397,8 @@ function QuizCallout({
               ? `You scored ${score}%. You can take it again at any time - the highest score is the one that counts.`
               : status === "failed"
                 ? `You scored ${score}% last time. There is no limit on attempts - this is a foundation, not a filter.`
-                : writtenCount
-                  ? `${QUIZ_LENGTH} questions, plus ${writtenCount} written question${writtenCount === 1 ? "" : "s"} at the end - taken whenever you are ready. This is what unlocks the next lecture.`
+                : blankCount
+                  ? `${QUIZ_LENGTH} questions, plus ${blankCount} fill-in-the-blank question${blankCount === 1 ? "" : "s"} at the end - taken whenever you are ready. This is what unlocks the next lecture.`
                   : `${QUIZ_LENGTH} questions, taken whenever you are ready. Retake it as many times as you need.`}
           </p>
         </div>
@@ -400,7 +419,7 @@ function LectureFooterNav({
   previous,
   next,
   gateCleared,
-  hasWritten,
+  hasBlanks,
   index,
   total,
 }: {
@@ -410,7 +429,7 @@ function LectureFooterNav({
   /** Whether THIS lecture's own gate is cleared - decides whether `next`,
    *  when there is one, is a link or a locked cell. */
   gateCleared: boolean;
-  hasWritten: boolean;
+  hasBlanks: boolean;
   index: number;
   total: number;
 }) {
@@ -460,8 +479,8 @@ function LectureFooterNav({
                 Next
               </span>
               <span className="mt-0.5 block text-muted">
-                {hasWritten
-                  ? "Pass the quiz, including its written questions, to unlock this"
+                {hasBlanks
+                  ? "Pass the quiz, including its fill-in-the-blank questions, to unlock this"
                   : "Pass the quiz to unlock this"}
               </span>
             </span>

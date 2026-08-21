@@ -94,6 +94,7 @@ export default function ModulesPage() {
               id: member.id,
               name: member.name,
               initials: member.initials,
+              avatarUrl: member.avatarUrl,
             }))}
           />
         </div>

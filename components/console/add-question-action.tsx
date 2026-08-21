@@ -6,7 +6,8 @@ import { ConfirmAction } from "@/components/console/actions";
 import { Drawer } from "@/components/console/drawer";
 import { IfCan, LockedNote } from "@/components/console/permission";
 import { EditIcon, PlusIcon } from "@/components/console/icons";
-import type { Question, WrittenQuestion } from "@/content/portal";
+import type { FillInTheBlankQuestion, Question } from "@/content/portal";
+import { passageSegments } from "@/lib/portal";
 import type { Capability } from "@/lib/permissions";
 
 /**
@@ -261,47 +262,174 @@ export function RemoveQuestionAction({
   );
 }
 
-/* =================================================== written questions ==== */
+/* ============================================= fill-in-the-blank questions */
+
+/** One clickable word of the passage being authored, or a blank made of one
+ *  or more of them merged together - see `mergeChunks()`. */
+type Chunk = {
+  id: string;
+  text: string;
+  blank: boolean;
+  /** Chunks blanked together toggle and render as one unit. Defaults to the
+   *  chunk's own id, i.e. "a group of one". */
+  groupId: string;
+  /** Which sentence this word falls in, for "blank the whole sentence". */
+  sentenceId: string;
+};
+
+const STRIP = /^[^\w-]+|[^\w-]+$/g;
+
+/** A raw passage, split on whitespace into clickable words and tagged with
+ *  which sentence each one belongs to. Nothing is blanked yet. */
+function tokenize(text: string): Chunk[] {
+  const words = text.split(/\s+/).filter(Boolean);
+  let sentenceIndex = 0;
+  return words.map((word, i) => {
+    const chunk: Chunk = {
+      id: `w${i}`,
+      text: word,
+      blank: false,
+      groupId: `w${i}`,
+      sentenceId: `s${sentenceIndex}`,
+    };
+    if (/[.!?]["')\]]?$/.test(word)) sentenceIndex += 1;
+    return chunk;
+  });
+}
 
 /**
- * Writing a WRITTEN question - the same "one form, two doors in" device as
- * `<QuestionForm>` above, but for a short-answer question instead of a
- * multiple-choice one.
+ * Rebuilds the clickable word list for a question already written, so
+ * `<EditBlankQuestionAction>` opens with its blanks already marked.
  *
- * THERE IS NO "CORRECT OPTION" RADIO HERE, because there is no fixed option to
- * mark - a written answer is checked against a short list of required words
- * and phrases instead (see `checkWrittenAnswer()` in `lib/portal.ts`). The
- * keywords are entered as one comma-separated field rather than one input
- * each, because the count genuinely varies question to question and a form
- * that adds and removes rows for it is more machinery than four or five words
- * are worth.
- *
- * THE MINIMUM IS NEVER "ALL OF THEM" BY DEFAULT. A real two-or-three-sentence
- * answer paraphrases; requiring every listed word back verbatim would fail an
- * answer a person reading it would pass. The field defaults to roughly half
- * the keywords, rounded up, and the lecturer can still raise or lower it.
+ * A blank in `question.blanks` only carries its answer text, not which of the
+ * freshly re-tokenized words it originally came from - so this walks the
+ * words in order and greedily matches each blank's answer against the next
+ * unclaimed run of words. Blanks are always in passage order and their
+ * answer is always an exact run lifted from the passage, so this always
+ * finds a match for content this form itself produced.
  */
-function WrittenQuestionForm({
+function chunksFromQuestion(question: FillInTheBlankQuestion): Chunk[] {
+  const plain = passageSegments(question)
+    .map((segment) => (segment.kind === "text" ? segment.text : segment.blank.answer))
+    .join("");
+  const chunks = tokenize(plain);
+
+  let cursor = 0;
+  for (const blank of question.blanks) {
+    const answerWords = blank.answer
+      .split(/\s+/)
+      .filter(Boolean)
+      .map((w) => w.replace(STRIP, "").toLowerCase());
+
+    for (let start = cursor; start <= chunks.length - answerWords.length; start++) {
+      const matches = answerWords.every(
+        (word, offset) => chunks[start + offset].text.replace(STRIP, "").toLowerCase() === word,
+      );
+      if (!matches) continue;
+
+      for (let i = 0; i < answerWords.length; i++) {
+        chunks[start + i].blank = true;
+        chunks[start + i].groupId = blank.id;
+      }
+      cursor = start + answerWords.length;
+      break;
+    }
+  }
+
+  return chunks;
+}
+
+/** Consecutive chunks sharing a blanked group render as one pill instead of
+ *  one per word. */
+function mergeChunks(chunks: Chunk[]) {
+  const merged: { key: string; text: string; blank: boolean; chunkIds: string[] }[] = [];
+  for (const chunk of chunks) {
+    const last = merged[merged.length - 1];
+    if (last && chunk.blank && last.blank && last.key === chunk.groupId) {
+      last.text += ` ${chunk.text}`;
+      last.chunkIds.push(chunk.id);
+    } else {
+      merged.push({
+        key: chunk.blank ? chunk.groupId : chunk.id,
+        text: chunk.text,
+        blank: chunk.blank,
+        chunkIds: [chunk.id],
+      });
+    }
+  }
+  return merged;
+}
+
+/**
+ * Writing a FILL-IN-THE-BLANK question - the same "one form, two doors in"
+ * device as `<QuestionForm>` above, but a passage with blanks picked out of
+ * it instead of a multiple-choice prompt.
+ *
+ * TWO STEPS, because marking blanks needs the passage to exist first. Step
+ * one is a plain textarea; step two renders that passage read-only, one word
+ * per clickable span, and a lecturer marks a blank by clicking - a single
+ * word by default, or a whole sentence with "Blank whole sentences" switched
+ * on, since the client asked for both. Going back to step one re-splits the
+ * passage and starts blank-picking over, which the copy says plainly.
+ *
+ * THE OPTION BANK IS SEEDED FROM THE BLANKS THEMSELVES. Every word or
+ * sentence marked as a blank is automatically one of the options a learner
+ * will see below the passage - the lecturer only has to add the wrong ones,
+ * never re-type the right ones (see `optionBankFor()` in `lib/portal.ts`).
+ */
+function FillInTheBlankQuestionForm({
   formId,
   questionNumber,
   initial,
 }: {
   formId: string;
   questionNumber: number;
-  initial?: WrittenQuestion;
+  initial?: FillInTheBlankQuestion;
 }) {
   const [saved, setSaved] = useState(false);
-  const [prompt, setPrompt] = useState(initial?.prompt ?? "");
-  const [keywordText, setKeywordText] = useState(
-    initial?.keywords.join(", ") ?? "",
+  const [step, setStep] = useState<"passage" | "blanks">(initial ? "blanks" : "passage");
+  const [passage, setPassage] = useState(() =>
+    initial
+      ? passageSegments(initial)
+          .map((segment) => (segment.kind === "text" ? segment.text : segment.blank.answer))
+          .join("")
+      : "",
   );
-  const keywords = keywordText
+  const [chunks, setChunks] = useState<Chunk[]>(() =>
+    initial ? chunksFromQuestion(initial) : [],
+  );
+  const [sentenceMode, setSentenceMode] = useState(false);
+  const [distractorText, setDistractorText] = useState(
+    initial?.distractors.join(", ") ?? "",
+  );
+  const distractors = distractorText
     .split(",")
     .map((word) => word.trim())
     .filter(Boolean);
-  const [minMatches, setMinMatches] = useState(
-    initial?.minMatches ?? Math.max(1, Math.ceil((keywords.length || 4) / 2)),
-  );
+
+  const blankGroups = mergeChunks(chunks).filter((group) => group.blank);
+  const optionBank = [...blankGroups.map((group) => group.text), ...distractors];
+
+  function toggle(clicked: Chunk) {
+    if (sentenceMode) {
+      const turningOn = !clicked.blank;
+      setChunks((current) =>
+        current.map((c) =>
+          c.sentenceId === clicked.sentenceId
+            ? { ...c, blank: turningOn, groupId: clicked.sentenceId }
+            : c,
+        ),
+      );
+      return;
+    }
+    setChunks((current) =>
+      current.map((c) =>
+        c.id === clicked.id
+          ? { ...c, blank: !c.blank, groupId: c.id }
+          : c,
+      ),
+    );
+  }
 
   return (
     <form
@@ -312,78 +440,116 @@ function WrittenQuestionForm({
       }}
     >
       <div className="grid gap-5">
-        <label className="block">
+        <div>
           <span className="mb-2 block text-lg font-semibold text-ink">
             Question {questionNumber}
           </span>
-          <textarea
-            required
-            rows={2}
-            value={prompt}
-            onChange={(event) => setPrompt(event.target.value)}
-            placeholder="In two or three sentences, explain why..."
-            className="field"
-          />
-          <p className="mt-2 text-sm text-muted">
-            Ask for a short explanation - two or three sentences, never an
-            essay. This is not a graded assignment.
-          </p>
-        </label>
 
-        <label className="block">
-          <span className="mb-2 block text-lg font-semibold text-ink">
-            Words and phrases to check for
-          </span>
-          <input
-            required
-            value={keywordText}
-            onChange={(event) => setKeywordText(event.target.value)}
-            placeholder="hazard, exposure, vulnerability"
-            className="field"
-          />
-          <p className="mt-2 text-sm text-muted">
-            Separate with commas. An answer is checked against these, not read
-            for meaning - list the specific terms a correct answer would
-            actually use.
-          </p>
-        </label>
+          {step === "passage" ? (
+            <>
+              <textarea
+                required
+                rows={5}
+                value={passage}
+                onChange={(event) => setPassage(event.target.value)}
+                placeholder="Write the paragraph exactly as a learner should read it - short or long. The next step picks out its blanks."
+                className="field"
+              />
+              <ActionButton
+                type="button"
+                variant="line"
+                size="sm"
+                className="mt-3"
+                onClick={() => {
+                  setChunks(tokenize(passage));
+                  setStep("blanks");
+                }}
+              >
+                Continue to picking blanks
+              </ActionButton>
+            </>
+          ) : (
+            <>
+              <div className="rounded-sm border border-surface-deep bg-paper-raised px-5 py-4 text-lg leading-loose">
+                {mergeChunks(chunks).map((group) => (
+                  <button
+                    key={group.key}
+                    type="button"
+                    onClick={() =>
+                      toggle(chunks.find((c) => c.id === group.chunkIds[0])!)
+                    }
+                    className={`mx-0.5 my-0.5 rounded-sm px-1.5 py-0.5 transition-colors duration-200 ${
+                      group.blank
+                        ? "bg-primary text-paper"
+                        : "text-ink hover:bg-tint-mist"
+                    }`}
+                  >
+                    {group.text}
+                  </button>
+                ))}
+              </div>
 
-        {/* <label className="block max-w-xs">
-          <span className="mb-2 block text-lg font-semibold text-ink">
-            How many have to appear
-          </span>
-          <select
-            value={Math.min(minMatches, Math.max(keywords.length, 1))}
-            onChange={(event) => setMinMatches(Number(event.target.value))}
-            className="field"
-          >
-            {Array.from(
-              { length: Math.max(keywords.length, 1) },
-              (_, i) => i + 1,
-            ).map((n) => (
-              <option key={n} value={n}>
-                {n} of {Math.max(keywords.length, 1)}
-              </option>
-            ))}
-          </select>
-          <p className="mt-2 text-sm text-muted">
-            Rarely all of them - a real answer paraphrases, so this is usually
-            set to roughly half.
-          </p>
-        </label> */}
+              <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
+                <label className="flex cursor-pointer items-center gap-2 text-sm font-medium text-ink">
+                  <input
+                    type="checkbox"
+                    checked={sentenceMode}
+                    onChange={(event) => setSentenceMode(event.target.checked)}
+                  />
+                  Blank whole sentences
+                </label>
+                <button
+                  type="button"
+                  onClick={() => setStep("passage")}
+                  className="text-sm font-semibold text-primary"
+                >
+                  <span className="link-wipe">Edit the passage text</span>
+                </button>
+              </div>
+              <p className="mt-2 text-sm text-muted">
+                Click a word to blank it, or switch on whole sentences and
+                click any word in one. Editing the passage text starts blank
+                picking over.
+              </p>
+            </>
+          )}
+        </div>
 
-        <label className="block">
-          <span className="mb-2 block text-lg font-semibold text-ink">
-            Model answer
-          </span>
-          <textarea
-            required
-            rows={3}
-            defaultValue={initial?.modelAnswer}
-            placeholder="What a correct answer would say - for you and other staff to check attempts against, never shown to a learner."
-            className="field"
-          />
-        </label>
+        {step === "blanks" ? (
+          <label className="block">
+            <span className="mb-2 block text-lg font-semibold text-ink">
+              Extra wrong options for the word bank
+            </span>
+            <input
+              value={distractorText}
+              onChange={(event) => setDistractorText(event.target.value)}
+              placeholder="threshold, baseline, disbursement"
+              className="field"
+            />
+            <p className="mt-2 text-sm text-muted">
+              Separate with commas. Every blanked word or sentence is already
+              an option below - these are the wrong ones shown alongside them.
+            </p>
+          </label>
+        ) : null}
+
+        {step === "blanks" && blankGroups.length ? (
+          <div>
+            <span className="mb-2 block text-lg font-semibold text-ink">
+              Word bank preview
+            </span>
+            <div className="flex flex-wrap gap-2">
+              {optionBank.map((option, i) => (
+                <span
+                  key={`${option}-${i}`}
+                  className="rounded-full bg-tint-mist px-3 py-1 text-sm font-medium text-ink"
+                >
+                  {option}
+                </span>
+              ))}
+            </div>
+          </div>
+        ) : null}
       </div>
 
       {saved ? (
@@ -401,10 +567,10 @@ function WrittenQuestionForm({
   );
 }
 
-/** The control under a lecture's written questions - absent (not merely
- *  disabled) once four exist, since 3-4 is the whole point of keeping these
- *  short rather than a rule enforced by a disabled button. */
-export function AddWrittenQuestionAction({
+/** The control under a lecture's fill-in-the-blank questions - absent (not
+ *  merely disabled) once four exist, since 3-4 is the whole point of keeping
+ *  these short rather than a rule enforced by a disabled button. */
+export function AddBlankQuestionAction({
   capability,
   nextNumber,
 }: {
@@ -422,15 +588,15 @@ export function AddWrittenQuestionAction({
       >
         <ActionButton variant="mono" size="sm" onClick={() => setOpen(true)}>
           <PlusIcon className="size-4" />
-          Add a written question
+          Add a fill-in-the-blank question
         </ActionButton>
       </IfCan>
 
       <Drawer
         open={open}
         onClose={() => setOpen(false)}
-        title="Add a written question"
-        description="A short explanation, checked for the words a correct answer would use - not multiple choice."
+        title="Add a fill-in-the-blank question"
+        description="Write a passage, pick which words or sentences are blanked, and a learner fills them from a word bank - not free text."
         size="md"
         footer={
           <ActionButton type="submit" form={formId} variant="solid" size="sm">
@@ -438,18 +604,18 @@ export function AddWrittenQuestionAction({
           </ActionButton>
         }
       >
-        <WrittenQuestionForm formId={formId} questionNumber={nextNumber} />
+        <FillInTheBlankQuestionForm formId={formId} questionNumber={nextNumber} />
       </Drawer>
     </>
   );
 }
 
-export function EditWrittenQuestionAction({
+export function EditBlankQuestionAction({
   question,
   number,
   capability,
 }: {
-  question: WrittenQuestion;
+  question: FillInTheBlankQuestion;
   number: number;
   capability: Capability;
 }) {
@@ -472,8 +638,8 @@ export function EditWrittenQuestionAction({
       <Drawer
         open={open}
         onClose={() => setOpen(false)}
-        title="Edit written question"
-        description={`Question ${number}. Checked against the words and phrases listed below.`}
+        title="Edit fill-in-the-blank question"
+        description={`Question ${number}. Click a blank or a word to change what's picked.`}
         size="md"
         footer={
           <ActionButton type="submit" form={formId} variant="solid" size="sm">
@@ -481,7 +647,7 @@ export function EditWrittenQuestionAction({
           </ActionButton>
         }
       >
-        <WrittenQuestionForm
+        <FillInTheBlankQuestionForm
           formId={formId}
           questionNumber={number}
           initial={question}
@@ -491,7 +657,7 @@ export function EditWrittenQuestionAction({
   );
 }
 
-export function RemoveWrittenQuestionAction({
+export function RemoveBlankQuestionAction({
   number,
   capability,
 }: {
@@ -502,8 +668,8 @@ export function RemoveWrittenQuestionAction({
     <IfCan capability={capability}>
       <ConfirmAction
         label="Remove"
-        question={`Remove written question ${number}?`}
-        detail="Learners who already passed it keep their pass - this only changes what the next attempt asks. If this is the lecture's last written question, its written step is removed entirely and the quiz alone reopens the gate."
+        question={`Remove fill-in-the-blank question ${number}?`}
+        detail="Learners who already passed it keep their pass - this only changes what the next attempt asks. If this is the lecture's last one, that step is removed entirely and the quiz alone reopens the gate."
         confirmLabel="Remove it"
         tone="warn"
         done="Prototype - the question is unchanged."

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CertificateActions } from "@/components/student-portal/certificate-actions";
 import { CertificateSheet } from "@/components/student-portal/certificate-sheet";
@@ -130,6 +131,18 @@ export default async function CertificatePage({ params }: Params) {
               <p className="mt-5 rounded-sm border border-surface-deep bg-surface px-4 py-3 text-center font-display text-lg tracking-tight tabular-nums text-ink">
                 {certificate.reference}
               </p>
+
+              {/* Opens in a new tab, deliberately - this is the public page
+                  itself, not a preview of it, and it should not cost the
+                  learner their place in their own portal to look at it. */}
+              <Link
+                href={`/verify/${certificate.reference}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="link-wipe mt-4 inline-block text-lg font-semibold text-primary"
+              >
+                See what this looks like when checked
+              </Link>
 
               <ul className="mt-5 space-y-2.5">
                 {[

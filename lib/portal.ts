@@ -17,14 +17,15 @@ import {
   ACTIVITY,
   CERTIFICATES,
   ENROLMENTS,
+  FILL_IN_THE_BLANK_QUESTIONS,
   PASS_MARK,
   QUESTION_POOL,
-  WRITTEN_QUESTIONS,
+  type Blank,
   type Certificate,
   type Enrolment,
   type EnrolmentStatus,
+  type FillInTheBlankQuestion,
   type Question,
-  type WrittenQuestion,
 } from "@/content/portal";
 import { MODULES, type Module } from "@/content/site";
 
@@ -87,7 +88,7 @@ export type ModuleProgress = {
   minutesTotal: number;
   certificate?: Certificate;
   /**
-   * Lectures whose gate is fully cleared - quiz passed, and written
+   * Lectures whose gate is fully cleared - quiz passed, and fill-in-the-blank
    * questions passed too where the lecture has any (see
    * `lectureGateCleared()`) - against lectures available to take.
    */
@@ -121,9 +122,9 @@ export function progressFor(moduleId: string): ModuleProgress | undefined {
     lectures.find((lecture) => !completed.has(lecture.id)) ??
     undefined;
 
-  // Gate-aware, not just the quiz score: a lecture with written questions
-  // that are not yet passed is not counted here even if its quiz is - see
-  // `lectureGateCleared()`.
+  // Gate-aware, not just the quiz score: a lecture with fill-in-the-blank
+  // questions that are not yet passed is not counted here even if its quiz
+  // is - see `lectureGateCleared()`.
   const quizzesPassed = lectures.filter((lecture) =>
     lectureGateCleared(moduleId, lecture.id),
   ).length;
@@ -221,11 +222,13 @@ export type QuizSummary = {
   /** A quiz sits behind its lecture - taking it first would give the answers away. */
   lectureCompleted: boolean;
   href: string;
-  /** Whether this lecture has written questions at all - most do not. */
-  hasWritten: boolean;
-  writtenStatus: WrittenStatus;
-  /** Whether both the quiz and any written questions are cleared - see
-   *  `lectureGateCleared()`. This is what actually unlocks the next lecture. */
+  /** Whether this lecture has fill-in-the-blank questions at all - most do
+   *  not. */
+  hasBlanks: boolean;
+  blankStatus: BlankStatus;
+  /** Whether both the quiz and any fill-in-the-blank questions are cleared -
+   *  see `lectureGateCleared()`. This is what actually unlocks the next
+   *  lecture. */
   gateCleared: boolean;
 };
 
@@ -279,56 +282,99 @@ export function allQuizzes(): QuizSummary[] {
         progress.enrolment?.completedLectureIds.includes(lecture.id),
       ),
       href: `/modules/${progress.module.id}/lectures/${lecture.id}/quiz`,
-      hasWritten: hasWrittenQuestions(lecture.id),
-      writtenStatus: writtenStatus(progress.module.id, lecture.id),
+      hasBlanks: hasBlankQuestions(lecture.id),
+      blankStatus: blankStatus(progress.module.id, lecture.id),
       gateCleared: lectureGateCleared(progress.module.id, lecture.id),
     })),
   );
 }
 
-/* --------------------------------------------------------- written questions */
+/* ----------------------------------------------------- fill-in-the-blanks */
 
-export type WrittenStatus = "passed" | "failed" | "not-attempted" | "not-required";
+export type BlankStatus = "passed" | "failed" | "not-attempted" | "not-required";
 
-/** Whether a lecturer wrote any written questions for this lecture at all.
- *  Most lectures have none - they are the exception, never the default. */
-export function hasWrittenQuestions(lectureId: string): boolean {
-  return (WRITTEN_QUESTIONS[lectureId]?.length ?? 0) > 0;
+/** Whether a lecturer wrote any fill-in-the-blank questions for this lecture
+ *  at all. Most lectures have none - they are the exception, never the
+ *  default. */
+export function hasBlankQuestions(lectureId: string): boolean {
+  return (FILL_IN_THE_BLANK_QUESTIONS[lectureId]?.length ?? 0) > 0;
 }
 
-/** The 3-4 written questions a lecture asks, in the order they were written. */
-export function writtenQuestionsFor(lectureId: string): WrittenQuestion[] {
-  return WRITTEN_QUESTIONS[lectureId] ?? [];
+/** The fill-in-the-blank questions a lecture asks, in the order they were
+ *  written. */
+export function blankQuestionsFor(lectureId: string): FillInTheBlankQuestion[] {
+  return FILL_IN_THE_BLANK_QUESTIONS[lectureId] ?? [];
+}
+
+/** One piece of a passage, as `passageSegments()` splits it - either plain
+ *  text or a blank to be filled. Read by both the console's read-only
+ *  preview and the learner's runner, so the two render a passage identically. */
+export type PassageSegment =
+  | { kind: "text"; text: string }
+  | { kind: "blank"; blank: Blank };
+
+/** A passage's `{{blankId}}` tokens, split into alternating text and blank
+ *  segments - the one parser both `<QuizManager>`'s preview and
+ *  `<QuizRunner>` read from, so a passage cannot render two different ways. */
+export function passageSegments(question: FillInTheBlankQuestion): PassageSegment[] {
+  const byId = new Map(question.blanks.map((blank) => [blank.id, blank]));
+  const segments: PassageSegment[] = [];
+  const pattern = /\{\{(.+?)\}\}/g;
+  let cursor = 0;
+  let match: RegExpExecArray | null;
+
+  while ((match = pattern.exec(question.passage))) {
+    if (match.index > cursor) {
+      segments.push({ kind: "text", text: question.passage.slice(cursor, match.index) });
+    }
+    const blank = byId.get(match[1]);
+    if (blank) segments.push({ kind: "blank", blank });
+    cursor = match.index + match[0].length;
+  }
+  if (cursor < question.passage.length) {
+    segments.push({ kind: "text", text: question.passage.slice(cursor) });
+  }
+  return segments;
 }
 
 /**
- * A learner's own text, checked against one question's required keywords.
+ * The options shown below a passage for a learner to fill its blanks with -
+ * every blank's own answer, plus its distractors, in the order the lecturer
+ * entered them.
  *
- * A SIMPLE PRESENCE CHECK, not a language model - see the note on
- * `WrittenQuestion.keywords`. It is deliberately forgiving about HOW MANY of
- * the listed words are needed (`minMatches`, never all of them) because a
- * real two-sentence answer paraphrases; it is deliberately strict about
- * matching the words THEMSELVES, because that strictness is exactly what a
- * lecturer is shown on the authoring screen, so nobody is surprised by
- * what "passed" meant.
+ * NOT SHUFFLED. A page that reorders its own option list between the
+ * server-rendered HTML and the client's first paint is a page that fails to
+ * hydrate quietly - see the note on SSR visibility elsewhere in this
+ * codebase. A lecturer who wants the bank to read less predictably orders
+ * the distractors accordingly when writing the question.
  */
-export function checkWrittenAnswer(
-  question: WrittenQuestion,
-  answer: string,
-): boolean {
-  const text = answer.toLowerCase();
-  const hits = question.keywords.filter((keyword) =>
-    text.includes(keyword.toLowerCase()),
-  ).length;
-  return hits >= question.minMatches;
+export function optionBankFor(question: FillInTheBlankQuestion): string[] {
+  return [...question.blanks.map((blank) => blank.answer), ...question.distractors];
 }
 
-export function writtenStatus(
-  moduleId: string,
-  lectureId: string,
-): WrittenStatus {
-  if (!hasWrittenQuestions(lectureId)) return "not-required";
-  const score = getEnrolment(moduleId)?.writtenScores[lectureId];
+/**
+ * A learner's picks, checked against a passage's blanks.
+ *
+ * EVERY BLANK HAS TO MATCH, exactly the way an MCQ question is right or
+ * wrong as a whole - a passage is one question in the quiz flow, not several,
+ * so a partially filled passage does not partially pass. Matching is
+ * case-insensitive and trims whitespace; the option came from a fixed word
+ * bank rather than free text, so there is no paraphrasing to be forgiving
+ * about, the way a free-text answer would need.
+ */
+export function checkBlankAnswers(
+  question: FillInTheBlankQuestion,
+  picks: Record<string, string>,
+): boolean {
+  return question.blanks.every((blank) => {
+    const pick = picks[blank.id];
+    return Boolean(pick) && pick.trim().toLowerCase() === blank.answer.trim().toLowerCase();
+  });
+}
+
+export function blankStatus(moduleId: string, lectureId: string): BlankStatus {
+  if (!hasBlankQuestions(lectureId)) return "not-required";
+  const score = getEnrolment(moduleId)?.blankScores[lectureId];
   if (score === undefined) return "not-attempted";
   return score >= PASS_MARK ? "passed" : "failed";
 }
@@ -337,9 +383,9 @@ export function writtenStatus(
  * Whether a lecture's gate is cleared - the one thing that decides whether
  * "next lecture" is offered.
  *
- * A lecture always has a quiz to clear; it only sometimes has written
- * questions as well, and when it does not, they cannot block anything -
- * `writtenStatus` returning `"not-required"` counts as cleared here. Nothing
+ * A lecture always has a quiz to clear; it only sometimes has fill-in-the-
+ * blank questions as well, and when it does not, they cannot block anything -
+ * `blankStatus` returning `"not-required"` counts as cleared here. Nothing
  * else on the platform is gated (a learner can still open any lecture's page
  * directly - see `lectureState()`); this is the one control that actually
  * withholds something, and it withholds exactly one thing: the "Next
@@ -347,8 +393,8 @@ export function writtenStatus(
  */
 export function lectureGateCleared(moduleId: string, lectureId: string): boolean {
   if (quizStatus(moduleId, lectureId) !== "passed") return false;
-  const written = writtenStatus(moduleId, lectureId);
-  return written === "passed" || written === "not-required";
+  const blanks = blankStatus(moduleId, lectureId);
+  return blanks === "passed" || blanks === "not-required";
 }
 
 /* -------------------------------------------------------------- dashboard */

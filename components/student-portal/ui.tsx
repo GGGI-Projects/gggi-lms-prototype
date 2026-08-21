@@ -132,21 +132,56 @@ const AVATAR_TONE = {
 } as const;
 
 /**
- * Someone's initials, drawn rather than uploaded - the rail, the topbar and
- * every register's first column all want the same circle and were building
- * it three separate times before this existed. `tone` is the one thing that
- * actually differs between a dark rail and a light table row; size and text
- * scale still come from `className`, the same as before.
+ * Someone's avatar - the rail, the topbar and every register's first column
+ * all want the same circle and were building it three separate times before
+ * this existed.
+ *
+ * A REAL PHOTO WHEN THERE IS ONE, which is every staff and student record in
+ * this prototype - see the `avatarUrl` field on `StaffMember`
+ * (`content/staff.ts`), `StudentRecord` (`content/students.ts`) and
+ * `LEARNER` (`content/portal.ts`). They are sourced from Unsplash: free to
+ * use for this kind of thing under Unsplash's license, and picked as plain,
+ * anonymous headshots rather than attached to any claim about who they
+ * really are - a real build would swap these for the person's own uploaded
+ * photo. `src` is the browser's own `<img>`, not `next/image`: these are
+ * small, decorative and already sized by Unsplash's own URL parameters, so
+ * there is nothing next/image's optimiser would do for them that is worth
+ * the extra remote-pattern config - see `next.config.ts` for the matching
+ * `img-src` entry a strict CSP needs before a browser will load them at all.
+ *
+ * FALLS BACK TO INITIALS when `src` is absent, which no real person record
+ * here leaves it as, but keeps this safe for anything that is not one.
+ * `tone` only matters for that fallback - the one thing that actually
+ * differs between a dark rail and a light table row; size and text scale
+ * still come from `className`, the same as before.
  */
-export function InitialsAvatar({
+export function Avatar({
+  src,
   initials,
   tone = "dark",
   className = "",
 }: {
+  src?: string;
   initials: string;
   tone?: keyof typeof AVATAR_TONE;
   className?: string;
 }) {
+  if (src) {
+    // Plain `<img>`, deliberately not `next/image` - see the note above. This
+    // is the one, well-understood exception to the framework's default.
+    return (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        src={src}
+        alt=""
+        aria-hidden="true"
+        loading="lazy"
+        decoding="async"
+        className={`shrink-0 rounded-full object-cover ${className}`}
+      />
+    );
+  }
+
   return (
     <span
       aria-hidden="true"

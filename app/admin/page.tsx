@@ -19,6 +19,7 @@ import {
 } from "@/lib/admin";
 import { formatDate } from "@/lib/portal";
 import {
+  Avatar,
   Badge,
   MetricCard,
   PageBody,
@@ -258,12 +259,12 @@ export default function AdminDashboard() {
                   href={`/admin/students/${student.id}`}
                   className="flex items-center gap-4 px-5 py-4 transition-colors duration-200 hover:bg-surface/70"
                 >
-                  <span
-                    aria-hidden="true"
-                    className="grid size-10 shrink-0 place-items-center rounded-full bg-tint-mist font-display text-sm font-bold tracking-tight text-primary"
-                  >
-                    {student.initials}
-                  </span>
+                  <Avatar
+                    src={student.avatarUrl}
+                    initials={student.initials}
+                    tone="light"
+                    className="size-10"
+                  />
                   <span className="min-w-0 flex-1">
                     <span className="block truncate text-lg font-semibold text-ink">
                       <span className="link-wipe">{student.name}</span>

@@ -55,12 +55,11 @@ export function NewLecturerAction({
         open={open}
         onClose={() => setOpen(false)}
         title="Add a lecturer"
-        description="Either an administrator or the super administrator can appoint one. Assigning modules now is optional - it can be done later from their page, and a lecturer with nothing assigned simply has an empty console until it is."
-        // Name, email, a field, and a wrapping fieldset of module
-        // checkboxes - `md` gives that fieldset room to wrap several across
-        // rather than stack one per line, without the drawer overreaching a
-        // form this short.
-        size="md"
+        description="Either an administrator or the super administrator can appoint one. Assigning modules now is optional - it can be done later from their page. Their public profile is not: bio, qualifications, experience, publications and achievements are all required before the account can be created."
+        // The basics plus a full public profile - `lg` is what a form this
+        // long needs, and the footer's submit button stays put below it
+        // regardless of how far the fields scroll.
+        size="lg"
         footer={
           <IfCan capability="manageLecturers">
             <ActionButton type="submit" form={formId} variant="solid" size="sm">

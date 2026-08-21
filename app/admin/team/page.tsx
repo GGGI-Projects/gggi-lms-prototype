@@ -100,6 +100,7 @@ function Team() {
               <NameCell
                 href="/admin/team"
                 initials={member.initials}
+                avatarUrl={member.avatarUrl}
                 title={member.name}
                 subtitle={member.email}
               />

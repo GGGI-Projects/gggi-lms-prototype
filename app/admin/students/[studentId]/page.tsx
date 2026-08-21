@@ -25,6 +25,8 @@ import {
 } from "@/components/console/ui";
 import { ConfirmAction } from "@/components/console/actions";
 import { IfCan, LockedNote } from "@/components/console/permission";
+import { messageContactsForAdmin } from "@/lib/comms";
+import { ComposeMessageAction } from "@/components/notifications/compose-message";
 import {
   CERTIFICATE_STATUS_LABEL,
   CERTIFICATE_STATUS_TONE,
@@ -89,13 +91,21 @@ export default async function StudentPage({ params }: Params) {
           </>
         }
         actions={
-          <a
-            href={`mailto:${student.email}`}
-            className="btn-ripple btn-solid btn-sm"
-          >
-            <span aria-hidden="true" className="btn-wave" />
-            <span className="btn-label">Email this learner</span>
-          </a>
+          <>
+            <ComposeMessageAction
+              contacts={messageContactsForAdmin()}
+              preselectedId={student.id}
+              buttonLabel="Send a message"
+              drawerTitle={`Message ${student.name}`}
+            />
+            <a
+              href={`mailto:${student.email}`}
+              className="btn-ripple btn-solid btn-sm"
+            >
+              <span aria-hidden="true" className="btn-wave" />
+              <span className="btn-label">Email this learner</span>
+            </a>
+          </>
         }
       />
 

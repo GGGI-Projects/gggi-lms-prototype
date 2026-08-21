@@ -21,7 +21,7 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
 } from "@/components/student-portal/icons";
-import { InitialsAvatar } from "@/components/student-portal/ui";
+import { Avatar } from "@/components/student-portal/ui";
 
 export type Column = {
   key: string;
@@ -135,12 +135,15 @@ export function Cell({
 export function NameCell({
   href,
   initials,
+  avatarUrl,
   title,
   subtitle,
 }: {
   href: string;
   /** Omit for rows that are not people - a module, a certificate. */
   initials?: string;
+  /** Omit along with `initials`, same reason. */
+  avatarUrl?: string;
   title: string;
   subtitle?: string;
 }) {
@@ -148,7 +151,12 @@ export function NameCell({
     <td className="px-5 py-4">
       <Link href={href} className="group flex items-center gap-3">
         {initials ? (
-          <InitialsAvatar initials={initials} tone="light" className="size-10" />
+          <Avatar
+            src={avatarUrl}
+            initials={initials}
+            tone="light"
+            className="size-10"
+          />
         ) : null}
         <span className="min-w-0">
           <span className="block truncate text-lg font-semibold text-ink">

@@ -3,19 +3,19 @@ import { notFound } from "next/navigation";
 import { SESSION } from "@/content/staff";
 import { LECTURES } from "@/content/curriculum";
 import {
+  blankStatsFor,
   consoleLectures,
   managedModule,
   modulesFor,
   quizStatsFor,
   staffById,
-  writtenStatsFor,
 } from "@/lib/admin";
-import { PASS_MARK, quizFor, writtenQuestionsFor } from "@/lib/portal";
+import { PASS_MARK, quizFor, blankQuestionsFor } from "@/lib/portal";
 import { PageBody, PageHeader } from "@/components/console/ui";
 import {
+  FillInTheBlankQuestionsManager,
   QuizHeaderMeta,
   QuizManager,
-  WrittenQuestionsManager,
 } from "@/components/console/quiz-manager";
 
 type Params = { params: Promise<{ moduleId: string; lectureId: string }> };
@@ -56,9 +56,9 @@ export default async function LecturerQuizPage({ params }: Params) {
     LECTURES[moduleId]?.find((entry) => entry.id === lectureId),
   );
   const questions = hasContent ? quizFor(moduleId, lectureId) : [];
-  const written = hasContent ? writtenQuestionsFor(lectureId) : [];
+  const blanks = hasContent ? blankQuestionsFor(lectureId) : [];
   const stats = quizStatsFor(lectureId);
-  const writtenStats = writtenStatsFor(lectureId);
+  const blankStats = blankStatsFor(lectureId);
   const live = mdl.status === "published" && mod.state === "published";
   const base = `/lecturer/modules/${mdl.id}`;
 
@@ -72,8 +72,8 @@ export default async function LecturerQuizPage({ params }: Params) {
         eyebrow="Lecture quiz"
         title={`Quiz - ${mod.title}`}
         lead={
-          written.length
-            ? `Four multiple-choice questions, plus ${written.length} written question${written.length === 1 ? "" : "s"} below them, close the lecture and confirm the ideas landed. Unlimited attempts, no timer - the quiz is a foundation, not a filter.`
+          blanks.length
+            ? `Four multiple-choice questions, plus ${blanks.length} fill-in-the-blank question${blanks.length === 1 ? "" : "s"} below them, close the lecture and confirm the ideas landed. Unlimited attempts, no timer - the quiz is a foundation, not a filter.`
             : "Four questions close the lecture and confirm the ideas landed. Unlimited attempts, no timer - the quiz is a foundation, not a filter."
         }
         meta={
@@ -81,7 +81,7 @@ export default async function LecturerQuizPage({ params }: Params) {
             questions={questions.length}
             passMark={PASS_MARK}
             stats={stats}
-            writtenCount={written.length}
+            blankCount={blanks.length}
           />
         }
       />
@@ -103,9 +103,9 @@ export default async function LecturerQuizPage({ params }: Params) {
       />
 
       <div className="mt-12">
-        <WrittenQuestionsManager
-          questions={written}
-          stats={writtenStats}
+        <FillInTheBlankQuestionsManager
+          questions={blanks}
+          stats={blankStats}
           passMark={PASS_MARK}
           capability="authorLectures"
         />
