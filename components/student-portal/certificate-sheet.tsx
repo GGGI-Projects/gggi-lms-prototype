@@ -7,12 +7,16 @@ import { formatDateLong } from "@/lib/portal";
 /**
  * The certificate itself.
  *
- * SHOWN IN TWO PLACES NOW: here in the portal, where it is a RECORD the
- * learner opens, and on the landing page's certificate section, where it is
- * an ILLUSTRATION OF A PROMISE shown to someone who has not signed up yet.
- * The landing page used to draw a deliberate empty frame instead - a
- * mocked-up certificate invites the client to review a document nobody has
- * designed, and every hour spent on its seal is an hour spent on something
+ * SHOWN IN THREE PLACES NOW: here in the portal, where it is a RECORD the
+ * learner opens; on the landing page's certificate section, where it is an
+ * ILLUSTRATION OF A PROMISE shown to someone who has not signed up yet; and
+ * on the admin console's own `/admin/certificates/[reference]` page, where
+ * it is the same record an administrator opens to act on it. Every use
+ * renders it unchanged - a credential that looks different depending on who
+ * is looking at it is not a credential. The landing page used to draw a
+ * deliberate empty frame instead - a mocked-up certificate invites the
+ * client to review a document nobody has designed, and every hour spent on
+ * its seal is an hour spent on something
  * that gets thrown away. That reasoning does not survive THIS component
  * existing: once the real document is designed and is what the portal
  * actually issues, drawing a second, fake one for the landing page would be

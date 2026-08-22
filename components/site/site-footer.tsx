@@ -97,9 +97,6 @@ export function SiteFooter() {
             © {new Date().getFullYear()} {BRAND.name} {BRAND.suffix}. Made for{" "}
             {BRAND.country}.
           </p>
-          <p>
-            Available in English. Sinhala and Tamil versions in preparation.
-          </p>
         </div>
       </div>
     </footer>

@@ -302,7 +302,9 @@ export function LectureEditor({
             Publication
           </h2>
           <p className={`mt-2 ${BODY.base}`}>
-            Only published lectures appear in a learner&rsquo;s contents list.
+            Only published lectures appear in a learner&rsquo;s contents
+            list. You publish it yourself, whenever it&rsquo;s ready - nobody
+            else needs to approve it.
           </p>
 
           <div className="mt-6">
@@ -318,12 +320,6 @@ export function LectureEditor({
                     value: "published",
                     label: "Published",
                     description: "Live. Learners can open it now.",
-                  },
-                  {
-                    value: "in-review",
-                    label: "In review",
-                    description:
-                      "Finished, flagged for a second pair of eyes. You can still publish it yourself whenever you're ready - this does not wait for anyone's approval.",
                   },
                   {
                     value: "draft",

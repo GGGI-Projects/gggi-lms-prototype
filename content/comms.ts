@@ -167,7 +167,7 @@ export const THREADS: MessageThread[] = [
         id: "thr-1-m2",
         from: "staff-inst-3",
         body:
-          "Two more are drafted and in review now - aiming to publish by Friday. I'll flag it if the retrofitting one needs another pass first.",
+          "Two more are drafted now - aiming to publish by Friday. I'll flag it if the retrofitting one needs another pass first.",
         sentOn: "2026-08-19",
       },
     ],

@@ -170,6 +170,5 @@ ships to the browser.
 ## Known prototype limitations
 
 - `/signup`, `/login` and `/dashboard` are not built yet - those links 404.
-- English only. Sinhala and Tamil are referenced in the copy as planned, and
-  the layout leaves room for them, but no i18n is wired up.
+- English only, with no other language planned.
 - The certificate is a visual mock; the reference number is illustrative.

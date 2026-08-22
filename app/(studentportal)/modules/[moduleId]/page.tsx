@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { ActionButton } from "@/components/ui/action-button";
 import { ModuleScene } from "@/components/art/scenes";
 import { LectureRow } from "@/components/student-portal/lecture-row";
+import { LecturerSection } from "@/components/student-portal/lecturer-link";
 import {
   Badge,
   DefinitionList,
@@ -20,6 +21,8 @@ import {
   QuizIcon,
 } from "@/components/student-portal/icons";
 import { MODULES } from "@/content/site";
+import type { StaffMember } from "@/content/staff";
+import { consoleLectures } from "@/lib/admin";
 import {
   formatDate,
   formatDuration,
@@ -70,10 +73,37 @@ export default async function ModulePage({ params }: Params) {
   const { module: mdl, lectures, enrolment, status, nextLecture, certificate } =
     progress;
 
+  // Who actually teaches this module - derived from the same per-lecture
+  // authorship the lecture page's own byline reads (`consoleLectures()`),
+  // deduplicated, so this list can never name someone who hasn't actually
+  // written anything here and can never disagree with a lecture's byline.
+  const moduleLecturers = Array.from(
+    new Map(
+      consoleLectures(mdl.id)
+        .map((entry) => entry.author)
+        .filter((author): author is StaffMember => Boolean(author))
+        .map((author) => [author.id, author] as const),
+    ).values(),
+  );
+
   const done = status === "completed";
+  // A FINISHED MODULE'S CALL TO ACTION IS A REVIEW, NOT A RESTART. The
+  // module contents list right below already lets a learner open any
+  // lecture they want, so a dedicated "back to lecture one" button added
+  // nothing a completed module didn't already offer - and the one thing it
+  // couldn't do yet, from here, was invite the review a certificate page
+  // has a form for. Certain, not merely likely, that `certificate` exists
+  // whenever `done` is true: marking a module's last lecture complete is
+  // itself gated on every quiz (and fill-in-the-blank set) being passed -
+  // see `lectureGateCleared()`/`<CompleteButton>` - which is the platform's
+  // own condition for issuing one. The `lectures[0]` fallback below exists
+  // only for the data-authoring mistake that invariant is meant to prevent,
+  // never a state a learner should actually be able to reach.
+  const reviewHref = certificate ? `/certificates/${certificate.id}#review` : undefined;
   const resumeHref = nextLecture
     ? `/modules/${mdl.id}/lectures/${nextLecture.id}`
-    : `/modules/${mdl.id}/lectures/${lectures[0].id}`;
+    : (reviewHref ?? `/modules/${mdl.id}/lectures/${lectures[0].id}`);
+  const completedLabel = certificate ? "Rate and review" : "Review";
 
   return (
     <PageBody>
@@ -84,7 +114,7 @@ export default async function ModulePage({ params }: Params) {
         lead={mdl.summary}
         actions={
           <ActionButton href={resumeHref} variant="solid" size="sm" className="group">
-            {done ? "Review" : progress.enrolled ? "Resume" : "Enrol and start"}
+            {done ? completedLabel : progress.enrolled ? "Resume" : "Enrol and start"}
             <ArrowRightIcon className="size-4 transition-transform duration-500 ease-out-expo group-hover:translate-x-1" />
           </ActionButton>
         }
@@ -116,6 +146,12 @@ export default async function ModulePage({ params }: Params) {
               ))}
             </ul>
           </section>
+
+          <LecturerSection
+            heading={moduleLecturers.length === 1 ? "Your lecturer" : "Your lecturers"}
+            lecturers={moduleLecturers}
+            className="mt-12"
+          />
 
           <section className="mt-12">
             <div className="flex flex-wrap items-end justify-between gap-4">
@@ -196,7 +232,7 @@ export default async function ModulePage({ params }: Params) {
                   size="sm"
                   className="group w-full"
                 >
-                  {done ? "Review module" : progress.enrolled ? "Resume" : "Start lecture 01"}
+                  {done ? completedLabel : progress.enrolled ? "Resume" : "Start lecture 01"}
                   <ArrowRightIcon className="size-4 transition-transform duration-500 ease-out-expo group-hover:translate-x-1" />
                 </ActionButton>
               </div>
@@ -264,7 +300,17 @@ function CertificatePanel({
 }) {
   if (certificateHref) {
     return (
-      <article className="relative isolate overflow-hidden rounded-sm bg-primary-950 px-7 py-7 text-tint">
+      // THE WHOLE CARD IS THE LINK, not just the "View certificate" line -
+      // a learner who earned a certificate has one reason to be looking at
+      // this panel. "View certificate" is a `<span>` styled as a button
+      // rather than a nested `<Link>`, both because a link inside a link is
+      // invalid HTML and because a pill that visibly matches every other
+      // solid button on the platform (`.btn-solid`'s own accent/ink pair)
+      // reads as far more clickable than the plain text line it replaces.
+      <Link
+        href={certificateHref}
+        className="group relative isolate block overflow-hidden rounded-sm bg-primary-950 px-7 py-7 text-tint transition-colors duration-300 hover:bg-primary-900"
+      >
         <p className={EYEBROW.onDark}>Certificate earned</p>
         <p className="mt-4 text-lg leading-relaxed">
           You completed {moduleTitle} - every quiz, and every
@@ -276,14 +322,11 @@ function CertificatePanel({
         <p className="mt-1 text-sm text-primary-500">
           Issued {issuedOn ? formatDate(issuedOn) : null}
         </p>
-        <Link
-          href={certificateHref}
-          className="link-wipe mt-5 inline-flex items-center gap-2 text-lg font-semibold text-accent-soft"
-        >
+        <span className="mt-5 inline-flex items-center gap-2 rounded-full bg-accent px-5 py-2.5 text-base font-semibold text-primary-950 transition-transform duration-500 ease-out-expo group-hover:translate-x-1">
           View certificate
           <ArrowRightIcon className="size-4" />
-        </Link>
-      </article>
+        </span>
+      </Link>
     );
   }
 

@@ -84,8 +84,8 @@ export default function LecturerProfilePage() {
         />
         <MetricCard
           label="Still to finish"
-          value={load.inReview + load.unwritten}
-          hint="in review or unwritten"
+          value={load.unwritten}
+          hint="not started or still drafting"
           goodWhen="down"
         />
         <MetricCard

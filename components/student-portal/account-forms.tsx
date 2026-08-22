@@ -203,7 +203,7 @@ export function ProfileForm() {
 
 /* --------------------------------------------------------------- settings */
 
-const LANGUAGES = ["English", "සිංහල (coming soon)", "தமிழ் (coming soon)"] as const;
+const LANGUAGES = ["English"] as const;
 const REMINDERS = ["Weekly", "Fortnightly", "Monthly", "Never"] as const;
 
 export function SettingsForm() {
@@ -230,7 +230,7 @@ export function SettingsForm() {
         <Toggle
           name="emailNewModules"
           label="New modules"
-          description="When a module is published, including the Sinhala and Tamil editions."
+          description="When a module is published."
           defaultChecked={LEARNER.preferences.emailNewModules}
         />
         <Toggle
@@ -256,7 +256,7 @@ export function SettingsForm() {
 
       <FieldGroup
         title="Language"
-        description="The first modules are published in English. Sinhala and Tamil are on the roadmap and the platform is built to carry all three side by side."
+        description="Every module is published in English."
       >
         <SelectField
           label="Interface language"

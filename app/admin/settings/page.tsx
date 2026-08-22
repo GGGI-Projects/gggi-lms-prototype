@@ -74,8 +74,7 @@ export default function SettingsPage() {
                 ))}
               </select>
               <span className={`mt-2 block ${META.base}`}>
-                Sinhala and Tamil are offered to learners. The interface itself
-                is English in this prototype.
+                The platform is English-only.
               </span>
             </label>
           </SettingsGroup>

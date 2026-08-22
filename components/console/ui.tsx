@@ -17,6 +17,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { BODY, CARD, CONSOLE, EYEBROW, HEADING, META } from "@/lib/theme";
+import { Avatar } from "@/components/student-portal/ui";
 import { ChevronLeftIcon, ChevronRightIcon } from "@/components/student-portal/icons";
 import { AlertIcon, TrendDownIcon, TrendUpIcon } from "@/components/console/icons";
 import { formatDelta } from "@/lib/admin";
@@ -69,6 +70,7 @@ export function PageHeader({
   title,
   lead,
   back,
+  avatar,
   meta,
   actions,
 }: {
@@ -76,6 +78,12 @@ export function PageHeader({
   title: string;
   lead?: string;
   back?: { href: string; label: string };
+  /** Set when `title` names one specific person - a learner, a lecturer,
+   *  an administrator - so their record opens with a face against the
+   *  name, the same way every list row and byline on the platform already
+   *  does. Omit for a page whose title is not a person (a module, a
+   *  material, a setting). */
+  avatar?: { src?: string; initials: string };
   /** Chips, dates, ids - anything that qualifies the title. */
   meta?: ReactNode;
   actions?: ReactNode;
@@ -93,15 +101,24 @@ export function PageHeader({
       ) : null}
 
       <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-        <div className="min-w-0">
-          <p className={EYEBROW.onLight}>{eyebrow}</p>
-          <h1 className="font-display text-3xl tracking-tight text-balance text-ink sm:text-4xl">
-            {title}
-          </h1>
-          {lead ? <p className={`measure-wide mt-4 ${BODY.base}`}>{lead}</p> : null}
-          {meta ? (
-            <div className="mt-5 flex flex-wrap items-center gap-2">{meta}</div>
+        <div className="flex min-w-0 items-center gap-5">
+          {avatar ? (
+            <Avatar
+              src={avatar.src}
+              initials={avatar.initials}
+              className="size-16 shrink-0 text-2xl"
+            />
           ) : null}
+          <div className="min-w-0">
+            <p className={EYEBROW.onLight}>{eyebrow}</p>
+            <h1 className="font-display text-3xl tracking-tight text-balance text-ink sm:text-4xl">
+              {title}
+            </h1>
+            {lead ? <p className={`measure-wide mt-4 ${BODY.base}`}>{lead}</p> : null}
+            {meta ? (
+              <div className="mt-5 flex flex-wrap items-center gap-2">{meta}</div>
+            ) : null}
+          </div>
         </div>
         {actions ? (
           <div className="flex shrink-0 flex-wrap gap-3">{actions}</div>

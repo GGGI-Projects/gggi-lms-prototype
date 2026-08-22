@@ -275,7 +275,6 @@ export function lectureLoad(member: StaffMember) {
     modules,
     lectures,
     published: lectures.filter((mod) => mod.state === "published").length,
-    inReview: lectures.filter((mod) => mod.state === "in-review").length,
     unwritten: lectures.filter(
       (mod) => mod.state === "draft" || mod.state === "not-started",
     ).length,
@@ -289,9 +288,9 @@ export function lectureLoad(member: StaffMember) {
 /**
  * What a learner sees when they click through to a lecturer's public
  * profile: only published modules, and only that lecturer's own published
- * lectures within them - never a draft, never a lecture still in review,
- * unlike `lectureLoad()` above which is the lecturer's own console view of
- * everything including work not yet public.
+ * lectures within them - never a draft, unlike `lectureLoad()` above which
+ * is the lecturer's own console view of everything including work not yet
+ * public.
  *
  * The one place the student portal reads from this file rather than
  * `lib/portal.ts` - lecture authorship lives in the console's own data
@@ -622,12 +621,13 @@ export function completionSplit() {
  * Things waiting for somebody. The dashboard's first block.
  *
  * EVERY FIGURE HERE HAS TO BE SOMETHING THE VIEWER CAN ACT ON, or the block
- * stops meaning "waiting for you" and starts meaning "here is a number". That
- * is why there is no count of lectures in review: moving a lecture to "in
- * review" is a lecturer flagging it for themselves or a colleague to revisit
- * (see `lecture-editor.tsx`) - nobody holds an approval an administrator can
- * open this dashboard and clear. A draft MODULE is the administrator's
- * equivalent: it is genuinely waiting on them, since only they can publish it.
+ * stops meaning "waiting for you" and starts meaning "here is a number".
+ * That is why there is no count of unpublished lectures here: a lecture
+ * belongs entirely to the lecturer writing it, who publishes it themselves
+ * whenever it's ready (see `lecture-editor.tsx`) - there is no administrator
+ * action to take, so it has no place in an administrator's queue. A draft
+ * MODULE is different: it is genuinely waiting on an administrator, since
+ * only they can publish one.
  */
 export function queues() {
   const drafts = MANAGED_MODULES.filter(

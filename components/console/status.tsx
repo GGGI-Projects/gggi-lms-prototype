@@ -67,7 +67,6 @@ export const MODULE_STATUS_TONE: Record<
 
 export const LECTURE_STATE_LABEL = {
   published: "Published",
-  "in-review": "In review",
   draft: "Draft",
   "not-started": "Not started",
 } as const;
@@ -77,7 +76,6 @@ export const LECTURE_STATE_TONE: Record<
   BadgeTone
 > = {
   published: "done",
-  "in-review": "active",
   draft: "info",
   "not-started": "neutral",
 };

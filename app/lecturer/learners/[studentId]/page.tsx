@@ -98,6 +98,7 @@ export default async function LecturerLearnerPage({ params }: Params) {
         back={{ href: "/lecturer/learners", label: "Enrolled students" }}
         eyebrow="Learner"
         title={student.name}
+        avatar={{ src: student.avatarUrl, initials: student.initials }}
         lead={`Enrolled on ${relevant.length === 1 ? "one of your modules" : `${relevant.length} of your modules`}.`}
         meta={
           <>

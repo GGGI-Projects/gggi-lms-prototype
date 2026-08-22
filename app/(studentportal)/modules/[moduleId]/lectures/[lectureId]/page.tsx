@@ -5,6 +5,7 @@ import { ActionButton } from "@/components/ui/action-button";
 import { CompleteButton } from "@/components/student-portal/complete-button";
 import { MaterialsList } from "@/components/student-portal/materials-list";
 import { VideoStage } from "@/components/student-portal/video-stage";
+import { LecturerSection } from "@/components/student-portal/lecturer-link";
 import {
   Badge,
   PageBody,
@@ -120,7 +121,25 @@ export default async function LecturePage({ params }: Params) {
       <PageHeader
         back={{ href: `/modules/${mdl.id}`, label: mdl.title }}
         eyebrow={`Lecture ${mod.number} of ${lectures.length}`}
-        title={mod.title}
+        title={
+          completed ? (
+            <span className="inline-flex flex-wrap items-center gap-3">
+              {mod.title}
+              {/* The same "you did it" green circle as the completed block
+                  in the aside and `<QuizCallout>` below - repeated beside
+                  the title itself, since that is the first thing read on
+                  the page and where "this is done" should show first. */}
+              <span
+                aria-hidden="true"
+                className="grid size-9 shrink-0 place-items-center rounded-full bg-primary text-paper"
+              >
+                <CheckIcon className="size-5" />
+              </span>
+            </span>
+          ) : (
+            mod.title
+          )
+        }
         lead={mod.summary}
       />
 
@@ -154,21 +173,15 @@ export default async function LecturePage({ params }: Params) {
         ) : null}
       </div>
 
-      {author ? (
-        <p className={`mt-4 ${META.base}`}>
-          Written by{" "}
-          <Link
-            href={`/lecturers/${author.id}`}
-            className="link-wipe font-semibold text-primary"
-          >
-            {author.name}
-          </Link>
-        </p>
-      ) : null}
-
       <div className="mt-10 grid gap-10 lg:grid-cols-12">
         {/* ------------------------------------------------------- main */}
         <article className="min-w-0 lg:col-span-8">
+          {/* Same card the module page's "Your lecturer(s)" section uses
+              (see `LecturerSection`) - a lecture's author and a module's
+              teaching staff are the same fact at two zoom levels, and
+              should look it. */}
+          <LecturerSection heading="Written by" lecturers={author ? [author] : []} className="mb-10" />
+
           <section className="rounded-sm border-l-2 border-accent bg-surface/50 px-6 py-6">
             <h2 className={EYEBROW.muted}>In this lecture</h2>
             <ul className="mt-4 space-y-3">

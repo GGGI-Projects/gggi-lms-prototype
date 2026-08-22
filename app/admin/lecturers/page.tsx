@@ -93,8 +93,8 @@ export default function LecturersPage() {
           </Cell>
           <Cell numeric hideBelow="sm">
             {load.published}
-            {load.inReview + load.unwritten > 0 ? (
-              <span className={META.base}> +{load.inReview + load.unwritten}</span>
+            {load.unwritten > 0 ? (
+              <span className={META.base}> +{load.unwritten}</span>
             ) : null}
           </Cell>
           <Cell numeric hideBelow="md">

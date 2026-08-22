@@ -111,7 +111,7 @@ export default function LecturerLecturesPage() {
 
       {load.lectures.length ? (
         <>
-          <div className={`${CONSOLE.stack} grid gap-4 sm:grid-cols-2 xl:grid-cols-4`}>
+          <div className={`${CONSOLE.stack} grid gap-4 sm:grid-cols-2 xl:grid-cols-3`}>
             <MetricCard
               label="Lectures"
               value={load.lectures.length}
@@ -121,11 +121,6 @@ export default function LecturerLecturesPage() {
               label="Published"
               value={load.published}
               hint="live for learners"
-            />
-            <MetricCard
-              label="In review"
-              value={load.inReview}
-              hint="waiting on somebody else"
             />
             <MetricCard
               label="Unwritten"
@@ -144,7 +139,6 @@ export default function LecturerLecturesPage() {
               filters={[
                 { value: "all", label: "All", count: load.lectures.length },
                 { value: "published", label: "Published", count: count("published") },
-                { value: "in-review", label: "In review", count: count("in-review") },
                 { value: "draft", label: "Draft", count: count("draft") },
                 {
                   value: "not-started",
@@ -193,15 +187,14 @@ export default function LecturerLecturesPage() {
 
             <Panel>
               <h2 className="font-display text-2xl tracking-tight text-ink">
-                Draft, in review, published
+                Draft, then published
               </h2>
               <p className={`mt-3 ${BODY.base}`}>
-                You can publish a lecture yourself, any time - nobody has to
-                approve it. Moving it to{" "}
-                <span className="font-semibold text-ink">in review</span> instead
-                is a flag for yourself or a colleague to double-check it first,
-                which is worth doing for anything that makes a claim about
-                policy or money.
+                You publish a lecture yourself, any time - nobody has to
+                approve it, and there is no separate review step. Read back
+                over anything that makes a claim about policy or money
+                before you publish it, since nobody else will check it for
+                you.
               </p>
               <p className={`mt-3 ${META.base}`}>
                 Nothing in a draft module is visible to a learner whatever

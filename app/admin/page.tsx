@@ -19,6 +19,10 @@ import {
 } from "@/lib/admin";
 import { formatDate } from "@/lib/portal";
 import {
+  LECTURE_STATE_LABEL,
+  LECTURE_STATE_TONE,
+} from "@/components/console/status";
+import {
   Avatar,
   Badge,
   MetricCard,
@@ -293,8 +297,8 @@ export default function AdminDashboard() {
                   {mod.module.title}
                 </p>
                 <p className={`mt-2 flex flex-wrap items-center gap-2 ${META.base}`}>
-                  <Badge tone={mod.state === "published" ? "done" : "warn"}>
-                    {mod.state === "in-review" ? "In review" : "Published"}
+                  <Badge tone={LECTURE_STATE_TONE[mod.state]}>
+                    {LECTURE_STATE_LABEL[mod.state]}
                   </Badge>
                   {mod.author ? mod.author.name : "No author recorded"}
                   {mod.updatedOn ? ` · ${formatDate(mod.updatedOn)}` : null}

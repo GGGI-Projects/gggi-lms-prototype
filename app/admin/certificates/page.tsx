@@ -67,14 +67,12 @@ export default function CertificatesPage() {
       .toLowerCase(),
     tags: [record.status, record.moduleId],
     row: (
-      <Row href={`/admin/students/${record.studentId}`}>
-        <Cell className="font-display font-bold tracking-tight text-ink tabular-nums">
-          {record.reference}
-        </Cell>
+      <Row href={`/admin/certificates/${record.reference}`}>
         <NameCell
-          href={`/admin/students/${record.studentId}`}
-          title={record.studentName}
+          href={`/admin/certificates/${record.reference}`}
+          title={record.reference}
         />
+        <Cell>{record.studentName}</Cell>
         <Cell hideBelow="lg">{record.moduleTitle}</Cell>
         <Cell numeric hideBelow="sm">
           {record.score === null ? "-" : `${record.score}%`}
@@ -167,6 +165,12 @@ export default function CertificatesPage() {
                     Withdrawn by {staffName(record.revoked?.by ?? "")} on{" "}
                     {record.revoked ? formatDateLong(record.revoked.revokedOn) : ""}
                   </p>
+                  <Link
+                    href={`/admin/certificates/${record.reference}`}
+                    className="link-wipe mt-2 inline-block text-sm font-semibold text-primary"
+                  >
+                    View the certificate
+                  </Link>
                 </Callout>
               </li>
             ))}

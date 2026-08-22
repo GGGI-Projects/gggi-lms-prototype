@@ -5,6 +5,7 @@ import { CertificateActions } from "@/components/student-portal/certificate-acti
 import { CertificateSheet } from "@/components/student-portal/certificate-sheet";
 import { ReviewForm } from "@/components/student-portal/review-form";
 import {
+  Badge,
   DefinitionList,
   PageBody,
   PageHeader,
@@ -14,10 +15,19 @@ import { CheckIcon } from "@/components/student-portal/icons";
 import { CERTIFICATES, LEARNER } from "@/content/portal";
 import {
   formatDate,
+  formatDateLong,
   formatDuration,
   getCertificate,
   progressFor,
 } from "@/lib/portal";
+// The one place this portal reads from the console's own data layer - see
+// the note on `record` below for why a certificate's live status has to
+// come from there.
+import { findCertificate, staffName } from "@/lib/admin";
+import {
+  CERTIFICATE_STATUS_LABEL,
+  CERTIFICATE_STATUS_TONE,
+} from "@/components/console/status";
 import { BODY, EYEBROW, META } from "@/lib/theme";
 
 type Params = { params: Promise<{ certificateId: string }> };
@@ -50,6 +60,15 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
  * They are different fields on purpose - a certificate carries the name that
  * matches an identity document, and the portal says hello using the name a
  * person goes by.
+ *
+ * SHOWS ITS CURRENT STATE, same as `/admin/certificates/[reference]` - a
+ * learner should never have to email support to find out their certificate
+ * was withdrawn; the page they'd open to show it off is exactly where that
+ * belongs. `content/portal.ts`'s own `CERTIFICATES` carries no status at
+ * all - a certificate is issued once and never edited there - so whether
+ * this one still verifies is looked up from `findCertificate()` in
+ * `lib/admin.ts`, the same withdrawal record the console reads, rather than
+ * duplicated here where it could disagree.
  */
 export default async function CertificatePage({ params }: Params) {
   const { certificateId } = await params;
@@ -62,6 +81,8 @@ export default async function CertificatePage({ params }: Params) {
 
   const { module: mdl, lectures } = progress;
   const hours = Math.round((progress.minutesTotal / 60) * 10) / 10;
+  const record = findCertificate(certificate.reference);
+  const revoked = record?.status === "revoked";
 
   return (
     <PageBody>
@@ -71,6 +92,28 @@ export default async function CertificatePage({ params }: Params) {
         title={mdl.title}
         lead={`Issued to ${LEARNER.certificateName} on ${formatDate(certificate.issuedOn)}, carrying a reference anyone can check.`}
       />
+
+      {record ? (
+        <div className="mt-6">
+          <Badge tone={CERTIFICATE_STATUS_TONE[record.status]}>
+            {CERTIFICATE_STATUS_LABEL[record.status]}
+          </Badge>
+        </div>
+      ) : null}
+
+      {revoked ? (
+        <div className="mt-6 rounded-sm border border-clay/30 bg-clay-pale/50 p-6 sm:p-8">
+          <p className={`${EYEBROW.muted} text-clay`}>
+            This certificate was withdrawn
+          </p>
+          <p className={`mt-3 ${BODY.base}`}>{record?.revoked?.reason}</p>
+          <p className={`mt-2 ${META.base}`}>
+            Withdrawn by {staffName(record?.revoked?.by ?? "")} on{" "}
+            {record?.revoked ? formatDateLong(record.revoked.revokedOn) : ""}
+            . The reference below no longer verifies.
+          </p>
+        </div>
+      ) : null}
 
       <div className="mt-10 grid gap-10 lg:grid-cols-12">
         <div className="min-w-0 lg:col-span-8">
@@ -87,7 +130,10 @@ export default async function CertificatePage({ params }: Params) {
             <CertificateActions reference={certificate.reference} />
           </div>
 
-          <div className="mt-8">
+          {/* `id` + `scroll-mt` so the completed module page's "Leave a
+              review" button can link straight here with `#review` and land
+              below the sticky header rather than under it. */}
+          <div id="review" className="mt-8 scroll-mt-[calc(var(--header-h)+1.5rem)]">
             <Panel>
               <ReviewForm moduleTitle={mdl.title} />
             </Panel>

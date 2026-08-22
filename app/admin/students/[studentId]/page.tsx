@@ -78,6 +78,7 @@ export default async function StudentPage({ params }: Params) {
         back={{ href: "/admin/students", label: "Students" }}
         eyebrow="Learner record"
         title={student.name}
+        avatar={{ src: student.avatarUrl, initials: student.initials }}
         lead={`${student.organisation} · ${student.district}`}
         meta={
           <>

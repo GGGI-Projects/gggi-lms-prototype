@@ -14,7 +14,7 @@
  * cannot claim a lecture that does not attach it. See the note on `usageOf`.
  *
  * GROUPS ARE SUBJECT SHELVES, not owners. Anybody on staff can use anything -
- * an energy lecturer attaching the Sinhala glossary from the teaching kit is
+ * an energy lecturer attaching the glossary from the teaching kit is
  * the whole point of the shelf being shared. What a group does is make the
  * library findable at 200 files, and let a lecture pick up a whole set at once.
  */
@@ -100,7 +100,7 @@ export const MATERIAL_GROUPS: MaterialGroup[] = [
     id: "teaching-kit",
     name: "Teaching kit",
     description:
-      "Slide templates and the Sinhala and Tamil glossaries. Used across every module.",
+      "Slide templates and the shared glossary. Used across every module.",
     createdOn: "2025-09-01",
     createdBy: "staff-admin-1",
   },
@@ -123,8 +123,8 @@ export type MaterialAsset = {
   groupId: string;
   uploadedBy: string;
   uploadedOn: string;
-  /** English unless stated. Learners are told which language a handout is in. */
-  language?: "English" | "සිංහල" | "தமிழ்";
+  /** Every handout is English. */
+  language?: "English";
   /** Shown on the material's own page. Blank where nothing was recorded. */
   source?: string;
 };
@@ -465,26 +465,14 @@ export const MATERIALS: MaterialAsset[] = [
   },
   {
     id: "mat-802",
-    title: "Glossary of climate terms - සිංහල",
+    title: "Glossary of climate terms",
     description:
-      "The platform's vocabulary in Sinhala. Attach it to any lecture whose learners asked for it.",
+      "The platform's vocabulary, defined in plain language. Attach it to any lecture whose learners asked for it.",
     kind: "pdf",
     size: "520 KB",
     groupId: "teaching-kit",
     uploadedBy: "staff-admin-2",
     uploadedOn: "2026-06-04",
-    language: "සිංහල",
-  },
-  {
-    id: "mat-803",
-    title: "Glossary of climate terms - தமிழ்",
-    description: "The same vocabulary in Tamil.",
-    kind: "pdf",
-    size: "515 KB",
-    groupId: "teaching-kit",
-    uploadedBy: "staff-admin-2",
-    uploadedOn: "2026-06-04",
-    language: "தமிழ்",
   },
   {
     id: "mat-804",

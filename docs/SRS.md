@@ -126,7 +126,7 @@ A responsive web app, used through desktop, laptop, and mobile browsers, on a wi
 
 - **No sponsor branding.** Nothing in the finished product — text, images, colours, or hidden page details — may show who is behind it. The brand identity (name, slogan, contact address) is a placeholder held in one settings file, so it can be swapped for the client's chosen brand without a rewrite.
 - **Free, always.** No requirement in this document, now or in future, should add billing, a paid tier, or lock any content behind payment. This is a core rule of the product, not just today's price.
-- **English at launch; Sinhala and Tamil are planned**, and the system (content structure, settings, footer/legal text) is built so all three languages can run side by side once the translated content exists (see §11).
+- **English only.** The product is English-language throughout, with no other language planned.
 - **One shared visual design** (a light, magazine-style layout with a teal/amber colour scheme, one shared font for headings and body text, and a carefully chosen amount of motion) has already been approved by the client through the prototype and should be carried into the finished product largely as built, rather than redesigned.
 - **Every content record in the prototype is sample data only, not a requirement.** Module titles and subjects, lecture counts and lengths, quiz questions, and every learner/lecturer/administrator record shown are sample data used to show how the platform behaves — they are not a description of what the real catalogue, content, or user base must contain. Wherever this document needs to describe such a screen, it describes the *mechanism* (for example, "a module has a title, a level, and a set of lectures") rather than the prototype's specific sample values. See the note at the start of §4.
 
@@ -278,7 +278,7 @@ Each requirement below has a stable ID (`FR-<area>-<number>`) and a priority (**
 | ID | Requirement | Pri. |
 |---|---|---|
 | FR-STU-340 | A **Profile** screen shall hold identity information: display name, the (separately editable) name printed on certificates, email address, and optional work details (role, organisation, sector, district) that never affect what the learner can join. It shall also show read-only facts about their learning (member since, modules joined, lectures completed, hours studied, certificates) and a short note on what personal data the platform keeps. | M |
-| FR-STU-350 | A separate **Settings** screen shall hold preferences about how the platform behaves, kept clearly apart from identity: email notification switches (progress/certificates, new modules, product news), how often study reminders are sent, a language choice (English now; Sinhala and Tamil marked "coming soon"), and a form to change password. None of these preferences shall affect what the learner has joined or already completed. | S |
+| FR-STU-350 | A separate **Settings** screen shall hold preferences about how the platform behaves, kept clearly apart from identity: email notification switches (progress/certificates, new modules, product news), how often study reminders are sent, and a form to change password. None of these preferences shall affect what the learner has joined or already completed. | S |
 | FR-STU-360 | Settings shall offer account deletion behind a two-step confirmation, and shall state clearly and correctly that deleting the account removes the learner's memberships and progress, but **does not** cancel certificates already given — those stay valid under their reference number even though the former learner can no longer download them from a deleted account. | M |
 
 ### 4.9 Lecturer Console — Dashboard and Module Management
@@ -286,8 +286,8 @@ Each requirement below has a stable ID (`FR-<area>-<number>`) and a priority (**
 | ID | Requirement | Pri. |
 |---|---|---|
 | FR-INS-010 | A lecturer's console shall be limited entirely to the module(s) an administrator has directly assigned them to. A lecturer with no assignment shall see a clear "nothing here yet" message, not an error, and shall have no way to assign themselves a module. | M |
-| FR-INS-020 | The lecturer dashboard shall sum up, across their assigned modules only: lectures still to write, lectures waiting for review, quizzes worth a closer look (see FR-INS-070), uploaded files not yet used anywhere, lectures published, learners reached, and average module rating. | M |
-| FR-INS-030 | A lecturer shall be able to list their assigned modules and open any one to see its lectures, each showing its state (Not started / Draft / In review / Published), files attached, a link to its quiz, its author, and when it was last updated. | M |
+| FR-INS-020 | The lecturer dashboard shall sum up, across their assigned modules only: lectures still to write, quizzes worth a closer look (see FR-INS-070), uploaded files not yet used anywhere, lectures published, learners reached, and average module rating. | M |
+| FR-INS-030 | A lecturer shall be able to list their assigned modules and open any one to see its lectures, each showing its state (Not started / Draft / Published), files attached, a link to its quiz, its author, and when it was last updated. | M |
 | FR-INS-040 | Creating and publishing a module is **for administrators only**; a lecturer may create, edit, and publish *lectures* by themselves within a module they are assigned to, but may never create a module or change whether a module itself is published or in draft. A draft module (no matter what state any of its lectures are in) is never visible to a learner. | M |
 | FR-INS-050 | A lecturer shall be able to add a new lecture to an assigned module, giving it a title and an estimated study time; the lecture shall start out empty, in Draft state, numbered automatically as the next one in order — lecture numbers are never chosen by hand. | M |
 
@@ -297,7 +297,7 @@ Each requirement below has a stable ID (`FR-<area>-<number>`) and a priority (**
 |---|---|---|
 | FR-INS-060 | The lecture editor shall let a lecturer add, edit, and remove content blocks of two kinds — a video block (title, the recording itself, its length, a short caption) and a written block (heading, body text) — and the order the blocks appear on screen is the order a learner will read them in. | M |
 | FR-INS-070 | Removing a content block, or deleting a lecture completely, shall require a clear two-step confirmation naming exactly what will be lost — never a plain "Are you sure?" — and shall correctly say that learners already past that point keep the progress they already made. | M |
-| FR-INS-080 | A lecture's publishing state (Draft / In review / Published) shall be changeable by the lecturer themselves for their own material — a lecturer does not need an administrator's approval to publish a lecture. Moving a lecture to "In review" is instead offered as an **optional** step for anything that makes a claim about policy or money, not something forced on every lecture. | M |
+| FR-INS-080 | A lecture's publishing state (Draft / Published) shall be changeable by the lecturer themselves for their own material — a lecturer does not need an administrator's approval, or anyone else's review, to publish a lecture. There is no separate review state or step: only the lecturer who wrote it acts on it. | M |
 | FR-INS-090 | Deleting a lecture shall renumber the lectures that come after it and shall show up in the progress of every learner already part-way through the module; any files it used stay in the shared library either way. | M |
 | FR-INS-100 | Real tools for adding video and formatted text — real video upload/processing and a real text editor — must be built for the finished product; the prototype shows the screen these tools will live in, without a working uploader or editor behind it. | M |
 
@@ -521,7 +521,7 @@ The rules below repeat across many screens in the prototype and are brought toge
 7. **Any file or group in the shared library may be linked to any lecture, by any staff member writing it, in any module, with no limit.** No file or group belongs only to one person or one module — this must never be blocked, or made to sound blocked, in code, on screen, or in any written message.
 8. **Files are linked, not copied.** Replacing a file's content updates every lecture that links to it; linking a whole group ("shelf") to a lecture copies its contents as they are at that moment, and does not stay updated afterward.
 9. **A lecturer may only write for the module(s) an administrator has directly assigned them to** — never assumed, never chosen by the lecturer, and always changed only by an administrator.
-10. **A lecturer may publish their own lectures without an administrator's approval**; moving a lecture to "in review" is an optional request for a second opinion, not something forced — except that a module itself can only ever be published or archived by an administrator, never by a lecturer.
+10. **A lecturer may publish their own lectures without an administrator's approval, and without any review step at all** — a lecture is only ever Draft or Published, and only the lecturer who wrote it decides when it moves between them — except that a module itself can only ever be published or archived by an administrator, never by a lecturer.
 11. **A draft module is completely hidden from learners**, no matter what state any of its individual lectures are in.
 12. **Suspending an account (learner, lecturer, or administrator) only blocks sign-in** — it never deletes, hides, or unpublishes anything that account already made or earned, and it can always be undone.
 13. **Only the super administrator may create or remove another administrator account, and only the super administrator may read the action log.** Exactly one super-administrator account exists at any time, and it cannot be created or removed from inside the console.
@@ -656,10 +656,6 @@ Normal secure web delivery (HTTPS); outgoing email for the flows listed above. N
 - Brand identity (name, slogan, contact address) must stay in one place that can be swapped easily.
 - The permission model must stay defined in one place and be used everywhere it is checked, rather than rebuilt separately on each screen.
 
-### 10.7 Localisation
-
-- The learner-facing product must be built to run in English, Sinhala, and Tamil side by side, even though only English content exists at launch; language is a preference each learner sets on the settings screen. The staff console itself may stay English-only for the first release.
-
 ---
 
 ## 11. Out of Prototype Scope / Roadmap
@@ -677,7 +673,6 @@ The items below are clearly **not** built in the current prototype, but are eith
 | A way for learners to reset a forgotten password themselves | Currently a placeholder link; staff password recovery is handled by an administrator on purpose instead. |
 | Separate, linkable pages for each module's details | The marketing site currently expands module details in place because no separate pages exist yet to link to. |
 | Group or department sign-up, with department-level progress reports | Clearly noted in the platform's own FAQ as planned but not yet available; only single sign-up exists today. |
-| Sinhala and Tamil translations of all learner-facing content | The system is built to support all three languages; the translated content itself does not exist yet. |
 | Final certificate design | The prototype shows a labelled placeholder frame on purpose, rather than a finished design nobody has approved yet. |
 | Final brand name, and updating it everywhere from one file | Placeholder brand in place until the client decides. |
 | A real language-model-backed assistant, connected to live platform data | The prototype's assistant is a plain keyword search over one hand-written paragraph kept in Settings — enough to demonstrate the feature and prove the two rules that must survive into production (§4.26): answers only from approved text, and an honest "I don't know" instead of a guess. A production build would likely want a real model reading the live catalogue directly, rather than a paragraph someone has to remember to update by hand. |
@@ -758,10 +753,9 @@ The items below need a decision from the client before, or during, the build of 
 1. **Final brand name, slogan, and look** — the current name is a working placeholder only.
 2. **Certificate design** — the certificate document already uses the platform's own visual style, but has not yet had a final design pass.
 3. **Group or department sign-up** — how important this is, and when the "join as a team" feature mentioned in the platform's own FAQ should be built.
-4. **Sinhala and Tamil translation** — timeline, and where the translated content will come from.
-5. **What the certificate legally represents** — whether it should mention any formal accreditation, and any wording rules that follow from that.
-6. **How long data is kept** — the two-year (after account closure) and seven-year (action log) figures used throughout this document are working defaults; please confirm against any data-retention rules that apply.
-7. **Whether the client wants to be named anywhere in the finished product** (for example, an "in partnership with" line in the footer), or whether the current fully unbranded approach should stay in place permanently.
+4. **What the certificate legally represents** — whether it should mention any formal accreditation, and any wording rules that follow from that.
+5. **How long data is kept** — the two-year (after account closure) and seven-year (action log) figures used throughout this document are working defaults; please confirm against any data-retention rules that apply.
+6. **Whether the client wants to be named anywhere in the finished product** (for example, an "in partnership with" line in the footer), or whether the current fully unbranded approach should stay in place permanently.
 
 ---
 

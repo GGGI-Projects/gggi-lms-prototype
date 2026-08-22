@@ -188,6 +188,19 @@ export function TrashIcon({ className }: IconProps) {
   );
 }
 
+/** Two crossing paths - reordering a list, not editing what's in it. */
+export function ShuffleIcon({ className }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M16 3h5v5" />
+      <path d="M4 20 21 3" />
+      <path d="M21 16v5h-5" />
+      <path d="m15 15 6 6" />
+      <path d="m4 4 5 5" />
+    </svg>
+  );
+}
+
 /** Filters on a table. */
 export function FilterIcon({ className }: IconProps) {
   return (

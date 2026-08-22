@@ -79,6 +79,7 @@ export default async function LecturerPage({ params }: Params) {
         back={{ href: "/admin/lecturers", label: "Lecturers" }}
         eyebrow={ROLE_LABEL.lecturer}
         title={member.name}
+        avatar={{ src: member.avatarUrl, initials: member.initials }}
         lead={member.title}
         meta={
           <>
@@ -141,8 +142,8 @@ export default async function LecturerPage({ params }: Params) {
         />
         <MetricCard
           label="Not yet published"
-          value={load.inReview + load.unwritten}
-          hint={`${load.inReview} in review, ${load.unwritten} unwritten`}
+          value={load.unwritten}
+          hint="not started or still drafting"
         />
         <MetricCard
           label="Learners reached"

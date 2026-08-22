@@ -156,8 +156,6 @@ export function UploadMaterial({
           </span>
           <select className="field" defaultValue="English">
             <option>English</option>
-            <option>සිංහල</option>
-            <option>தமிழ்</option>
           </select>
           <span className={`mt-2 block ${META.base}`}>
             Learners are told which language a handout is in before they open

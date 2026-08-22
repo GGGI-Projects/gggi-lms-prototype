@@ -1,11 +1,17 @@
 "use client";
 
-import { useId, useState } from "react";
+import {
+  forwardRef,
+  useId,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
 import { ActionButton } from "@/components/ui/action-button";
 import { ConfirmAction } from "@/components/console/actions";
 import { Drawer } from "@/components/console/drawer";
 import { IfCan, LockedNote } from "@/components/console/permission";
-import { EditIcon, PlusIcon } from "@/components/console/icons";
+import { EditIcon, PlusIcon, ShuffleIcon } from "@/components/console/icons";
 import type { FillInTheBlankQuestion, Question } from "@/content/portal";
 import { passageSegments } from "@/lib/portal";
 import type { Capability } from "@/lib/permissions";
@@ -361,6 +367,38 @@ function mergeChunks(chunks: Chunk[]) {
 }
 
 /**
+ * A deterministic shuffle - the same `seed` always reorders the same list
+ * the same way. That matters here because the word bank is recomputed on
+ * every render (a lecturer typing another distractor re-renders the form):
+ * `Math.random()` would silently re-shuffle what they were just looking at,
+ * and a seed of `0` means "not shuffled yet" (see `shuffleSeed` below), so
+ * the natural, passage order is what a lecturer sees until they ask for
+ * something else.
+ */
+function seededShuffle<T>(items: T[], seed: number): T[] {
+  let state = seed;
+  function nextRandom() {
+    state |= 0;
+    state = (state + 0x6d2b79f5) | 0;
+    let t = Math.imul(state ^ (state >>> 15), 1 | state);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  }
+  const shuffled = [...items];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(nextRandom() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
+/** What `<AddBlankQuestionAction>` and `<EditBlankQuestionAction>` reach
+ *  into the form for - see the note on `FillInTheBlankQuestionForm` below. */
+type FillInTheBlankFormHandle = {
+  continueToBlanks: () => void;
+};
+
+/**
  * Writing a FILL-IN-THE-BLANK question - the same "one form, two doors in"
  * device as `<QuestionForm>` above, but a passage with blanks picked out of
  * it instead of a multiple-choice prompt.
@@ -372,22 +410,47 @@ function mergeChunks(chunks: Chunk[]) {
  * on, since the client asked for both. Going back to step one re-splits the
  * passage and starts blank-picking over, which the copy says plainly.
  *
+ * THE STEP'S OWN "CONTINUE"/"ADD" BUTTON LIVES IN THE DRAWER'S FOOTER, not
+ * here - the same fixed spot every drawer's primary action sits in, rather
+ * than a button buried at the end of a form that can run long. That footer
+ * is rendered by `<AddBlankQuestionAction>`/`<EditBlankQuestionAction>`,
+ * outside this component, so `step` is mirrored up to them via
+ * `onStepChange` and the actual step-one-to-step-two transition (which
+ * needs `passage` and `setChunks`, both local to this form) is exposed back
+ * down through `ref` as `continueToBlanks()` - the one thing the footer
+ * button calls.
+ *
  * THE OPTION BANK IS SEEDED FROM THE BLANKS THEMSELVES. Every word or
  * sentence marked as a blank is automatically one of the options a learner
  * will see below the passage - the lecturer only has to add the wrong ones,
  * never re-type the right ones (see `optionBankFor()` in `lib/portal.ts`).
+ * It previews in passage order - right answers in the order they appear,
+ * then the typed-in wrong ones - until "Shuffle" is used, because passage
+ * order is exactly the pattern a learner could guess from without reading a
+ * word: see `seededShuffle()` above for why `shuffleSeed` (not
+ * `Math.random()`) drives it, and the submit handler below for what happens
+ * if a lecturer never clicks Shuffle at all.
  */
-function FillInTheBlankQuestionForm({
-  formId,
-  questionNumber,
-  initial,
-}: {
-  formId: string;
-  questionNumber: number;
-  initial?: FillInTheBlankQuestion;
-}) {
+const FillInTheBlankQuestionForm = forwardRef<
+  FillInTheBlankFormHandle,
+  {
+    formId: string;
+    questionNumber: number;
+    initial?: FillInTheBlankQuestion;
+    onStepChange: (step: "passage" | "blanks") => void;
+  }
+>(function FillInTheBlankQuestionForm(
+  { formId, questionNumber, initial, onStepChange },
+  ref,
+) {
   const [saved, setSaved] = useState(false);
-  const [step, setStep] = useState<"passage" | "blanks">(initial ? "blanks" : "passage");
+  const [step, setStepState] = useState<"passage" | "blanks">(
+    initial ? "blanks" : "passage",
+  );
+  function setStep(next: "passage" | "blanks") {
+    setStepState(next);
+    onStepChange(next);
+  }
   const [passage, setPassage] = useState(() =>
     initial
       ? passageSegments(initial)
@@ -408,7 +471,19 @@ function FillInTheBlankQuestionForm({
     .filter(Boolean);
 
   const blankGroups = mergeChunks(chunks).filter((group) => group.blank);
-  const optionBank = [...blankGroups.map((group) => group.text), ...distractors];
+  const naturalBank = [...blankGroups.map((group) => group.text), ...distractors];
+  // 0 is "not shuffled" - anything else is the seed the lecturer last
+  // shuffled with. See `seededShuffle()`.
+  const [shuffleSeed, setShuffleSeed] = useState(0);
+  const shuffled = shuffleSeed !== 0;
+  const optionBank = shuffled ? seededShuffle(naturalBank, shuffleSeed) : naturalBank;
+
+  useImperativeHandle(ref, () => ({
+    continueToBlanks() {
+      setChunks(tokenize(passage));
+      setStep("blanks");
+    },
+  }));
 
   function toggle(clicked: Chunk) {
     if (sentenceMode) {
@@ -436,6 +511,13 @@ function FillInTheBlankQuestionForm({
       id={formId}
       onSubmit={(event) => {
         event.preventDefault();
+        // Honesty rule: a lecturer who never touched "Shuffle" was only
+        // ever previewing the passage-order bank, which is not what a
+        // learner should be checked against - see the note above on why
+        // that order is guessable. Shuffling it here, on the way out,
+        // means the option a lecturer never gets is a question that looks
+        // shuffled but was not.
+        if (!shuffled) setShuffleSeed(Date.now());
         setSaved(true);
       }}
     >
@@ -446,28 +528,14 @@ function FillInTheBlankQuestionForm({
           </span>
 
           {step === "passage" ? (
-            <>
-              <textarea
-                required
-                rows={5}
-                value={passage}
-                onChange={(event) => setPassage(event.target.value)}
-                placeholder="Write the paragraph exactly as a learner should read it - short or long. The next step picks out its blanks."
-                className="field"
-              />
-              <ActionButton
-                type="button"
-                variant="line"
-                size="sm"
-                className="mt-3"
-                onClick={() => {
-                  setChunks(tokenize(passage));
-                  setStep("blanks");
-                }}
-              >
-                Continue to picking blanks
-              </ActionButton>
-            </>
+            <textarea
+              required
+              rows={5}
+              value={passage}
+              onChange={(event) => setPassage(event.target.value)}
+              placeholder="Write the paragraph exactly as a learner should read it - short or long. The next step picks out its blanks."
+              className="field"
+            />
           ) : (
             <>
               <div className="rounded-sm border border-surface-deep bg-paper-raised px-5 py-4 text-lg leading-loose">
@@ -535,9 +603,21 @@ function FillInTheBlankQuestionForm({
 
         {step === "blanks" && blankGroups.length ? (
           <div>
-            <span className="mb-2 block text-lg font-semibold text-ink">
-              Word bank preview
-            </span>
+            <div className="mb-2 flex flex-wrap items-center justify-between gap-3">
+              <span className="text-lg font-semibold text-ink">
+                Word bank preview
+              </span>
+              <ActionButton
+                type="button"
+                variant="line"
+                size="table"
+                className="shrink-0"
+                onClick={() => setShuffleSeed((seed) => seed + 1)}
+              >
+                <ShuffleIcon className="size-3.5" />
+                Shuffle
+              </ActionButton>
+            </div>
             <div className="flex flex-wrap gap-2">
               {optionBank.map((option, i) => (
                 <span
@@ -548,6 +628,11 @@ function FillInTheBlankQuestionForm({
                 </span>
               ))}
             </div>
+            <p className="mt-2 text-sm text-muted">
+              {shuffled
+                ? "Shuffled - this is the order a learner sees."
+                : "Shown in passage order for now. Shuffled automatically when the question is added, if left untouched."}
+            </p>
           </div>
         ) : null}
       </div>
@@ -565,7 +650,7 @@ function FillInTheBlankQuestionForm({
       ) : null}
     </form>
   );
-}
+});
 
 /** The control under a lecture's fill-in-the-blank questions - absent (not
  *  merely disabled) once four exist, since 3-4 is the whole point of keeping
@@ -578,6 +663,8 @@ export function AddBlankQuestionAction({
   nextNumber: number;
 }) {
   const [open, setOpen] = useState(false);
+  const [step, setStep] = useState<"passage" | "blanks">("passage");
+  const formRef = useRef<FillInTheBlankFormHandle>(null);
   const formId = useId();
 
   return (
@@ -598,13 +685,39 @@ export function AddBlankQuestionAction({
         title="Add a fill-in-the-blank question"
         description="Write a passage, pick which words or sentences are blanked, and a learner fills them from a word bank - not free text."
         size="md"
+        // Distinct `key`s, deliberately - without them React reuses the
+        // same underlying `<button>` across the swap and merely updates
+        // its props, which for this pair means flipping the very button a
+        // click is still being dispatched on from `type="button"` to
+        // `type="submit" form=…`. A browser resolves that click's default
+        // action against the button's properties AFTER the JS handler
+        // runs, so the same click that moves to the blanks step also
+        // submits the form it just revealed the submit button for. Keying
+        // them differently forces a real unmount/remount instead.
         footer={
-          <ActionButton type="submit" form={formId} variant="solid" size="sm">
-            Add the question
-          </ActionButton>
+          step === "passage" ? (
+            <ActionButton
+              key="continue"
+              type="button"
+              variant="solid"
+              size="sm"
+              onClick={() => formRef.current?.continueToBlanks()}
+            >
+              Continue to picking blanks
+            </ActionButton>
+          ) : (
+            <ActionButton key="submit" type="submit" form={formId} variant="solid" size="sm">
+              Add the question
+            </ActionButton>
+          )
         }
       >
-        <FillInTheBlankQuestionForm formId={formId} questionNumber={nextNumber} />
+        <FillInTheBlankQuestionForm
+          ref={formRef}
+          formId={formId}
+          questionNumber={nextNumber}
+          onStepChange={setStep}
+        />
       </Drawer>
     </>
   );
@@ -620,6 +733,11 @@ export function EditBlankQuestionAction({
   capability: Capability;
 }) {
   const [open, setOpen] = useState(false);
+  // Editing always starts on the blanks step, but "Edit the passage text"
+  // inside the form can send it back to "passage" - the footer has to
+  // follow, exactly as it does for `<AddBlankQuestionAction>`.
+  const [step, setStep] = useState<"passage" | "blanks">("blanks");
+  const formRef = useRef<FillInTheBlankFormHandle>(null);
   const formId = useId();
 
   return (
@@ -641,16 +759,32 @@ export function EditBlankQuestionAction({
         title="Edit fill-in-the-blank question"
         description={`Question ${number}. Click a blank or a word to change what's picked.`}
         size="md"
+        // See the note on `<AddBlankQuestionAction>`'s footer - the `key`s
+        // are load-bearing, not decorative.
         footer={
-          <ActionButton type="submit" form={formId} variant="solid" size="sm">
-            Save changes
-          </ActionButton>
+          step === "passage" ? (
+            <ActionButton
+              key="continue"
+              type="button"
+              variant="solid"
+              size="sm"
+              onClick={() => formRef.current?.continueToBlanks()}
+            >
+              Continue to picking blanks
+            </ActionButton>
+          ) : (
+            <ActionButton key="submit" type="submit" form={formId} variant="solid" size="sm">
+              Save changes
+            </ActionButton>
+          )
         }
       >
         <FillInTheBlankQuestionForm
+          ref={formRef}
           formId={formId}
           questionNumber={number}
           initial={question}
+          onStepChange={setStep}
         />
       </Drawer>
     </>

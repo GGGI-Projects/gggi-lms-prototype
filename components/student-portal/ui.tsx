@@ -37,7 +37,9 @@ export function PageHeader({
   actions,
 }: {
   eyebrow: string;
-  title: string;
+  /** A plain string on every screen but the lecture page, which appends a
+   *  completed-state icon beside it - see the note there. */
+  title: ReactNode;
   lead?: string;
   /** A way back up the tree, above the eyebrow. Only on nested screens. */
   back?: { href: string; label: string };

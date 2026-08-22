@@ -26,7 +26,7 @@ import {
   Section,
 } from "@/components/console/ui";
 import { ConfirmAction } from "@/components/console/actions";
-import { LECTURE_STATE_LABEL } from "@/components/console/status";
+import { LECTURE_STATE_LABEL, LECTURE_STATE_TONE } from "@/components/console/status";
 import { StarFilledIcon } from "@/components/console/icons";
 
 export const metadata: Metadata = { title: "Dashboard" };
@@ -119,17 +119,12 @@ export default function LecturerDashboard() {
         <h2 id="waiting-heading" className="sr-only">
           Waiting on you
         </h2>
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           <QueueCard
             count={load.unwritten}
             label="Lectures still to write"
             href="/lecturer/lectures"
             urgent={load.unwritten > 0}
-          />
-          <QueueCard
-            count={load.inReview}
-            label="Lectures in review"
-            href="/lecturer/lectures"
           />
           <QueueCard
             count={weakQuizzes.length}
@@ -213,7 +208,7 @@ export default function LecturerDashboard() {
                           : " · never edited"}
                       </span>
                     </span>
-                    <Badge tone={mod.state === "in-review" ? "active" : "neutral"}>
+                    <Badge tone={LECTURE_STATE_TONE[mod.state]}>
                       {LECTURE_STATE_LABEL[mod.state]}
                     </Badge>
                   </Link>

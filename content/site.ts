@@ -250,6 +250,6 @@ export const FAQ: FaqItem[] = [
   {
     question: "Which language is the material in?",
     answer:
-      "The first modules are published in English. Sinhala and Tamil versions are on the roadmap, and the platform is built to carry all three side by side.",
+      "Every module is published in English.",
   },
 ];

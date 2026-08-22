@@ -408,9 +408,9 @@ export const SESSION: Record<StaffRole, string> = {
   admin: "staff-admin-1",
   // Anoma Herath rather than one of the single-module lecturers, because
   // this account exercises the console: two modules, one published and one
-  // still a draft, a lecture in review, and material on the shelf that nothing
-  // uses yet. A lecturer with one finished module shows a console where
-  // every screen is already green.
+  // still a draft, and material on the shelf that nothing uses yet. A
+  // lecturer with one finished module shows a console where every screen
+  // is already green.
   lecturer: "staff-inst-3",
 };
 
@@ -554,13 +554,19 @@ export const MANAGED_MODULES: ManagedModule[] = [
  * The five published modules get their lectures from `content/curriculum.ts`
  * - the same 37 the learner reads. A draft has no learner-facing content yet,
  * so its lectures exist only as a plan, which is exactly what an authoring
- * screen needs to show: two written, one in review, three not started.
+ * screen needs to show: three written, three not started.
+ *
+ * NO "IN REVIEW" STATE. There is nobody to review a lecture for - the
+ * lecturer who wrote it is also the one who publishes it, so a lecture is
+ * either still being written (`draft`, or `not-started` if nobody has
+ * opened it yet) or `published`. See `lecture-editor.tsx`'s `StateControl`
+ * for where that choice is made.
  */
 export type DraftLecture = {
   id: string;
   number: string;
   title: string;
-  state: "published" | "in-review" | "draft" | "not-started";
+  state: "published" | "draft" | "not-started";
   updatedOn: string | null;
 };
 
@@ -584,7 +590,7 @@ export const DRAFT_LECTURES: Record<string, DraftLecture[]> = {
       id: "sizing-and-specifying-plant",
       number: "03",
       title: "Sizing and specifying plant",
-      state: "in-review",
+      state: "draft",
       updatedOn: "2026-07-29",
     },
     {

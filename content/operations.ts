@@ -652,7 +652,7 @@ export const PLATFORM_SETTINGS = {
     platformName: "GreenFin Academy",
     supportEmail: "hello@greenfin.lk",
     defaultLanguage: "English",
-    languages: ["English", "සිංහල", "தமிழ்"],
+    languages: ["English"],
     timezone: "Asia/Colombo (UTC+5:30)",
   },
   enrolment: {
