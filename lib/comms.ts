@@ -135,12 +135,19 @@ function byDateDesc(a: FeedItem, b: FeedItem): number {
   return b.date.localeCompare(a.date);
 }
 
-/** The bell panel and the notifications page both read this - one list,
- *  sorted newest first, announcements and messages interleaved. */
+/** The bell panel and the Communications page both read this - one list,
+ *  sorted newest first, announcements and messages interleaved. Includes
+ *  what this account has SENT as well as what it has received - an
+ *  administrator never receives an announcement (see `announcementsForStaff`)
+ *  so without this their feed would only ever show messages; a lecturer's
+ *  own sent announcements were previously kept in a page-only "sent log"
+ *  (see `sentByMe` on `AnnouncementView`, and the merge decision that
+ *  replaced it). */
 export function feedForStaff(member: StaffMember): FeedItem[] {
-  const announcementItems: FeedItem[] = announcementsForStaff(member).map(
-    (announcement) => ({ kind: "announcement", date: announcement.sentOn, announcement }),
-  );
+  const announcementItems: FeedItem[] = [
+    ...announcementsForStaff(member),
+    ...announcementsSentBy(member.id),
+  ].map((announcement) => ({ kind: "announcement", date: announcement.sentOn, announcement }));
   const messageItems: FeedItem[] = threadsFor(member.id).map((thread) => ({
     kind: "message",
     date: lastMessage(thread).sentOn,
@@ -211,6 +218,18 @@ export function adminContactFor(member: StaffMember): StaffMember {
   return appointedBy ?? staffById(SESSION.admin)!;
 }
 
+/**
+ * Who a learner's official "Contact GreenFin admin" channel reaches. A
+ * lecturer without an appointer falls back to the session administrator
+ * (above); a learner has no "who enrolled me" relationship to derive one
+ * from at all, so there is just the one, and it is always this account -
+ * a deliberate, named channel to the administration, separate from
+ * `messageContactsForStudent` (lecturers only, for a different button).
+ */
+export function adminContactForStudent(): StaffMember {
+  return staffById(SESSION.admin)!;
+}
+
 /* ----------------------------------------------------------- the bell panel */
 
 export type NotificationSummary = {
@@ -246,7 +265,10 @@ export function summariseFeed(
         headline: item.announcement.title,
         snippet: truncate(item.announcement.body),
         date: item.date,
-        unread: Boolean(item.announcement.isNew),
+        // Never "new" to the account that sent it - `isNew` is authored for
+        // recipients, and a self-sent announcement now rides in the same
+        // feed as what this account received (see `feedForStaff`).
+        unread: Boolean(item.announcement.isNew) && item.announcement.from !== viewerId,
       };
     }
     const other = otherParty(item.thread, viewerId);
@@ -357,6 +379,9 @@ export type AnnouncementView = {
   audience: string;
   date: string;
   isNew: boolean;
+  /** This account is `from` - the identifier the Communications page badges
+   *  an announcement with, now that sent and received share one list. */
+  sentByMe: boolean;
 };
 
 export type MessageView = { thread: MessageThread; otherName: string; unread: boolean };
@@ -377,6 +402,7 @@ export function feedViewForStaff(member: StaffMember): FeedView {
       .filter((item) => item.kind === "announcement")
       .map((item) => {
         const announcement = item.announcement;
+        const sentByMe = announcement.from === member.id;
         return {
           id: announcement.id,
           title: announcement.title,
@@ -384,7 +410,10 @@ export function feedViewForStaff(member: StaffMember): FeedView {
           from: staffName(announcement.from),
           audience: audienceLabel(announcement.audience),
           date: announcement.sentOn,
-          isNew: Boolean(announcement.isNew),
+          // Never "new" to the account that sent it - same reasoning as
+          // `summariseFeed`.
+          isNew: Boolean(announcement.isNew) && !sentByMe,
+          sentByMe,
         };
       }),
     messages: feed
@@ -415,6 +444,8 @@ export function feedViewForStudent(
           audience: audienceLabel(announcement.audience),
           date: announcement.sentOn,
           isNew: Boolean(announcement.isNew),
+          // A student never sends an announcement.
+          sentByMe: false,
         };
       }),
     messages: feed
@@ -425,26 +456,6 @@ export function feedViewForStudent(
         unread: item.unread,
       })),
   };
-}
-
-export type SentAnnouncementView = {
-  id: string;
-  title: string;
-  body: string;
-  audience: string;
-  date: string;
-};
-
-/** One account's own sent log, for the Communications page - rendering-ready,
- *  same reason as `feedViewForStaff`. */
-export function sentAnnouncementViewsFor(staffId: string): SentAnnouncementView[] {
-  return announcementsSentBy(staffId).map((announcement) => ({
-    id: announcement.id,
-    title: announcement.title,
-    body: announcement.body,
-    audience: audienceLabel(announcement.audience),
-    date: announcement.sentOn,
-  }));
 }
 
 /**

@@ -3,6 +3,7 @@
 import { useId, useState } from "react";
 import { ActionButton } from "@/components/ui/action-button";
 import { Drawer } from "@/components/console/drawer";
+import { NewTag } from "@/components/notifications/filled-tag";
 import { META } from "@/lib/theme";
 import { formatDate } from "@/lib/portal";
 import type { MessageThread } from "@/content/comms";
@@ -44,9 +45,7 @@ export function ThreadDrawer({
         <span className="min-w-0">
           <span className="flex items-center gap-2">
             <span className="truncate text-lg font-semibold text-ink">{otherName}</span>
-            {unread ? (
-              <span aria-hidden="true" className="size-1.5 shrink-0 rounded-full bg-accent" />
-            ) : null}
+            {unread ? <NewTag /> : null}
           </span>
           <span className={`mt-0.5 block truncate ${META.base}`}>{last.body}</span>
         </span>

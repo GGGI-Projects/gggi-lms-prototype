@@ -415,7 +415,7 @@ function Topbar({
 
           <NotificationBell
             items={notifications}
-            seeAllHref={area === "admin" ? "/admin/notifications" : "/lecturer/notifications"}
+            seeAllHref={area === "admin" ? "/admin/communications" : "/lecturer/communications"}
           />
 
           <Link

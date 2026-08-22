@@ -6,7 +6,7 @@ import type { StaffRole } from "@/lib/permissions";
 import type { FeedView } from "@/lib/comms";
 
 /**
- * The admin area's notifications page - the one place `NotificationFeed`
+ * The admin area's Communications page - the one place `NotificationFeed`
  * cannot simply be rendered by the server page directly, because who "you"
  * are is whichever viewpoint the switcher is on (see the note on
  * `AccountIdentity`, the only other screen with the same problem). The
@@ -28,7 +28,7 @@ export function RoleScopedFeed({
     <NotificationFeed
       view={view}
       viewerId={viewerId}
-      emptyAnnouncements="Nobody broadcasts to an administrator on this platform - announcements go from you to lecturers and students. See Communications to send one."
+      emptyAnnouncements="Nobody broadcasts to an administrator on this platform - announcements go from you to lecturers and students. Send one above and it'll show up here, marked as sent by you."
     />
   );
 }

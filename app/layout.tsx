@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Hanken_Grotesk, Source_Sans_3 } from "next/font/google";
+import localFont from "next/font/local";
 import { BRAND } from "@/lib/brand";
 import { PERF_TIER_SCRIPT } from "@/lib/perf-tier";
 import { PerfWatchdog } from "@/components/motion/perf-watchdog";
@@ -28,16 +28,31 @@ import "./globals.css";
  *
  * Both are loaded variable, so the whole weight axis costs one file per family
  * rather than one file per weight.
+ *
+ * SELF-HOSTED, not `next/font/google`. That was the original setup, and
+ * `next/font/google` still does the fetching-and-caching work for you - the
+ * problem is it does it live, over the network, the first time each machine
+ * builds (nothing is committed, `.next`'s cache is the only copy). A flaky
+ * or firewalled connection to fonts.gstatic.com fails the whole build with
+ * `Module not found` before a single page renders. These two files are the
+ * exact same latin-subset, variable-weight woff2s Google would have served
+ * (fetched once via the same `fonts.googleapis.com/css2` request the
+ * `next/font/google` loader makes internally, weight ranges matched to what
+ * was requested below), just committed to the repo instead of fetched at
+ * build time - `next/font/local` still gets you the zero-layout-shift,
+ * self-hosted-at-build behaviour, it just isn't the one doing the fetching.
  */
-const hankenGrotesk = Hanken_Grotesk({
+const hankenGrotesk = localFont({
+  src: "./fonts/hanken-grotesk-latin-variable.woff2",
+  weight: "100 900",
   variable: "--font-hanken",
-  subsets: ["latin"],
   display: "swap",
 });
 
-const sourceSans = Source_Sans_3({
+const sourceSans = localFont({
+  src: "./fonts/source-sans-3-latin-variable.woff2",
+  weight: "200 900",
   variable: "--font-source-sans",
-  subsets: ["latin"],
   display: "swap",
 });
 

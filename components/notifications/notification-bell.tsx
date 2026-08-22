@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { BellIcon } from "@/components/student-portal/icons";
 import { MailIcon, MegaphoneIcon } from "@/components/console/icons";
+import { NewTag } from "@/components/notifications/filled-tag";
 import { META } from "@/lib/theme";
 import type { NotificationSummary } from "@/lib/comms";
 
@@ -113,12 +114,7 @@ export function NotificationBell({
                         <span className="truncate text-base font-semibold text-ink">
                           {item.headline}
                         </span>
-                        {item.unread ? (
-                          <span
-                            aria-hidden="true"
-                            className="size-1.5 shrink-0 rounded-full bg-accent"
-                          />
-                        ) : null}
+                        {item.unread ? <NewTag /> : null}
                       </span>
                       <span className={`mt-0.5 block truncate ${META.base}`}>
                         {item.snippet}

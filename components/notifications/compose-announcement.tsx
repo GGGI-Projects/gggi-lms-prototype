@@ -105,8 +105,7 @@ function AnnouncementForm({
                   className="flex cursor-pointer items-center gap-2.5 rounded-full border border-surface-deep bg-paper px-4 py-2 text-lg text-ink-soft transition-colors hover:border-muted-light"
                 >
                   <input
-                    type={isModule ? "radio" : "checkbox"}
-                    name={isModule ? `${formId}-module` : undefined}
+                    type="checkbox"
                     checked={selectedIds.includes(entry.id)}
                     onChange={() => toggle(entry.id)}
                     className="checkbox"

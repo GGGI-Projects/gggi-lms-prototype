@@ -27,15 +27,24 @@ function MessageForm({
   contacts: ContactOption[];
   preselected?: ContactOption;
 }) {
-  const [recipientId, setRecipientId] = useState(preselected?.id ?? "");
+  const [recipientIds, setRecipientIds] = useState<string[]>(
+    preselected ? [preselected.id] : [],
+  );
   const [body, setBody] = useState("");
   const [blocked, setBlocked] = useState(false);
   const [sent, setSent] = useState(false);
 
-  const missing = [!recipientId && "a recipient", !body.trim() && "a message"].filter(
-    (entry): entry is string => Boolean(entry),
-  );
+  const missing = [
+    !recipientIds.length && "a recipient",
+    !body.trim() && "a message",
+  ].filter((entry): entry is string => Boolean(entry));
   const grouped = groupContacts(contacts);
+
+  function toggle(id: string) {
+    setRecipientIds((current) =>
+      current.includes(id) ? current.filter((entry) => entry !== id) : [...current, id],
+    );
+  }
 
   return (
     <form
@@ -55,33 +64,32 @@ function MessageForm({
           <span className="font-semibold">To:</span> {preselected.label}
         </p>
       ) : (
-        <label className="block">
-          <span className="mb-2 block text-lg font-semibold text-ink">To</span>
-          <select
-            value={recipientId}
-            onChange={(event) => setRecipientId(event.target.value)}
-            className="field"
-          >
-            <option value="">Choose who to message</option>
-            {grouped.map(([group, options]) =>
-              group ? (
-                <optgroup key={group} label={group}>
+        <fieldset>
+          <legend className="mb-2 block text-lg font-semibold text-ink">To</legend>
+          <div className="space-y-4">
+            {grouped.map(([group, options]) => (
+              <div key={group || "_"}>
+                {group ? <p className={`${META.base} mb-2`}>{group}</p> : null}
+                <div className="flex flex-wrap gap-2">
                   {options.map((contact) => (
-                    <option key={contact.id} value={contact.id}>
+                    <label
+                      key={contact.id}
+                      className="flex cursor-pointer items-center gap-2.5 rounded-full border border-surface-deep bg-paper px-4 py-2 text-lg text-ink-soft transition-colors hover:border-muted-light"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={recipientIds.includes(contact.id)}
+                        onChange={() => toggle(contact.id)}
+                        className="checkbox"
+                      />
                       {contact.label}
-                    </option>
+                    </label>
                   ))}
-                </optgroup>
-              ) : (
-                options.map((contact) => (
-                  <option key={contact.id} value={contact.id}>
-                    {contact.label}
-                  </option>
-                ))
-              ),
-            )}
-          </select>
-        </label>
+                </div>
+              </div>
+            ))}
+          </div>
+        </fieldset>
       )}
 
       <label className="mt-5 block">
@@ -109,9 +117,10 @@ function MessageForm({
           role="status"
           className="mt-6 rounded-sm border border-accent-600/40 bg-accent-pale px-5 py-4 text-lg leading-relaxed text-accent-strong"
         >
-          Prototype - nothing was sent. A real send would start this
-          conversation in their notifications right away, and yours once they
-          reply.
+          Prototype - nothing was sent. A real send would start a separate
+          conversation with each person picked - one thread per recipient, so
+          each can reply on their own - in their notifications right away,
+          and yours once they reply.
         </p>
       ) : null}
     </form>
