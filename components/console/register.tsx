@@ -8,7 +8,7 @@ import {
   type Column,
 } from "@/components/console/table";
 import { CARD, META } from "@/lib/theme";
-import { SearchIcon } from "@/components/student-portal/icons";
+import { SearchField } from "@/components/student-portal/ui";
 import { FilterIcon } from "@/components/console/icons";
 
 /**
@@ -116,17 +116,12 @@ export function Register({
           that either fits on the current line or drops to a fresh one at
           the container's FULL width, the way flex-wrap is supposed to work. */}
       <div className="mb-5 flex flex-wrap items-center gap-3">
-        <label className="relative block w-full sm:max-w-sm">
-          <span className="sr-only">{searchPlaceholder}</span>
-          <SearchIcon className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-muted-light" />
-          <input
-            type="search"
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder={searchPlaceholder}
-            className="field py-2.5 pl-12"
-          />
-        </label>
+        <SearchField
+          value={query}
+          onChange={setQuery}
+          placeholder={searchPlaceholder}
+          className="w-full sm:max-w-sm"
+        />
 
         {/* Right beside the search box, not after the status pills - this is
             the other half of "find this row", and putting it at the far end

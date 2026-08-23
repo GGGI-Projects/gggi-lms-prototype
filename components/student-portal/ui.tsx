@@ -15,7 +15,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { BODY, CARD, EYEBROW, HEADING, META, PORTAL } from "@/lib/theme";
-import { ChevronLeftIcon } from "@/components/student-portal/icons";
+import { ChevronLeftIcon, SearchIcon } from "@/components/student-portal/icons";
 
 /* -------------------------------------------------------------- page frame */
 
@@ -34,6 +34,7 @@ export function PageHeader({
   title,
   lead,
   back,
+  avatar,
   actions,
 }: {
   eyebrow: string;
@@ -43,6 +44,11 @@ export function PageHeader({
   lead?: string;
   /** A way back up the tree, above the eyebrow. Only on nested screens. */
   back?: { href: string; label: string };
+  /** Set when `title` names one specific person - a lecturer's own profile
+   *  page - so it opens with a face against the name, the same rule the
+   *  console's own `PageHeader` follows for a single-person record. Omit
+   *  for a page whose title is not a person. */
+  avatar?: { src?: string; initials: string };
   /** Buttons, right-aligned from `sm` up and stacked under the copy below it. */
   actions?: ReactNode;
 }) {
@@ -59,12 +65,21 @@ export function PageHeader({
       ) : null}
 
       <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
-        <div className="min-w-0">
-          <p className={EYEBROW.onLight}>{eyebrow}</p>
-          <h1 className="font-display text-3xl tracking-tight text-balance text-ink sm:text-4xl">
-            {title}
-          </h1>
-          {lead ? <p className={`measure-wide mt-5 ${BODY.base}`}>{lead}</p> : null}
+        <div className="flex min-w-0 items-start gap-5">
+          {avatar ? (
+            <Avatar
+              src={avatar.src}
+              initials={avatar.initials}
+              className="size-16 shrink-0 text-2xl"
+            />
+          ) : null}
+          <div className="min-w-0">
+            <p className={EYEBROW.onLight}>{eyebrow}</p>
+            <h1 className="font-display text-3xl tracking-tight text-balance text-ink sm:text-4xl">
+              {title}
+            </h1>
+            {lead ? <p className={`measure-wide mt-5 ${BODY.base}`}>{lead}</p> : null}
+          </div>
         </div>
         {actions ? <div className="flex shrink-0 gap-3">{actions}</div> : null}
       </div>
@@ -190,6 +205,59 @@ export function Avatar({
       className={`grid shrink-0 place-items-center rounded-full font-display font-bold tracking-tight ${AVATAR_TONE[tone]} ${className}`}
     >
       {initials}
+    </span>
+  );
+}
+
+const PERSON_TAG_AVATAR = {
+  xs: "size-5 text-[10px]",
+  sm: "size-6 text-xs",
+} as const;
+
+/**
+ * A person's name, never without their face next to it - the one rule this
+ * whole component exists to make impossible to forget. Anywhere a staff
+ * member's or a student's name is the thing being displayed (a chip, a
+ * table cell, a definitions-list value, a queue card's byline, a bell
+ * preview row) reaches for this rather than printing `member.name` on its
+ * own, the same way a page about one person reaches for `PageHeader`'s
+ * `avatar` prop instead of a bare `<h1>`.
+ *
+ * NOT a link itself - callers that need one wrap this in their own `<Link>`,
+ * since where a name goes (a lecturer's console record, a student's, a
+ * public profile, nowhere at all) is a fact about the page, not about a
+ * person's name needing a face.
+ *
+ * Two sizes only: `sm` for anywhere a name is close to the main content of
+ * its row (a card byline, a definitions-list value), `xs` for the tighter
+ * spots this still has to fit - a wrapped chip, a dense register cell with
+ * several other columns. Neither is `Avatar`'s bare fallback tone-less
+ * default; both pass `tone="light"`, the same reading the console's own
+ * `NameCell` and `assign-lecturers-action.tsx` already settled on for an
+ * avatar sitting on a pale ground.
+ */
+export function PersonTag({
+  name,
+  avatarUrl,
+  initials,
+  size = "sm",
+  className = "",
+}: {
+  name: string;
+  avatarUrl?: string;
+  initials: string;
+  size?: keyof typeof PERSON_TAG_AVATAR;
+  className?: string;
+}) {
+  return (
+    <span className={`inline-flex min-w-0 items-center gap-2 ${className}`}>
+      <Avatar
+        src={avatarUrl}
+        initials={initials}
+        tone="light"
+        className={`${PERSON_TAG_AVATAR[size]} shrink-0`}
+      />
+      <span className="truncate">{name}</span>
     </span>
   );
 }
@@ -355,6 +423,49 @@ export function Badge({
       {icon}
       {children}
     </span>
+  );
+}
+
+/* -------------------------------------------------------------- form input */
+
+/**
+ * The one search box, everywhere a list can be typed into rather than
+ * scrolled through - `Register`'s own register-wide search, and every
+ * embedded picker (a module's lecturer-assignment list, an announcement's
+ * or message's recipient picker, a new lecturer's module list) that can grow
+ * past a glance-and-pick length. Six lecturers or three modules read fine as
+ * a bare list; a platform with a hundred of either does not, and the fix is
+ * the same control everywhere rather than six near-identical inputs drifting
+ * apart one at a time.
+ *
+ * Fully controlled - no state of its own - so it works the same whether the
+ * list it's filtering lives in the caller's `useState` or is derived from a
+ * prop. Same markup `Register` already used before this existed: `SearchIcon`
+ * absolutely positioned over a `.field pl-12`, not a new search-box design.
+ */
+export function SearchField({
+  value,
+  onChange,
+  placeholder,
+  className = "",
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  placeholder: string;
+  className?: string;
+}) {
+  return (
+    <label className={`relative block ${className}`}>
+      <span className="sr-only">{placeholder}</span>
+      <SearchIcon className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-muted-light" />
+      <input
+        type="search"
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        placeholder={placeholder}
+        className="field py-2.5 pl-12"
+      />
+    </label>
   );
 }
 

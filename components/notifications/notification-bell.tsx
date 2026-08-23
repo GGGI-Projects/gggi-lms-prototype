@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { BellIcon } from "@/components/student-portal/icons";
+import { Avatar } from "@/components/student-portal/ui";
 import { MailIcon, MegaphoneIcon } from "@/components/console/icons";
 import { NewTag } from "@/components/notifications/filled-tag";
 import { META } from "@/lib/theme";
@@ -96,18 +97,31 @@ export function NotificationBell({
                     onClick={() => setOpen(false)}
                     className="flex items-start gap-3 px-4 py-3 transition-colors hover:bg-surface"
                   >
-                    <span
-                      className={`mt-0.5 grid size-8 shrink-0 place-items-center rounded-full ${
-                        item.kind === "announcement"
-                          ? "bg-accent-pale text-accent-strong"
-                          : "bg-marine-pale text-marine"
-                      }`}
-                    >
-                      {item.kind === "announcement" ? (
-                        <MegaphoneIcon className="size-4" />
-                      ) : (
-                        <MailIcon className="size-4" />
-                      )}
+                    <span className="relative mt-0.5 shrink-0">
+                      <Avatar
+                        src={item.fromAvatarUrl}
+                        initials={item.fromInitials}
+                        tone="light"
+                        className="size-8"
+                      />
+                      {/* Whose face this is is the avatar's job; this badge
+                          only says which kind of thing they sent - the same
+                          distinction the two-tab Announcements/Messages split
+                          on the full page draws, shrunk to a corner icon. */}
+                      <span
+                        aria-hidden="true"
+                        className={`absolute -bottom-1 -right-1 grid size-4 place-items-center rounded-full ring-2 ring-paper ${
+                          item.kind === "announcement"
+                            ? "bg-accent-pale text-accent-strong"
+                            : "bg-marine-pale text-marine"
+                        }`}
+                      >
+                        {item.kind === "announcement" ? (
+                          <MegaphoneIcon className="size-2.5" />
+                        ) : (
+                          <MailIcon className="size-2.5" />
+                        )}
+                      </span>
                     </span>
                     <span className="min-w-0 flex-1">
                       <span className="flex items-center gap-2">

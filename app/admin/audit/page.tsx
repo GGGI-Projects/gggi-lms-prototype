@@ -10,6 +10,7 @@ import {
   PageBody,
   PageHeader,
   Panel,
+  PersonTag,
   PrototypeNote,
   Row,
   type BadgeTone,
@@ -92,10 +93,17 @@ function AuditLog() {
             {formatStamp(entry.at)}
           </Cell>
           <Cell>
-            <span className="block font-semibold text-ink">
-              {actor?.name ?? entry.actorId}
-            </span>
-            <span className={`block ${META.base}`}>
+            {actor ? (
+              <PersonTag
+                name={actor.name}
+                avatarUrl={actor.avatarUrl}
+                initials={actor.initials}
+                className="font-semibold text-ink"
+              />
+            ) : (
+              <span className="font-semibold text-ink">{entry.actorId}</span>
+            )}
+            <span className={`mt-0.5 block ${META.base}`}>
               {actor ? ROLE_LABEL[actor.role] : "Unknown account"}
             </span>
           </Cell>

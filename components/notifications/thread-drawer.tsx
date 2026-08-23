@@ -2,6 +2,7 @@
 
 import { useId, useState } from "react";
 import { ActionButton } from "@/components/ui/action-button";
+import { Avatar } from "@/components/student-portal/ui";
 import { Drawer } from "@/components/console/drawer";
 import { NewTag } from "@/components/notifications/filled-tag";
 import { META } from "@/lib/theme";
@@ -22,11 +23,15 @@ export function ThreadDrawer({
   thread,
   viewerId,
   otherName,
+  otherAvatarUrl,
+  otherInitials,
   unread,
 }: {
   thread: MessageThread;
   viewerId: string;
   otherName: string;
+  otherAvatarUrl?: string;
+  otherInitials: string;
   unread: boolean;
 }) {
   const [open, setOpen] = useState(false);
@@ -40,17 +45,25 @@ export function ThreadDrawer({
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="flex w-full items-start justify-between gap-4 rounded-sm border border-surface-deep bg-paper-raised px-4 py-3.5 text-left transition-colors hover:border-muted-light"
+        className="flex w-full items-start gap-3 rounded-sm border border-surface-deep bg-paper-raised px-4 py-3.5 text-left transition-colors hover:border-muted-light"
       >
-        <span className="min-w-0">
-          <span className="flex items-center gap-2">
-            <span className="truncate text-lg font-semibold text-ink">{otherName}</span>
-            {unread ? <NewTag /> : null}
+        <Avatar
+          src={otherAvatarUrl}
+          initials={otherInitials}
+          tone="light"
+          className="size-10 shrink-0"
+        />
+        <span className="flex min-w-0 flex-1 items-start justify-between gap-4">
+          <span className="min-w-0">
+            <span className="flex items-center gap-2">
+              <span className="truncate text-lg font-semibold text-ink">{otherName}</span>
+              {unread ? <NewTag /> : null}
+            </span>
+            <span className={`mt-0.5 block truncate ${META.base}`}>{last.body}</span>
           </span>
-          <span className={`mt-0.5 block truncate ${META.base}`}>{last.body}</span>
-        </span>
-        <span className={`shrink-0 whitespace-nowrap ${META.base}`}>
-          {formatDate(last.sentOn)}
+          <span className={`shrink-0 whitespace-nowrap ${META.base}`}>
+            {formatDate(last.sentOn)}
+          </span>
         </span>
       </button>
 
@@ -70,7 +83,19 @@ export function ThreadDrawer({
           {thread.messages.map((message) => {
             const mine = message.from === viewerId;
             return (
-              <li key={message.id} className={`flex ${mine ? "justify-end" : "justify-start"}`}>
+              <li
+                key={message.id}
+                className={`flex items-end gap-2 ${mine ? "justify-end" : "justify-start"}`}
+              >
+                {/* "You" needs no face; the other side's name always does. */}
+                {mine ? null : (
+                  <Avatar
+                    src={otherAvatarUrl}
+                    initials={otherInitials}
+                    tone="light"
+                    className="size-7 shrink-0 text-xs"
+                  />
+                )}
                 <div
                   className={`max-w-[85%] rounded-sm border px-4 py-3 ${
                     mine

@@ -4,7 +4,7 @@ import { useState, type ReactNode } from "react";
 import { ActionButton } from "@/components/ui/action-button";
 import { BODY, HEADING, META } from "@/lib/theme";
 import { CheckIcon, CloseIcon } from "@/components/student-portal/icons";
-import { Avatar } from "@/components/student-portal/ui";
+import { Avatar, SearchField } from "@/components/student-portal/ui";
 import { AlertIcon, LockIcon } from "@/components/console/icons";
 import { useLockedGroup } from "@/components/console/locked-context";
 import { EntryListBuilder } from "@/components/console/profile-entries";
@@ -285,6 +285,7 @@ export function AssignModules({
 }) {
   const [selected, setSelected] = useState<string[]>(assigned);
   const [saved, setSaved] = useState(false);
+  const [query, setQuery] = useState("");
 
   const toggle = (id: string) => {
     setSaved(false);
@@ -296,41 +297,54 @@ export function AssignModules({
   };
 
   const removed = assigned.filter((id) => !selected.includes(id));
+  const visibleModules = modules.filter((mdl) =>
+    mdl.title.toLowerCase().includes(query.trim().toLowerCase()),
+  );
 
   return (
     <div>
-      <ul className="space-y-3">
-        {modules.map((mdl) => {
-          const checked = selected.includes(mdl.id);
-          return (
-            <li key={mdl.id}>
-              <label
-                className={`flex cursor-pointer items-start gap-4 rounded-sm border px-5 py-4 transition-colors duration-300 ${
-                  checked
-                    ? "border-primary bg-tint-mist"
-                    : "border-surface-deep bg-paper hover:border-muted-light"
-                } ${disabled ? "cursor-not-allowed opacity-60" : ""}`}
-              >
-                <input
-                  type="checkbox"
-                  checked={checked}
-                  disabled={disabled}
-                  onChange={() => toggle(mdl.id)}
-                  className="checkbox mt-1"
-                />
-                <span className="min-w-0 flex-1">
-                  <span className="block text-lg font-semibold text-ink">
-                    {mdl.title}
+      <SearchField
+        value={query}
+        onChange={setQuery}
+        placeholder="Search modules"
+        className="mb-4"
+      />
+      {visibleModules.length ? (
+        <ul className="space-y-3">
+          {visibleModules.map((mdl) => {
+            const checked = selected.includes(mdl.id);
+            return (
+              <li key={mdl.id}>
+                <label
+                  className={`flex cursor-pointer items-start gap-4 rounded-sm border px-5 py-4 transition-colors duration-300 ${
+                    checked
+                      ? "border-primary bg-tint-mist"
+                      : "border-surface-deep bg-paper hover:border-muted-light"
+                  } ${disabled ? "cursor-not-allowed opacity-60" : ""}`}
+                >
+                  <input
+                    type="checkbox"
+                    checked={checked}
+                    disabled={disabled}
+                    onChange={() => toggle(mdl.id)}
+                    className="checkbox mt-1"
+                  />
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-lg font-semibold text-ink">
+                      {mdl.title}
+                    </span>
+                    <span className={`mt-0.5 block ${META.base}`}>
+                      {mdl.status} · {mdl.lectures} lectures
+                    </span>
                   </span>
-                  <span className={`mt-0.5 block ${META.base}`}>
-                    {mdl.status} · {mdl.lectures} lectures
-                  </span>
-                </span>
-              </label>
-            </li>
-          );
-        })}
-      </ul>
+                </label>
+              </li>
+            );
+          })}
+        </ul>
+      ) : (
+        <p className={META.base}>No module matches that.</p>
+      )}
 
       {removed.length ? (
         <p className="mt-4 flex items-start gap-2 rounded-sm border border-clay/25 bg-clay-pale px-5 py-4 text-lg leading-relaxed text-ink">
@@ -406,6 +420,10 @@ export function InviteForm({
   const [experience, setExperience] = useState<EntryValues[]>([]);
   const [publications, setPublications] = useState<EntryValues[]>([]);
   const [achievements, setAchievements] = useState<EntryValues[]>([]);
+  const [moduleQuery, setModuleQuery] = useState("");
+  const visibleModules = modules.filter((mdl) =>
+    mdl.title.toLowerCase().includes(moduleQuery.trim().toLowerCase()),
+  );
 
   const missing =
     kind === "lecturer"
@@ -477,17 +495,27 @@ export function InviteForm({
           <legend className="mb-3 text-lg font-semibold text-ink">
             Modules they may author
           </legend>
-          <div className="flex flex-wrap gap-2">
-            {modules.map((mdl) => (
-              <label
-                key={mdl.id}
-                className="flex cursor-pointer items-center gap-2.5 rounded-full border border-surface-deep bg-paper px-4 py-2 text-lg text-ink-soft transition-colors hover:border-muted-light"
-              >
-                <input type="checkbox" className="checkbox" />
-                {mdl.title}
-              </label>
-            ))}
-          </div>
+          <SearchField
+            value={moduleQuery}
+            onChange={setModuleQuery}
+            placeholder="Search modules"
+            className="mb-3"
+          />
+          {visibleModules.length ? (
+            <div className="flex flex-wrap gap-2">
+              {visibleModules.map((mdl) => (
+                <label
+                  key={mdl.id}
+                  className="flex cursor-pointer items-center gap-2.5 rounded-full border border-surface-deep bg-paper px-4 py-2 text-lg text-ink-soft transition-colors hover:border-muted-light"
+                >
+                  <input type="checkbox" className="checkbox" />
+                  {mdl.title}
+                </label>
+              ))}
+            </div>
+          ) : (
+            <p className={META.base}>No module matches that.</p>
+          )}
           <p className={`mt-3 ${META.base}`}>
             Can be changed at any time from the lecturer&rsquo;s page.
           </p>
@@ -616,6 +644,10 @@ export function NewModuleForm({
 }) {
   const [created, setCreated] = useState<string | null>(null);
   const [title, setTitle] = useState("");
+  const [lecturerQuery, setLecturerQuery] = useState("");
+  const visibleLecturers = lecturers.filter((lecturer) =>
+    lecturer.name.toLowerCase().includes(lecturerQuery.trim().toLowerCase()),
+  );
 
   return (
     <form
@@ -662,23 +694,33 @@ export function NewModuleForm({
           <legend className="mb-3 text-lg font-semibold text-ink">
             Lecturers
           </legend>
-          <div className="flex flex-wrap gap-2">
-            {lecturers.map((lecturer) => (
-              <label
-                key={lecturer.id}
-                className="flex cursor-pointer items-center gap-2.5 rounded-full border border-surface-deep bg-paper py-1.5 pl-2 pr-4 text-lg text-ink-soft transition-colors hover:border-muted-light"
-              >
-                <input type="checkbox" className="checkbox" />
-                <Avatar
-                  src={lecturer.avatarUrl}
-                  initials={lecturer.initials}
-                  tone="light"
-                  className="size-7 text-sm"
-                />
-                {lecturer.name}
-              </label>
-            ))}
-          </div>
+          <SearchField
+            value={lecturerQuery}
+            onChange={setLecturerQuery}
+            placeholder="Search lecturers"
+            className="mb-3"
+          />
+          {visibleLecturers.length ? (
+            <div className="flex flex-wrap gap-2">
+              {visibleLecturers.map((lecturer) => (
+                <label
+                  key={lecturer.id}
+                  className="flex cursor-pointer items-center gap-2.5 rounded-full border border-surface-deep bg-paper py-1.5 pl-2 pr-4 text-lg text-ink-soft transition-colors hover:border-muted-light"
+                >
+                  <input type="checkbox" className="checkbox" />
+                  <Avatar
+                    src={lecturer.avatarUrl}
+                    initials={lecturer.initials}
+                    tone="light"
+                    className="size-7 text-sm"
+                  />
+                  {lecturer.name}
+                </label>
+              ))}
+            </div>
+          ) : (
+            <p className={META.base}>No lecturer matches that.</p>
+          )}
           <p className={`mt-3 ${META.base}`}>
             Optional, and not exclusive - a module can have more than one
             lecturer, and every one of them writes any lecture in it. Can be

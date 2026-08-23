@@ -18,6 +18,7 @@ import {
   MetricCard,
   PageBody,
   PageHeader,
+  PersonTag,
   PrototypeNote,
 } from "@/components/console/ui";
 import { ModerationActions } from "@/components/console/actions";
@@ -133,9 +134,13 @@ export default function ReviewsPage() {
                         {student ? (
                           <Link
                             href={`/admin/students/${student.id}`}
-                            className="link-wipe"
+                            className="link-wipe inline-flex"
                           >
-                            {review.studentName}
+                            <PersonTag
+                              name={review.studentName}
+                              avatarUrl={student.avatarUrl}
+                              initials={student.initials}
+                            />
                           </Link>
                         ) : (
                           review.studentName
@@ -198,6 +203,7 @@ export default function ReviewsPage() {
             .sort((a, b) => b.submittedOn.localeCompare(a.submittedOn))
             .map((review) => {
               const subject = subjectInfo(review);
+              const reviewer = studentById(review.studentId);
               const card: ReviewCard = {
                 id: review.id,
                 filterKey: subject.filterKey,
@@ -205,8 +211,17 @@ export default function ReviewsPage() {
                   <li key={review.id} className="px-5 py-5 sm:px-6">
                     <div className="flex flex-wrap items-start justify-between gap-3">
                       <div className="min-w-0">
-                        <p className="text-lg font-semibold text-ink">
-                          {review.studentName}
+                        <p className="flex flex-wrap items-center text-lg font-semibold text-ink">
+                          {reviewer ? (
+                            <PersonTag
+                              name={review.studentName}
+                              avatarUrl={reviewer.avatarUrl}
+                              initials={reviewer.initials}
+                              size="xs"
+                            />
+                          ) : (
+                            review.studentName
+                          )}
                           <span className={`ml-2 font-normal ${META.base}`}>
                             {subject.label}
                           </span>

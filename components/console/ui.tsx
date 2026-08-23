@@ -28,8 +28,10 @@ export {
   DefinitionList,
   EmptyState,
   Panel,
+  PersonTag,
   ProgressBar,
   ProgressRing,
+  SearchField,
   StatTile,
   type BadgeTone,
 } from "@/components/student-portal/ui";
@@ -101,7 +103,7 @@ export function PageHeader({
       ) : null}
 
       <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-        <div className="flex min-w-0 items-center gap-5">
+        <div className="flex min-w-0 items-start gap-5">
           {avatar ? (
             <Avatar
               src={avatar.src}

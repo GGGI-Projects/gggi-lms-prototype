@@ -30,6 +30,7 @@ import {
   PageBody,
   PageHeader,
   Panel,
+  PersonTag,
   PrototypeNote,
   Section,
 } from "@/components/console/ui";
@@ -124,6 +125,8 @@ export function MaterialsLibrary({ area }: { area: ConsoleArea }) {
             groupId: entry.asset.groupId,
             groupName: entry.group?.name ?? "No group",
             uploadedBy: entry.uploadedBy?.name ?? "Unknown",
+            uploadedByAvatarUrl: entry.uploadedBy?.avatarUrl,
+            uploadedByInitials: entry.uploadedBy?.initials,
             uploadedOn: entry.asset.uploadedOn,
             uses: entry.usage.length,
             language: entry.asset.language,
@@ -400,12 +403,24 @@ export function MaterialDetail({
                             ? `/admin/lecturers/${uploadedBy.id}`
                             : "/admin/team"
                         }
-                        className="link-wipe text-primary"
+                        className="link-wipe inline-flex text-primary"
                       >
-                        {uploadedBy.name}
+                        <PersonTag
+                          name={uploadedBy.name}
+                          avatarUrl={uploadedBy.avatarUrl}
+                          initials={uploadedBy.initials}
+                          size="xs"
+                        />
                       </Link>
+                    ) : uploadedBy ? (
+                      <PersonTag
+                        name={uploadedBy.name}
+                        avatarUrl={uploadedBy.avatarUrl}
+                        initials={uploadedBy.initials}
+                        size="xs"
+                      />
                     ) : (
-                      (uploadedBy?.name ?? "Unknown")
+                      "Unknown"
                     ),
                 },
                 { term: "Reference", value: asset.id },

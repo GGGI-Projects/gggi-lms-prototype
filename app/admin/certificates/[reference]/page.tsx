@@ -10,6 +10,7 @@ import {
   PageBody,
   PageHeader,
   Panel,
+  PersonTag,
   PrototypeNote,
 } from "@/components/console/ui";
 import { ConfirmAction } from "@/components/console/actions";
@@ -23,6 +24,7 @@ import {
   findCertificate,
   managedModule,
   staffName,
+  studentById,
 } from "@/lib/admin";
 import { formatDate, formatDateLong } from "@/lib/portal";
 import { BODY, CONSOLE, EYEBROW, META } from "@/lib/theme";
@@ -122,14 +124,26 @@ export default async function AdminCertificatePage({ params }: Params) {
                 items={[
                   {
                     term: "Awarded to",
-                    value: (
-                      <Link
-                        href={`/admin/students/${record.studentId}`}
-                        className="link-wipe font-semibold text-primary"
-                      >
-                        {record.studentName}
-                      </Link>
-                    ),
+                    value: (() => {
+                      const student = studentById(record.studentId);
+                      return (
+                        <Link
+                          href={`/admin/students/${record.studentId}`}
+                          className="link-wipe inline-flex font-semibold text-primary"
+                        >
+                          {student ? (
+                            <PersonTag
+                              name={record.studentName}
+                              avatarUrl={student.avatarUrl}
+                              initials={student.initials}
+                              size="xs"
+                            />
+                          ) : (
+                            record.studentName
+                          )}
+                        </Link>
+                      );
+                    })(),
                   },
                   {
                     term: "Module",

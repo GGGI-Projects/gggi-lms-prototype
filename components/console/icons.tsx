@@ -272,3 +272,86 @@ export function MegaphoneIcon({ className }: IconProps) {
     </svg>
   );
 }
+
+/* --------------------------------------------------------------- formatting */
+
+/**
+ * The passage editor's toolbar - purely decorative, see the long note on
+ * `FormattingToolbar` in `content-block-actions.tsx`. Drawn in the same
+ * grid/weight/cap style as every icon above rather than reached for from an
+ * icon package, same reason the rest of this file gives.
+ */
+export function BoldIcon({ className }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M7 4h6a3.5 3.5 0 0 1 0 7H7Z" />
+      <path d="M7 11h6.5a3.5 3.5 0 0 1 0 7H7Z" />
+    </svg>
+  );
+}
+
+export function ItalicIcon({ className }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M14.5 4h-4" />
+      <path d="M9.5 20h-4" />
+      <path d="M14 4 10 20" />
+    </svg>
+  );
+}
+
+export function UnderlineIcon({ className }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M6 4v6.5a6 6 0 0 0 12 0V4" />
+      <path d="M4 20h16" />
+    </svg>
+  );
+}
+
+export function BulletListIcon({ className }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M9 6h11" />
+      <path d="M9 12h11" />
+      <path d="M9 18h11" />
+      <path d="M4 6h.01" />
+      <path d="M4 12h.01" />
+      <path d="M4 18h.01" />
+    </svg>
+  );
+}
+
+export function NumberedListIcon({ className }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M10 6h11" />
+      <path d="M10 12h11" />
+      <path d="M10 18h11" />
+      <path d="M4.5 5.5h1v3" />
+      <path d="M4 10.5h2" />
+      <path d="M4.2 15c0-.9.9-1.5 1.6-1.5.8 0 1.4.5 1.4 1.1 0 .5-.3.8-.7 1.1l-2.1 1.9h2.8" />
+    </svg>
+  );
+}
+
+export function QuoteIcon({ className }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M7 5.5v13" />
+      <path d="M11.5 9h9" />
+      <path d="M11.5 13h9" />
+      <path d="M11.5 17h6" />
+    </svg>
+  );
+}
+
+export function LinkIcon({ className }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M9.5 17H7a5 5 0 0 1 0-10h2.5" />
+      <path d="M14.5 7H17a5 5 0 0 1 0 10h-2.5" />
+      <path d="M8.5 12h7" />
+    </svg>
+  );
+}

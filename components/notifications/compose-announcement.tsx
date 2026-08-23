@@ -4,6 +4,7 @@ import { useId, useState } from "react";
 import { ActionButton } from "@/components/ui/action-button";
 import { Drawer } from "@/components/console/drawer";
 import { MegaphoneIcon } from "@/components/console/icons";
+import { PersonTag, SearchField } from "@/components/student-portal/ui";
 import { META } from "@/lib/theme";
 import type { AnnouncementScope } from "@/lib/comms";
 
@@ -33,10 +34,12 @@ function AnnouncementForm({
   const [body, setBody] = useState("");
   const [blocked, setBlocked] = useState(false);
   const [sent, setSent] = useState(false);
+  const [recipientQuery, setRecipientQuery] = useState("");
 
   const scope = scopes.find((entry) => entry.kind === scopeKind);
   const isModule = scope?.kind === "module";
   const needsPicker = Boolean(scope && "options" in scope);
+  const needle = recipientQuery.trim().toLowerCase();
 
   const missing = [
     !scope && "an audience",
@@ -83,6 +86,7 @@ function AnnouncementForm({
                 onChange={() => {
                   setScopeKind(option.kind);
                   setSelectedIds([]);
+                  setRecipientQuery("");
                 }}
                 className="checkbox"
               />
@@ -98,22 +102,67 @@ function AnnouncementForm({
             {isModule ? "Which module" : "Who exactly"}
           </legend>
           {scope.options.length ? (
-            <div className="flex flex-wrap gap-2">
-              {scope.options.map((entry) => (
-                <label
-                  key={entry.id}
-                  className="flex cursor-pointer items-center gap-2.5 rounded-full border border-surface-deep bg-paper px-4 py-2 text-lg text-ink-soft transition-colors hover:border-muted-light"
-                >
-                  <input
-                    type="checkbox"
-                    checked={selectedIds.includes(entry.id)}
-                    onChange={() => toggle(entry.id)}
-                    className="checkbox"
-                  />
-                  {entry.label}
-                </label>
-              ))}
-            </div>
+            <>
+              {/* A module list stays short enough to scan (see the sibling
+                  pickers this same search box was added to for the actual
+                  long ones - a lecturer's or a student's) - no search box
+                  for that scope, so it doesn't read as a control with
+                  nothing useful to do. */}
+              {isModule ? null : (
+                <SearchField
+                  value={recipientQuery}
+                  onChange={setRecipientQuery}
+                  placeholder="Search by name"
+                  className="mb-3"
+                />
+              )}
+              {(() => {
+                // `scope.options` is a union of two array shapes (module
+                // options have no face; lecturer/student options do) -
+                // normalised to one shape once here rather than casting
+                // per-field at every render below.
+                const options = scope.options as {
+                  id: string;
+                  label: string;
+                  avatarUrl?: string;
+                  initials?: string;
+                }[];
+                const visible = options.filter((entry) =>
+                  entry.label.toLowerCase().includes(needle),
+                );
+                return visible.length ? (
+                  <div className="flex flex-wrap gap-2">
+                    {visible.map((entry) => (
+                      <label
+                        key={entry.id}
+                        className="flex cursor-pointer items-center gap-2.5 rounded-full border border-surface-deep bg-paper py-2 pl-3 pr-4 text-lg text-ink-soft transition-colors hover:border-muted-light"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={selectedIds.includes(entry.id)}
+                          onChange={() => toggle(entry.id)}
+                          className="checkbox"
+                        />
+                        {/* A module isn't a person - only the lecturer/student
+                            scopes carry a face to show next to the label. */}
+                        {isModule ? (
+                          entry.label
+                        ) : (
+                          <PersonTag
+                            name={entry.label}
+                            avatarUrl={entry.avatarUrl}
+                            initials={entry.initials ?? "?"}
+                            size="xs"
+                          />
+                        )}
+                      </label>
+                    ))}
+                  </div>
+                ) : (
+                  <p className={META.base}>No match for that.</p>
+                );
+              })()}
+            </>
           ) : (
             <p className={META.base}>Nothing to choose from yet.</p>
           )}

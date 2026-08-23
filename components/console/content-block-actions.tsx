@@ -5,7 +5,17 @@ import { ActionButton } from "@/components/ui/action-button";
 import { ConfirmAction } from "@/components/console/actions";
 import { Drawer } from "@/components/console/drawer";
 import { IfCan, LockedNote } from "@/components/console/permission";
-import { EditIcon, PlusIcon } from "@/components/console/icons";
+import {
+  BoldIcon,
+  BulletListIcon,
+  EditIcon,
+  ItalicIcon,
+  LinkIcon,
+  NumberedListIcon,
+  PlusIcon,
+  QuoteIcon,
+  UnderlineIcon,
+} from "@/components/console/icons";
 import { META } from "@/lib/theme";
 import type { ContentBlock } from "@/content/curriculum";
 import type { Capability } from "@/lib/permissions";
@@ -141,6 +151,107 @@ function VideoBlockForm({
 
 /* ------------------------------------------------------------------- text */
 
+/** One square button on the toolbar below - see the note on
+ *  `FormattingToolbar` for why it does nothing.
+ *
+ *  Solid `text-ink` at rest, not the fainter `text-ink-soft` most icon
+ *  buttons in this console use - those sit next to their own visible label
+ *  text, this is the only thing in its row, and at `text-ink-soft` on the
+ *  toolbar's `bg-surface` the glyphs read as barely-there.
+ *
+ *  `pointer-events-none`, ON PURPOSE - not just `tabIndex={-1}`. The Drawer
+ *  this sits in slides into place with a CSS `transition-transform`; a
+ *  browser only recomputes `:hover` on an actual pointer event, not on
+ *  every animated frame, so a button that ends its slide-in sitting under
+ *  wherever the cursor happened to be when the drawer's trigger was clicked
+ *  can be left showing a `:hover` style it never really earned, and it then
+ *  stays stuck that way until the next real mouse move happens to land
+ *  somewhere that clears it - which is what the user saw and reported as
+ *  "hovering the text field highlights the buttons". A functioning button
+ *  would need real interaction to fix that properly; a decorative one that
+ *  does nothing on click has no reason to run any risk of it at all -
+ *  `pointer-events-none` removes it from hit-testing entirely, so `:hover`
+ *  (and this stale-hover class of bug) can never match it, full stop. */
+function ToolbarButton({
+  label,
+  children,
+}: {
+  label: string;
+  children: ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      aria-label={label}
+      title={label}
+      tabIndex={-1}
+      className="pointer-events-none grid size-8 shrink-0 place-items-center rounded-sm text-ink"
+    >
+      {children}
+    </button>
+  );
+}
+
+/** A hairline between two groups of buttons - bold/italic/underline sit apart
+ *  from the list controls, which sit apart from quote/link, the same
+ *  grouping a real editor's toolbar draws with a divider rather than a gap
+ *  alone. */
+function ToolbarDivider() {
+  return <span aria-hidden="true" className="mx-1 h-5 w-px shrink-0 bg-surface-deep" />;
+}
+
+/**
+ * Sits above the Passage field as its own bordered strip, `mb-2` of daylight
+ * between the two - NOT fused flush on top of it. An earlier version shared
+ * the field's own border (`rounded-t-none` on the field, no bottom border on
+ * the toolbar) to read as one continuous control; the user reported hovering
+ * the field itself appeared to light up the buttons, and with the two now
+ * fully separate boxes there is no shared edge left for that to happen on -
+ * keep the gap if this is touched again, don't re-fuse them.
+ *
+ * DELIBERATELY INERT, same as before. The user's own words: "no need to
+ * work... want to look like a text editor." The Passage field is a plain
+ * `<textarea>` - there is no rich-text model underneath for Bold to act on,
+ * and wiring these up to mutate raw text (wrapping a selection in
+ * `**`/`*`/markdown) would be a half-built markdown editor nobody asked for,
+ * a different and much bigger feature than "the drawer should look like a
+ * text editor." Every button is `type="button"` (never accidentally submits
+ * the form) and `tabIndex={-1}` (a keyboard user tabbing through the form
+ * skips straight to the field itself, not seven buttons that do nothing).
+ */
+function FormattingToolbar() {
+  return (
+    <div
+      aria-hidden="true"
+      className="mb-2 flex flex-wrap items-center gap-0.5 rounded-sm border border-surface-deep bg-surface px-2 py-1.5"
+    >
+      <ToolbarButton label="Bold">
+        <BoldIcon className="size-4.5" />
+      </ToolbarButton>
+      <ToolbarButton label="Italic">
+        <ItalicIcon className="size-4.5" />
+      </ToolbarButton>
+      <ToolbarButton label="Underline">
+        <UnderlineIcon className="size-4.5" />
+      </ToolbarButton>
+      <ToolbarDivider />
+      <ToolbarButton label="Bulleted list">
+        <BulletListIcon className="size-4.5" />
+      </ToolbarButton>
+      <ToolbarButton label="Numbered list">
+        <NumberedListIcon className="size-4.5" />
+      </ToolbarButton>
+      <ToolbarDivider />
+      <ToolbarButton label="Quote">
+        <QuoteIcon className="size-4.5" />
+      </ToolbarButton>
+      <ToolbarButton label="Link">
+        <LinkIcon className="size-4.5" />
+      </ToolbarButton>
+    </div>
+  );
+}
+
 function TextBlockForm({
   initial,
   formId,
@@ -177,6 +288,7 @@ function TextBlockForm({
           <span className="mb-2 block text-lg font-semibold text-ink">
             Passage
           </span>
+          <FormattingToolbar />
           <textarea
             required
             rows={8}

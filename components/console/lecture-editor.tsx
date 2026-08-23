@@ -13,6 +13,7 @@ import {
   DefinitionList,
   MetricCard,
   Panel,
+  PersonTag,
   PrototypeNote,
 } from "@/components/console/ui";
 import { ConfirmAction, StateControl } from "@/components/console/actions";
@@ -357,7 +358,16 @@ export function LectureEditor({
               },
               {
                 term: "Author",
-                value: mod.author ? mod.author.name : "Nobody recorded",
+                value: mod.author ? (
+                  <PersonTag
+                    name={mod.author.name}
+                    avatarUrl={mod.author.avatarUrl}
+                    initials={mod.author.initials}
+                    size="xs"
+                  />
+                ) : (
+                  "Nobody recorded"
+                ),
               },
               {
                 term: "Last updated",

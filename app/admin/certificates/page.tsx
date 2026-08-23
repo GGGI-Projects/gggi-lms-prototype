@@ -7,6 +7,7 @@ import {
   formatNumber,
   publishedModules,
   staffName,
+  studentById,
 } from "@/lib/admin";
 import { formatDate, formatDateLong } from "@/lib/portal";
 import {
@@ -18,6 +19,7 @@ import {
   PageBody,
   PageHeader,
   Panel,
+  PersonTag,
   PrototypeNote,
   Row,
   Section,
@@ -60,7 +62,9 @@ export default function CertificatesPage() {
   const register = certificateRegister();
   const revoked = register.filter((record) => record.status === "revoked");
 
-  const items: RegisterItem[] = register.map((record) => ({
+  const items: RegisterItem[] = register.map((record) => {
+    const student = studentById(record.studentId);
+    const item: RegisterItem = {
     id: record.reference,
     text: [record.reference, record.studentName, record.moduleTitle]
       .join(" ")
@@ -72,7 +76,18 @@ export default function CertificatesPage() {
           href={`/admin/certificates/${record.reference}`}
           title={record.reference}
         />
-        <Cell>{record.studentName}</Cell>
+        <Cell>
+          {student ? (
+            <PersonTag
+              name={record.studentName}
+              avatarUrl={student.avatarUrl}
+              initials={student.initials}
+              size="xs"
+            />
+          ) : (
+            record.studentName
+          )}
+        </Cell>
         <Cell hideBelow="lg">{record.moduleTitle}</Cell>
         <Cell numeric hideBelow="sm">
           {record.score === null ? "-" : `${record.score}%`}
@@ -87,7 +102,9 @@ export default function CertificatesPage() {
         </Cell>
       </Row>
     ),
-  }));
+    };
+    return item;
+  });
 
   return (
     <PageBody>

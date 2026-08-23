@@ -238,4 +238,64 @@ export const THREADS: MessageThread[] = [
     ],
     unreadFor: ["staff-inst-1"],
   },
+  {
+    // The super administrator's own inbox - without this (and thr-6 below)
+    // staff-super had zero threads, since every messaging flow in this file
+    // (`adminContactFor`, `adminContactForStudent`) resolves to staff-admin-1
+    // regardless of who actually appointed a lecturer. Malika is the natural
+    // other party: `createdBy: "staff-super"` on her own record.
+    id: "thr-5",
+    participants: [
+      { id: "staff-super", kind: "staff" },
+      { id: "staff-inst-1", kind: "staff" },
+    ],
+    messages: [
+      {
+        id: "thr-5-m1",
+        from: "staff-inst-1",
+        body:
+          "Thanks for setting up the public profile pages - quick one: is qualifications entirely self-service now, or should new ones still go through you?",
+        sentOn: "2026-08-21",
+      },
+      {
+        id: "thr-5-m2",
+        from: "staff-super",
+        body:
+          "Self-service - anything under qualifications, experience, publications or achievements is yours to edit from your own profile page any time. Nothing there needs to come through me.",
+        sentOn: "2026-08-21",
+      },
+      {
+        id: "thr-5-m3",
+        from: "staff-inst-1",
+        body:
+          "Good to know - added the field verification protocols paper I'd been meaning to list. Thanks!",
+        sentOn: "2026-08-22",
+      },
+    ],
+    unreadFor: ["staff-super"],
+  },
+  {
+    id: "thr-6",
+    participants: [
+      { id: "staff-super", kind: "staff" },
+      { id: "staff-inst-2", kind: "staff" },
+    ],
+    messages: [
+      {
+        id: "thr-6-m1",
+        from: "staff-super",
+        body:
+          "Saw the costing template fix went out for lecture 5 - good catch. How's enrolment looking for Provincial Adaptation Plan this month?",
+        sentOn: "2026-08-14",
+      },
+      {
+        id: "thr-6-m2",
+        from: "staff-inst-2",
+        body:
+          "Steady - about a dozen new learners since the start of August, and the completion rate's holding up better than I expected given how dense lecture 5 is.",
+        sentOn: "2026-08-15",
+      },
+    ],
+    unreadFor: [],
+  },
 ];

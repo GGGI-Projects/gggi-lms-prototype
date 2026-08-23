@@ -12,6 +12,7 @@ import {
   managedModule,
   quizStatsFor,
   reviewsForModule,
+  studentById,
 } from "@/lib/admin";
 import { attachmentsFor } from "@/lib/materials";
 import { formatDate, formatDateLong, hasBlankQuestions } from "@/lib/portal";
@@ -26,6 +27,7 @@ import {
   PageBody,
   PageHeader,
   Panel,
+  PersonTag,
   PrototypeNote,
   Row,
   Section,
@@ -217,9 +219,14 @@ export default async function ModulePage({ params }: Params) {
                     {mod.author ? (
                       <Link
                         href={`/admin/lecturers/${mod.author.id}`}
-                        className="link-wipe text-primary"
+                        className="link-wipe inline-flex text-primary"
                       >
-                        {mod.author.name}
+                        <PersonTag
+                          name={mod.author.name}
+                          avatarUrl={mod.author.avatarUrl}
+                          initials={mod.author.initials}
+                          size="xs"
+                        />
                       </Link>
                     ) : (
                       <span className="text-muted-light">-</span>
@@ -271,14 +278,24 @@ export default async function ModulePage({ params }: Params) {
           >
             {reviews.length ? (
               <ul className="space-y-3">
-                {reviews.slice(0, 4).map((review) => (
+                {reviews.slice(0, 4).map((review) => {
+                  const reviewer = studentById(review.studentId);
+                  return (
                   <li
                     key={review.id}
                     className="rounded-sm border border-surface-deep bg-paper-raised px-5 py-4"
                   >
                     <div className="flex flex-wrap items-center justify-between gap-3">
                       <p className="text-lg font-semibold text-ink">
-                        {review.studentName}
+                        {reviewer ? (
+                          <PersonTag
+                            name={review.studentName}
+                            avatarUrl={reviewer.avatarUrl}
+                            initials={reviewer.initials}
+                          />
+                        ) : (
+                          review.studentName
+                        )}
                       </p>
                       <span className="flex items-center gap-1">
                         {Array.from({ length: 5 }).map((_, index) => (
@@ -303,7 +320,8 @@ export default async function ModulePage({ params }: Params) {
                         : review.status}
                     </p>
                   </li>
-                ))}
+                  );
+                })}
               </ul>
             ) : (
               <p className={`rounded-sm border border-dashed border-muted-light bg-paper-raised px-6 py-10 text-center ${BODY.base}`}>

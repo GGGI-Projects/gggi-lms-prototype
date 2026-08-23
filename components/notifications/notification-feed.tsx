@@ -2,6 +2,7 @@
 
 import { useId, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 import { EmptyState } from "@/components/console/ui";
+import { Avatar } from "@/components/student-portal/ui";
 import { CheckIcon } from "@/components/student-portal/icons";
 import { CONSOLE, META } from "@/lib/theme";
 import { formatDate } from "@/lib/portal";
@@ -87,7 +88,16 @@ export function NotificationFeed({
         role="tablist"
         aria-label="Notifications"
         onKeyDown={onKeyDown}
-        className="flex flex-wrap gap-2 border-b border-surface-deep"
+        // A segmented control on a `paper-raised` mini-card (the same
+        // border-surface-deep panel every other block on this screen sits
+        // on), with the selected tab filled solid `primary` rather than a
+        // near-white pill on a near-white track - a grey-on-grey selection
+        // reads as barely-there next to the page's actual brand colour. The
+        // shape stays `rounded-sm`, not `rounded-full`, so this still reads
+        // as a different control from `ModuleFilter`'s filter pills even
+        // though the "solid `primary` = selected" colour logic is the same
+        // one those pills use.
+        className="inline-flex gap-1 rounded-sm border border-surface-deep bg-paper-raised p-1"
       >
         {tabs.map((tab) => {
           const selected = active === tab.id;
@@ -104,14 +114,18 @@ export function NotificationFeed({
               aria-controls={`${baseId}-${tab.id}-panel`}
               tabIndex={selected ? 0 : -1}
               onClick={() => setActive(tab.id)}
-              className={`relative -mb-px inline-flex items-center gap-2 border-b-2 px-1 py-3 text-lg font-semibold transition-colors ${
+              className={`inline-flex items-center gap-2 rounded-sm px-5 py-2.5 text-lg font-semibold transition-colors duration-200 ${
                 selected
-                  ? "border-primary text-ink"
-                  : "border-transparent text-ink-soft hover:text-ink"
+                  ? "bg-primary text-paper"
+                  : "text-ink-soft hover:bg-surface hover:text-ink"
               }`}
             >
               {tab.label}
-              <span className="text-sm font-medium text-muted">{tab.count}</span>
+              <span
+                className={`text-sm font-medium ${selected ? "text-tint" : "text-muted"}`}
+              >
+                {tab.count}
+              </span>
               {tab.dot ? (
                 <span
                   aria-hidden="true"
@@ -135,22 +149,30 @@ export function NotificationFeed({
             {view.announcements.map((announcement) => (
               <li
                 key={announcement.id}
-                className="rounded-sm border border-surface-deep bg-paper-raised px-5 py-4"
+                className="flex gap-4 rounded-sm border border-surface-deep bg-paper-raised px-5 py-4"
               >
-                <div className="flex flex-wrap items-center gap-2">
-                  <p className="text-lg font-semibold text-ink">{announcement.title}</p>
-                  {announcement.sentByMe ? (
-                    <FilledTag tone="primary" icon={<CheckIcon className="size-3.5" />}>
-                      Sent by you
-                    </FilledTag>
-                  ) : null}
-                  {announcement.isNew ? <NewTag /> : null}
+                <Avatar
+                  src={announcement.fromAvatarUrl}
+                  initials={announcement.fromInitials}
+                  tone="light"
+                  className="size-10 shrink-0"
+                />
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <p className="text-lg font-semibold text-ink">{announcement.title}</p>
+                    {announcement.sentByMe ? (
+                      <FilledTag tone="primary" icon={<CheckIcon className="size-3.5" />}>
+                        Sent by you
+                      </FilledTag>
+                    ) : null}
+                    {announcement.isNew ? <NewTag /> : null}
+                  </div>
+                  <p className={`mt-1 ${META.base}`}>
+                    {announcement.from} · {announcement.audience} ·{" "}
+                    {formatDate(announcement.date)}
+                  </p>
+                  <p className="mt-3 text-lg leading-relaxed text-ink">{announcement.body}</p>
                 </div>
-                <p className={`mt-1 ${META.base}`}>
-                  {announcement.from} · {announcement.audience} ·{" "}
-                  {formatDate(announcement.date)}
-                </p>
-                <p className="mt-3 text-lg leading-relaxed text-ink">{announcement.body}</p>
               </li>
             ))}
           </ul>
@@ -175,6 +197,8 @@ export function NotificationFeed({
                   thread={message.thread}
                   viewerId={viewerId}
                   otherName={message.otherName}
+                  otherAvatarUrl={message.otherAvatarUrl}
+                  otherInitials={message.otherInitials}
                   unread={message.unread}
                 />
               </li>

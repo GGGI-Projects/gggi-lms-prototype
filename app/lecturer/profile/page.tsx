@@ -14,6 +14,7 @@ import {
   PageBody,
   PageHeader,
   Panel,
+  PersonTag,
   PrototypeNote,
   Section,
 } from "@/components/console/ui";
@@ -274,7 +275,19 @@ export default function LecturerProfilePage() {
                 { term: "Appointed", value: formatDateLong(member.createdOn) },
                 {
                   term: "Appointed by",
-                  value: member.createdBy ? staffName(member.createdBy) : "-",
+                  value: (() => {
+                    const appointer = member.createdBy ? staffById(member.createdBy) : undefined;
+                    return appointer ? (
+                      <PersonTag
+                        name={appointer.name}
+                        avatarUrl={appointer.avatarUrl}
+                        initials={appointer.initials}
+                        size="xs"
+                      />
+                    ) : (
+                      "-"
+                    );
+                  })(),
                 },
               ]}
             />

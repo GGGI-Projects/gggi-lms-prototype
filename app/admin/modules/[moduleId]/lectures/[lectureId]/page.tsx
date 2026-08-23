@@ -6,7 +6,7 @@ import { LECTURES } from "@/content/curriculum";
 import { consoleLectures, managedModule, quizStatsFor } from "@/lib/admin";
 import { attachmentsFor, pickerData } from "@/lib/materials";
 import { PASS_MARK, quizFor, blankQuestionsFor } from "@/lib/portal";
-import { Badge, PageBody, PageHeader } from "@/components/console/ui";
+import { Avatar, Badge, PageBody, PageHeader } from "@/components/console/ui";
 import {
   DraftLectureNotice,
   LectureEditor,
@@ -76,7 +76,19 @@ export default async function AdminLecturePage({ params }: Params) {
             ) : (
               <Badge tone="neutral">Nothing written</Badge>
             )}
-            {mod.author ? <Badge>Written by {mod.author.name}</Badge> : null}
+            {mod.author ? (
+              <Badge
+                icon={
+                  <Avatar
+                    src={mod.author.avatarUrl}
+                    initials={mod.author.initials}
+                    className="size-4"
+                  />
+                }
+              >
+                Written by {mod.author.name}
+              </Badge>
+            ) : null}
           </>
         }
         actions={

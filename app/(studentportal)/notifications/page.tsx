@@ -64,7 +64,14 @@ export default function NotificationsPage() {
             </p>
             <div className="mt-4">
               <ComposeMessageAction
-                contacts={[{ id: admin.id, label: admin.name }]}
+                contacts={[
+                  {
+                    id: admin.id,
+                    label: admin.name,
+                    avatarUrl: admin.avatarUrl,
+                    initials: admin.initials,
+                  },
+                ]}
                 preselectedId={admin.id}
                 buttonLabel="Contact GreenFin admin"
                 drawerTitle={`Message ${admin.name}`}

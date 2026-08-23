@@ -7,6 +7,7 @@ import {
   PageBody,
   PageHeader,
   Panel,
+  PersonTag,
   Section,
 } from "@/components/student-portal/ui";
 import { LecturerReviewForm } from "@/components/student-portal/lecturer-review-form";
@@ -79,6 +80,7 @@ export default async function LecturerProfilePage({ params }: Params) {
       <PageHeader
         eyebrow={member.title}
         title={member.name}
+        avatar={{ src: member.avatarUrl, initials: member.initials }}
         lead={profile?.bio}
         actions={
           canMessage ? (
@@ -187,13 +189,25 @@ export default async function LecturerProfilePage({ params }: Params) {
           <Section className="mt-12" title="Reviews">
             {reviews.length ? (
               <ul className="space-y-4">
-                {reviews.map((review) => (
+                {reviews.map((review) => {
+                  const reviewer = studentById(review.studentId);
+                  return (
                   <li
                     key={review.id}
                     className="rounded-sm border border-surface-deep bg-paper-raised p-6"
                   >
                     <div className="flex items-center justify-between gap-4">
-                      <p className="font-semibold text-ink">{review.studentName}</p>
+                      <p className="font-semibold text-ink">
+                        {reviewer ? (
+                          <PersonTag
+                            name={review.studentName}
+                            avatarUrl={reviewer.avatarUrl}
+                            initials={reviewer.initials}
+                          />
+                        ) : (
+                          review.studentName
+                        )}
+                      </p>
                       <span className="flex items-center gap-0.5">
                         {Array.from({ length: 5 }).map((_, i) => (
                           <StarFilledIcon
@@ -206,7 +220,8 @@ export default async function LecturerProfilePage({ params }: Params) {
                     <p className={`mt-3 ${BODY.base}`}>{review.body}</p>
                     <p className={`mt-3 ${META.base}`}>{formatDate(review.submittedOn)}</p>
                   </li>
-                ))}
+                  );
+                })}
               </ul>
             ) : (
               <p className={BODY.base}>No reviews published yet.</p>

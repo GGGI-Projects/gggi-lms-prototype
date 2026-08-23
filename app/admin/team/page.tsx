@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { BODY, CONSOLE, META } from "@/lib/theme";
 import { ROLE_LABEL, ROLE_SUMMARY, type StaffRole } from "@/content/staff";
-import { admins, auditEntries, formatStamp, staffName } from "@/lib/admin";
+import { admins, auditEntries, formatStamp, staffById, staffName } from "@/lib/admin";
 import { formatDate, formatDateLong } from "@/lib/portal";
 import {
   Badge,
@@ -11,6 +11,7 @@ import {
   PageBody,
   PageHeader,
   Panel,
+  PersonTag,
   PrototypeNote,
   Row,
   TableFrame,
@@ -112,10 +113,27 @@ function Team() {
               <Cell hideBelow="lg">{member.title}</Cell>
               <Cell hideBelow="md">
                 <span className="block">{formatDate(member.createdOn)}</span>
-                <span className={`block ${META.base}`}>
-                  {member.createdBy
-                    ? `by ${staffName(member.createdBy)}`
-                    : "founding account"}
+                <span className={`mt-0.5 block ${META.base}`}>
+                  {member.createdBy ? (
+                    (() => {
+                      const appointer = staffById(member.createdBy);
+                      return appointer ? (
+                        <span className="inline-flex items-center gap-1">
+                          by
+                          <PersonTag
+                            name={appointer.name}
+                            avatarUrl={appointer.avatarUrl}
+                            initials={appointer.initials}
+                            size="xs"
+                          />
+                        </span>
+                      ) : (
+                        `by ${staffName(member.createdBy)}`
+                      );
+                    })()
+                  ) : (
+                    "founding account"
+                  )}
                 </span>
               </Cell>
               <Cell numeric hideBelow="sm">
@@ -182,14 +200,27 @@ function Team() {
             Account changes
           </h2>
           <ul className="mt-5 space-y-4">
-            {accountTrail.slice(0, 5).map((entry) => (
+            {accountTrail.slice(0, 5).map((entry) => {
+              const actor = staffById(entry.actorId);
+              return (
               <li key={entry.id} className="border-l-2 border-surface-deep pl-4">
                 <p className="text-lg leading-snug text-ink">{entry.target}</p>
-                <p className={`mt-1 ${META.base}`}>
-                  {staffName(entry.actorId)} · {formatStamp(entry.at)}
+                <p className={`mt-1 flex items-center gap-1.5 ${META.base}`}>
+                  {actor ? (
+                    <PersonTag
+                      name={actor.name}
+                      avatarUrl={actor.avatarUrl}
+                      initials={actor.initials}
+                      size="xs"
+                    />
+                  ) : (
+                    staffName(entry.actorId)
+                  )}
+                  · {formatStamp(entry.at)}
                 </p>
               </li>
-            ))}
+              );
+            })}
           </ul>
         </Panel>
 

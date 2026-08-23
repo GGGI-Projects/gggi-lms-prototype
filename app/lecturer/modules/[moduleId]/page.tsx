@@ -12,6 +12,7 @@ import {
   quizStatsFor,
   reviewsForModule,
   staffById,
+  studentById,
 } from "@/lib/admin";
 import { attachmentsFor } from "@/lib/materials";
 import { formatDate, formatDateLong, hasBlankQuestions } from "@/lib/portal";
@@ -25,6 +26,7 @@ import {
   PageBody,
   PageHeader,
   Panel,
+  PersonTag,
   Row,
   Section,
   TableFrame,
@@ -239,14 +241,24 @@ export default async function LecturerModulePage({ params }: Params) {
           >
             {published.length ? (
               <ul className="space-y-3">
-                {published.map((review) => (
+                {published.map((review) => {
+                  const reviewer = studentById(review.studentId);
+                  return (
                   <li
                     key={review.id}
                     className="rounded-sm border border-surface-deep bg-paper-raised px-5 py-4"
                   >
                     <div className="flex flex-wrap items-center justify-between gap-3">
                       <p className="text-lg font-semibold text-ink">
-                        {review.studentName}
+                        {reviewer ? (
+                          <PersonTag
+                            name={review.studentName}
+                            avatarUrl={reviewer.avatarUrl}
+                            initials={reviewer.initials}
+                          />
+                        ) : (
+                          review.studentName
+                        )}
                       </p>
                       <span className="flex items-center gap-0.5">
                         {Array.from({ length: 5 }).map((_, index) => (
@@ -263,7 +275,8 @@ export default async function LecturerModulePage({ params }: Params) {
                       {formatDate(review.submittedOn)}
                     </p>
                   </li>
-                ))}
+                  );
+                })}
               </ul>
             ) : (
               <Panel>

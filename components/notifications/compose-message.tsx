@@ -4,6 +4,7 @@ import { useId, useState } from "react";
 import { ActionButton } from "@/components/ui/action-button";
 import { Drawer } from "@/components/console/drawer";
 import { MailIcon } from "@/components/console/icons";
+import { PersonTag, SearchField } from "@/components/student-portal/ui";
 import { META } from "@/lib/theme";
 import type { ContactOption } from "@/lib/comms";
 
@@ -33,12 +34,16 @@ function MessageForm({
   const [body, setBody] = useState("");
   const [blocked, setBlocked] = useState(false);
   const [sent, setSent] = useState(false);
+  const [query, setQuery] = useState("");
 
   const missing = [
     !recipientIds.length && "a recipient",
     !body.trim() && "a message",
   ].filter((entry): entry is string => Boolean(entry));
-  const grouped = groupContacts(contacts);
+  const needle = query.trim().toLowerCase();
+  const grouped = groupContacts(
+    contacts.filter((contact) => contact.label.toLowerCase().includes(needle)),
+  );
 
   function toggle(id: string) {
     setRecipientIds((current) =>
@@ -60,35 +65,55 @@ function MessageForm({
       }}
     >
       {preselected ? (
-        <p className="text-lg text-ink">
-          <span className="font-semibold">To:</span> {preselected.label}
+        <p className="flex items-center gap-2 text-lg text-ink">
+          <span className="font-semibold">To:</span>
+          <PersonTag
+            name={preselected.label}
+            avatarUrl={preselected.avatarUrl}
+            initials={preselected.initials}
+          />
         </p>
       ) : (
         <fieldset>
           <legend className="mb-2 block text-lg font-semibold text-ink">To</legend>
-          <div className="space-y-4">
-            {grouped.map(([group, options]) => (
-              <div key={group || "_"}>
-                {group ? <p className={`${META.base} mb-2`}>{group}</p> : null}
-                <div className="flex flex-wrap gap-2">
-                  {options.map((contact) => (
-                    <label
-                      key={contact.id}
-                      className="flex cursor-pointer items-center gap-2.5 rounded-full border border-surface-deep bg-paper px-4 py-2 text-lg text-ink-soft transition-colors hover:border-muted-light"
-                    >
-                      <input
-                        type="checkbox"
-                        checked={recipientIds.includes(contact.id)}
-                        onChange={() => toggle(contact.id)}
-                        className="checkbox"
-                      />
-                      {contact.label}
-                    </label>
-                  ))}
+          <SearchField
+            value={query}
+            onChange={setQuery}
+            placeholder="Search by name"
+            className="mb-3"
+          />
+          {grouped.length ? (
+            <div className="space-y-4">
+              {grouped.map(([group, options]) => (
+                <div key={group || "_"}>
+                  {group ? <p className={`${META.base} mb-2`}>{group}</p> : null}
+                  <div className="flex flex-wrap gap-2">
+                    {options.map((contact) => (
+                      <label
+                        key={contact.id}
+                        className="flex cursor-pointer items-center gap-2.5 rounded-full border border-surface-deep bg-paper py-2 pl-3 pr-4 text-lg text-ink-soft transition-colors hover:border-muted-light"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={recipientIds.includes(contact.id)}
+                          onChange={() => toggle(contact.id)}
+                          className="checkbox"
+                        />
+                        <PersonTag
+                          name={contact.label}
+                          avatarUrl={contact.avatarUrl}
+                          initials={contact.initials}
+                          size="xs"
+                        />
+                      </label>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <p className={META.base}>No match for that.</p>
+          )}
         </fieldset>
       )}
 

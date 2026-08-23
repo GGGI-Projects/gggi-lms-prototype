@@ -29,6 +29,7 @@ import {
   PageBody,
   PageHeader,
   Panel,
+  PersonTag,
   PrototypeNote,
   QueueCard,
   Section,
@@ -300,7 +301,16 @@ export default function AdminDashboard() {
                   <Badge tone={LECTURE_STATE_TONE[mod.state]}>
                     {LECTURE_STATE_LABEL[mod.state]}
                   </Badge>
-                  {mod.author ? mod.author.name : "No author recorded"}
+                  {mod.author ? (
+                    <PersonTag
+                      name={mod.author.name}
+                      avatarUrl={mod.author.avatarUrl}
+                      initials={mod.author.initials}
+                      size="xs"
+                    />
+                  ) : (
+                    "No author recorded"
+                  )}
                   {mod.updatedOn ? ` · ${formatDate(mod.updatedOn)}` : null}
                 </p>
               </li>

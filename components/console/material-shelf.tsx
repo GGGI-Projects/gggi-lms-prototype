@@ -6,7 +6,7 @@ import { CARD, META } from "@/lib/theme";
 import { SearchIcon } from "@/components/student-portal/icons";
 import { FilterIcon } from "@/components/console/icons";
 import { KindMark, KIND_LABEL, type LibraryKindKey } from "@/components/console/material-parts";
-import { Badge } from "@/components/student-portal/ui";
+import { Badge, PersonTag } from "@/components/student-portal/ui";
 import type { ConsoleArea } from "@/components/console/nav";
 
 /**
@@ -32,6 +32,8 @@ export type ShelfEntry = {
   groupId: string;
   groupName: string;
   uploadedBy: string;
+  uploadedByAvatarUrl?: string;
+  uploadedByInitials?: string;
   uploadedOn: string;
   uses: number;
   language?: string;
@@ -163,10 +165,22 @@ export function MaterialShelf({
                   <p className={`mt-0.5 truncate ${META.base}`}>
                     {entry.description}
                   </p>
-                  <p className={`mt-1.5 ${META.base}`}>
-                    {entry.groupName}
-                    {entry.size ? ` · ${entry.size}` : null} ·{" "}
-                    {entry.uploadedBy} · {entry.uploadedOn}
+                  <p className={`mt-1.5 flex flex-wrap items-center gap-x-1.5 ${META.base}`}>
+                    <span>
+                      {entry.groupName}
+                      {entry.size ? ` · ${entry.size}` : null} ·
+                    </span>
+                    {entry.uploadedByInitials ? (
+                      <PersonTag
+                        name={entry.uploadedBy}
+                        avatarUrl={entry.uploadedByAvatarUrl}
+                        initials={entry.uploadedByInitials}
+                        size="xs"
+                      />
+                    ) : (
+                      entry.uploadedBy
+                    )}
+                    <span>· {entry.uploadedOn}</span>
                   </p>
                 </div>
 

@@ -17,6 +17,7 @@ import {
   NameCell,
   PageBody,
   PageHeader,
+  PersonTag,
   PrototypeNote,
   Row,
   TableFoot,
@@ -130,14 +131,19 @@ export default function ModulesPage() {
                 </Cell>
                 <Cell hideBelow="lg">
                   {team.length ? (
-                    <span className="flex flex-wrap gap-1.5">
+                    <span className="flex flex-wrap gap-x-3 gap-y-1.5">
                       {team.map((member) => (
                         <Link
                           key={member.id}
                           href={`/admin/lecturers/${member.id}`}
-                          className="link-wipe text-lg text-primary"
+                          className="link-wipe inline-flex text-lg text-primary"
                         >
-                          {member.name}
+                          <PersonTag
+                            name={member.name}
+                            avatarUrl={member.avatarUrl}
+                            initials={member.initials}
+                            size="xs"
+                          />
                         </Link>
                       ))}
                     </span>

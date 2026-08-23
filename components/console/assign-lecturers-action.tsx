@@ -3,7 +3,7 @@
 import { useId, useState } from "react";
 import { ActionButton } from "@/components/ui/action-button";
 import { Drawer } from "@/components/console/drawer";
-import { Avatar } from "@/components/student-portal/ui";
+import { Avatar, SearchField } from "@/components/student-portal/ui";
 import { IfCan, LockedNote } from "@/components/console/permission";
 import { META } from "@/lib/theme";
 import type { Capability } from "@/lib/permissions";
@@ -44,13 +44,19 @@ export function AssignModuleLecturers({
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<string[]>(assigned);
   const [saved, setSaved] = useState(false);
+  const [query, setQuery] = useState("");
   const formId = useId();
 
   const close = () => {
     setOpen(false);
     setSaved(false);
     setSelected(assigned);
+    setQuery("");
   };
+
+  const visibleLecturers = lecturers.filter((lecturer) =>
+    lecturer.name.toLowerCase().includes(query.trim().toLowerCase()),
+  );
 
   const toggle = (id: string) => {
     setSaved(false);
@@ -95,43 +101,53 @@ export function AssignModuleLecturers({
             setSaved(true);
           }}
         >
-          <ul className="space-y-3">
-            {lecturers.map((lecturer) => {
-              const checked = selected.includes(lecturer.id);
-              return (
-                <li key={lecturer.id}>
-                  <label
-                    className={`flex cursor-pointer items-center gap-4 rounded-sm border px-5 py-4 transition-colors duration-300 ${
-                      checked
-                        ? "border-primary bg-tint-mist"
-                        : "border-surface-deep bg-paper hover:border-muted-light"
-                    }`}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={checked}
-                      onChange={() => toggle(lecturer.id)}
-                      className="checkbox"
-                    />
-                    <Avatar
-                      src={lecturer.avatarUrl}
-                      initials={lecturer.initials}
-                      tone="light"
-                      className="size-9 text-sm"
-                    />
-                    <span className="min-w-0 flex-1">
-                      <span className="block truncate text-lg font-semibold text-ink">
-                        {lecturer.name}
+          <SearchField
+            value={query}
+            onChange={setQuery}
+            placeholder="Search lecturers"
+            className="mb-4"
+          />
+          {visibleLecturers.length ? (
+            <ul className="space-y-3">
+              {visibleLecturers.map((lecturer) => {
+                const checked = selected.includes(lecturer.id);
+                return (
+                  <li key={lecturer.id}>
+                    <label
+                      className={`flex cursor-pointer items-center gap-4 rounded-sm border px-5 py-4 transition-colors duration-300 ${
+                        checked
+                          ? "border-primary bg-tint-mist"
+                          : "border-surface-deep bg-paper hover:border-muted-light"
+                      }`}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        onChange={() => toggle(lecturer.id)}
+                        className="checkbox"
+                      />
+                      <Avatar
+                        src={lecturer.avatarUrl}
+                        initials={lecturer.initials}
+                        tone="light"
+                        className="size-9 text-sm"
+                      />
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate text-lg font-semibold text-ink">
+                          {lecturer.name}
+                        </span>
+                        <span className={`block truncate ${META.base}`}>
+                          {lecturer.title}
+                        </span>
                       </span>
-                      <span className={`block truncate ${META.base}`}>
-                        {lecturer.title}
-                      </span>
-                    </span>
-                  </label>
-                </li>
-              );
-            })}
-          </ul>
+                    </label>
+                  </li>
+                );
+              })}
+            </ul>
+          ) : (
+            <p className={META.base}>No lecturer matches that.</p>
+          )}
 
           {saved ? (
             <p

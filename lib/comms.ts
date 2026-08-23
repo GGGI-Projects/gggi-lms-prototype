@@ -100,6 +100,13 @@ export function partyInitials(party: Party): string {
   return studentById(party.id)?.initials ?? "?";
 }
 
+/** `Avatar`'s `src` for either kind of party - `undefined` falls back to the
+ *  initials it already knows how to draw. */
+export function partyAvatarUrl(party: Party): string | undefined {
+  if (party.kind === "staff") return staffById(party.id)?.avatarUrl;
+  return studentById(party.id)?.avatarUrl;
+}
+
 export function threadById(id: string): MessageThread | undefined {
   return THREADS.find((thread) => thread.id === id);
 }
@@ -184,14 +191,34 @@ export function feedNeedsAttention(items: FeedItem[]): boolean {
 
 /* ------------------------------------------------------- compose targets */
 
+/** One selectable person - a lecturer or a student - on an audience or
+ *  contact picker. Carries the same face `PersonTag` draws everywhere else a
+ *  name shows, so a picker chip is never just a bare label. */
+export type PersonOption = {
+  id: string;
+  label: string;
+  avatarUrl?: string;
+  initials: string;
+};
+
 /** Every lecturer, for an administrator's audience picker. */
-export function lecturerOptions(): { id: string; label: string }[] {
-  return lecturers().map((member) => ({ id: member.id, label: member.name }));
+export function lecturerOptions(): PersonOption[] {
+  return lecturers().map((member) => ({
+    id: member.id,
+    label: member.name,
+    avatarUrl: member.avatarUrl,
+    initials: member.initials,
+  }));
 }
 
 /** Every student in the register sample, for an administrator's picker. */
-export function studentOptions(): { id: string; label: string }[] {
-  return students().map((student) => ({ id: student.id, label: student.name }));
+export function studentOptions(): PersonOption[] {
+  return students().map((student) => ({
+    id: student.id,
+    label: student.name,
+    avatarUrl: student.avatarUrl,
+    initials: student.initials,
+  }));
 }
 
 /** The lecturers teaching a student's own modules - who they may message,
@@ -236,6 +263,11 @@ export type NotificationSummary = {
   id: string;
   kind: "announcement" | "message";
   from: string;
+  /** The sender's (announcement) or other party's (message) face - the bell
+   *  preview shows this instead of a generic kind icon, same rule as every
+   *  other place a name shows. */
+  fromAvatarUrl?: string;
+  fromInitials: string;
   headline: string;
   snippet: string;
   date: string;
@@ -258,10 +290,13 @@ export function summariseFeed(
 ): NotificationSummary[] {
   return items.map((item) => {
     if (item.kind === "announcement") {
+      const sender = staffById(item.announcement.from);
       return {
         id: item.announcement.id,
         kind: "announcement" as const,
-        from: staffName(item.announcement.from),
+        from: sender?.name ?? item.announcement.from,
+        fromAvatarUrl: sender?.avatarUrl,
+        fromInitials: sender?.initials ?? "?",
         headline: item.announcement.title,
         snippet: truncate(item.announcement.body),
         date: item.date,
@@ -277,6 +312,8 @@ export function summariseFeed(
       id: item.thread.id,
       kind: "message" as const,
       from: partyName(other),
+      fromAvatarUrl: partyAvatarUrl(other),
+      fromInitials: partyInitials(other),
       headline: `Message from ${partyName(other)}`,
       snippet: truncate(last.body),
       date: item.date,
@@ -296,10 +333,11 @@ export function summariseFeed(
  */
 export type AnnouncementScope =
   | { kind: "all-lecturers"; label: string }
-  | { kind: "lecturers"; label: string; options: { id: string; label: string }[] }
+  | { kind: "lecturers"; label: string; options: PersonOption[] }
   | { kind: "all-students"; label: string }
   | { kind: "own-students"; label: string }
-  | { kind: "students"; label: string; options: { id: string; label: string }[] }
+  | { kind: "students"; label: string; options: PersonOption[] }
+  // A module isn't a person - no avatar on this one's options.
   | { kind: "module"; label: string; options: { id: string; label: string }[] };
 
 export function moduleOptions(): { id: string; label: string }[] {
@@ -325,6 +363,8 @@ export function announcementScopesForLecturer(member: StaffMember): Announcement
   const ownStudents = learnersFor(member).map((student) => ({
     id: student.id,
     label: student.name,
+    avatarUrl: student.avatarUrl,
+    initials: student.initials,
   }));
 
   const scopes: AnnouncementScope[] = [{ kind: "own-students", label: "All my students" }];
@@ -339,7 +379,7 @@ export function announcementScopesForLecturer(member: StaffMember): Announcement
 
 /* ------------------------------------------------------ composing a message */
 
-export type ContactOption = { id: string; label: string; group?: string };
+export type ContactOption = PersonOption & { group?: string };
 
 /** An administrator may open a new conversation with any lecturer or any
  *  student. */
@@ -355,8 +395,18 @@ export function messageContactsForAdmin(): ContactOption[] {
 export function messageContactsForLecturer(member: StaffMember): ContactOption[] {
   const admin = adminContactFor(member);
   return [
-    { id: admin.id, label: `${admin.name} (administrator)` },
-    ...learnersFor(member).map((student) => ({ id: student.id, label: student.name })),
+    {
+      id: admin.id,
+      label: `${admin.name} (administrator)`,
+      avatarUrl: admin.avatarUrl,
+      initials: admin.initials,
+    },
+    ...learnersFor(member).map((student) => ({
+      id: student.id,
+      label: student.name,
+      avatarUrl: student.avatarUrl,
+      initials: student.initials,
+    })),
   ];
 }
 
@@ -366,6 +416,8 @@ export function messageContactsForStudent(student: StudentRecord): ContactOption
   return lecturersForStudent(student).map((lecturer) => ({
     id: lecturer.id,
     label: lecturer.name,
+    avatarUrl: lecturer.avatarUrl,
+    initials: lecturer.initials,
   }));
 }
 
@@ -376,6 +428,11 @@ export type AnnouncementView = {
   title: string;
   body: string;
   from: string;
+  /** `Avatar`'s `src`/`initials` for the sender - an announcement is always
+   *  from a staff member, so this is never the "unknown learner" fallback
+   *  `partyAvatarUrl`/`partyInitials` carry for a party of unknown kind. */
+  fromAvatarUrl?: string;
+  fromInitials: string;
   audience: string;
   date: string;
   isNew: boolean;
@@ -384,7 +441,13 @@ export type AnnouncementView = {
   sentByMe: boolean;
 };
 
-export type MessageView = { thread: MessageThread; otherName: string; unread: boolean };
+export type MessageView = {
+  thread: MessageThread;
+  otherName: string;
+  otherAvatarUrl?: string;
+  otherInitials: string;
+  unread: boolean;
+};
 
 export type FeedView = { announcements: AnnouncementView[]; messages: MessageView[] };
 
@@ -403,11 +466,14 @@ export function feedViewForStaff(member: StaffMember): FeedView {
       .map((item) => {
         const announcement = item.announcement;
         const sentByMe = announcement.from === member.id;
+        const sender = staffById(announcement.from);
         return {
           id: announcement.id,
           title: announcement.title,
           body: announcement.body,
-          from: staffName(announcement.from),
+          from: sender?.name ?? announcement.from,
+          fromAvatarUrl: sender?.avatarUrl,
+          fromInitials: sender?.initials ?? "?",
           audience: audienceLabel(announcement.audience),
           date: announcement.sentOn,
           // Never "new" to the account that sent it - same reasoning as
@@ -418,11 +484,16 @@ export function feedViewForStaff(member: StaffMember): FeedView {
       }),
     messages: feed
       .filter((item) => item.kind === "message")
-      .map((item) => ({
-        thread: item.thread,
-        otherName: partyName(otherParty(item.thread, member.id)),
-        unread: item.unread,
-      })),
+      .map((item) => {
+        const other = otherParty(item.thread, member.id);
+        return {
+          thread: item.thread,
+          otherName: partyName(other),
+          otherAvatarUrl: partyAvatarUrl(other),
+          otherInitials: partyInitials(other),
+          unread: item.unread,
+        };
+      }),
   };
 }
 
@@ -436,11 +507,14 @@ export function feedViewForStudent(
       .filter((item) => item.kind === "announcement")
       .map((item) => {
         const announcement = item.announcement;
+        const sender = staffById(announcement.from);
         return {
           id: announcement.id,
           title: announcement.title,
           body: announcement.body,
-          from: staffName(announcement.from),
+          from: sender?.name ?? announcement.from,
+          fromAvatarUrl: sender?.avatarUrl,
+          fromInitials: sender?.initials ?? "?",
           audience: audienceLabel(announcement.audience),
           date: announcement.sentOn,
           isNew: Boolean(announcement.isNew),
@@ -450,11 +524,16 @@ export function feedViewForStudent(
       }),
     messages: feed
       .filter((item) => item.kind === "message")
-      .map((item) => ({
-        thread: item.thread,
-        otherName: partyName(otherParty(item.thread, studentId)),
-        unread: item.unread,
-      })),
+      .map((item) => {
+        const other = otherParty(item.thread, studentId);
+        return {
+          thread: item.thread,
+          otherName: partyName(other),
+          otherAvatarUrl: partyAvatarUrl(other),
+          otherInitials: partyInitials(other),
+          unread: item.unread,
+        };
+      }),
   };
 }
 
