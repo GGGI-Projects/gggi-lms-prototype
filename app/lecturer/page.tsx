@@ -92,12 +92,6 @@ export default function LecturerDashboard() {
                 done="Prototype - no file was produced."
               />
             </div>
-            <div>
-              <Link href="/lecturer/lectures" className="link-wipe self-end text-lg font-semibold text-primary">
-                <span aria-hidden="true" className="btn-wave" />
-                <span className="btn-label">Your lectures</span>
-              </Link>
-            </div>
           </div>
         }
       />
@@ -105,7 +99,7 @@ export default function LecturerDashboard() {
       {
         !load.modules.length ? (
           <div className={CONSOLE.stack}>
-            <Callout tone="info" title="Waiting for an assignment">
+            <Callout tone="info" title="Waiting for a module">
               An administrator has to assign you a module before you can write
               anything. Until then this console is empty, and that is the platform
               working correctly rather than a fault.
@@ -179,14 +173,6 @@ export default function LecturerDashboard() {
             title="What is waiting on you"
             description="Everything of yours that is not yet in front of a learner."
             className={CONSOLE.stack}
-            action={
-              <Link
-                href="/lecturer/lectures"
-                className="link-wipe text-lg font-semibold text-primary"
-              >
-                All lectures
-              </Link>
-            }
           >
             <ul className="divide-y divide-surface-deep rounded-sm border border-surface-deep bg-paper-raised">
               {outstanding.map((mod) => (
@@ -224,14 +210,6 @@ export default function LecturerDashboard() {
         <Section
           title="Your modules"
           className="lg:col-span-2"
-          action={
-            <Link
-              href="/lecturer/modules"
-              className="link-wipe text-lg font-semibold text-primary"
-            >
-              All modules
-            </Link>
-          }
         >
           <ul className="space-y-4">
             {load.modules.map((mdl) => {
@@ -281,14 +259,6 @@ export default function LecturerDashboard() {
 
         <Section
           title="What learners said"
-          action={
-            <Link
-              href="/lecturer/modules"
-              className="link-wipe text-sm font-semibold text-primary"
-            >
-              By module
-            </Link>
-          }
         >
           {reviews.length ? (
             <ul className="space-y-3">
@@ -328,14 +298,6 @@ export default function LecturerDashboard() {
       <div className={`${CONSOLE.stack} grid gap-4 lg:grid-cols-2`}>
         <Section
           title="How the quizzes are doing"
-          action={
-            <Link
-              href="/lecturer/quizzes"
-              className="link-wipe text-lg font-semibold text-primary"
-            >
-              All quizzes
-            </Link>
-          }
         >
           {quizzes.some((quiz) => quiz.stats) ? (
             <ul className="divide-y divide-surface-deep rounded-sm border border-surface-deep bg-paper-raised">
@@ -384,14 +346,6 @@ export default function LecturerDashboard() {
 
         <Section
           title="Your learners"
-          action={
-            <Link
-              href="/lecturer/learners"
-              className="link-wipe text-lg font-semibold text-primary"
-            >
-              All learners
-            </Link>
-          }
         >
           <Panel>
             <p className={BODY.base}>

@@ -137,7 +137,7 @@ export default function LecturersPage() {
           hint="written by this team"
         />
         <MetricCard
-          label="Awaiting assignment"
+          label="Awaiting a module"
           value={unassignedCount}
           hint="cannot author anything yet"
           goodWhen="down"

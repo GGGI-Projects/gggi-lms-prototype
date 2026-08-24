@@ -316,11 +316,10 @@ export function AssignModules({
             return (
               <li key={mdl.id}>
                 <label
-                  className={`flex cursor-pointer items-start gap-4 rounded-sm border px-5 py-4 transition-colors duration-300 ${
-                    checked
+                  className={`flex cursor-pointer items-start gap-4 rounded-sm border px-5 py-4 transition-colors duration-300 ${checked
                       ? "border-primary bg-tint-mist"
                       : "border-surface-deep bg-paper hover:border-muted-light"
-                  } ${disabled ? "cursor-not-allowed opacity-60" : ""}`}
+                    } ${disabled ? "cursor-not-allowed opacity-60" : ""}`}
                 >
                   <input
                     type="checkbox"
@@ -363,13 +362,13 @@ export function AssignModules({
           size="sm"
           onClick={() => !disabled && setSaved(true)}
         >
-          Save assignments
+          Save
         </ActionButton>
       </div>
 
       {saved ? (
         <DoneNote>
-          Prototype - {lecturer}&rsquo;s assignments are unchanged, and no
+          Prototype - {lecturer}&rsquo;s modules are unchanged, and no
           notification was sent.
         </DoneNote>
       ) : null}
@@ -428,12 +427,12 @@ export function InviteForm({
   const missing =
     kind === "lecturer"
       ? [
-          !bio.trim() && "a bio",
-          !qualifications.length && "a qualification",
-          !experience.length && "an experience entry",
-          !publications.length && "a publication",
-          !achievements.length && "an achievement",
-        ].filter((entry): entry is string => Boolean(entry))
+        !bio.trim() && "a bio",
+        !qualifications.length && "a qualification",
+        !experience.length && "an experience entry",
+        !publications.length && "a publication",
+        !achievements.length && "an achievement",
+      ].filter((entry): entry is string => Boolean(entry))
       : [];
 
   return (
@@ -868,11 +867,10 @@ export function StateControl({
           return (
             <li key={state.value}>
               <label
-                className={`flex cursor-pointer items-start gap-3.5 rounded-sm border px-4 py-3 transition-colors duration-300 ${
-                  active
+                className={`flex cursor-pointer items-start gap-3.5 rounded-sm border px-4 py-3 transition-colors duration-300 ${active
                     ? "border-primary bg-tint-mist"
                     : "border-surface-deep bg-paper hover:border-muted-light"
-                } ${disabled ? "cursor-not-allowed opacity-60" : ""}`}
+                  } ${disabled ? "cursor-not-allowed opacity-60" : ""}`}
               >
                 <input
                   type="radio"
@@ -887,9 +885,8 @@ export function StateControl({
                 />
                 <span
                   aria-hidden="true"
-                  className={`mt-1 grid size-5 shrink-0 place-items-center rounded-full border-2 ${
-                    active ? "border-primary bg-primary" : "border-muted-light"
-                  }`}
+                  className={`mt-1 grid size-5 shrink-0 place-items-center rounded-full border-2 ${active ? "border-primary bg-primary" : "border-muted-light"
+                    }`}
                 >
                   <span className="size-1.5 rounded-full bg-paper" />
                 </span>

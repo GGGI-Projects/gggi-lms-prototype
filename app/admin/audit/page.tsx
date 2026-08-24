@@ -55,7 +55,7 @@ const ACTION_TONE: Record<string, BadgeTone> = {
   role: "warn",
   module: "done",
   lecture: "done",
-  assignment: "info",
+  roster: "info",
   review: "neutral",
   certificate: "warn",
   settings: "warn",

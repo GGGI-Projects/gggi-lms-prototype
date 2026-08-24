@@ -450,7 +450,7 @@ export type AuditAction =
   | "module.published"
   | "module.updated"
   | "lecture.published"
-  | "assignment.changed"
+  | "roster.changed"
   | "review.published"
   | "review.rejected"
   | "certificate.revoked"
@@ -542,7 +542,7 @@ export const AUDIT: AuditEntry[] = [
   {
     id: "log-212",
     actorId: "staff-admin-1",
-    action: "assignment.changed",
+    action: "roster.changed",
     target: "Anoma Herath",
     detail: "Assigned to Green Buildings & Efficient Cooling",
     at: "2026-07-06T13:02",
@@ -622,7 +622,7 @@ export const AUDIT: AuditEntry[] = [
   {
     id: "log-202",
     actorId: "staff-admin-1",
-    action: "assignment.changed",
+    action: "roster.changed",
     target: "Tharindu Bandara",
     detail: "Assigned to Gender-Responsive Budgeting",
     at: "2026-01-19T09:31",

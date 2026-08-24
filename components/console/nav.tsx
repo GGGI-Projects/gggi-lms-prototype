@@ -74,14 +74,14 @@ const ADMIN_NAV: NavGroup[] = [
   {
     label: "People",
     items: [
-      { href: "/admin/students", label: "Students", icon: StudentsIcon },
-      { href: "/admin/lecturers", label: "Lecturers", icon: LecturerIcon },
       {
         href: "/admin/team",
         label: "Administrators",
         icon: TeamIcon,
         capability: "manageAdmins",
       },
+      { href: "/admin/lecturers", label: "Lecturers", icon: LecturerIcon },
+      { href: "/admin/students", label: "Students", icon: StudentsIcon },
     ],
   },
   {

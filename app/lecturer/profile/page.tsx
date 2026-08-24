@@ -228,7 +228,7 @@ export default function LecturerProfilePage() {
         <aside className="min-w-0 space-y-4">
           <Panel>
             <h2 className="font-display text-2xl tracking-tight text-ink">
-              Your assignments
+              Your modules
             </h2>
             <p className={`mt-2 ${BODY.base}`}>
               Set by an administrator. If something is missing here, ask{" "}

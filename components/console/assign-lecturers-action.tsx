@@ -90,7 +90,7 @@ export function AssignModuleLecturers({
         size="sm"
         footer={
           <ActionButton type="submit" form={formId} variant="solid" size="sm">
-            Save assignment
+            Save
           </ActionButton>
         }
       >
@@ -114,11 +114,10 @@ export function AssignModuleLecturers({
                 return (
                   <li key={lecturer.id}>
                     <label
-                      className={`flex cursor-pointer items-center gap-4 rounded-sm border px-5 py-4 transition-colors duration-300 ${
-                        checked
+                      className={`flex cursor-pointer items-center gap-4 rounded-sm border px-5 py-4 transition-colors duration-300 ${checked
                           ? "border-primary bg-tint-mist"
                           : "border-surface-deep bg-paper hover:border-muted-light"
-                      }`}
+                        }`}
                     >
                       <input
                         type="checkbox"

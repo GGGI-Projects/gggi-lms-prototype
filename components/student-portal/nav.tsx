@@ -18,7 +18,6 @@ import {
   DashboardIcon,
   ProfileIcon,
   ModulesIcon,
-  QuizIcon,
   SettingsIcon,
 } from "@/components/student-portal/icons";
 
@@ -40,7 +39,6 @@ export const PORTAL_NAV: { label: string; items: NavItem[] }[] = [
     items: [
       { href: "/dashboard", label: "Dashboard", icon: DashboardIcon, exact: true },
       { href: "/modules", label: "Modules", icon: ModulesIcon },
-      { href: "/quizzes", label: "Quizzes", icon: QuizIcon },
       { href: "/certificates", label: "Certificates", icon: CertificateIcon },
     ],
   },

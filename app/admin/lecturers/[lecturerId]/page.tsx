@@ -155,7 +155,7 @@ export default async function LecturerPage({ params }: Params) {
       <div className={`${CONSOLE.stack} grid gap-4 lg:grid-cols-3`}>
         <div className="min-w-0 space-y-10 lg:col-span-2">
           <Section
-            title="Module assignments"
+            title="Assigned modules"
             description="What this lecturer may write. Changing it takes effect immediately and is recorded in the audit log."
           >
             <IfCan

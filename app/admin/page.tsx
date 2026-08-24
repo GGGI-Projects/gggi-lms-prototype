@@ -81,14 +81,6 @@ export default function AdminDashboard() {
                 done="Prototype - no file was produced."
               />
             </div>
-            <div>
-              <Link
-                href="/admin/modules"
-                className="link-wipe self-end text-lg font-semibold text-primary"
-              >
-                Manage modules
-              </Link>
-            </div>
           </div>
         }
       />
