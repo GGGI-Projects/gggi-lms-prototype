@@ -25,7 +25,7 @@ import { BODY, EYEBROW, HEADING, META } from "@/lib/theme";
  * feel assembled from parts.
  *
  * Nothing submits anywhere. Each form says so after a save rather than
- * silently doing nothing - the same choice `<SignupForm>` makes.
+ * silently doing nothing - the same choice `<RegisterForm>` makes.
  */
 
 /* ---------------------------------------------------------------- shared */

@@ -15,6 +15,7 @@ export function RailLink({
   label,
   icon: Icon,
   active,
+  showActiveBar = true,
   lockedNote,
   lockIcon: LockIcon,
 }: {
@@ -22,6 +23,16 @@ export function RailLink({
   label: string;
   icon: ComponentType<{ className?: string }>;
   active: boolean;
+  /**
+   * Whether an active state draws the accent bar down its left edge. A row
+   * with sub-menu entries of its own (the portal's "Learn") stays `active`
+   * for the bold/tinted background whenever the learner is anywhere under
+   * it - the bar itself, though, is reserved for the one row that is
+   * actually the current page: the specific child, or a childless entry
+   * like "Laws"/"Certificates". Two rows both carrying it at once would
+   * read as two current pages, not one.
+   */
+  showActiveBar?: boolean;
   /** Screen-reader text for a capability the viewpoint lacks. Its presence
    *  alone decides whether the padlock renders. */
   lockedNote?: string;
@@ -42,7 +53,7 @@ export function RailLink({
       <span
         aria-hidden="true"
         className={`absolute left-0 top-1/2 h-6 w-[3px] -translate-y-1/2 rounded-full bg-accent transition-opacity duration-300 ${
-          active ? "opacity-100" : "opacity-0"
+          active && showActiveBar ? "opacity-100" : "opacity-0"
         }`}
       />
       <Icon

@@ -1,0 +1,440 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { ActionButton } from "@/components/ui/action-button";
+import { ModuleScene } from "@/components/art/scenes";
+import { LectureRow } from "@/components/student-portal/lecture-row";
+import { LecturerSection } from "@/components/student-portal/lecturer-link";
+import { LawRow, ToolRow } from "@/components/student-portal/reference-row";
+import {
+  Badge,
+  DefinitionList,
+  EmptyState,
+  PageBody,
+  PageHeader,
+  Panel,
+  ProgressBar,
+  ProgressRing,
+  Section,
+} from "@/components/student-portal/ui";
+import {
+  ArrowRightIcon,
+  CertificateIcon,
+  CheckIcon,
+  QuizIcon,
+} from "@/components/student-portal/icons";
+import { MODULES } from "@/content/site";
+import type { StaffMember } from "@/content/staff";
+import { consoleLectures } from "@/lib/admin";
+import { relatedPoolForModule } from "@/lib/laws-tools";
+import {
+  formatDate,
+  formatDuration,
+  blankStatus,
+  hasBlankQuestions,
+  lectureState,
+  progressFor,
+  quizStatus,
+} from "@/lib/portal";
+import { BODY, EYEBROW, HEADING, META } from "@/lib/theme";
+
+type Params = { params: Promise<{ moduleId: string }> };
+
+/** All five are known at build time, so all five are prerendered. */
+export function generateStaticParams() {
+  return MODULES.map((mdl) => ({ moduleId: mdl.id }));
+}
+
+export async function generateMetadata({ params }: Params): Promise<Metadata> {
+  const { moduleId } = await params;
+  const mdl = MODULES.find((entry) => entry.id === moduleId);
+  if (!mdl) return { title: "Module not found" };
+
+  return { title: mdl.title, description: mdl.summary };
+}
+
+/**
+ * A single module, from the inside.
+ *
+ * The page answers three questions in the order they get asked: where am I in
+ * this, what is in it, and what do I get at the end. So the progress panel is
+ * pinned beside the contents rather than sitting above them - a learner
+ * scrolling a ten-lecture list should not have to scroll back up to see how far
+ * through it they are.
+ *
+ * The contents list is the page. Everything else is framing, and it is kept
+ * short enough that the first lecture row is visible without scrolling on a
+ * laptop.
+ */
+export default async function ModulePage({ params }: Params) {
+  const { moduleId } = await params;
+  const progress = progressFor(moduleId);
+
+  // An unknown id is a 404 rather than an empty page. The prototype has five
+  // modules and a hand-typed URL is the only way to get here otherwise.
+  if (!progress) notFound();
+
+  const { module: mdl, lectures, enrolment, status, nextLecture, certificate } =
+    progress;
+
+  // Who actually teaches this module - derived from the same per-lecture
+  // authorship the lecture page's own byline reads (`consoleLectures()`),
+  // deduplicated, so this list can never name someone who hasn't actually
+  // written anything here and can never disagree with a lecture's byline.
+  const moduleLecturers = Array.from(
+    new Map(
+      consoleLectures(mdl.id)
+        .map((entry) => entry.author)
+        .filter((author): author is StaffMember => Boolean(author))
+        .map((author) => [author.id, author] as const),
+    ).values(),
+  );
+
+  // Every published Law and Tool sharing at least one dynamic-option tag
+  // with this Module (see BR-26) - never hand-linked, so tagging a Law
+  // differently is the only way this list changes.
+  const relatedPool = relatedPoolForModule(mdl.id);
+
+  const done = status === "completed";
+  // A FINISHED MODULE'S CALL TO ACTION IS A REVIEW, NOT A RESTART. The
+  // module contents list right below already lets a learner open any
+  // lecture they want, so a dedicated "back to lecture one" button added
+  // nothing a completed module didn't already offer - and the one thing it
+  // couldn't do yet, from here, was invite the review a certificate page
+  // has a form for. Certain, not merely likely, that `certificate` exists
+  // whenever `done` is true: marking a module's last lecture complete is
+  // itself gated on every quiz (and fill-in-the-blank set) being passed -
+  // see `lectureGateCleared()`/`<CompleteButton>` - which is the platform's
+  // own condition for issuing one. The `lectures[0]` fallback below exists
+  // only for the data-authoring mistake that invariant is meant to prevent,
+  // never a state a learner should actually be able to reach.
+  const reviewHref = certificate ? `/learn/certificates/${certificate.id}#review` : undefined;
+  const resumeHref = nextLecture
+    ? `/learn/modules/${mdl.id}/lectures/${nextLecture.id}`
+    : (reviewHref ?? `/learn/modules/${mdl.id}/lectures/${lectures[0].id}`);
+  const completedLabel = certificate ? "Rate and review" : "Review";
+
+  return (
+    <PageBody>
+      <PageHeader
+        back={{ href: "/learn/modules", label: "All modules" }}
+        eyebrow={`Module ${mdl.number}`}
+        title={mdl.title}
+        lead={mdl.summary}
+        actions={
+          <ActionButton href={resumeHref} variant="solid" size="sm" className="group">
+            {done ? completedLabel : progress.enrolled ? "Resume" : "Enrol and start"}
+            <ArrowRightIcon className="size-4 transition-transform duration-500 ease-out-expo group-hover:translate-x-1" />
+          </ActionButton>
+        }
+      />
+
+      <div className="mt-10 grid gap-10 lg:grid-cols-12">
+        {/* ------------------------------------------------------- main */}
+        <div className="min-w-0 lg:col-span-8">
+          <ModuleScene
+            scene={mdl.scene}
+            className="h-40 w-full rounded-md object-cover sm:h-52"
+          />
+
+          <div className="mt-6 flex flex-wrap items-center gap-2">
+            <Badge>{mdl.level}</Badge>
+            <Badge>{lectures.length} lectures</Badge>
+            <Badge>{formatDuration(progress.minutesTotal)} of material</Badge>
+            <Badge tone="info">Free · self-paced</Badge>
+          </div>
+
+          <section className="mt-10">
+            <h2 className={HEADING.card}>What you will cover</h2>
+            <ul className="mt-5 grid gap-x-8 gap-y-3 sm:grid-cols-2">
+              {mdl.topics.map((topic) => (
+                <li key={topic} className={`flex items-start gap-3 ${BODY.base}`}>
+                  <span className="mt-[0.55rem] size-1.5 shrink-0 rounded-full bg-accent" />
+                  {topic}
+                </li>
+              ))}
+            </ul>
+          </section>
+
+          <LecturerSection
+            heading={moduleLecturers.length === 1 ? "Your lecturer" : "Your lecturers"}
+            lecturers={moduleLecturers}
+            className="mt-12"
+          />
+
+          <section className="mt-12">
+            <div className="flex flex-wrap items-end justify-between gap-4">
+              <h2 className={HEADING.card}>Module contents</h2>
+              <p className={META.base}>
+                {progress.completedCount} of {lectures.length} completed
+              </p>
+            </div>
+
+            <div className="mt-6 overflow-hidden rounded-sm border border-surface-deep bg-paper-raised">
+              <div className="divide-y divide-surface-deep">
+                {lectures.map((lecture) => (
+                  <LectureRow
+                    key={lecture.id}
+                    moduleId={mdl.id}
+                    lecture={lecture}
+                    state={lectureState(progress, lecture.id)}
+                    quiz={quizStatus(mdl.id, lecture.id)}
+                    score={enrolment?.quizScores[lecture.id]}
+                    hasBlanks={hasBlankQuestions(lecture.id)}
+                    blanks={blankStatus(mdl.id, lecture.id)}
+                  />
+                ))}
+              </div>
+            </div>
+          </section>
+
+          {/* LAWS AND TOOLS ARE TWO SEPARATE LIBRARIES, never one merged
+              list - a Laws Administrator and a Tools Administrator each own
+              their own shelf (docs/SRS.md §4.30, §4.31), and a learner
+              scanning for "is there a law about this" should not have to
+              pick law rows out from between tool rows to answer it. Each
+              gets its own section, its own heading, and its own link out to
+              its own tab - the same "linked, not copied" rule already
+              governing this relationship (FR-STU-530/620). */}
+          <Section
+            className="mt-12"
+            title="Related laws"
+            description="Every published law sharing a hazard or category tag with this module - the same tags a Laws Administrator sets on it (BR-26)."
+            action={
+              <Link
+                href="/laws"
+                className="link-wipe inline-flex items-center gap-1.5 text-lg font-semibold text-primary"
+              >
+                Browse all laws
+                <ArrowRightIcon className="size-4" />
+              </Link>
+            }
+          >
+            {relatedPool.laws.length ? (
+              <div className="overflow-hidden rounded-sm border border-surface-deep bg-paper-raised divide-y divide-surface-deep">
+                {relatedPool.laws.map((law) => (
+                  <LawRow key={law.id} law={law} />
+                ))}
+              </div>
+            ) : (
+              <EmptyState
+                title="No law tagged to this module yet"
+                body="A law appears here the moment it shares a hazard or category tag with this module - there is nothing to link by hand."
+              />
+            )}
+          </Section>
+
+          <Section
+            className="mt-12"
+            title="Related tools"
+            description="Every published tool sharing a hazard or category tag with this module."
+            action={
+              <Link
+                href="/tools"
+                className="link-wipe inline-flex items-center gap-1.5 text-lg font-semibold text-primary"
+              >
+                Browse all tools
+                <ArrowRightIcon className="size-4" />
+              </Link>
+            }
+          >
+            {relatedPool.tools.length ? (
+              <div className="overflow-hidden rounded-sm border border-surface-deep bg-paper-raised divide-y divide-surface-deep">
+                {relatedPool.tools.map((tool) => (
+                  <ToolRow key={tool.id} tool={tool} />
+                ))}
+              </div>
+            ) : (
+              <EmptyState
+                title="No tool tagged to this module yet"
+                body="A tool appears here the moment it shares a hazard or category tag with this module - there is nothing to link by hand."
+              />
+            )}
+          </Section>
+        </div>
+
+        {/* ------------------------------------------------------ aside */}
+        <aside className="lg:col-span-4">
+          <div className="space-y-6 lg:sticky lg:top-[calc(var(--header-h)+1.5rem)]">
+            <Panel>
+              <div className="flex items-center gap-5">
+                <ProgressRing
+                  percent={progress.percent}
+                  label={mdl.title}
+                  size={64}
+                />
+                <div className="min-w-0">
+                  <p className={EYEBROW.muted}>Your progress</p>
+                  <p className="mt-2 text-lg font-semibold leading-snug text-ink">
+                    {done
+                      ? "Module complete"
+                      : progress.enrolled
+                        ? `${progress.completedCount} of ${lectures.length} lectures`
+                        : "Not started yet"}
+                  </p>
+                </div>
+              </div>
+
+              <ProgressBar
+                percent={progress.percent}
+                label={`${mdl.title} progress`}
+                className="mt-6"
+              />
+
+              <dl className="mt-6 grid grid-cols-2 gap-4 border-t border-surface-deep pt-5">
+                <div>
+                  <dt className={META.base}>Time studied</dt>
+                  <dd className="mt-1 font-display text-lg text-ink">
+                    {formatDuration(progress.minutesDone)}
+                  </dd>
+                </div>
+                <div>
+                  <dt className={META.base}>Time remaining</dt>
+                  <dd className="mt-1 font-display text-lg text-ink">
+                    {formatDuration(
+                      progress.minutesTotal - progress.minutesDone,
+                    )}
+                  </dd>
+                </div>
+              </dl>
+
+              <div className="mt-6">
+                <ActionButton
+                  href={resumeHref}
+                  variant="solid"
+                  size="sm"
+                  className="group w-full"
+                >
+                  {done ? completedLabel : progress.enrolled ? "Resume" : "Start lecture 01"}
+                  <ArrowRightIcon className="size-4 transition-transform duration-500 ease-out-expo group-hover:translate-x-1" />
+                </ActionButton>
+              </div>
+            </Panel>
+
+            <CertificatePanel
+              moduleTitle={mdl.title}
+              certificateHref={certificate ? `/learn/certificates/${certificate.id}` : undefined}
+              reference={certificate?.reference}
+              issuedOn={certificate?.issuedOn}
+              lecturesLeft={lectures.length - progress.completedCount}
+              quizzesLeft={
+                lectures.length - progress.quizzesPassed
+              }
+            />
+
+            <Panel>
+              <p className={EYEBROW.muted}>Module facts</p>
+              <DefinitionList
+                className="mt-4"
+                items={[
+                  { term: "Level", value: mdl.level },
+                  { term: "Lectures", value: lectures.length },
+                  {
+                    term: "Material",
+                    value: formatDuration(progress.minutesTotal),
+                  },
+                  { term: "Quizzes", value: `${lectures.length} · unlimited attempts` },
+                  { term: "Cost", value: "Free" },
+                  {
+                    term: "Enrolled",
+                    value: enrolment ? formatDate(enrolment.enrolledOn) : "Not yet",
+                  },
+                ]}
+              />
+            </Panel>
+          </div>
+        </aside>
+      </div>
+    </PageBody>
+  );
+}
+
+/**
+ * The credential, stated as a condition rather than a promise.
+ *
+ * Before it is earned this panel says exactly what is left - so many lectures,
+ * so many quizzes - because "keep going!" is not information. After it is
+ * earned it becomes the link to the certificate itself.
+ */
+function CertificatePanel({
+  moduleTitle,
+  certificateHref,
+  reference,
+  issuedOn,
+  lecturesLeft,
+  quizzesLeft,
+}: {
+  moduleTitle: string;
+  certificateHref?: string;
+  reference?: string;
+  issuedOn?: string;
+  lecturesLeft: number;
+  quizzesLeft: number;
+}) {
+  if (certificateHref) {
+    return (
+      // THE WHOLE CARD IS THE LINK, not just the "View certificate" line -
+      // a learner who earned a certificate has one reason to be looking at
+      // this panel. "View certificate" is a `<span>` styled as a button
+      // rather than a nested `<Link>`, both because a link inside a link is
+      // invalid HTML and because a pill that visibly matches every other
+      // solid button on the platform (`.btn-solid`'s own accent/ink pair)
+      // reads as far more clickable than the plain text line it replaces.
+      <Link
+        href={certificateHref}
+        className="group relative isolate block overflow-hidden rounded-sm bg-primary-950 px-7 py-7 text-tint transition-colors duration-300 hover:bg-primary-900"
+      >
+        <p className={EYEBROW.onDark}>Certificate earned</p>
+        <p className="mt-4 text-lg leading-relaxed">
+          You completed {moduleTitle} - every quiz, and every
+          fill-in-the-blank question along with it, passed.
+        </p>
+        <p className="mt-4 font-display text-lg tracking-tight text-paper">
+          {reference}
+        </p>
+        <p className="mt-1 text-sm text-primary-500">
+          Issued {issuedOn ? formatDate(issuedOn) : null}
+        </p>
+        <span className="mt-5 inline-flex items-center gap-2 rounded-full bg-accent px-5 py-2.5 text-base font-semibold text-primary-950 transition-transform duration-500 ease-out-expo group-hover:translate-x-1">
+          View certificate
+          <ArrowRightIcon className="size-4" />
+        </span>
+      </Link>
+    );
+  }
+
+  return (
+    <Panel>
+      <div className="flex items-start gap-4">
+        <span className="grid size-10 shrink-0 place-items-center rounded-full bg-accent-pale text-accent-strong">
+          <CertificateIcon className="size-5" />
+        </span>
+        <div className="min-w-0">
+          <p className="text-lg font-semibold text-ink">
+            Certificate on completion
+          </p>
+          <p className={`mt-2 ${BODY.base}`}>
+            Finish every lecture and pass every quiz - and any
+            fill-in-the-blank questions a lecture carries - and it issues
+            immediately, carrying a reference anyone can check.
+          </p>
+        </div>
+      </div>
+
+      <ul className="mt-5 space-y-2.5 border-t border-surface-deep pt-5">
+        <li className={`flex items-center gap-3 ${META.base}`}>
+          <CheckIcon className="size-4 shrink-0 text-primary" />
+          {lecturesLeft === 0
+            ? "All lectures completed"
+            : `${lecturesLeft} ${lecturesLeft === 1 ? "lecture" : "lectures"} left`}
+        </li>
+        <li className={`flex items-center gap-3 ${META.base}`}>
+          <QuizIcon className="size-4 shrink-0 text-primary" />
+          {quizzesLeft === 0
+            ? "All quizzes passed"
+            : `${quizzesLeft} ${quizzesLeft === 1 ? "quiz" : "quizzes"} to pass`}
+        </li>
+      </ul>
+    </Panel>
+  );
+}

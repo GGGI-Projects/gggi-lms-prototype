@@ -116,7 +116,7 @@ export default async function LecturerModulePage({ params }: Params) {
             />
             {publicEntry ? (
               <Link
-                href={`/modules/${mdl.id}`}
+                href={`/learn/modules/${mdl.id}`}
                 className="btn-ripple btn-solid btn-sm"
               >
                 <span aria-hidden="true" className="btn-wave" />

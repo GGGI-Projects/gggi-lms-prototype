@@ -90,7 +90,7 @@ export default function AdminDashboard() {
         <h2 id="waiting-heading" className="sr-only">
           Waiting for attention
         </h2>
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           <QueueCard
             count={waiting.pendingReviews}
             label={
@@ -100,6 +100,12 @@ export default function AdminDashboard() {
             }
             href="/admin/reviews"
             urgent={waiting.flaggedReviews > 0}
+          />
+          <QueueCard
+            count={waiting.modulesWithoutAdmin}
+            label="Modules with no module administrator"
+            href="/admin/modules"
+            urgent={waiting.modulesWithoutAdmin > 0}
           />
           <QueueCard
             count={waiting.draftModules}
@@ -125,7 +131,7 @@ export default function AdminDashboard() {
         <h2 id="figures-heading" className="sr-only">
           Headline figures
         </h2>
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
           <MetricCard
             label="Registered learners"
             value={formatNumber(PLATFORM.learners)}
@@ -154,6 +160,11 @@ export default function AdminDashboard() {
             value={formatNumber(PLATFORM.certificates)}
             delta={monthOverMonth("completions")}
             hint="issued on last month"
+          />
+          <MetricCard
+            label="Pending applications"
+            value={waiting.pendingApplications}
+            hint="platform-wide - each province's own Registrar decides them"
           />
         </div>
       </section>

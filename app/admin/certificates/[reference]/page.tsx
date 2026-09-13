@@ -55,7 +55,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
  * and shown here unchanged, for the reason given on that component itself -
  * a credential that looks different depending on who is looking at it is
  * not a credential. Everything on this page that differs from the learner's
- * own `/certificates/[id]` lives in the aside: the administration panel,
+ * own `/learn/certificates/[id]` lives in the aside: the administration panel,
  * and the withdrawn banner when there is one.
  *
  * REACHED FROM THE REGISTER'S OWN REFERENCE COLUMN, not from a student's

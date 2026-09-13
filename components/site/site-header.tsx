@@ -153,7 +153,7 @@ export function SiteHeader() {
               Sign in
             </ActionButton>
             <ActionButton
-              href={BRAND.routes.signup}
+              href={BRAND.routes.register}
               variant="filled"
               size="sm"
               className="hidden sm:inline-flex"
@@ -244,7 +244,7 @@ export function SiteHeader() {
               className="flex flex-col gap-3"
             >
               <ActionButton
-                href={BRAND.routes.signup}
+                href={BRAND.routes.register}
                 variant="filled"
                 size="md"
                 className="w-full"

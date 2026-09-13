@@ -37,6 +37,7 @@ import {
 import { ConfirmAction, StateControl } from "@/components/console/actions";
 import { RenameAction } from "@/components/console/rename-action";
 import { AssignModuleLecturers } from "@/components/console/assign-lecturers-action";
+import { EditModuleDetails } from "@/components/console/module-details-action";
 import { IfCan, LockedNote } from "@/components/console/permission";
 import {
   LECTURE_STATE_LABEL,
@@ -45,6 +46,7 @@ import {
   MODULE_STATUS_TONE,
 } from "@/components/console/status";
 import { ExternalIcon, StarFilledIcon } from "@/components/console/icons";
+import { categoryLabel, hazardLabel } from "@/content/tags";
 
 type Params = { params: Promise<{ moduleId: string }> };
 
@@ -126,7 +128,7 @@ export default async function ModulePage({ params }: Params) {
             />
             {publicEntry ? (
               <Link
-                href={`/modules/${mdl.id}`}
+                href={`/learn/modules/${mdl.id}`}
                 className="btn-ripple btn-solid btn-sm"
               >
                 <span aria-hidden="true" className="btn-wave" />
@@ -413,9 +415,19 @@ export default async function ModulePage({ params }: Params) {
           </Panel>
 
           <Panel>
-            <h2 className="font-display text-2xl tracking-tight text-ink">
-              Facts
-            </h2>
+            <div className="flex items-start justify-between gap-4">
+              <h2 className="font-display text-2xl tracking-tight text-ink">
+                Facts
+              </h2>
+              <EditModuleDetails
+                moduleTitle={mdl.title}
+                summary={publicEntry?.summary}
+                level={mdl.level}
+                hazardIds={mdl.hazardIds}
+                categoryIds={mdl.categoryIds}
+                capability="manageModules"
+              />
+            </div>
             <DefinitionList
               className="mt-5"
               items={[
@@ -426,6 +438,18 @@ export default async function ModulePage({ params }: Params) {
                 {
                   term: "Reviews waiting",
                   value: pending ? `${pending}` : "None",
+                },
+                {
+                  term: "Hazards",
+                  value: mdl.hazardIds.length
+                    ? mdl.hazardIds.map(hazardLabel).join(", ")
+                    : "None tagged",
+                },
+                {
+                  term: "Categories",
+                  value: mdl.categoryIds.length
+                    ? mdl.categoryIds.map(categoryLabel).join(", ")
+                    : "None tagged",
                 },
                 { term: "Identifier", value: mdl.id },
               ]}

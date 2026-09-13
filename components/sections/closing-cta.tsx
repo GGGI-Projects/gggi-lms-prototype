@@ -40,7 +40,7 @@ export function ClosingCta() {
                 between here and the header is outlined, so the final ask is
                 the only thing that looks like the primary action. */}
             <ActionButton
-              href={BRAND.routes.signup}
+              href={BRAND.routes.register}
               variant="solid"
               size="lg"
               className="group shadow-[0_18px_50px_-16px_var(--color-accent)]"

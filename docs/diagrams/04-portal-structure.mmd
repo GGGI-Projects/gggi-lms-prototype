@@ -1,0 +1,23 @@
+%% Ministry Pivot — Learner Portal Structure (Learn / Laws / Tools)
+%% See docs/SRS.md §4.4, §4.27, §4.28
+flowchart TD
+    PORTAL["Learner Portal"]
+    LEARN["Learn"]
+    LAWS["Laws"]
+    TOOLS["Tools"]
+
+    PORTAL --> LEARN
+    PORTAL --> LAWS
+    PORTAL --> TOOLS
+
+    LEARN --> LEARNDETAIL["Module → Lecture → Quiz / Fill-in-blank<br/><i>+ related Laws/Tools shown inline</i>"]
+    LAWS --> LAWSDETAIL["Your province — first<br/>Other provinces — below<br/><i>§4.27, FR-STU-500</i>"]
+    TOOLS --> TOOLSDETAIL["Flat directory, filterable by tags<br/><i>§4.28</i>"]
+
+    classDef apex fill:#f5ead2,stroke:#a5711f,stroke-width:2px,color:#16201c;
+    classDef scoped fill:#e2efe9,stroke:#1f5f4f,color:#16201c;
+    classDef plain fill:#ffffff,stroke:#888888,color:#16201c;
+
+    class PORTAL apex;
+    class LEARN,LAWS,TOOLS scoped;
+    class LEARNDETAIL,LAWSDETAIL,TOOLSDETAIL plain;

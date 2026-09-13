@@ -235,7 +235,7 @@ export function Hero() {
             style={{ animationDelay: "1.1s" }}
           >
             <ActionButton
-              href={BRAND.routes.signup}
+              href={BRAND.routes.register}
               variant="filled"
               size="md"
               className="group w-full sm:w-auto"

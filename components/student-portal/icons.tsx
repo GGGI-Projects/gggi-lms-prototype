@@ -26,6 +26,20 @@ const base = {
 
 /* --------------------------------------------------------------------- nav */
 
+/** A graduation cap - the "Learn" section itself, one level up from its own
+ *  "Dashboard" child, which is why this is not just `DashboardIcon` reused:
+ *  a parent and its first child showing the identical mark read as one row
+ *  duplicated, not a section and a page inside it. */
+export function LearnIcon({ className }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M12 4 3 8.5 12 13l9-4.5Z" />
+      <path d="M7 10.5v3.8c0 1.5 2.24 2.7 5 2.7s5-1.2 5-2.7v-3.8" />
+      <path d="M19.5 8.5v5.5" />
+    </svg>
+  );
+}
+
 export function DashboardIcon({ className }: IconProps) {
   return (
     <svg {...base} className={className}>
@@ -79,6 +93,38 @@ export function SettingsIcon({ className }: IconProps) {
     <svg {...base} className={className}>
       <circle cx="12" cy="12" r="3.1" />
       <path d="M19.4 14.3a1.6 1.6 0 0 0 .3 1.8l.1.1a1.9 1.9 0 1 1-2.7 2.7l-.1-.1a1.6 1.6 0 0 0-2.7 1.1v.3a1.9 1.9 0 1 1-3.8 0v-.2a1.6 1.6 0 0 0-2.8-1.1l-.1.1a1.9 1.9 0 1 1-2.7-2.7l.1-.1a1.6 1.6 0 0 0-1.1-2.7h-.3a1.9 1.9 0 1 1 0-3.8h.2a1.6 1.6 0 0 0 1.1-2.8l-.1-.1a1.9 1.9 0 1 1 2.7-2.7l.1.1a1.6 1.6 0 0 0 1.8.3h.1A1.6 1.6 0 0 0 10.5 3v-.3a1.9 1.9 0 1 1 3.8 0v.2a1.6 1.6 0 0 0 2.7 1.1l.1-.1a1.9 1.9 0 1 1 2.7 2.7l-.1.1a1.6 1.6 0 0 0 1.1 2.7h.3a1.9 1.9 0 1 1 0 3.8h-.2a1.6 1.6 0 0 0-1.5 1.1Z" />
+    </svg>
+  );
+}
+
+/** Scales of justice - the Laws tab, and its nav entry. */
+export function LawIcon({ className }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M12 4v15.5" />
+      <path d="M6 7h12" />
+      <path d="M8.5 20h7" />
+      <path d="M3.5 12 6 7l2.5 5a2.5 2.5 0 0 1-5 0Z" />
+      <path d="M15.5 12 18 7l2.5 5a2.5 2.5 0 0 1-5 0Z" />
+    </svg>
+  );
+}
+
+/** A spanner - the Tools tab, and its nav entry. */
+export function ToolIcon({ className }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M15 6.5a4 4 0 0 0-5.3 5.3L4 17.5l2.5 2.5 5.7-5.7a4 4 0 0 0 5.3-5.3l-2.7 2.7-2-2Z" />
+    </svg>
+  );
+}
+
+/** A province badge, on a Law's row. */
+export function MapPinIcon({ className }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M12 21S5 14.4 5 9.5a7 7 0 0 1 14 0C19 14.4 12 21 12 21Z" />
+      <circle cx="12" cy="9.5" r="2.5" />
     </svg>
   );
 }

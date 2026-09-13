@@ -14,7 +14,32 @@
  */
 
 /**
- * The three roles, and what each is called on screen.
+ * SEVEN ROLES: six scoped console roles plus Lecturer (docs/SRS.md §1.2,
+ * BR-31) - THE OLD FLAT `admin` ROLE NO LONGER EXISTS. It was retired in the
+ * same pass that built the last of the six scoped roles below, once every one
+ * of its old responsibilities had somewhere real to go (see the per-capability
+ * notes further down, and `content/staff.ts`'s three former `admin` accounts,
+ * each now reassigned to the scoped role its actual work already matched).
+ *
+ *   super-admin           Owns the platform. The only role that can appoint
+ *                         any other console role, and the only one that reads
+ *                         the audit log.
+ *   module-admin          Runs one Module (or several - Appendix D, item 9)
+ *                         day to day: its lecturer roster, its own details and
+ *                         tags, its publish state, and its own reviews and
+ *                         certificates (§4.29).
+ *   laws-admin            Keeps the Law library current, platform-wide.
+ *                         Touches no Module, lecturer or learner (§4.30).
+ *   tools-admin           Keeps the Tool directory current, platform-wide.
+ *                         Touches no Module, lecturer or learner (§4.31).
+ *   list-manager          Maintains the dynamic option lists (Hazards,
+ *                         Categories, and any added later) that tag Modules,
+ *                         Laws and Tools (§4.32).
+ *   provincial-registrar  Reviews registration applications for one province,
+ *                         and administers that province's learners once
+ *                         approved (§4.33).
+ *   lecturer              Writes the material, and only for the modules they
+ *                         have been assigned.
  *
  * They live here rather than with the staff records because a role is a
  * permission concept, not a person - and because the padlocks, the restricted
@@ -22,21 +47,40 @@
  * browser. `content/staff.ts` imports the type from here and re-exports it, so
  * nothing outside this file has to know which way the dependency runs.
  */
-export type StaffRole = "super-admin" | "admin" | "lecturer";
+export type StaffRole =
+  | "super-admin"
+  | "module-admin"
+  | "laws-admin"
+  | "tools-admin"
+  | "list-manager"
+  | "provincial-registrar"
+  | "lecturer";
 
 /** Titles as they appear in the interface. Never abbreviated on screen. */
 export const ROLE_LABEL: Record<StaffRole, string> = {
   "super-admin": "Super administrator",
-  admin: "Administrator",
+  "module-admin": "Module administrator",
+  "laws-admin": "Laws administrator",
+  "tools-admin": "Tools administrator",
+  "list-manager": "List manager",
+  "provincial-registrar": "Provincial registrar",
   lecturer: "Lecturer",
 };
 
 /** One line each, for the role switcher and the administrators page. */
 export const ROLE_SUMMARY: Record<StaffRole, string> = {
   "super-admin":
-    "Full access, including administrator accounts, the audit log and platform settings.",
-  admin:
-    "Modules, learners, lecturers, moderation and certificates. Cannot create administrators.",
+    "Full access, including appointing every other console role, the audit log and platform settings.",
+  "module-admin":
+    "Runs one Module day to day - its lecturer roster, details, tags, publish state, and its own reviews and certificates.",
+  "laws-admin":
+    "Adds, edits and publishes the Law library. Touches no Module, lecturer or learner.",
+  "tools-admin":
+    "Adds, edits and publishes the Tool directory. Touches no Module, lecturer or learner.",
+  "list-manager":
+    "Adds, renames and retires the values in every dynamic option list that tags Modules, Laws and Tools.",
+  "provincial-registrar":
+    "Approves or rejects that province's registration applications, and administers the learners it lets in.",
   lecturer:
     "Writes and edits lectures for assigned modules, and sees how learners are doing on them.",
 };
@@ -46,9 +90,19 @@ export const ROLE_SUMMARY: Record<StaffRole, string> = {
  * after the screen it appears on. A capability called `viewTeamPage` would
  * have to be renamed the first time the page moved.
  *
- * Two of these are the whole reason the roles exist: `manageAdmins` is the
- * super administrator's alone, and `readAuditLog` with it - a log that the
- * people it records can edit their way out of is not a log.
+ * `manageAdmins` and `readAuditLog` are the super administrator's alone - a
+ * log that the people it records can edit their way out of is not a log.
+ *
+ * `manageModuleDetails` and `manageModuleLecturers` are `manageModules` and
+ * `manageLecturers` SPLIT, NOT RENAMED, and the split is the point: a Module
+ * Administrator may run their own Module's details/tags/publish-state and
+ * invite or assign a lecturer onto it, but must never be able to suspend a
+ * lecturer's whole account (that can be shared across several Module
+ * Administrators' modules at once - BR-29) or create a brand new Module
+ * platform-wide (FR-ADM-060). The old, broader `manageModules`/
+ * `manageLecturers` stay exactly what they were - Super-Administrator powers
+ * spanning every Module - so neither capability had to be renamed out from
+ * under the screens already gated on it.
  */
 export type Capability =
   | "viewConsole"
@@ -56,14 +110,20 @@ export type Capability =
   | "readAuditLog"
   | "managePlatformSettings"
   | "manageModules"
+  | "manageModuleDetails"
   | "manageLecturers"
+  | "manageModuleLecturers"
   | "assignModules"
   | "viewAllLearners"
   | "manageLearners"
   | "moderateReviews"
   | "manageCertificates"
   | "authorLectures"
-  | "viewAssignedLearners";
+  | "viewAssignedLearners"
+  | "manageLaws"
+  | "manageTools"
+  | "manageOptionLists"
+  | "manageApplications";
 
 const CAPABILITIES: Record<StaffRole, Capability[]> = {
   "super-admin": [
@@ -72,7 +132,9 @@ const CAPABILITIES: Record<StaffRole, Capability[]> = {
     "readAuditLog",
     "managePlatformSettings",
     "manageModules",
+    "manageModuleDetails",
     "manageLecturers",
+    "manageModuleLecturers",
     "assignModules",
     "viewAllLearners",
     "manageLearners",
@@ -80,18 +142,22 @@ const CAPABILITIES: Record<StaffRole, Capability[]> = {
     "manageCertificates",
     "authorLectures",
     "viewAssignedLearners",
+    "manageLaws",
+    "manageTools",
+    "manageOptionLists",
+    "manageApplications",
   ],
-  admin: [
+  "module-admin": [
     "viewConsole",
-    "manageModules",
-    "manageLecturers",
-    "assignModules",
-    "viewAllLearners",
-    "manageLearners",
+    "manageModuleDetails",
+    "manageModuleLecturers",
     "moderateReviews",
     "manageCertificates",
-    "viewAssignedLearners",
   ],
+  "laws-admin": ["viewConsole", "manageLaws"],
+  "tools-admin": ["viewConsole", "manageTools"],
+  "list-manager": ["viewConsole", "manageOptionLists"],
+  "provincial-registrar": ["viewConsole", "manageApplications", "manageLearners"],
   lecturer: ["viewConsole", "authorLectures", "viewAssignedLearners"],
 };
 
@@ -107,21 +173,33 @@ export function can(role: StaffRole, capability: Capability): boolean {
  */
 export const RESTRICTION: Partial<Record<Capability, string>> = {
   manageAdmins:
-    "Only the super administrator can create, suspend or remove administrator accounts.",
+    "Only the super administrator can appoint, suspend or remove any other console role.",
   readAuditLog:
     "The audit log is restricted to the super administrator, so that the people it records cannot edit their own trail.",
   managePlatformSettings:
-    "Platform settings are set by the super administrator. Administrators can read them.",
+    "Platform settings are set by the super administrator. Every other role can read them.",
   manageModules:
-    "Modules are created and published by administrators. Lecturers write the lectures inside them.",
+    "Only the super administrator can create a new module. Running one day to day belongs to that module's own module administrator.",
+  manageModuleDetails:
+    "A module's own details, tags and publish state are managed by its module administrator, or the super administrator.",
   manageLecturers:
-    "Only an administrator can appoint or suspend a lecturer.",
+    "Only the super administrator can appoint a lecturer platform-wide, or suspend and restore a lecturer's whole account.",
+  manageModuleLecturers:
+    "Only that module's own module administrator, or the super administrator, may invite, assign or remove a lecturer on this module.",
   assignModules:
-    "Only an administrator can change which modules a lecturer may write for.",
+    "Only the super administrator can change which modules a lecturer may write for, platform-wide. A module administrator assigns lecturers from their own module's page instead.",
   manageLearners:
-    "Learner accounts are managed by administrators.",
-  moderateReviews: "Reviews are moderated by administrators.",
-  manageCertificates: "Certificates are managed by administrators.",
+    "A learner's account is administered by their own province's provincial registrar, or the super administrator for National / Head Office.",
+  moderateReviews:
+    "A module's reviews are moderated by that module's own module administrator, or the super administrator. A lecturer's own profile reviews are moderated by the super administrator alone.",
+  manageCertificates:
+    "A certificate is withdrawn by its own module's module administrator, or the super administrator, as a documented exception.",
   authorLectures:
     "Lectures are written by the lecturers assigned to the module.",
+  manageLaws: "The Law library is managed by the laws administrator.",
+  manageTools: "The Tool directory is managed by the tools administrator.",
+  manageOptionLists:
+    "The dynamic option lists are managed by the list manager. The client has flagged this role as possibly unnecessary on its own - see docs/SRS.md Appendix D.",
+  manageApplications:
+    "Registration applications are reviewed by that province's provincial registrar, or the super administrator for a National / Head Office applicant.",
 };

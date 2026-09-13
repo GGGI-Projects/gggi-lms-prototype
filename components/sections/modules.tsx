@@ -205,7 +205,7 @@ function ModuleRow({
                   </p>
                   <div className="mt-4">
                     <ActionButton
-                      href={BRAND.routes.signup}
+                      href={BRAND.routes.register}
                       variant="solid"
                       size="sm"
                       className="group/cta"

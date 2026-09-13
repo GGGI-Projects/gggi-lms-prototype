@@ -14,7 +14,7 @@ const COLUMNS = [
   {
     heading: "Account",
     links: [
-      { label: "Create an account", href: BRAND.routes.signup },
+      { label: "Create an account", href: BRAND.routes.register },
       { label: "Sign in", href: BRAND.routes.login },
     ],
   },

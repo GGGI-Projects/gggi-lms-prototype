@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { BODY, CONSOLE, META } from "@/lib/theme";
 import { PLATFORM_SETTINGS } from "@/content/operations";
-import { BRAND } from "@/lib/brand";
 import {
   PageBody,
   PageHeader,
@@ -83,19 +82,13 @@ export default function SettingsPage() {
         <SettingsGate>
           <SettingsGroup
             title="Enrolment"
-            description="Who can join, and what they can join."
+            description="Who can apply, and what they can join once approved."
           >
             <Toggle
-              name="open-registration"
-              label="Anyone can register"
-              description={`Open sign-up, no approval queue - what the public site promises. Switching this off turns ${BRAND.name} into an invitation-only platform.`}
-              defaultChecked={enrolment.openRegistration}
-            />
-            <Toggle
-              name="verify-email"
-              label="Require email verification"
-              description="A learner must confirm their address before their first certificate can issue."
-              defaultChecked={enrolment.requireEmailVerification}
+              name="accepting-applications"
+              label="Accepting new applications"
+              description="Whether the registration form is open at all. Every application a province receives is still reviewed by its own Provincial Registrar before sign-in works - this only controls whether new ones can be submitted."
+              defaultChecked={enrolment.acceptingApplications}
             />
             <Toggle
               name="self-unenrol"

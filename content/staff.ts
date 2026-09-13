@@ -1,19 +1,38 @@
 /**
  * The people who run the platform, and what each of them is allowed to touch.
  *
- * THREE ROLES, and the boundaries between them are the product rather than a
- * technicality:
+ * SEVEN ROLES, and the boundaries between them are the product rather than a
+ * technicality. THE OLD FLAT `admin` ROLE NO LONGER EXISTS (docs/SRS.md
+ * §1.2, BR-31) - every one of its old responsibilities now belongs to
+ * exactly one of the six scoped roles below, never to a second,
+ * general-purpose account kept "just in case":
  *
- *   super-admin  Owns the platform. The only role that can create or remove an
- *                administrator, and the only one that reads the audit log.
- *   admin        Runs the day to day - modules, learners, lecturers,
- *                moderation, certificates. Cannot make another admin.
- *   lecturer     Writes the material, and only for the modules they have
- *                been assigned. Sees learners as progress on their own
- *                modules, never as a directory to browse.
+ *   super-admin           Owns the platform. The only role that can appoint
+ *                         any other console role, and the only one that
+ *                         reads the audit log.
+ *   module-admin          Runs one Module (or several - Appendix D, item 9)
+ *                         day to day: its lecturer roster, its own details
+ *                         and tags, its publish state, and its own reviews
+ *                         and certificates (§4.29). Scoped by `moduleIds`
+ *                         below, the same field a lecturer's own assignment
+ *                         already uses.
+ *   laws-admin            Keeps the Law library current, platform-wide.
+ *                         Touches no Module, lecturer or learner (§4.30).
+ *   tools-admin           Keeps the Tool directory current, platform-wide.
+ *                         Touches no Module, lecturer or learner (§4.31).
+ *   list-manager          Maintains the dynamic option lists that tag
+ *                         Modules, Laws and Tools (§4.32).
+ *   provincial-registrar  Reviews registration applications for exactly one
+ *                         province (docs/SRS.md §4.33), and, once approved,
+ *                         is that province's learners' ongoing administrator
+ *                         - suspend, reset, export. Scoped by the `province`
+ *                         field below.
+ *   lecturer              Writes the material, and only for the modules they
+ *                         have been assigned. Sees learners as progress on
+ *                         their own modules, never as a directory to browse.
  *
- * The rule that shapes the console is that ADMINS ARE APPOINTED, NOT
- * SELF-SERVED: an admin account exists because one specific person created it,
+ * The rule that shapes the console is that EVERY ONE OF THESE IS APPOINTED,
+ * NOT SELF-SERVED: an account exists because one specific person created it,
  * on a date, and that is recorded on the account itself (`createdBy`) rather
  * than only in the log. A console where you cannot see who let someone in is a
  * console where nobody is responsible for it.
@@ -24,6 +43,7 @@
  */
 
 import { MODULES } from "@/content/site";
+import type { Province } from "@/content/laws";
 import type { StaffRole } from "@/lib/permissions";
 
 /* -------------------------------------------------------------------- roles */
@@ -117,12 +137,25 @@ export type StaffMember = {
   /** ISO date. "Never" is expressed as the account still being `invited`. */
   lastActive: string | null;
   /**
-   * Lecturers only: the modules they may author lectures for. An empty
-   * array is a real and visible state - a lecturer with nothing assigned
-   * can sign in and has nothing to open, which is what the assignment screen
-   * exists to fix.
+   * Lecturers and Module Administrators only, and the two roles read this
+   * same array very differently: for a lecturer it is which modules they may
+   * author lectures for, for a Module Administrator (§4.29) it is which
+   * modules they administer - its lecturer roster, its details and tags, its
+   * publish state (FR-MODADM-010). A person can hold either role for more
+   * than one Module (Appendix D, item 9), so this stays an array rather than
+   * a single id, the same shape both readings need. An empty array is a real
+   * and visible state either way - nothing assigned, nothing to open.
    */
   moduleIds?: string[];
+  /**
+   * Provincial Registrars only: the one province they administer (§4.33).
+   * Never "National / Head Office" - applications and learners with that
+   * choice belong to the Super Administrator directly instead (FR-REG-040),
+   * so this field is always a real province, and a Provincial Registrar
+   * without one would be a role with nothing to scope it - a state this
+   * prototype does not create.
+   */
+  province?: Province;
   /**
    * Lecturers only: their public profile, set by an administrator when the
    * account is appointed (see FR-INS-201 in the SRS) and managed by the
@@ -149,44 +182,65 @@ export const STAFF: StaffMember[] = [
     lastActive: "2026-08-15",
   },
   {
+    // The old flat Administrator role's most active account (see her
+    // `createdBy` trail on staff-inst-3/4/5/6 below) - now a Module
+    // Administrator for the same modules those appointments already tie her
+    // to (BR-31). IDS ARE NOT RENAMED on a role change, here or on the two
+    // records after it: `staff-admin-1` is an opaque identifier, not
+    // user-facing text, and every `createdBy`/`addedBy`/`uploadedBy`
+    // reference elsewhere in this codebase is a historical fact about who
+    // did something, not a claim about what role that person holds today.
     id: "staff-admin-1",
     name: "Chathuri Wijesinghe",
     initials: "CW",
     avatarUrl:
       "https://images.unsplash.com/photo-1541101767792-f9b2b1c4f127?w=256&h=256&fit=crop&crop=faces&auto=format&q=80",
     email: "chathuri.wijesinghe@example.lk",
-    role: "admin",
+    role: "module-admin",
     title: "Module operations lead",
     status: "active",
     createdOn: "2025-08-19",
     createdBy: "staff-super",
     lastActive: "2026-08-15",
+    // Every module her own appointees write for - none overlapping
+    // staff-moduleadmin-1's climate-vulnerability-assessment/green-buildings,
+    // so the two module administrators' territory stays legible at a glance.
+    moduleIds: [
+      "provincial-adaptation-plan",
+      "bankable-climate-finance-proposals",
+      "gender-responsive-budgeting",
+      "gender-social-inclusion",
+    ],
   },
   {
+    // "Learner support" already described exactly what a Provincial
+    // Registrar does - day-to-day learner administration - so this account
+    // became one outright rather than being retired and replaced.
     id: "staff-admin-2",
     name: "Dilan Fernando",
     initials: "DF",
     avatarUrl:
       "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=256&h=256&fit=crop&crop=faces&auto=format&q=80",
     email: "dilan.fernando@example.lk",
-    role: "admin",
-    title: "Learner support",
+    role: "provincial-registrar",
+    title: "Provincial Registrar, Eastern Province",
     status: "active",
     createdOn: "2025-11-06",
     createdBy: "staff-super",
     lastActive: "2026-08-14",
+    province: "Eastern",
   },
   {
-    // An account that exists but has never been used. The team page has to be
-    // able to show a pending invitation, or "invite someone" is a button with
-    // no visible consequence.
+    // An account that exists but has never been used - kept invited, not
+    // retired, so the team page still has a pending invitation to show for
+    // one of the NEW roles too, not only ever for the old flat one.
     id: "staff-admin-3",
     name: "Ayesha Nazeer",
     initials: "AN",
     avatarUrl:
       "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=256&h=256&fit=crop&crop=faces&auto=format&q=80",
     email: "ayesha.nazeer@example.lk",
-    role: "admin",
+    role: "list-manager",
     title: "Monitoring & evaluation",
     status: "invited",
     createdOn: "2026-08-11",
@@ -393,6 +447,127 @@ export const STAFF: StaffMember[] = [
       achievements: [],
     },
   },
+  {
+    // The registrar viewpoint deliberately administers Southern Province -
+    // the same province the demo learner (Nadeesha) belongs to, so signing
+    // in as this account and opening the register shows the one learner the
+    // client can cross-check against the student portal itself.
+    id: "staff-registrar-1",
+    name: "Nimal Gunawardena",
+    initials: "NG",
+    avatarUrl:
+      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=256&h=256&fit=crop&crop=faces&auto=format&q=80",
+    email: "nimal.gunawardena@example.lk",
+    role: "provincial-registrar",
+    title: "Provincial Registrar, Southern Province",
+    status: "active",
+    createdOn: "2026-06-02",
+    createdBy: "staff-super",
+    lastActive: "2026-08-15",
+    province: "Southern",
+  },
+  {
+    // A second registrar sharing Southern Province's queue - FR-REG-010
+    // assumes a province may be served by more than one registrar, sharing
+    // one queue, and this is the record that makes that visible rather than
+    // only asserted in a comment.
+    id: "staff-registrar-2",
+    name: "Kumari Abeywardena",
+    initials: "KA",
+    avatarUrl:
+      "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=256&h=256&fit=crop&crop=faces&auto=format&q=80",
+    email: "kumari.abeywardena@example.lk",
+    role: "provincial-registrar",
+    title: "Provincial Registrar, Southern Province",
+    status: "active",
+    createdOn: "2026-06-02",
+    createdBy: "staff-super",
+    lastActive: "2026-08-14",
+    province: "Southern",
+  },
+  {
+    // Western Province is the busiest in the sample data (see
+    // `content/students.ts`), so this account gives the console a registrar
+    // whose queue and register are not both nearly empty.
+    id: "staff-registrar-3",
+    name: "Sanjeewa Ilangakoon",
+    initials: "SI",
+    avatarUrl:
+      "https://images.unsplash.com/photo-1519345182560-3f2917c472ef?w=256&h=256&fit=crop&crop=faces&auto=format&q=80",
+    email: "sanjeewa.ilangakoon@example.lk",
+    role: "provincial-registrar",
+    title: "Provincial Registrar, Western Province",
+    status: "active",
+    createdOn: "2026-05-11",
+    createdBy: "staff-super",
+    lastActive: "2026-08-15",
+    province: "Western",
+  },
+  {
+    // One published module and one draft - the same "shows both states at
+    // once" reasoning `SESSION.lecturer` already picked staff-inst-3 for,
+    // reused here so the module-admin viewpoint has a publish/draft control
+    // to actually exercise on sight rather than only on the second module
+    // opened.
+    id: "staff-moduleadmin-1",
+    name: "Harsha Wickramasuriya",
+    initials: "HW",
+    avatarUrl:
+      "https://images.unsplash.com/photo-1607990281513-2c110a25bd8c?w=256&h=256&fit=crop&crop=faces&auto=format&q=80",
+    email: "harsha.wickramasuriya@example.lk",
+    role: "module-admin",
+    title: "Module Administrator",
+    status: "active",
+    createdOn: "2026-06-15",
+    createdBy: "staff-super",
+    lastActive: "2026-08-15",
+    moduleIds: ["climate-vulnerability-assessment", "green-buildings"],
+  },
+  {
+    id: "staff-lawsadmin-1",
+    name: "Dilrukshi Fonseka",
+    initials: "DF",
+    avatarUrl:
+      "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=256&h=256&fit=crop&crop=faces&auto=format&q=80",
+    email: "dilrukshi.fonseka@example.lk",
+    role: "laws-admin",
+    title: "Laws Administrator",
+    status: "active",
+    createdOn: "2026-07-01",
+    createdBy: "staff-super",
+    lastActive: "2026-08-15",
+  },
+  {
+    id: "staff-toolsadmin-1",
+    name: "Sampath Kodikara",
+    initials: "SK",
+    avatarUrl:
+      "https://images.unsplash.com/photo-1521119989659-a83eee488004?w=256&h=256&fit=crop&crop=faces&auto=format&q=80",
+    email: "sampath.kodikara@example.lk",
+    role: "tools-admin",
+    title: "Tools Administrator",
+    status: "active",
+    createdOn: "2026-07-01",
+    createdBy: "staff-super",
+    lastActive: "2026-08-15",
+  },
+  {
+    // Ayesha Nazeer (above) also holds this role but has never signed in -
+    // the session needs an ACTIVE account to view the console as, so this is
+    // a second, working List Manager rather than a repurposing of hers.
+    id: "staff-listmanager-1",
+    name: "Iresha Bandaranayake",
+    initials: "IB",
+    avatarUrl:
+      "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=256&h=256&fit=crop&crop=faces&auto=format&q=80",
+    email: "iresha.bandaranayake@example.lk",
+    role: "list-manager",
+    title: "List Manager",
+    status: "active",
+    createdOn: "2026-07-15",
+    createdBy: "staff-super",
+    lastActive: "2026-08-15",
+  },
 ];
 
 /**
@@ -405,13 +580,28 @@ export const STAFF: StaffMember[] = [
  */
 export const SESSION: Record<StaffRole, string> = {
   "super-admin": "staff-super",
-  admin: "staff-admin-1",
   // Anoma Herath rather than one of the single-module lecturers, because
   // this account exercises the console: two modules, one published and one
   // still a draft, and material on the shelf that nothing uses yet. A
   // lecturer with one finished module shows a console where every screen
   // is already green.
   lecturer: "staff-inst-3",
+  // Southern Province, shared with a second registrar - so this viewpoint's
+  // queue shows the "more than one registrar, one queue" shape FR-REG-010
+  // assumes, and its register includes the demo learner (Nadeesha is also
+  // Southern), the same "two sides of one person cannot disagree" reasoning
+  // `demoLearnerRecord()` documents in `lib/admin.ts`.
+  "provincial-registrar": "staff-registrar-1",
+  // One published module (a lecturer roster, reviews, certificates already
+  // in it) and one draft (nothing to moderate yet, a tag-editing form with
+  // real content in it) - the same "don't pick the account where every
+  // screen is already green" reasoning as `lecturer` above.
+  "module-admin": "staff-moduleadmin-1",
+  "laws-admin": "staff-lawsadmin-1",
+  "tools-admin": "staff-toolsadmin-1",
+  // Not Ayesha Nazeer - see the note on `staff-listmanager-1` above; the
+  // session needs an account that has actually signed in at least once.
+  "list-manager": "staff-listmanager-1",
 };
 
 /* ------------------------------------------------------------- modules */
@@ -438,6 +628,19 @@ export type ManagedModule = {
   reviewCount: number;
   createdOn: string;
   updatedOn: string;
+  /**
+   * Tags from the dynamic option lists (`content/tags.ts`) - what a Module
+   * Administrator edits (FR-MODADM-020) and what `relatedPoolForModule()` in
+   * `lib/laws-tools.ts` matches against. Carried HERE rather than read off
+   * `content/site.ts`'s own `Module.hazardIds`/`categoryIds` at the point of
+   * use, because a draft module (see `"green-buildings"` below) has no entry
+   * in `content/site.ts` at all - it is not on the public catalogue yet - so
+   * a lookup that only checked there would silently find nothing to tag a
+   * draft module's related pool with, which is exactly the state a
+   * newly-created Module is naturally in.
+   */
+  hazardIds: string[];
+  categoryIds: string[];
 };
 
 /**
@@ -452,7 +655,14 @@ const catalogue = (
   id: string,
   operational: Omit<
     ManagedModule,
-    "id" | "title" | "level" | "hours" | "lectureCount" | "status"
+    | "id"
+    | "title"
+    | "level"
+    | "hours"
+    | "lectureCount"
+    | "status"
+    | "hazardIds"
+    | "categoryIds"
   >,
 ): ManagedModule => {
   const mdl = MODULES.find((entry) => entry.id === id);
@@ -465,6 +675,8 @@ const catalogue = (
     level: mdl.level,
     hours: mdl.hours,
     lectureCount: mdl.lectures,
+    hazardIds: mdl.hazardIds,
+    categoryIds: mdl.categoryIds,
     ...operational,
   };
 };
@@ -536,6 +748,13 @@ export const MANAGED_MODULES: ManagedModule[] = [
     level: "Foundation",
     hours: 5,
     lectureCount: 6,
+    // A draft's tags are exactly as real as a published module's - a Module
+    // Administrator can tag a Module before it ever reaches the catalogue,
+    // and its related pool of Laws/Tools already reflects that (see
+    // `relatedPoolForModule()` in `lib/laws-tools.ts`). No category yet fits
+    // "buildings" well - an empty list is the honest state, not a gap.
+    hazardIds: ["extreme-heat"],
+    categoryIds: [],
     publishedLectures: 0,
     lecturerIds: ["staff-inst-3"],
     enrolments: 0,

@@ -24,6 +24,15 @@ export type Module = {
   level: "Foundation" | "Intermediate";
   /** Picks which illustrated scene renders alongside the row. */
   scene: "hills" | "waste" | "energy" | "finance" | "coast";
+  /**
+   * Tags from the dynamic option lists in `content/tags.ts`. This, and
+   * nothing else, is how a Module relates to the Laws and Tools it shows -
+   * see `relatedPoolForModule()` in `lib/laws-tools.ts` and BR-26 in the SRS.
+   * Either array may be empty; a Module needs no hazard tag to be tagged by
+   * category alone, or the reverse.
+   */
+  hazardIds: string[];
+  categoryIds: string[];
 };
 
 export const MODULES: Module[] = [
@@ -43,6 +52,8 @@ export const MODULES: Module[] = [
     hours: 5,
     level: "Foundation",
     scene: "hills",
+    hazardIds: ["flooding", "drought", "landslide", "sea-level-rise"],
+    categoryIds: ["climate-vulnerability", "climate-risk"],
   },
   {
     id: "provincial-adaptation-plan",
@@ -60,6 +71,8 @@ export const MODULES: Module[] = [
     hours: 5,
     level: "Intermediate",
     scene: "coast",
+    hazardIds: ["flooding", "drought", "coastal-erosion"],
+    categoryIds: ["adaptation-planning", "provincial-planning"],
   },
   {
     id: "bankable-climate-finance-proposals",
@@ -77,6 +90,8 @@ export const MODULES: Module[] = [
     hours: 6,
     level: "Intermediate",
     scene: "finance",
+    hazardIds: [],
+    categoryIds: ["climate-finance", "public-finance"],
   },
   {
     id: "gender-social-inclusion",
@@ -94,6 +109,8 @@ export const MODULES: Module[] = [
     hours: 5,
     level: "Foundation",
     scene: "waste",
+    hazardIds: [],
+    categoryIds: ["gender-social-inclusion"],
   },
   {
     id: "gender-responsive-budgeting",
@@ -111,6 +128,8 @@ export const MODULES: Module[] = [
     hours: 5,
     level: "Intermediate",
     scene: "energy",
+    hazardIds: [],
+    categoryIds: ["gender-responsive-budgeting", "public-finance"],
   },
 ];
 

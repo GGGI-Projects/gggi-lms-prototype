@@ -100,13 +100,13 @@ export function AuthAside({
  * that the account already holds something. Split across two route files, they
  * drift into being the same four sentences twice.
  */
-export type AuthMode = "signup" | "login";
+export type AuthMode = "register" | "login";
 
 const COPY = {
-  signup: {
-    eyebrow: "Create your account",
-    heading: "An account is only how your progress gets saved.",
-    body: `Nothing on ${BRAND.name} sits behind it. There is no paid tier, no approval queue and no departmental sponsorship - you enrol, and you start.`,
+  register: {
+    eyebrow: "Apply for access",
+    heading: "One human check, then everything is free.",
+    body: `Nothing on ${BRAND.name} sits behind a paid tier or a departmental sponsorship - your province's registrar reviews your application, and once approved, you enrol and you start.`,
     promises: [
       "Free at every stage - no card, ever",
       "No prior qualification required",

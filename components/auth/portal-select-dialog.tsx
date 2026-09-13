@@ -4,15 +4,24 @@ import { useEffect, useRef, type ComponentType } from "react";
 import Link from "next/link";
 import { ROLE_LABEL, ROLE_SUMMARY, type StaffRole } from "@/lib/permissions";
 import { VIEWPOINTS } from "@/components/console/nav";
-import { LecturerIcon, ShieldIcon, TeamIcon } from "@/components/console/icons";
-import { ChevronRightIcon } from "@/components/student-portal/icons";
+import { InboxIcon, LecturerIcon, ShieldIcon, TagIcon } from "@/components/console/icons";
+import {
+  ChevronRightIcon,
+  LawIcon,
+  ModulesIcon,
+  ToolIcon,
+} from "@/components/student-portal/icons";
 import { EYEBROW, HEADING } from "@/lib/theme";
 
-/** Same three glyphs the console already uses for these roles elsewhere - the
+/** Same glyphs the console already uses for these roles elsewhere - the
  *  rail's restricted-page notes and the viewpoint switcher's own list. */
 const PORTAL_ICON: Record<StaffRole, ComponentType<{ className?: string }>> = {
   "super-admin": ShieldIcon,
-  admin: TeamIcon,
+  "module-admin": ModulesIcon,
+  "laws-admin": LawIcon,
+  "tools-admin": ToolIcon,
+  "list-manager": TagIcon,
+  "provincial-registrar": InboxIcon,
   lecturer: LecturerIcon,
 };
 
@@ -31,7 +40,7 @@ const PORTAL_ICON: Record<StaffRole, ComponentType<{ className?: string }>> = {
  * password is accepted rather than guessing and making them find the switcher
  * buried in the rail afterwards.
  *
- * ALL THREE ROLES, ALWAYS - see the note on `VIEWPOINTS`. A real account would
+ * ALL SEVEN ROLES, ALWAYS - see the note on `VIEWPOINTS`. A real account would
  * only ever offer the roles it actually holds; this prototype has no session
  * to read that from, so it says so rather than pretending the list is
  * personal. The rail's own viewpoint switcher is the same honesty, in the
@@ -64,7 +73,7 @@ export function PortalSelectDialog({
       data-lenis-prevent
       className="modal-panel w-[min(36rem,calc(100vw-2rem))] overflow-y-auto rounded-sm border border-surface-deep bg-paper"
     >
-      {/* Centred header block, sized and spaced like `<VerifyEmailPanel>` -
+      {/* Centred header block, sized and spaced like `<ApplicationStatusPanel>` -
           the icon-in-a-circle, the eyebrow, the display heading, the 18px
           lead paragraph - so the two "you just did one thing, here is the
           next" screens in the account flow read as the same product rather
@@ -123,7 +132,7 @@ export function PortalSelectDialog({
 }
 
 /** Three overlapping tiles - "more than one place to land," the same idea
- *  `<VerifyEmailPanel>`'s envelope gives its own single-purpose screen. */
+ *  `<ApplicationStatusPanel>`'s envelope gives its own single-purpose screen. */
 function PortalsIcon({ className }: { className?: string }) {
   return (
     <svg

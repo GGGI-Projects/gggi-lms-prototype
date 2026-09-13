@@ -8,10 +8,11 @@ import { sessionNotifications } from "@/lib/comms";
  * The administration console.
  *
  * `/admin` is a real segment rather than a route group, unlike the student
- * portal's `(studentportal)`. The portal owns the bare paths because it is
- * what a learner thinks the product IS - `/modules` is the catalogue they
- * were sent a link to. The console is a place staff go, and every address in
- * it saying so is worth more than four characters of tidiness: a screenshot,
+ * portal's `(studentportal)`. The portal owns the paths with no person-role
+ * in them because it is what a learner thinks the product IS - `/laws`, or
+ * `/learn/modules`, is the catalogue they were sent a link to, not staff
+ * infrastructure. The console is a place staff go, and every address in it
+ * saying so is worth more than four characters of tidiness: a screenshot,
  * a bookmark or a support ticket carries its own context.
  *
  * There is no auth check, because there is no auth - the same position the

@@ -6,6 +6,7 @@ import { Drawer } from "@/components/console/drawer";
 import { InviteForm } from "@/components/console/actions";
 import { IfCan, LockedNote } from "@/components/console/permission";
 import { PlusIcon } from "@/components/console/icons";
+import type { Capability } from "@/lib/permissions";
 
 /**
  * "New lecturer" and the drawer it opens, kept as one component rather than
@@ -33,8 +34,15 @@ import { PlusIcon } from "@/components/console/icons";
  */
 export function NewLecturerAction({
   modules,
+  capability = "manageLecturers",
+  description = "The super administrator can appoint one. Assigning modules now is optional - it can be done later from their page. Their public profile is not: bio, qualifications, experience, publications and achievements are all required before the account can be created.",
 }: {
   modules: { id: string; title: string }[];
+  /** `manageLecturers` (platform-wide, the default) on `/admin/lecturers`,
+   *  or `manageModuleLecturers` (scoped to one module, FR-MODADM-050) from a
+   *  Module Administrator's own module page. */
+  capability?: Capability;
+  description?: string;
 }) {
   const [open, setOpen] = useState(false);
   const formId = useId();
@@ -55,23 +63,20 @@ export function NewLecturerAction({
         open={open}
         onClose={() => setOpen(false)}
         title="Add a lecturer"
-        description="Either an administrator or the super administrator can appoint one. Assigning modules now is optional - it can be done later from their page. Their public profile is not: bio, qualifications, experience, publications and achievements are all required before the account can be created."
+        description={description}
         // The basics plus a full public profile - `lg` is what a form this
         // long needs, and the footer's submit button stays put below it
         // regardless of how far the fields scroll.
         size="lg"
         footer={
-          <IfCan capability="manageLecturers">
+          <IfCan capability={capability}>
             <ActionButton type="submit" form={formId} variant="solid" size="sm">
               Send the invitation
             </ActionButton>
           </IfCan>
         }
       >
-        <IfCan
-          capability="manageLecturers"
-          fallback={<LockedNote capability="manageLecturers" />}
-        >
+        <IfCan capability={capability} fallback={<LockedNote capability={capability} />}>
           <InviteForm kind="lecturer" modules={modules} formId={formId} />
         </IfCan>
       </Drawer>

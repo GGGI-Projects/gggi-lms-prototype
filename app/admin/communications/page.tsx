@@ -8,7 +8,7 @@ import {
 import { PageBody, PageHeader } from "@/components/console/ui";
 import { ComposeAnnouncementAction } from "@/components/notifications/compose-announcement";
 import { ComposeMessageAction } from "@/components/notifications/compose-message";
-import { RoleScopedFeed } from "@/components/notifications/role-scoped-feed";
+import { NotificationFeed } from "@/components/notifications/notification-feed";
 
 export const metadata: Metadata = { title: "Communications" };
 
@@ -20,19 +20,15 @@ export const metadata: Metadata = { title: "Communications" };
  * happened here even before the merge, since a message thread only ever had
  * one "reply" box, so folding the read side in didn't reintroduce that risk.
  *
- * BOTH VIEWPOINTS' DATA IS COMPUTED HERE, on the server, and handed to a
- * client component that picks the live one - see `RoleScopedFeed` and the
- * long note on `AccountIdentity`, the only other screen with the same
- * "who am I right now" problem.
- *
- * The compose actions are NOT viewpoint-dependent - an administrator may
- * address every lecturer or every student regardless of which admin account
- * is doing it, so `announcementScopesForAdmin()` / `messageContactsForAdmin()`
- * are the same for both.
+ * A PLAIN SERVER PAGE, not a role-scoped client one - it used to compute both
+ * the super administrator's and the (now-retired) flat administrator's own
+ * feeds and hand both to a client component that picked the live one, back
+ * when the `admin` area could render as either. Now the `admin` area only
+ * ever renders as `super-admin` (BR-31), there is exactly one feed to
+ * compute, so this reads it once, here, the ordinary way.
  */
 export default function AdminCommunicationsPage() {
   const superAdmin = sessionFor("super-admin");
-  const admin = sessionFor("admin");
 
   return (
     <PageBody>
@@ -48,12 +44,10 @@ export default function AdminCommunicationsPage() {
         }
       />
 
-      <RoleScopedFeed
-        views={{
-          "super-admin": feedViewForStaff(superAdmin),
-          admin: feedViewForStaff(admin),
-        }}
-        viewerIds={{ "super-admin": superAdmin.id, admin: admin.id }}
+      <NotificationFeed
+        view={feedViewForStaff(superAdmin)}
+        viewerId={superAdmin.id}
+        emptyAnnouncements="Nobody broadcasts to the super administrator on this platform - announcements go from you to lecturers and students. Send one above and it'll show up here, marked as sent by you."
       />
     </PageBody>
   );

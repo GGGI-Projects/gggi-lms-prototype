@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { BRAND } from "@/lib/brand";
 import { ActionButton } from "@/components/ui/action-button";
-import { GoogleButton } from "@/components/auth/google-button";
 import { PasswordField, TextField } from "@/components/auth/fields";
 
 /**
@@ -15,19 +14,21 @@ import { PasswordField, TextField } from "@/components/auth/fields";
  * anything - every question here is asked of someone who has already answered
  * it once and is now standing outside their own account.
  *
- * Same order as sign-up, deliberately: Google first, then the divider, then
- * email. Someone who created their account with the Google button will look for
- * it in the place they last saw it, and finding the email fields there instead
- * is how a person ends up locked out of an account they can see.
+ * NO GOOGLE BUTTON - removed platform-wide by the ministry pivot (FR-AUTH-060),
+ * not deferred. The field order below is what is left once it and its divider
+ * are gone: straight into email and password.
  *
  * Nothing is wired up - see the note on `submitted` below.
  */
 export function LoginForm() {
   const router = useRouter();
-  // The prototype has no backend. Rather than silently doing nothing, the form
-  // says so - and then carries on into the portal, because the dashboard now
-  // exists and dead-ending on this page in the middle of a demo is worse than
-  // signing in to a sample account.
+  // The prototype has no backend, and no per-account application status to
+  // check against - see the note below the form for how a genuinely pending
+  // or rejected applicant is meant to check theirs instead (FR-AUTH-055).
+  // Rather than silently doing nothing, this form says so and carries on
+  // into the portal, because the dashboard now exists and dead-ending on
+  // this page in the middle of a demo is worse than signing in to a sample
+  // account.
   const [submitted, setSubmitted] = useState(false);
 
   // The note is announced first and the navigation follows, so nobody is moved
@@ -49,14 +50,6 @@ export function LoginForm() {
       }}
       className="mt-10"
     >
-      <GoogleButton />
-
-      <div className="my-8 flex items-center gap-4">
-        <span className="rule flex-1" />
-        <span className="text-sm text-muted">or sign in with email</span>
-        <span className="rule flex-1" />
-      </div>
-
       <div className="space-y-6">
         <TextField
           label="Email address"
@@ -103,6 +96,17 @@ export function LoginForm() {
       ) : null}
 
       <p className="mt-6 text-center text-sm text-muted">
+        Still waiting on a decision?{" "}
+        <Link
+          href={BRAND.routes.applicationStatus}
+          className="link-wipe font-semibold text-primary"
+        >
+          Check your application
+        </Link>
+        .
+      </p>
+
+      <p className="mt-3 text-center text-sm text-muted">
         Trouble getting in? Write to{" "}
         <a href={`mailto:${BRAND.email}`} className="link-wipe font-semibold text-primary">
           {BRAND.email}

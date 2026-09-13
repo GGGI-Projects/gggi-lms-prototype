@@ -1,0 +1,32 @@
+%% Ministry Pivot — Registration, Review, and Resubmission
+%% See docs/SRS.md §4.2, §4.33, FR-AUTH-010–090, FR-REG-010–060
+flowchart TD
+    FORM["Registration form<br/><i>name, email, password, Province</i>"]
+    PEND["Application — Pending<br/><i>no console access exists yet</i>"]
+    PRQ["Provincial Registrar queue<br/><i>own province only §4.33</i>"]
+    SAQ["Super Administrator queue<br/><i>National / Head Office fallback — FR-REG-040</i>"]
+    APR["Approved<br/><i>no reason required</i>"]
+    REJ["Rejected<br/><i>written reason kept on record</i>"]
+    SIGNIN["Learner signs in —<br/>full portal access"]
+    EDIT["Applicant edits & resubmits"]
+
+    FORM -->|submits, FR-AUTH-015| PEND
+    PEND -->|province = one of 9| PRQ
+    PEND -->|province = National/Head Office| SAQ
+    PRQ -->|approve| APR
+    PRQ -->|reject| REJ
+    SAQ -->|approve| APR
+    SAQ -->|reject| REJ
+    APR --> SIGNIN
+    REJ --> EDIT
+    EDIT -.->|resubmit — same record, FR-AUTH-025| PEND
+
+    classDef state fill:#e2efe9,stroke:#1f5f4f,color:#16201c;
+    classDef good fill:#e2efe9,stroke:#1f5f4f,stroke-width:2px,color:#16201c;
+    classDef bad fill:#f3e3dd,stroke:#93412b,stroke-width:2px,color:#16201c;
+    classDef plain fill:#ffffff,stroke:#888888,color:#16201c;
+
+    class PEND state;
+    class APR,SIGNIN good;
+    class REJ bad;
+    class FORM,PRQ,SAQ,EDIT plain;

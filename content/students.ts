@@ -14,7 +14,11 @@
  * signs into cannot disagree about how many lectures she has finished.
  *
  * Names, emails and districts are invented. Nothing here is a real person.
+ * Provinces are not invented separately, though - each is the real Sri
+ * Lankan province its district sits in.
  */
+
+import type { LearnerProvince } from "@/content/laws";
 
 export type StudentStatus = "active" | "dormant" | "suspended";
 
@@ -38,6 +42,11 @@ export type StudentRecord = {
   avatarUrl: string;
   email: string;
   district: string;
+  /** Chosen at registration (see docs/SRS.md §4.2) - the one field that
+   *  decides which Provincial Registrar administers this learner's account
+   *  (BR-29's "exclusive ownership" rule), and it is real, mapped from the
+   *  district above rather than invented separately. */
+  province: LearnerProvince;
   sector: string;
   organisation: string;
   joined: string;
@@ -69,6 +78,7 @@ export const STUDENTS: StudentRecord[] = [
       "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=256&h=256&fit=crop&crop=faces&auto=format&q=80",
     email: "ishara.w@example.lk",
     district: "Colombo",
+    province: "Western",
     sector: "Government or public sector",
     organisation: "Ministry of Environment",
     joined: "2026-08-14",
@@ -91,6 +101,7 @@ export const STUDENTS: StudentRecord[] = [
       "https://images.unsplash.com/photo-1519345182560-3f2917c472ef?w=256&h=256&fit=crop&crop=faces&auto=format&q=80",
     email: "kasun.ekanayake@example.lk",
     district: "Kandy",
+    province: "Central",
     sector: "Provincial or local authority",
     organisation: "Central Provincial Council",
     joined: "2026-08-13",
@@ -119,6 +130,7 @@ export const STUDENTS: StudentRecord[] = [
       "https://images.unsplash.com/photo-1607746882042-944635dfe10e?w=256&h=256&fit=crop&crop=faces&auto=format&q=80",
     email: "fathima.ashraff@example.lk",
     district: "Batticaloa",
+    province: "Eastern",
     sector: "NGO or development organisation",
     organisation: "Eastern Coastal Trust",
     joined: "2026-08-12",
@@ -141,6 +153,7 @@ export const STUDENTS: StudentRecord[] = [
       "https://images.unsplash.com/photo-1517070208541-6ddc4d3efbcb?w=256&h=256&fit=crop&crop=faces&auto=format&q=80",
     email: "dinesh.rajapaksha@example.lk",
     district: "Gampaha",
+    province: "Western",
     sector: "Private sector",
     organisation: "Lanka Cement Works",
     joined: "2026-08-11",
@@ -163,6 +176,7 @@ export const STUDENTS: StudentRecord[] = [
       "https://images.unsplash.com/photo-1520813792240-56fc4a3765a7?w=256&h=256&fit=crop&crop=faces&auto=format&q=80",
     email: "sanduni.alwis@example.lk",
     district: "Colombo",
+    province: "Western",
     sector: "University or school",
     organisation: "University of Moratuwa",
     joined: "2026-08-10",
@@ -191,6 +205,7 @@ export const STUDENTS: StudentRecord[] = [
       "https://images.unsplash.com/photo-1544723795-3fb6469f5b39?w=256&h=256&fit=crop&crop=faces&auto=format&q=80",
     email: "mohamed.rizvi@example.lk",
     district: "Puttalam",
+    province: "North Western",
     sector: "Provincial or local authority",
     organisation: "Puttalam Urban Council",
     joined: "2026-08-08",
@@ -213,6 +228,7 @@ export const STUDENTS: StudentRecord[] = [
       "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=256&h=256&fit=crop&crop=faces&auto=format&q=80",
     email: "piyumi.g@example.lk",
     district: "Galle",
+    province: "Southern",
     sector: "Government or public sector",
     organisation: "Coast Conservation Department",
     joined: "2026-08-06",
@@ -242,6 +258,7 @@ export const STUDENTS: StudentRecord[] = [
       "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=256&h=256&fit=crop&crop=faces&auto=format&q=80",
     email: "thilina.perera@example.lk",
     district: "Kurunegala",
+    province: "North Western",
     sector: "Government or public sector",
     organisation: "District Secretariat, Kurunegala",
     joined: "2026-08-04",
@@ -264,6 +281,7 @@ export const STUDENTS: StudentRecord[] = [
       "https://images.unsplash.com/photo-1500917293891-ef795e70e1f6?w=256&h=256&fit=crop&crop=faces&auto=format&q=80",
     email: "nirosha.silva@example.lk",
     district: "Matara",
+    province: "Southern",
     sector: "University or school",
     organisation: "University of Ruhuna",
     joined: "2026-08-02",
@@ -287,6 +305,7 @@ export const STUDENTS: StudentRecord[] = [
       "https://images.unsplash.com/photo-1489980557514-251d61e3eeb6?w=256&h=256&fit=crop&crop=faces&auto=format&q=80",
     email: "ahamed.naushad@example.lk",
     district: "Ampara",
+    province: "Eastern",
     sector: "Provincial or local authority",
     organisation: "Ampara Pradeshiya Sabha",
     joined: "2026-07-31",
@@ -309,6 +328,7 @@ export const STUDENTS: StudentRecord[] = [
       "https://images.unsplash.com/photo-1554151228-14d9def656e4?w=256&h=256&fit=crop&crop=faces&auto=format&q=80",
     email: "chamodi.j@example.lk",
     district: "Colombo",
+    province: "Western",
     sector: "Private sector",
     organisation: "Ceylon Green Advisory",
     joined: "2026-07-29",
@@ -337,6 +357,7 @@ export const STUDENTS: StudentRecord[] = [
       "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=256&h=256&fit=crop&crop=faces&auto=format&q=80",
     email: "ruwanthi.dias@example.lk",
     district: "Nuwara Eliya",
+    province: "Central",
     sector: "NGO or development organisation",
     organisation: "Highlands Water Forum",
     joined: "2026-07-27",
@@ -359,6 +380,7 @@ export const STUDENTS: StudentRecord[] = [
       "https://images.unsplash.com/photo-1542178243-bc20204b769f?w=256&h=256&fit=crop&crop=faces&auto=format&q=80",
     email: "buddhika.s@example.lk",
     district: "Anuradhapura",
+    province: "North Central",
     sector: "Government or public sector",
     organisation: "Department of Agriculture",
     joined: "2026-07-24",
@@ -381,6 +403,7 @@ export const STUDENTS: StudentRecord[] = [
       "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=256&h=256&fit=crop&crop=faces&auto=format&q=80",
     email: "shanika.rodrigo@example.lk",
     district: "Gampaha",
+    province: "Western",
     sector: "Private sector",
     organisation: "Negombo Logistics",
     joined: "2026-07-21",
@@ -410,6 +433,7 @@ export const STUDENTS: StudentRecord[] = [
       "https://images.unsplash.com/photo-1618077360395-f3068be8e001?w=256&h=256&fit=crop&crop=faces&auto=format&q=80",
     email: "janaka.b@example.lk",
     district: "Badulla",
+    province: "Uva",
     sector: "Provincial or local authority",
     organisation: "Uva Provincial Council",
     joined: "2026-07-18",
@@ -425,6 +449,7 @@ export const STUDENTS: StudentRecord[] = [
       "https://images.unsplash.com/photo-1567532939604-b6b5b0db2604?w=256&h=256&fit=crop&crop=faces&auto=format&q=80",
     email: "vithya.s@example.lk",
     district: "Jaffna",
+    province: "Northern",
     sector: "University or school",
     organisation: "University of Jaffna",
     joined: "2026-07-15",
@@ -453,6 +478,7 @@ export const STUDENTS: StudentRecord[] = [
       "https://images.unsplash.com/photo-1607990281513-2c110a25bd8c?w=256&h=256&fit=crop&crop=faces&auto=format&q=80",
     email: "roshan.peiris@example.lk",
     district: "Colombo",
+    province: "Western",
     sector: "Government or public sector",
     organisation: "Urban Development Authority",
     joined: "2026-07-12",
@@ -475,6 +501,7 @@ export const STUDENTS: StudentRecord[] = [
       "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=256&h=256&fit=crop&crop=faces&auto=format&q=80",
     email: "amali.fonseka@example.lk",
     district: "Kalutara",
+    province: "Western",
     sector: "NGO or development organisation",
     organisation: "Southern Livelihoods Network",
     joined: "2026-07-09",
@@ -504,6 +531,7 @@ export const STUDENTS: StudentRecord[] = [
       "https://images.unsplash.com/photo-1552374196-c4e7ffc6e126?w=256&h=256&fit=crop&crop=faces&auto=format&q=80",
     email: "sajith.weerakoon@example.lk",
     district: "Ratnapura",
+    province: "Sabaragamuwa",
     sector: "Something else",
     organisation: "Independent consultant",
     joined: "2026-07-05",
@@ -526,6 +554,7 @@ export const STUDENTS: StudentRecord[] = [
       "https://images.unsplash.com/photo-1602233158242-3ba0ac4d2167?w=256&h=256&fit=crop&crop=faces&auto=format&q=80",
     email: "hasini.a@example.lk",
     district: "Kandy",
+    province: "Central",
     sector: "Government or public sector",
     organisation: "Central Environmental Authority",
     joined: "2026-07-02",
@@ -555,6 +584,7 @@ export const STUDENTS: StudentRecord[] = [
       "https://images.unsplash.com/photo-1508341591423-4347099e1f19?w=256&h=256&fit=crop&crop=faces&auto=format&q=80",
     email: "nimal.k@example.lk",
     district: "Polonnaruwa",
+    province: "North Central",
     sector: "Government or public sector",
     organisation: "Irrigation Department",
     joined: "2026-06-28",
@@ -577,6 +607,7 @@ export const STUDENTS: StudentRecord[] = [
       "https://images.unsplash.com/photo-1614283233556-f35b0c801ef1?w=256&h=256&fit=crop&crop=faces&auto=format&q=80",
     email: "dulmini.herath@example.lk",
     district: "Colombo",
+    province: "Western",
     sector: "Private sector",
     organisation: "Hatton Development Bank",
     joined: "2026-06-24",
@@ -606,6 +637,7 @@ export const STUDENTS: StudentRecord[] = [
       "https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=256&h=256&fit=crop&crop=faces&auto=format&q=80",
     email: "aravinth.t@example.lk",
     district: "Trincomalee",
+    province: "Eastern",
     sector: "Provincial or local authority",
     organisation: "Trincomalee Municipal Council",
     joined: "2026-06-20",
@@ -628,6 +660,7 @@ export const STUDENTS: StudentRecord[] = [
       "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=256&h=256&fit=crop&crop=faces&auto=format&q=80",
     email: "menaka.liyanage@example.lk",
     district: "Galle",
+    province: "Southern",
     sector: "University or school",
     organisation: "Southern Technical College",
     joined: "2026-06-16",
@@ -651,6 +684,7 @@ export const STUDENTS: StudentRecord[] = [
       "https://images.unsplash.com/photo-1519244703995-f4e0f30006d5?w=256&h=256&fit=crop&crop=faces&auto=format&q=80",
     email: "chathura.r@example.lk",
     district: "Hambantota",
+    province: "Southern",
     sector: "Government or public sector",
     organisation: "Divisional Secretariat, Tangalle",
     joined: "2026-06-11",
@@ -673,6 +707,7 @@ export const STUDENTS: StudentRecord[] = [
       "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=256&h=256&fit=crop&crop=faces&auto=format&q=80",
     email: "iresha.kumari@example.lk",
     district: "Monaragala",
+    province: "Uva",
     sector: "NGO or development organisation",
     organisation: "Dry Zone Farmers Collective",
     joined: "2026-06-07",

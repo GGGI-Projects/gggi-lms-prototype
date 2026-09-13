@@ -29,13 +29,21 @@ export const BRAND = {
   email: "hello@greenfin.lk",
   /** Prototype only - no real routes behind these yet. */
   routes: {
-    signup: "/signup",
+    /** No longer an instant account - see docs/SRS.md §4.2. The property
+     *  name stays `register` rather than `signup` for the same reason the
+     *  Lecturer role rename touched every route that said `instructor`:
+     *  the word a route is named after should say what it does now. */
+    register: "/register",
     login: "/login",
-    verifyEmail: "/verify-email",
+    /** Where an application lands after submitting, and where signing back
+     *  in returns a pending or rejected one - see FR-AUTH-050/055. Replaces
+     *  the old `/verify-email` step outright; there is no confirmation
+     *  email to wait for any more. */
+    applicationStatus: "/application-status",
     /** The one route here that is not a prototype stand-in - see `/verify`. */
     verifyCertificate: "/verify",
     consoleLogin: "/console/login",
     modules: "#modules",
-    dashboard: "/dashboard",
+    dashboard: "/learn/dashboard",
   },
 } as const;

@@ -96,7 +96,7 @@ export default async function LecturerQuizPage({ params }: Params) {
           lecture: `${base}/lectures/${mod.id}`,
           module: base,
           learner: live
-            ? `/modules/${mdl.id}/lectures/${mod.id}/quiz`
+            ? `/learn/modules/${mdl.id}/lectures/${mod.id}/quiz`
             : undefined,
         }}
         capability="authorLectures"

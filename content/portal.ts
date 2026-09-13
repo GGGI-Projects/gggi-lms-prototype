@@ -38,6 +38,11 @@ export const LEARNER = {
   organisation: "District Secretariat, Galle",
   sector: "Government or public sector",
   district: "Galle",
+  /** Galle sits in the Southern Province - set once at registration
+   *  (see docs/SRS.md §4.2) and read twice after: it decides which
+   *  Provincial Registrar an application would have gone to, and it orders
+   *  the Laws tab, own-province items first (see `lib/laws-tools.ts`). */
+  province: "Southern" as const,
   joined: "2026-05-18",
   /** Used by the settings page. No preference is persisted anywhere. */
   preferences: {
@@ -203,7 +208,7 @@ export const ACTIVITY: ActivityItem[] = [
     title: "Building a vulnerability index",
     detail: "Climate Vulnerability Assessment",
     on: "2026-08-11",
-    href: "/modules/climate-vulnerability-assessment/lectures/building-a-vulnerability-index",
+    href: "/learn/modules/climate-vulnerability-assessment/lectures/building-a-vulnerability-index",
   },
   {
     id: "a2",
@@ -211,7 +216,7 @@ export const ACTIVITY: ActivityItem[] = [
     title: "Reading Sri Lanka's climate hazard data",
     detail: "Passed with 100%",
     on: "2026-08-09",
-    href: "/modules/climate-vulnerability-assessment/lectures/reading-sri-lankas-climate-hazard-data/quiz",
+    href: "/learn/modules/climate-vulnerability-assessment/lectures/reading-sri-lankas-climate-hazard-data/quiz",
   },
   {
     id: "a3",
@@ -219,7 +224,7 @@ export const ACTIVITY: ActivityItem[] = [
     title: "What makes a project bankable",
     detail: "Developing Bankable Climate Finance Proposals",
     on: "2026-07-31",
-    href: "/modules/bankable-climate-finance-proposals/lectures/what-makes-a-project-bankable",
+    href: "/learn/modules/bankable-climate-finance-proposals/lectures/what-makes-a-project-bankable",
   },
   {
     id: "a4",
@@ -227,7 +232,7 @@ export const ACTIVITY: ActivityItem[] = [
     title: "Localising the Provincial Adaptation Plan",
     detail: "Certificate GP-2026-PA-04817 issued",
     on: "2026-07-28",
-    href: "/certificates/gp-2026-pa-04817",
+    href: "/learn/certificates/gp-2026-pa-04817",
   },
   {
     id: "a5",
@@ -235,7 +240,7 @@ export const ACTIVITY: ActivityItem[] = [
     title: "Developing Bankable Climate Finance Proposals",
     detail: "Enrolled",
     on: "2026-07-14",
-    href: "/modules/bankable-climate-finance-proposals",
+    href: "/learn/modules/bankable-climate-finance-proposals",
   },
 ];
 

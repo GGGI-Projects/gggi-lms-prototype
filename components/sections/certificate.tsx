@@ -72,7 +72,7 @@ export function Certificate() {
           <Reveal delay={0.5}>
             <div className="mt-9">
               <ActionButton
-                href={BRAND.routes.signup}
+                href={BRAND.routes.register}
                 variant="solid"
                 size="md"
                 className="group"

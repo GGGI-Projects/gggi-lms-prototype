@@ -59,7 +59,7 @@ export function LectureRow({
 
   return (
     <Link
-      href={`/modules/${moduleId}/lectures/${lecture.id}`}
+      href={`/learn/modules/${moduleId}/lectures/${lecture.id}`}
       aria-current={current ? "step" : undefined}
       className={`group flex items-start gap-4 px-5 py-5 transition-colors duration-300 sm:gap-5 sm:px-6 ${current ? "bg-accent-pale/60" : "hover:bg-surface/60"
         }`}

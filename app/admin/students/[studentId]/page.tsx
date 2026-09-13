@@ -126,7 +126,7 @@ export default async function StudentPage({ params }: Params) {
             <p>
               The student portal signs in as this account, so the progress below
               is the same progress that dashboard shows.{" "}
-              <Link href="/dashboard" className="link-wipe font-semibold text-primary">
+              <Link href="/learn/dashboard" className="link-wipe font-semibold text-primary">
                 Open the student portal
               </Link>
               .
@@ -284,6 +284,7 @@ export default async function StudentPage({ params }: Params) {
               className="mt-5"
               items={[
                 { term: "Email", value: student.email },
+                { term: "Province", value: student.province },
                 { term: "District", value: student.district },
                 { term: "Sector", value: student.sector },
                 { term: "Registered", value: formatDateLong(student.joined) },
@@ -329,7 +330,7 @@ export default async function StudentPage({ params }: Params) {
                   <ConfirmAction
                     label="Suspend this account"
                     question={`Suspend ${student.name}?`}
-                    detail="They cannot sign in until an administrator lifts it. Progress and certificates already earned are kept."
+                    detail="They cannot sign in until an administrator or their province's Registrar lifts it. Progress and certificates already earned are kept."
                     confirmLabel="Suspend the account"
                     done="Prototype - the account is unchanged and the learner was not notified."
                   />

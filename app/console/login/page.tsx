@@ -18,7 +18,7 @@ export const metadata: Metadata = {
  * creating a free learner account - no card, no prerequisite, cancel any
  * time - and none of that is true of a staff seat, which somebody else on the
  * team had to create first. A single narrow column, closer to
- * `/verify-email`'s, says "this is a different kind of door" without having
+ * `/application-status`'s, says "this is a different kind of door" without having
  * to say it in a sentence.
  */
 export default function ConsoleLoginPage() {

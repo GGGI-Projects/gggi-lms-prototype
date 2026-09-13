@@ -4,6 +4,7 @@ import { useId, useState } from "react";
 import { ActionButton } from "@/components/ui/action-button";
 import { Drawer } from "@/components/console/drawer";
 import { Avatar, SearchField } from "@/components/student-portal/ui";
+import { AlertIcon } from "@/components/console/icons";
 import { IfCan, LockedNote } from "@/components/console/permission";
 import { META } from "@/lib/theme";
 import type { Capability } from "@/lib/permissions";
@@ -14,9 +15,10 @@ import type { Capability } from "@/lib/permissions";
  * The mirror of `AssignModules` in `console/actions.tsx` - that one is a
  * lecturer's own page asking "which modules", this is a module's page asking
  * "which lecturers" - same checkbox-list-and-save shape, read from the other
- * side. Unlike `AssignModules`, unchecking someone here carries no removal
- * warning: the module keeps every lecture already written regardless of who
- * is assigned to write the next one.
+ * side, right down to the same removal warning: unchecking someone here ends
+ * their ASSIGNMENT, never their account, and never anything they already
+ * wrote (FR-MODADM-060) - a fact worth stating plainly rather than trusting
+ * the reader to already know it.
  *
  * A DRAWER, not an inline panel, for the same reason `<AttachLectureMaterials>`
  * keeps its picker behind a button - assigning lecturers is an occasional act,
@@ -56,6 +58,9 @@ export function AssignModuleLecturers({
 
   const visibleLecturers = lecturers.filter((lecturer) =>
     lecturer.name.toLowerCase().includes(query.trim().toLowerCase()),
+  );
+  const removed = lecturers.filter(
+    (lecturer) => assigned.includes(lecturer.id) && !selected.includes(lecturer.id),
   );
 
   const toggle = (id: string) => {
@@ -147,6 +152,19 @@ export function AssignModuleLecturers({
           ) : (
             <p className={META.base}>No lecturer matches that.</p>
           )}
+
+          {removed.length ? (
+            <p className="mt-4 flex items-start gap-2 rounded-sm border border-clay/25 bg-clay-pale px-5 py-4 text-lg leading-relaxed text-ink">
+              <AlertIcon className="mt-1 size-5 shrink-0 text-clay" />
+              <span>
+                Ending {removed.length === 1 ? "this assignment" : "these assignments"}{" "}
+                does not delete or unpublish anything{" "}
+                {removed.map((lecturer) => lecturer.name).join(", ")} already
+                wrote for {moduleTitle} - it only stops them editing it
+                further.
+              </span>
+            </p>
+          ) : null}
 
           {saved ? (
             <p

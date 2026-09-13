@@ -65,6 +65,18 @@ export function TeamIcon({ className }: IconProps) {
   );
 }
 
+/** An intake tray - the Provincial Registrar's queue of applications waiting
+ *  on a decision, not yet anybody's account. */
+export function InboxIcon({ className }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M4 12.5h4.5l1.5 3h4l1.5-3H20" />
+      <path d="M4 12.5 6 5.5a1.6 1.6 0 0 1 1.5-1h9a1.6 1.6 0 0 1 1.5 1l2 7" />
+      <rect x="4" y="12.5" width="16" height="6.5" rx="1.6" />
+    </svg>
+  );
+}
+
 /* --------------------------------------------------------------- moderation */
 
 // `StarIcon` and `StarFilledIcon` used to live here - "reviews are a console
@@ -153,6 +165,17 @@ export function LecturesIcon({ className }: IconProps) {
       <rect x="3.5" y="3.5" width="17" height="6" rx="2" />
       <rect x="3.5" y="13" width="17" height="7.5" rx="2" />
       <path d="M7 16.8h6" />
+    </svg>
+  );
+}
+
+/** A price tag - the dynamic option lists a Module, Law or Tool is tagged
+ *  from. */
+export function TagIcon({ className }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M11.5 3.5h6a2 2 0 0 1 2 2v6a2 2 0 0 1-.6 1.4l-8 8a2 2 0 0 1-2.8 0l-6-6a2 2 0 0 1 0-2.8l8-8a2 2 0 0 1 1.4-.6Z" />
+      <circle cx="15.5" cy="7.5" r="1.4" />
     </svg>
   );
 }

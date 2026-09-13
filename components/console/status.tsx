@@ -97,6 +97,23 @@ export const REVIEW_STATUS_TONE: Record<
   rejected: "warn",
 };
 
+/* -------------------------------------------------------- applications */
+
+export const APPLICATION_STATUS_LABEL = {
+  pending: "Pending",
+  approved: "Approved",
+  rejected: "Rejected",
+} as const;
+
+export const APPLICATION_STATUS_TONE: Record<
+  keyof typeof APPLICATION_STATUS_LABEL,
+  BadgeTone
+> = {
+  pending: "active",
+  approved: "done",
+  rejected: "warn",
+};
+
 /* ------------------------------------------------------------ certificates */
 
 export const CERTIFICATE_STATUS_LABEL = {

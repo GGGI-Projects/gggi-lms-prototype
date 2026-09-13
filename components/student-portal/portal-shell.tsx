@@ -126,7 +126,7 @@ function Rail({ className = "" }: { className?: string }) {
   return (
     <RailShell
       className={className}
-      logoHref="/dashboard"
+      logoHref="/learn/dashboard"
       logoLabel={`${BRAND.name} ${BRAND.suffix} - dashboard`}
       navLabel="Portal"
       logo={
@@ -144,8 +144,8 @@ function Rail({ className = "" }: { className?: string }) {
       }
       foot={<LearnerCard />}
     >
-      {PORTAL_NAV.map((group) => (
-        <RailGroup key={group.label} label={group.label}>
+      {PORTAL_NAV.map((group, groupIndex) => (
+        <RailGroup key={group.label ?? `group-${groupIndex}`} label={group.label}>
           {group.items.map((item) => (
             <li key={item.href}>
               <RailLink
@@ -153,7 +153,28 @@ function Rail({ className = "" }: { className?: string }) {
                 label={item.label}
                 icon={item.icon}
                 active={isActive(pathname, item)}
+                // A row with its own sub-menu (only "Learn") never draws the
+                // bar itself - the specific child underneath it does, so
+                // exactly one row in the tree ever carries it at a time.
+                showActiveBar={!item.children}
               />
+              {item.children ? (
+                // Indented, and connected by a rule to the parent above it -
+                // "Dashboard"/"Modules"/"Certificates" reading as pieces of
+                // "Learn" rather than three more peers of it.
+                <ul className="mt-1 ml-5 space-y-1 border-l border-primary-800/60 pl-3">
+                  {item.children.map((child) => (
+                    <li key={child.href}>
+                      <RailLink
+                        href={child.href}
+                        label={child.label}
+                        icon={child.icon}
+                        active={isActive(pathname, child)}
+                      />
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
             </li>
           ))}
         </RailGroup>
@@ -208,7 +229,7 @@ function Topbar({
         // The mark only appears below `lg`, where the rail is not on screen.
         // Showing it in both places would put two wordmarks on one row.
         <Link
-          href="/dashboard"
+          href="/learn/dashboard"
           className="flex items-center gap-2.5 text-ink lg:hidden"
           aria-label={`${BRAND.name} ${BRAND.suffix} - dashboard`}
         >

@@ -73,6 +73,17 @@ export type Lecture = {
   /** Three, always. A list of five stops being read. */
   objectives: string[];
   content: ContentBlock[];
+  /**
+   * A lecturer's own pick from their Module's related pool (see
+   * `relatedPoolForModule()` in `lib/laws-tools.ts`) - never chosen from the
+   * whole Law library or Tool directory directly (see docs/SRS.md §4.10a).
+   * Optional, and most lectures have neither: this is a deliberate,
+   * narrower editorial choice on top of the pool's automatic, broader one,
+   * the same relationship fill-in-the-blank questions have to a lecture's
+   * quiz.
+   */
+  relatedLawIds?: string[];
+  relatedToolIds?: string[];
 };
 
 /* ------------------------------------------------------------------ lectures */
@@ -82,6 +93,8 @@ export const LECTURES: Record<string, Lecture[]> = {
   "climate-vulnerability-assessment": [
     {
       id: "why-vulnerability-is-not-risk",
+      relatedLawIds: ["national-environmental-act", "disaster-management-act"],
+      relatedToolIds: ["climate-risk-screening-tool"],
       number: "01",
       title: "Why vulnerability is not the same as risk",
       kind: "video",
@@ -184,6 +197,7 @@ export const LECTURES: Record<string, Lecture[]> = {
     },
     {
       id: "building-a-vulnerability-index",
+      relatedToolIds: ["vulnerability-index-calculator"],
       number: "04",
       title: "Building a vulnerability index",
       kind: "reading",
@@ -486,6 +500,8 @@ export const LECTURES: Record<string, Lecture[]> = {
     },
     {
       id: "costing-a-localised-adaptation-action",
+      relatedLawIds: ["national-adaptation-plan", "provincial-councils-act"],
+      relatedToolIds: ["provincial-adaptation-costing-sheet"],
       number: "05",
       title: "Costing a localised adaptation action",
       kind: "video",
@@ -789,6 +805,7 @@ export const LECTURES: Record<string, Lecture[]> = {
     },
     {
       id: "writing-the-proposal-that-survives-review",
+      relatedToolIds: ["climate-finance-proposal-checklist"],
       number: "07",
       title: "Writing the proposal that survives review",
       kind: "video",
@@ -926,6 +943,7 @@ export const LECTURES: Record<string, Lecture[]> = {
     },
     {
       id: "designing-an-inclusive-consultation",
+      relatedToolIds: ["gsi-consultation-design-toolkit"],
       number: "03",
       title: "Designing an inclusive consultation",
       kind: "video",
@@ -1162,6 +1180,7 @@ export const LECTURES: Record<string, Lecture[]> = {
     },
     {
       id: "gender-budget-statements",
+      relatedToolIds: ["gender-budget-statement-template"],
       number: "03",
       title: "Gender budget statements: what goes in one",
       kind: "video",

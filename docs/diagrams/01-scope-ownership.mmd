@@ -1,0 +1,34 @@
+%% Ministry Pivot — Scope & Ownership Map
+%% See docs/SRS.md §1.2, §4.15–4.21, §4.29–4.33, §7, BR-29
+flowchart TD
+    SA["Super Administrator<br/><i>platform-wide · exactly one account</i>"]
+    MA["Module Administrator<br/><i>scope: one Module</i>"]
+    LA["Laws Administrator<br/><i>scope: global library</i>"]
+    TA["Tools Administrator<br/><i>scope: global directory</i>"]
+    LM["List Manager<br/><i>scope: dynamic lists</i>"]
+    PR["Provincial Registrar<br/><i>scope: one province</i>"]
+    LEC["Lecturer"]
+    MA2["Module Administrator<br/><i>(a different Module — FR-MODADM-055)</i>"]
+    LRN["Learner<br/><i>one province</i>"]
+
+    SA -->|appoints §4.21| MA
+    SA -->|appoints| LA
+    SA -->|appoints| TA
+    SA -->|appoints| LM
+    SA -->|appoints| PR
+
+    MA -->|appoints, own Module| LEC
+    MA2 -.->|also assigns| LEC
+    LEC -.->|full suspend / profile review — escalates BR-29| SA
+
+    PR -->|approves| LRN
+
+    classDef apex fill:#f5ead2,stroke:#a5711f,stroke-width:2px,color:#16201c;
+    classDef scoped fill:#e2efe9,stroke:#1f5f4f,stroke-width:1.5px,color:#16201c;
+    classDef ghost fill:#eeeeee,stroke:#999999,stroke-width:1px,stroke-dasharray: 4 3,color:#555555;
+    classDef plain fill:#ffffff,stroke:#888888,stroke-width:1px,color:#16201c;
+
+    class SA apex;
+    class MA,PR scoped;
+    class MA2 ghost;
+    class LA,TA,LM,LEC,LRN plain;

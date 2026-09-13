@@ -1,0 +1,40 @@
+%% Ministry Pivot — Tag-Based Relatedness, From Pool to Lecture
+%% See docs/SRS.md §4.10a, §4.32, BR-26. Example content is illustrative only.
+flowchart TD
+    subgraph Hazards["Hazards"]
+        H1["Flooding"]
+        H2["Landslide"]
+        H3["Chemical Spill"]
+    end
+    subgraph Categories["Categories"]
+        C1["Waste Management"]
+        C2["Water Quality"]
+    end
+
+    MOD["Module<br/>'Coastal Waste Management'<br/><i>tags: Flooding, Waste Mgmt</i>"]
+    LAW["Law<br/>'National Environmental Act §23'<br/><i>tags: Waste Mgmt</i>"]
+    TOOL["Tool<br/>'Waste Audit Calculator'<br/><i>tags: Waste Mgmt, Water Quality</i>"]
+
+    H1 --> MOD
+    C1 --> MOD
+    C1 --> LAW
+    C1 --> TOOL
+    C2 --> TOOL
+
+    POOL["Module's related pool<br/><i>Law + Tool — any shared tag, BR-26</i>"]
+    LAW ==>|matches| POOL
+    TOOL ==>|matches| POOL
+
+    CURATE["Lecturer curates a subset<br/><i>§4.10a</i>"]
+    POOL --> CURATE
+
+    RESULT["Lecture page shows:<br/>✓ Waste Audit Calculator<br/>✗ Act §23 — not picked"]
+    CURATE --> RESULT
+
+    classDef chip fill:#eeeeee,stroke:#999999,color:#333333;
+    classDef pool fill:#e2efe9,stroke:#1f5f4f,stroke-width:2px,color:#16201c;
+    classDef plain fill:#ffffff,stroke:#888888,color:#16201c;
+
+    class H1,H2,H3,C1,C2 chip;
+    class MOD,LAW,TOOL plain;
+    class POOL,RESULT pool;

@@ -6,7 +6,10 @@ import type { ContentBlock, Lecture } from "@/content/curriculum";
 import type { QuizStats } from "@/content/operations";
 import { quizNeedsAttention, type ConsoleLecture } from "@/lib/admin";
 import type { AttachedMaterial } from "@/lib/materials";
+import type { Law } from "@/content/laws";
+import type { Tool } from "@/content/tools";
 import { formatDate, formatDuration } from "@/lib/portal";
+import { lawTagLabels, toolTagLabels } from "@/lib/laws-tools";
 import {
   Badge,
   Callout,
@@ -17,6 +20,10 @@ import {
   PrototypeNote,
 } from "@/components/console/ui";
 import { ConfirmAction, StateControl } from "@/components/console/actions";
+import {
+  AttachRelatedItems,
+  type PickableRelatedItem,
+} from "@/components/console/attach-related-action";
 import { AttachLectureMaterials } from "@/components/console/attach-materials-action";
 import {
   AddContentBlockActions,
@@ -33,7 +40,9 @@ import { LECTURE_STATE_LABEL, LECTURE_STATE_TONE } from "@/components/console/st
 import {
   ArrowRightIcon,
   ClockIcon,
+  LawIcon,
   ReadingIcon,
+  ToolIcon,
   VideoIcon,
 } from "@/components/student-portal/icons";
 import { ExternalIcon, PlusIcon } from "@/components/console/icons";
@@ -69,6 +78,8 @@ export function LectureEditor({
   content,
   attachments,
   picker,
+  relatedPool,
+  related,
   quiz,
   hrefs,
   capability,
@@ -79,6 +90,13 @@ export function LectureEditor({
   content: Lecture | null;
   attachments: AttachedMaterial[];
   picker: { materials: PickerMaterial[]; groups: PickerGroup[] };
+  /** The MODULE's own related pool - every published Law/Tool sharing a tag
+   *  with it (see `relatedPoolForModule()`), and never anything wider. This
+   *  is the pool the pickers below are scoped to (FR-INS-105). */
+  relatedPool: { laws: Law[]; tools: Tool[] };
+  /** This LECTURE's own curated subset of the pool above (see
+   *  `curatedForLecture()`) - most lectures pick neither. */
+  related: { laws: Law[]; tools: Tool[] };
   quiz: {
     questions: number;
     stats: QuizStats | null;
@@ -235,9 +253,38 @@ export function LectureEditor({
           </div>
         </EditorSection>
 
+        {/* -------------------------------------------------- related laws */}
+        {/* LAWS AND TOOLS ARE TWO SEPARATE SECTIONS, never merged - the same
+            rule the learner-facing Module and Lecture pages follow (see the
+            note there). A Laws Administrator and a Tools Administrator each
+            own one shelf; a lecturer picking from one should never have to
+            pick law rows out from between tool rows to find them. */}
+        <RelatedItemsSection
+          index={3}
+          noun="law"
+          Icon={LawIcon}
+          pool={relatedPool.laws}
+          picked={related.laws}
+          detailFor={(law) => law.reference}
+          tagsFor={lawTagLabels}
+          capability={capability}
+        />
+
+        {/* ------------------------------------------------- related tools */}
+        <RelatedItemsSection
+          index={4}
+          noun="tool"
+          Icon={ToolIcon}
+          pool={relatedPool.tools}
+          picked={related.tools}
+          detailFor={(tool) => tool.explanation}
+          tagsFor={toolTagLabels}
+          capability={capability}
+        />
+
         {/* ----------------------------------------------------------- quiz */}
         <EditorSection
-          index={3}
+          index={5}
           title="Lecture quiz"
           description={`${quiz.questions ? `${quiz.questions} questions` : "No questions"} close this lecture. The pass mark is ${quiz.passMark}% and is set once for the whole platform.${quiz.blankCount ? ` It also carries ${quiz.blankCount} fill-in-the-blank question${quiz.blankCount === 1 ? "" : "s"} - a learner has to clear both to move on.` : ""}`}
           action={
@@ -494,6 +541,118 @@ function EditorSection({
       </div>
       <div className="mt-6">{children}</div>
     </section>
+  );
+}
+
+/* -------------------------------------------------------------- related */
+
+/**
+ * One of the two related-item steps - laws, or tools - never both at once.
+ *
+ * Generic over `T` so the one component serves both `Law` and `Tool`
+ * without either being reshaped to fit the other: a Law's second line is
+ * its reference, a Tool's is its explanation, and `detailFor`/`tagsFor` are
+ * how each call site says so without this component needing to know either
+ * shape directly.
+ *
+ * A POOL OF ZERO IS ITS OWN STATE (FR-INS-107), not an empty version of the
+ * picked-items state below it: there is nothing to pick, so the picker
+ * button itself does not appear - only a plain explanation of why, pointing
+ * at the module's own tags as the fix.
+ */
+function RelatedItemsSection<T extends { id: string; title: string }>({
+  index,
+  noun,
+  Icon,
+  pool,
+  picked,
+  detailFor,
+  tagsFor,
+  capability,
+}: {
+  index: number;
+  noun: "law" | "tool";
+  Icon: (props: { className?: string }) => ReactNode;
+  /** The module's own related pool for this kind - see `relatedPool` on
+   *  `<LectureEditor>`. */
+  pool: T[];
+  /** This lecture's own curated subset of `pool`. */
+  picked: T[];
+  detailFor: (item: T) => string;
+  tagsFor: (item: T) => string[];
+  capability: "manageModules" | "authorLectures";
+}) {
+  const Noun = noun === "law" ? "Law" : "Tool";
+
+  return (
+    <EditorSection
+      index={index}
+      title={`Related ${noun}s`}
+      description={`Picked from the module's own related ${noun}s - a ${noun} joins that pool automatically once it shares a hazard or category tag with the module, and a lecturer picks which of them are worth this lecture specifically.`}
+    >
+      {pool.length === 0 ? (
+        <Callout tone="info" title="Nothing to pick yet">
+          No {noun} shares a hazard or category tag with this module yet -
+          tag the module, or a {noun}, with something they share to relate
+          one.
+        </Callout>
+      ) : (
+        <>
+          {picked.length ? (
+            <ul className="divide-y divide-surface-deep rounded-sm border border-surface-deep bg-paper-raised">
+              {picked.map((item) => (
+                <li key={item.id} className="flex items-center gap-4 px-5 py-3.5">
+                  <span
+                    aria-hidden="true"
+                    className="grid size-9 shrink-0 place-items-center rounded-sm bg-surface text-ink-soft"
+                  >
+                    <Icon className="size-5" />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-lg font-semibold text-ink">
+                      {item.title}
+                    </p>
+                    <p className={`mt-0.5 truncate ${META.base}`}>
+                      {detailFor(item)}
+                    </p>
+                  </div>
+                  <IfCan capability={capability}>
+                    <span className="shrink-0 text-sm font-semibold text-clay">
+                      Remove
+                    </span>
+                  </IfCan>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p
+              className={`rounded-sm border border-dashed border-muted-light bg-paper-raised px-6 py-10 text-center ${BODY.base}`}
+            >
+              Nothing picked for this lecture yet.
+            </p>
+          )}
+
+          <div className="mt-6">
+            <AttachRelatedItems
+              noun={noun}
+              items={pool.map(
+                (item): PickableRelatedItem => ({
+                  id: item.id,
+                  title: item.title,
+                  detail: detailFor(item),
+                  tags: tagsFor(item),
+                }),
+              )}
+              attachedIds={picked.map((item) => item.id)}
+              capability={capability}
+            />
+          </div>
+        </>
+      )}
+      <p className={`mt-3 ${META.base}`}>
+        {Noun}s themselves live in the {noun === "law" ? "Law library" : "Tool directory"}, managed separately.
+      </p>
+    </EditorSection>
   );
 }
 

@@ -281,7 +281,7 @@ export function allQuizzes(): QuizSummary[] {
       lectureCompleted: Boolean(
         progress.enrolment?.completedLectureIds.includes(lecture.id),
       ),
-      href: `/modules/${progress.module.id}/lectures/${lecture.id}/quiz`,
+      href: `/learn/modules/${progress.module.id}/lectures/${lecture.id}/quiz`,
       hasBlanks: hasBlankQuestions(lecture.id),
       blankStatus: blankStatus(progress.module.id, lecture.id),
       gateCleared: lectureGateCleared(progress.module.id, lecture.id),

@@ -14,6 +14,12 @@ import {
 import {
   navFor,
   isActive,
+  AREA_HAS_COMMS,
+  AREA_HOME,
+  AREA_LABEL,
+  AREA_PROFILE,
+  AREA_ROLE,
+  AREA_SEARCH_PLACEHOLDER,
   VIEWPOINTS,
   type ConsoleArea,
   type NavItem,
@@ -78,14 +84,12 @@ export function ConsoleShell({
   const pathname = usePathname();
 
   /**
-   * The viewpoint. In the lecturer area it is not a choice - there is one
-   * lecturer role and nothing to switch between - so `setRole` is only
-   * handed down in the admin area, and the switcher renders as a plain label
-   * rather than a menu.
+   * The viewpoint. In every area but `admin` it is not a choice - there is
+   * one role that area renders as and nothing to switch between - so
+   * `setRole` is only handed down in the admin area, and the switcher
+   * renders as a plain label rather than a menu everywhere else.
    */
-  const [role, setRole] = useState<StaffRole>(
-    area === "lecturer" ? "lecturer" : "super-admin",
-  );
+  const [role, setRole] = useState<StaffRole>(AREA_ROLE[area]);
 
   // The drawer's open state, tied to the route it was opened on, so any
   // navigation closes it without an effect firing a second render. Same
@@ -165,7 +169,7 @@ function Rail({
   return (
     <RailShell
       className={className}
-      logoHref={area === "admin" ? "/admin" : "/lecturer"}
+      logoHref={AREA_HOME[area]}
       logoLabel={`${BRAND.name} ${BRAND.suffix} - console home`}
       navLabel="Console"
       logo={
@@ -181,7 +185,7 @@ function Rail({
                 "Academy" here; saying it again would leave the two products
                 indistinguishable at a glance in a screenshot. */}
             <span className="label-eyebrow mt-1 block text-primary-500">
-              {area === "admin" ? "Console" : "Lecturer"}
+              {AREA_LABEL[area]}
             </span>
           </span>
         </>
@@ -335,9 +339,12 @@ function RoleSwitcher({
                     setOpen(false);
                     setRole(viewpoint.role);
                     // Leaving the admin area is a navigation, not a state
-                    // change - the lecturer console is a different set of
-                    // screens, not the same ones with fewer buttons.
-                    if (viewpoint.area === "lecturer") {
+                    // change - the lecturer and registrar consoles are each
+                    // a different set of screens, not the same ones with
+                    // fewer buttons. The switcher only ever renders inside
+                    // the admin area (see `setRole` above), so "not admin"
+                    // reliably means "somewhere else."
+                    if (viewpoint.area !== "admin") {
                       router.push(viewpoint.home);
                     }
                   }}
@@ -386,15 +393,11 @@ function Topbar({
   return (
     <TopbarShell
       onMenu={onMenu}
-      searchPlaceholder={
-        area === "admin"
-          ? "Search learners, modules, references"
-          : "Search your lectures"
-      }
+      searchPlaceholder={AREA_SEARCH_PLACEHOLDER[area]}
       searchAriaLabel="Search the console"
       mobileLogo={
         <Link
-          href={area === "admin" ? "/admin" : "/lecturer"}
+          href={AREA_HOME[area]}
           className="flex items-center gap-2.5 text-ink lg:hidden"
           aria-label={`${BRAND.name} ${BRAND.suffix} - console home`}
         >
@@ -413,13 +416,19 @@ function Topbar({
             Public site
           </Link>
 
-          <NotificationBell
-            items={notifications}
-            seeAllHref={area === "admin" ? "/admin/communications" : "/lecturer/communications"}
-          />
+          {/* No bell outside admin/lecturer - see the note on
+              `AREA_HAS_COMMS`: every other scoped role's messaging reach is
+              an inferred, unconfirmed SRS extension, not something to build
+              ahead of the client asking for it. */}
+          {AREA_HAS_COMMS[area] ? (
+            <NotificationBell
+              items={notifications}
+              seeAllHref={area === "admin" ? "/admin/communications" : "/lecturer/communications"}
+            />
+          ) : null}
 
           <Link
-            href={area === "admin" ? "/admin/profile" : "/lecturer/profile"}
+            href={AREA_PROFILE[area]}
             className="flex items-center gap-2.5 rounded-full py-1 pl-1 pr-1 transition-colors hover:bg-surface sm:pr-4"
           >
             <Avatar

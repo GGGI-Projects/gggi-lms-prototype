@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { BODY, CONSOLE, META } from "@/lib/theme";
-import { ROLE_LABEL, ROLE_SUMMARY, type StaffRole } from "@/content/staff";
-import { admins, auditEntries, formatStamp, staffById, staffName } from "@/lib/admin";
+import { MANAGED_MODULES, ROLE_LABEL, ROLE_SUMMARY, type StaffRole } from "@/content/staff";
+import { appointedStaff, auditEntries, formatStamp, staffById, staffName } from "@/lib/admin";
 import { formatDate, formatDateLong } from "@/lib/portal";
 import {
   Badge,
@@ -18,7 +18,7 @@ import {
   type Column,
 } from "@/components/console/ui";
 import { ConfirmAction } from "@/components/console/actions";
-import { NewAdministratorAction } from "@/components/console/new-administrator-action";
+import { NewStaffAction } from "@/components/console/new-staff-action";
 import { Restricted } from "@/components/console/permission";
 import {
   STAFF_STATUS_LABEL,
@@ -26,7 +26,20 @@ import {
 } from "@/components/console/status";
 import { ShieldIcon } from "@/components/console/icons";
 
-export const metadata: Metadata = { title: "Administrators" };
+export const metadata: Metadata = { title: "Console team" };
+
+/** Every appointable role, in the order the roster reads best - the founding
+ *  account first, then the five it can appoint, lecturer last since it has
+ *  its own dedicated roster and profile summary elsewhere on this page. */
+const ROLE_ORDER: StaffRole[] = [
+  "super-admin",
+  "module-admin",
+  "laws-admin",
+  "tools-admin",
+  "list-manager",
+  "provincial-registrar",
+  "lecturer",
+];
 
 const COLUMNS: Column[] = [
   { key: "name", head: "Account" },
@@ -48,7 +61,7 @@ const COLUMNS: Column[] = [
  * makes every other permission mean something.
  *
  * Each row shows WHO APPOINTED IT. That is not decoration - it is the only
- * question worth asking about an administrator account nobody recognises.
+ * question worth asking about a console account nobody recognises.
  */
 export default function TeamPage() {
   return (
@@ -59,7 +72,7 @@ export default function TeamPage() {
 }
 
 function Team() {
-  const team = admins();
+  const team = appointedStaff();
   const accountTrail = auditEntries().filter((entry) =>
     entry.action.startsWith("account") || entry.action.startsWith("role"),
   );
@@ -68,16 +81,16 @@ function Team() {
     <PageBody>
       <PageHeader
         eyebrow="People"
-        title="Administrators"
-        lead="Who runs the platform, and who let them in. Only the super administrator can add, suspend or remove an account on this page."
+        title="Console team"
+        lead="Every appointed console role - who holds it, and who let them in. Only the super administrator can add, suspend or remove an account on this page. Lecturers have their own roster at Lecturers."
       />
 
       <div className={`${CONSOLE.stack} grid gap-4 sm:grid-cols-2 xl:grid-cols-4`}>
         <MetricCard label="Accounts" value={team.length} hint="with console access" />
         <MetricCard
-          label="Administrators"
-          value={team.filter((member) => member.role === "admin").length}
-          hint="day-to-day operations"
+          label="Scoped roles held"
+          value={new Set(team.map((member) => member.role)).size}
+          hint="of six possible"
         />
         <MetricCard
           label="Awaiting acceptance"
@@ -90,12 +103,14 @@ function Team() {
       <div className={CONSOLE.stack}>
         {/* The button that ADDS to this register sits at its top-right edge
             rather than in a panel somebody has to scroll past every row to
-            reach - see the note on `<NewAdministratorAction>`. */}
+            reach - see the note on `<NewStaffAction>`. */}
         <div className="mb-4 flex justify-end">
-          <NewAdministratorAction />
+          <NewStaffAction
+            modules={MANAGED_MODULES.map((mdl) => ({ id: mdl.id, title: mdl.title }))}
+          />
         </div>
 
-        <TableFrame columns={COLUMNS} caption="Administrator accounts">
+        <TableFrame columns={COLUMNS} caption="Console team accounts">
           {team.map((member) => (
             <Row key={member.id}>
               <NameCell
@@ -184,7 +199,7 @@ function Team() {
             What each role can do
           </h2>
           <ul className="mt-5 space-y-5">
-            {(["super-admin", "admin", "lecturer"] as StaffRole[]).map((role) => (
+            {ROLE_ORDER.map((role) => (
               <li key={role}>
                 <p className="text-lg font-semibold text-ink">
                   {ROLE_LABEL[role]}

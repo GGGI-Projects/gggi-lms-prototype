@@ -15,6 +15,8 @@ import {
   QUALIFICATION_FIELDS,
   type EntryValues,
 } from "@/lib/profile-fields";
+import { ROLE_LABEL, type StaffRole } from "@/lib/permissions";
+import { PROVINCES } from "@/content/laws";
 
 /**
  * The console's verbs.
@@ -154,6 +156,115 @@ export function ModerationActions({
           Your role cannot moderate reviews.
         </span>
       ) : null}
+    </div>
+  );
+}
+
+/* -------------------------------------------------------- registration */
+
+/**
+ * Approve or reject one registration application (docs/SRS.md §4.33).
+ *
+ * SAME SHAPE AS `ModerationActions`, and for the same reason: approving is
+ * agreeing that the form in front of you is genuine, rejecting is a decision
+ * the applicant gets to read back (FR-AUTH-025), so only rejecting asks for a
+ * reason. No `disabled` prop here, unlike `ModerationActions` - the review
+ * queue is read by every admin viewpoint and only some of them may moderate,
+ * but this component only ever renders inside the Provincial Registrar's own
+ * area, and every account that opens that area holds `manageApplications`
+ * (see `CAPABILITIES` in `lib/permissions.ts`). A disabled state with nobody
+ * ever seeing it would be a control this file drew for no one.
+ */
+export function ApplicationActions({
+  applicationId,
+  name,
+}: {
+  applicationId: string;
+  name: string;
+}) {
+  const [decision, setDecision] = useState<"approved" | "rejected" | null>(null);
+  const [asking, setAsking] = useState(false);
+  const [reason, setReason] = useState("");
+
+  if (decision) {
+    return (
+      <div className="mt-5">
+        <p className="flex items-center gap-2 text-lg font-semibold text-primary">
+          <CheckIcon className="size-5" />
+          {decision === "approved" ? "Approved - the account is open" : "Rejected"}
+        </p>
+        <p className={`mt-2 ${META.base}`}>
+          Prototype - {applicationId} is unchanged. No account was created and{" "}
+          {name} was not emailed.
+        </p>
+      </div>
+    );
+  }
+
+  if (asking) {
+    return (
+      <div className="mt-5 rounded-sm border border-clay/25 bg-clay-pale px-5 py-4">
+        <p className="text-lg font-semibold text-ink">
+          Why is {name}&rsquo;s application being rejected?
+        </p>
+        <p className={`mt-1 ${BODY.base}`}>
+          Recorded against the application and shown in the audit log. {name}{" "}
+          can read this reason, edit the application, and resubmit it
+          (FR-AUTH-025) - it reopens the same application rather than starting
+          a second one.
+        </p>
+
+        <label className="mt-4 block">
+          <span className="sr-only">Reason for rejection</span>
+          <textarea
+            rows={2}
+            value={reason}
+            onChange={(event) => setReason(event.target.value)}
+            placeholder="Work email could not be confirmed, terms left unticked…"
+            className="field"
+          />
+        </label>
+
+        <div className="mt-4 flex flex-wrap items-center gap-3">
+          <ActionButton
+            variant="solid"
+            size="sm"
+            onClick={() => reason.trim() && setDecision("rejected")}
+          >
+            Reject the application
+          </ActionButton>
+          <button
+            type="button"
+            onClick={() => setAsking(false)}
+            className="text-lg font-semibold text-primary"
+          >
+            <span className="link-wipe">Cancel</span>
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-5 flex flex-wrap items-center gap-3">
+      <ActionButton
+        variant="solid"
+        size="sm"
+        className="group"
+        onClick={() => setDecision("approved")}
+      >
+        <CheckIcon className="size-4" />
+        Approve
+      </ActionButton>
+
+      <button
+        type="button"
+        onClick={() => setAsking(true)}
+        className="inline-flex items-center gap-1.5 text-lg font-semibold text-clay"
+      >
+        <CloseIcon className="size-4" />
+        <span className="link-wipe">Reject</span>
+      </button>
     </div>
   );
 }
@@ -379,28 +490,41 @@ export function AssignModules({
 /* ------------------------------------------------------------------ invite */
 
 /**
+ * One appointable role, whichever the Super Administrator is appointing -
+ * see `ROLE_LABEL` for what each is called on screen. Never `"super-admin"`
+ * itself: that account is founding, not appointed (see the note on
+ * `<TeamPage>`).
+ */
+export type AppointableRole = Exclude<StaffRole, "super-admin">;
+
+/**
  * Create an account for somebody.
  *
- * The same form for an administrator and a lecturer, because it is the same
- * act - name, email, role, and for a lecturer the modules they start
- * with. What differs is who is allowed to press it, and that is decided by the
- * page, not here.
+ * ONE FORM FOR EVERY APPOINTABLE ROLE (FR-SA-010), because it is the same
+ * act underneath - name, email, a title, and whatever extra fact THIS role
+ * needs to be scoped (which modules, for a Module Administrator; which
+ * province, for a Provincial Registrar) - not six different forms that would
+ * have to be kept agreeing with each other by hand. What differs is who is
+ * allowed to press it, and that is decided by the page, not here.
  *
  * A LECTURER ALSO CARRIES A FULL PROFILE, MANDATORY AT CREATION - bio,
  * qualifications, experience, publications, achievements - because this is
  * a public-facing appointment, not an internal account: a learner reads this
  * profile from the lecturer's own page before the account exists in any
- * other sense (see FR-INS-201). THE BUTTON STAYS CLICKABLE EITHER WAY, same
- * device as the quiz runner's "answer every question first": submitting
- * with a category still empty does not silently fail, it explains exactly
- * which ones are missing, right next to the button that failed.
+ * other sense (see FR-INS-201). No other role carries one. THE BUTTON STAYS
+ * CLICKABLE EITHER WAY, same device as the quiz runner's "answer every
+ * question first": submitting with a category still empty does not silently
+ * fail, it explains exactly which ones are missing, right next to the
+ * button that failed.
  */
 export function InviteForm({
   kind,
   modules = [],
   formId,
 }: {
-  kind: "administrator" | "lecturer";
+  kind: AppointableRole;
+  /** Every Module, published or draft - a Module Administrator's own
+   *  assignment is not limited to public ones, and neither is a lecturer's. */
   modules?: { id: string; title: string }[];
   /**
    * Set when the submit button lives OUTSIDE this form - a drawer's footer,
@@ -423,6 +547,7 @@ export function InviteForm({
   const visibleModules = modules.filter((mdl) =>
     mdl.title.toLowerCase().includes(moduleQuery.trim().toLowerCase()),
   );
+  const showModules = kind === "lecturer" || kind === "module-admin";
 
   const missing =
     kind === "lecturer"
@@ -445,7 +570,7 @@ export function InviteForm({
           return;
         }
         setBlocked(false);
-        setSent(name.trim() || `the new ${kind}`);
+        setSent(name.trim() || `the new ${ROLE_LABEL[kind].toLowerCase()}`);
       }}
     >
       <div className="grid gap-5 sm:grid-cols-2">
@@ -476,23 +601,46 @@ export function InviteForm({
 
         <label className="block sm:col-span-2">
           <span className="mb-2 block text-lg font-semibold text-ink">
-            {kind === "administrator" ? "Job title" : "Field"}
+            {kind === "lecturer" ? "Field" : "Job title"}
           </span>
           <input
             placeholder={
-              kind === "administrator"
-                ? "Module operations, learner support…"
-                : "Climate adaptation, waste engineering…"
+              kind === "lecturer"
+                ? "Climate adaptation, waste engineering…"
+                : "Module operations, learner support…"
             }
             className="field"
           />
         </label>
+
+        {kind === "provincial-registrar" ? (
+          <label className="block sm:col-span-2">
+            <span className="mb-2 block text-lg font-semibold text-ink">
+              Province
+            </span>
+            <select required defaultValue="" className="field">
+              <option value="" disabled>
+                Choose the one province they administer
+              </option>
+              {PROVINCES.map((province) => (
+                <option key={province}>{province}</option>
+              ))}
+            </select>
+            <span className={`mt-2 block ${META.base}`}>
+              Never &ldquo;National / Head Office&rdquo; - those applications
+              and learners belong to the Super Administrator directly
+              (FR-REG-040).
+            </span>
+          </label>
+        ) : null}
       </div>
 
-      {kind === "lecturer" && modules.length ? (
+      {showModules && modules.length ? (
         <fieldset className="mt-7">
           <legend className="mb-3 text-lg font-semibold text-ink">
-            Modules they may author
+            {kind === "lecturer"
+              ? "Modules they may author"
+              : "Modules they will administer"}
           </legend>
           <SearchField
             value={moduleQuery}
@@ -516,7 +664,14 @@ export function InviteForm({
             <p className={META.base}>No module matches that.</p>
           )}
           <p className={`mt-3 ${META.base}`}>
-            Can be changed at any time from the lecturer&rsquo;s page.
+            {kind === "lecturer" ? (
+              <>Can be changed at any time from the lecturer&rsquo;s page.</>
+            ) : (
+              <>
+                Can be changed at any time from the module administrator&rsquo;s
+                page, and any number can be checked (Appendix D, item 9).
+              </>
+            )}
           </p>
         </fieldset>
       ) : null}

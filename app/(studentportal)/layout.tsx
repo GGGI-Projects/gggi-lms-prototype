@@ -7,11 +7,14 @@ import { PLATFORM_SETTINGS } from "@/content/operations";
 /**
  * The signed-in area.
  *
- * A route GROUP - `(portal)` is in brackets, so it adds no segment to any URL
- * and the routes underneath stay at `/dashboard`, `/modules` and so on. All
- * it does is give those ten screens one layout, which is the whole point: the
- * rail, the header and the page measure are decided once here rather than
- * imported by each page and drifting apart.
+ * A route GROUP - `(studentportal)` is in brackets, so it adds no segment of
+ * its own to any URL; `/laws` and `/profile` sit directly under it, and
+ * `/learn/dashboard`, `/learn/modules` and `/learn/certificates` sit under a
+ * real `learn` segment inside it (see `app/(studentportal)/learn/`) - the
+ * nesting the nav's own "Learn" section needs is a real folder, not a group.
+ * What this layout gives every one of those screens is one shell: the rail,
+ * the header and the page measure decided once here rather than imported by
+ * each page and drifting apart.
  *
  * There is no auth check because there is no auth - this is a front-end
  * prototype and every route is reachable directly, which is what lets the

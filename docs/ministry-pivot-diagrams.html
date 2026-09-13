@@ -1,0 +1,564 @@
+<title>Ministry Pivot Architecture</title>
+<meta name="description" content="Diagrams of the six-role access model, registration approval flow, and Laws/Tools tagging mechanism behind the SRS v0.2 ministry pivot.">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --ink:#16201c;
+    --ink-soft:#48544d;
+    --ink-faint:#7c887f;
+    --paper:#f2f4ef;
+    --surface:#ffffff;
+    --surface-2:#eaede6;
+    --line:rgba(22,32,28,.16);
+    --line-strong:rgba(22,32,28,.30);
+    --forest:#1f5f4f;
+    --forest-ink:#123a30;
+    --forest-soft:#e2efe9;
+    --amber:#a5711f;
+    --amber-soft:#f5ead2;
+    --rust:#93412b;
+    --rust-soft:#f3e3dd;
+    --shadow: 0 1px 2px rgba(22,32,28,.06), 0 6px 20px -12px rgba(22,32,28,.25);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --ink:#eef1ec;
+      --ink-soft:#b6c0ba;
+      --ink-faint:#8b988f;
+      --paper:#111613;
+      --surface:#181f1b;
+      --surface-2:#202822;
+      --line:rgba(238,241,236,.14);
+      --line-strong:rgba(238,241,236,.28);
+      --forest:#6fbfa4;
+      --forest-ink:#bfe8da;
+      --forest-soft:#1b2f28;
+      --amber:#dcb066;
+      --amber-soft:#31281a;
+      --rust:#d98d76;
+      --rust-soft:#332019;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 10px 30px -14px rgba(0,0,0,.6);
+    }
+  }
+  :root[data-theme="dark"]{
+    --ink:#eef1ec;
+    --ink-soft:#b6c0ba;
+    --ink-faint:#8b988f;
+    --paper:#111613;
+    --surface:#181f1b;
+    --surface-2:#202822;
+    --line:rgba(238,241,236,.14);
+    --line-strong:rgba(238,241,236,.28);
+    --forest:#6fbfa4;
+    --forest-ink:#bfe8da;
+    --forest-soft:#1b2f28;
+    --amber:#dcb066;
+    --amber-soft:#31281a;
+    --rust:#d98d76;
+    --rust-soft:#332019;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 10px 30px -14px rgba(0,0,0,.6);
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+    line-height:1.55;
+  }
+  ::selection{ background:var(--forest-soft); color:var(--forest-ink); }
+
+  .wrap{ max-width:920px; margin:0 auto; padding:0 24px 96px; }
+
+  /* ---------- masthead ---------- */
+  header.masthead{
+    border-bottom:1px solid var(--line-strong);
+    padding:44px 0 28px;
+  }
+  .eyebrow{
+    font-family:"IBM Plex Mono",monospace;
+    font-size:12.5px;
+    letter-spacing:.09em;
+    text-transform:uppercase;
+    color:var(--forest);
+    display:flex; align-items:center; gap:10px;
+  }
+  .eyebrow::before{
+    content:"";
+    width:7px; height:7px; border-radius:50%;
+    background:var(--forest);
+    display:inline-block;
+  }
+  h1{
+    font-family:"IBM Plex Serif",Georgia,serif;
+    font-weight:700;
+    font-size:clamp(30px,4.4vw,44px);
+    line-height:1.1;
+    text-wrap:balance;
+    margin:14px 0 12px;
+    letter-spacing:-.01em;
+  }
+  .dek{
+    max-width:64ch;
+    color:var(--ink-soft);
+    font-size:16.5px;
+  }
+  .dek code, .doc-meta code{
+    font-family:"IBM Plex Mono",monospace;
+    background:var(--surface-2);
+    padding:1px 6px;
+    border-radius:3px;
+    font-size:.92em;
+  }
+  table.doc-meta{
+    margin-top:24px;
+    border-collapse:collapse;
+    font-size:14px;
+    width:100%;
+  }
+  table.doc-meta td{
+    padding:7px 0;
+    border-top:1px solid var(--line);
+    vertical-align:top;
+  }
+  table.doc-meta td:first-child{
+    font-family:"IBM Plex Mono",monospace;
+    color:var(--ink-faint);
+    width:180px;
+    letter-spacing:.02em;
+    padding-right:16px;
+  }
+
+  /* ---------- contents strip ---------- */
+  nav.toc{
+    display:flex; flex-wrap:wrap; gap:8px;
+    padding:20px 0 8px;
+  }
+  nav.toc a{
+    font-family:"IBM Plex Mono",monospace;
+    font-size:12.5px;
+    color:var(--ink-soft);
+    text-decoration:none;
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:20px;
+    padding:7px 14px;
+    transition:border-color .15s ease, color .15s ease;
+  }
+  nav.toc a:hover, nav.toc a:focus-visible{
+    border-color:var(--forest);
+    color:var(--forest);
+  }
+  nav.toc a span{ color:var(--ink-faint); margin-right:6px; }
+
+  /* ---------- sections ---------- */
+  section.figure-section{
+    padding:56px 0;
+    border-bottom:1px solid var(--line);
+    scroll-margin-top:20px;
+  }
+  section.figure-section:last-of-type{ border-bottom:none; }
+
+  .section-head{ max-width:70ch; margin-bottom:26px; }
+  .kicker{
+    font-family:"IBM Plex Mono",monospace;
+    font-size:12px;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:var(--amber);
+    margin-bottom:8px;
+    display:block;
+  }
+  h2{
+    font-family:"IBM Plex Serif",Georgia,serif;
+    font-weight:600;
+    font-size:24px;
+    margin:0 0 10px;
+    text-wrap:balance;
+  }
+  .section-head p{ color:var(--ink-soft); font-size:15.5px; margin:0; }
+  .section-head p + p{ margin-top:10px; }
+
+  figure{ margin:0; }
+  .diagram-card{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:10px;
+    box-shadow:var(--shadow);
+    padding:22px clamp(10px,3vw,28px);
+    overflow-x:auto;
+  }
+  .diagram-card svg{ display:block; margin:0 auto; max-width:100%; height:auto; min-width:560px; }
+  figcaption{
+    margin-top:14px;
+    font-size:13.5px;
+    color:var(--ink-faint);
+    max-width:70ch;
+  }
+  figcaption strong{ color:var(--ink-soft); font-weight:600; }
+
+  /* svg node styling via CSS so theme tokens apply */
+  .n-rect{ fill:var(--surface); stroke:var(--line-strong); stroke-width:1.5; }
+  .n-rect-apex{ fill:var(--amber-soft); stroke:var(--amber); stroke-width:1.75; }
+  .n-rect-scoped{ fill:var(--forest-soft); stroke:var(--forest); stroke-width:1.5; }
+  .n-rect-ghost{ fill:var(--surface-2); stroke:var(--line-strong); stroke-width:1.25; stroke-dasharray:5 4; }
+  .n-rect-good{ fill:var(--forest-soft); stroke:var(--forest); stroke-width:1.75; }
+  .n-rect-bad{ fill:var(--rust-soft); stroke:var(--rust); stroke-width:1.5; }
+  .n-title{ font-family:"IBM Plex Sans",sans-serif; font-weight:600; fill:var(--ink); }
+  .n-sub{ font-family:"IBM Plex Mono",monospace; fill:var(--ink-faint); }
+  .n-chip{ fill:var(--surface-2); stroke:var(--line-strong); stroke-width:1; }
+  .n-chip-forest{ fill:var(--forest-soft); stroke:var(--forest); stroke-width:1.25; }
+  .n-chip-muted{ fill:var(--surface-2); stroke:var(--line); stroke-width:1; stroke-dasharray:3 3; }
+  .n-chip-text{ font-family:"IBM Plex Mono",monospace; fill:var(--ink-soft); }
+  .n-chip-text-muted{ fill:var(--ink-faint); }
+  .edge{ stroke:var(--ink-faint); stroke-width:1.4; fill:none; }
+  .edge-accent{ stroke:var(--forest); stroke-width:1.6; fill:none; }
+  .edge-exception{ stroke:var(--amber); stroke-width:1.6; fill:none; stroke-dasharray:6 5; }
+  .edge-label{ font-family:"IBM Plex Mono",monospace; font-size:11px; fill:var(--ink-faint); }
+  .edge-label-accent{ font-family:"IBM Plex Mono",monospace; font-size:11px; fill:var(--forest); }
+  .group-label{ font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.04em; fill:var(--ink-faint); text-transform:uppercase; }
+
+  footer.colophon{
+    padding-top:40px;
+    font-size:13px;
+    color:var(--ink-faint);
+    max-width:70ch;
+  }
+  footer.colophon a{ color:var(--forest); }
+
+  @media (max-width:640px){
+    .diagram-card{ padding:16px 8px; }
+  }
+</style>
+
+<div class="wrap">
+
+  <header class="masthead">
+    <span class="eyebrow">Companion to docs/SRS.md v0.2</span>
+    <h1>Ministry Pivot Architecture</h1>
+    <p class="dek">Four diagrams for the engineering team, drawn from the ministry-pivot revision of the SRS: how the six console roles replace the old flat Administrator, how a registration application clears provincial review, how a Module's tags surface Laws and Tools, and how the learner portal now splits into Learn / Laws / Tools.</p>
+    <table class="doc-meta">
+      <tr><td>Source</td><td><code>docs/SRS.md</code>, revision 0.2, 2026‑09‑13</td></tr>
+      <tr><td>Covers</td><td>§1.2, §4.2, §4.10a, §4.27–4.33, §6 (BR‑26–32), §7</td></tr>
+      <tr><td>Status</td><td>For team review — several open items are called out in each caption and in SRS Appendix D</td></tr>
+    </table>
+  </header>
+
+  <nav class="toc" aria-label="Diagrams on this page">
+    <a href="#scope"><span>01</span>Scope &amp; ownership</a>
+    <a href="#registration"><span>02</span>Registration flow</a>
+    <a href="#tagging"><span>03</span>Tag-based relatedness</a>
+    <a href="#portal"><span>04</span>Portal structure</a>
+  </nav>
+
+  <!-- ============ 01 SCOPE & OWNERSHIP ============ -->
+  <section class="figure-section" id="scope">
+    <div class="section-head">
+      <span class="kicker">01 — Roles</span>
+      <h2>Scope &amp; ownership map</h2>
+      <p>The old flat Administrator is gone. Every one of its jobs now sits with exactly one of six roles, and each role's authority stops at a hard boundary: one Module, one global library, one province, or the whole platform.</p>
+      <p>The one recurring exception: a Lecturer can be assigned across <em>several</em> Module Administrators' modules at once, so nobody with only one Module's authority may lock that person's whole account, or decide whether their profile review goes public. Both escalate to the Super Administrator — the dashed line below (<strong>BR‑29</strong>).</p>
+    </div>
+    <figure>
+      <div class="diagram-card">
+        <svg viewBox="0 0 900 360" role="img" aria-label="Super Administrator appoints five scoped roles — Module Administrator, Laws Administrator, Tools Administrator, List Manager, Provincial Registrar. Module Administrator appoints a Lecturer, who can also be assigned by a different Module Administrator; full suspension or profile-review moderation of that Lecturer escalates back to the Super Administrator. Provincial Registrar approves a Learner, scoped to one province.">
+          <defs>
+            <marker id="arr1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" fill="var(--ink-faint)"/>
+            </marker>
+            <marker id="arr1a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" fill="var(--amber)"/>
+            </marker>
+          </defs>
+
+          <!-- row 1: Super Administrator -->
+          <rect class="n-rect-apex" x="300" y="20" width="300" height="56" rx="6"/>
+          <text class="n-title" x="450" y="45" font-size="15" text-anchor="middle">Super Administrator</text>
+          <text class="n-sub" x="450" y="64" font-size="11" text-anchor="middle">platform-wide · exactly one account</text>
+
+          <!-- fan arrows to row 2 -->
+          <line class="edge" x1="450" y1="76" x2="120" y2="150" marker-end="url(#arr1)"/>
+          <line class="edge" x1="450" y1="76" x2="285" y2="150" marker-end="url(#arr1)"/>
+          <line class="edge" x1="450" y1="76" x2="450" y2="150" marker-end="url(#arr1)"/>
+          <line class="edge" x1="450" y1="76" x2="615" y2="150" marker-end="url(#arr1)"/>
+          <line class="edge" x1="450" y1="76" x2="780" y2="150" marker-end="url(#arr1)"/>
+          <text class="edge-label" x="460" y="106" font-size="11">appoints (§4.21)</text>
+
+          <!-- row 2: five scoped roles -->
+          <rect class="n-rect-scoped" x="45" y="150" width="150" height="56" rx="6"/>
+          <text class="n-title" x="120" y="175" font-size="12.5" text-anchor="middle">Module</text>
+          <text class="n-title" x="120" y="190" font-size="12.5" text-anchor="middle">Administrator</text>
+          <text class="n-sub" x="120" y="202" font-size="9.5" text-anchor="middle">scope: one Module</text>
+
+          <rect class="n-rect" x="210" y="150" width="150" height="56" rx="6"/>
+          <text class="n-title" x="285" y="175" font-size="12.5" text-anchor="middle">Laws</text>
+          <text class="n-title" x="285" y="190" font-size="12.5" text-anchor="middle">Administrator</text>
+          <text class="n-sub" x="285" y="202" font-size="9.5" text-anchor="middle">scope: global library</text>
+
+          <rect class="n-rect" x="375" y="150" width="150" height="56" rx="6"/>
+          <text class="n-title" x="450" y="175" font-size="12.5" text-anchor="middle">Tools</text>
+          <text class="n-title" x="450" y="190" font-size="12.5" text-anchor="middle">Administrator</text>
+          <text class="n-sub" x="450" y="202" font-size="9.5" text-anchor="middle">scope: global directory</text>
+
+          <rect class="n-rect" x="540" y="150" width="150" height="56" rx="6"/>
+          <text class="n-title" x="615" y="182" font-size="12.5" text-anchor="middle">List Manager</text>
+          <text class="n-sub" x="615" y="202" font-size="9.5" text-anchor="middle">scope: dynamic lists</text>
+
+          <rect class="n-rect-scoped" x="705" y="150" width="150" height="56" rx="6"/>
+          <text class="n-title" x="780" y="175" font-size="12.5" text-anchor="middle">Provincial</text>
+          <text class="n-title" x="780" y="190" font-size="12.5" text-anchor="middle">Registrar</text>
+          <text class="n-sub" x="780" y="202" font-size="9.5" text-anchor="middle">scope: one province</text>
+
+          <!-- Module Admin -> Lecturer -->
+          <line class="edge" x1="120" y1="206" x2="135" y2="280" marker-end="url(#arr1)"/>
+          <text class="edge-label" x="10" y="248" font-size="10.5">appoints, own Module</text>
+
+          <!-- ghost second Module Admin -> Lecturer -->
+          <rect class="n-rect-ghost" x="270" y="280" width="230" height="56" rx="6"/>
+          <text class="n-title" x="385" y="303" font-size="12" text-anchor="middle" fill="var(--ink-soft)">Module Administrator</text>
+          <text class="n-sub" x="385" y="320" font-size="9.5" text-anchor="middle">(a different Module — FR‑MODADM‑055)</text>
+          <line class="edge" x1="270" y1="308" x2="225" y2="308" marker-end="url(#arr1)"/>
+          <text class="edge-label" x="228" y="298" font-size="10">also assigns</text>
+
+          <!-- Lecturer -->
+          <rect class="n-rect" x="45" y="280" width="180" height="56" rx="6"/>
+          <text class="n-title" x="135" y="312" font-size="13" text-anchor="middle">Lecturer</text>
+
+          <!-- escalation dashed path Lecturer -> Super Admin -->
+          <path class="edge-exception" d="M 100,280 L 100,60 L 300,50" marker-end="url(#arr1a)"/>
+          <text class="edge-label-accent" x="103" y="170" font-size="10" transform="rotate(-90 103 170)">full suspend / profile review → escalates (BR‑29)</text>
+
+          <!-- Registrar -> Learner -->
+          <line class="edge" x1="780" y1="206" x2="780" y2="280" marker-end="url(#arr1)"/>
+          <text class="edge-label" x="787" y="248" font-size="10.5">approves</text>
+          <rect class="n-rect" x="705" y="280" width="150" height="56" rx="6"/>
+          <text class="n-title" x="780" y="305" font-size="13" text-anchor="middle">Learner</text>
+          <text class="n-sub" x="780" y="322" font-size="9.5" text-anchor="middle">one province</text>
+        </svg>
+      </div>
+      <figcaption><strong>Reads as:</strong> the Super Administrator appoints all five scoped roles; a Module Administrator's authority over a Module never reaches the Lecturer's whole account, because that Lecturer may answer to more than one Module Administrator at once — full-account actions climb to the one role with undivided ownership instead (SRS §4.17–§4.20, §7).</figcaption>
+    </figure>
+  </section>
+
+  <!-- ============ 02 REGISTRATION FLOW ============ -->
+  <section class="figure-section" id="registration">
+    <div class="section-head">
+      <span class="kicker">02 — Onboarding</span>
+      <h2>Registration, review, and resubmission</h2>
+      <p>No public self-signup. A submitted application sits pending until one human decides it — routed by province, with the fixed "National / Head Office" choice falling to the Super Administrator instead of a province that doesn't apply.</p>
+      <p>Rejection isn't terminal: the applicant edits and resubmits the <em>same</em> record rather than starting a second, duplicate one (<strong>FR‑AUTH‑025</strong>).</p>
+    </div>
+    <figure>
+      <div class="diagram-card">
+        <svg viewBox="0 0 700 660" role="img" aria-label="Applicant submits a registration form with a chosen province. It becomes a pending application, routed either to that province's Provincial Registrar queue or, for National or Head Office, to the Super Administrator queue. Either queue can approve or reject. Approved leads to the learner signing in with full access. Rejected shows the reason and lets the applicant edit and resubmit, looping back to the same pending application.">
+          <defs>
+            <marker id="arr2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" fill="var(--ink-faint)"/>
+            </marker>
+            <marker id="arr2a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" fill="var(--amber)"/>
+            </marker>
+          </defs>
+
+          <rect class="n-rect" x="190" y="20" width="300" height="60" rx="6"/>
+          <text class="n-title" x="340" y="45" font-size="13" text-anchor="middle">Registration form</text>
+          <text class="n-sub" x="340" y="63" font-size="10" text-anchor="middle">name, email, password, Province</text>
+
+          <line class="edge" x1="340" y1="80" x2="340" y2="140" marker-end="url(#arr2)"/>
+          <text class="edge-label" x="352" y="114" font-size="10.5">submits (FR‑AUTH‑015)</text>
+
+          <rect class="n-rect-scoped" x="190" y="140" width="300" height="60" rx="6"/>
+          <text class="n-title" x="340" y="165" font-size="13" text-anchor="middle">Application — Pending</text>
+          <text class="n-sub" x="340" y="183" font-size="10" text-anchor="middle">no console access exists yet</text>
+
+          <line class="edge" x1="270" y1="200" x2="170" y2="260" marker-end="url(#arr2)"/>
+          <text class="edge-label" x="60" y="230" font-size="10">province = one of 9</text>
+          <line class="edge" x1="410" y1="200" x2="510" y2="260" marker-end="url(#arr2)"/>
+          <text class="edge-label" x="415" y="230" font-size="10">province = National / Head Office</text>
+
+          <rect class="n-rect" x="30" y="260" width="280" height="60" rx="6"/>
+          <text class="n-title" x="170" y="285" font-size="12.5" text-anchor="middle">Provincial Registrar queue</text>
+          <text class="n-sub" x="170" y="303" font-size="10" text-anchor="middle">own province only (§4.33)</text>
+
+          <rect class="n-rect" x="370" y="260" width="280" height="60" rx="6"/>
+          <text class="n-title" x="510" y="285" font-size="12.5" text-anchor="middle">Super Administrator queue</text>
+          <text class="n-sub" x="510" y="303" font-size="10" text-anchor="middle">FR‑REG‑040 fallback</text>
+
+          <line class="edge" x1="170" y1="320" x2="210" y2="400" marker-end="url(#arr2)"/>
+          <text class="edge-label" x="130" y="360" font-size="10">approve</text>
+          <line class="edge" x1="170" y1="320" x2="470" y2="400" marker-end="url(#arr2)"/>
+          <text class="edge-label" x="270" y="345" font-size="10">reject</text>
+          <line class="edge" x1="510" y1="320" x2="470" y2="400" marker-end="url(#arr2)"/>
+          <text class="edge-label" x="480" y="360" font-size="10">approve</text>
+          <line class="edge" x1="510" y1="320" x2="210" y2="400" marker-end="url(#arr2)"/>
+          <text class="edge-label" x="350" y="345" font-size="10">reject</text>
+
+          <rect class="n-rect-good" x="100" y="400" width="220" height="60" rx="6"/>
+          <text class="n-title" x="210" y="425" font-size="13" text-anchor="middle">Approved</text>
+          <text class="n-sub" x="210" y="443" font-size="10" text-anchor="middle">no reason required</text>
+
+          <rect class="n-rect-bad" x="360" y="400" width="220" height="60" rx="6"/>
+          <text class="n-title" x="470" y="425" font-size="13" text-anchor="middle">Rejected</text>
+          <text class="n-sub" x="470" y="443" font-size="10" text-anchor="middle">written reason kept on record</text>
+
+          <line class="edge-accent" x1="210" y1="460" x2="210" y2="520" marker-end="url(#arr2)"/>
+          <rect class="n-rect-good" x="100" y="520" width="220" height="60" rx="6"/>
+          <text class="n-title" x="210" y="545" font-size="12.5" text-anchor="middle">Learner signs in —</text>
+          <text class="n-title" x="210" y="562" font-size="12.5" text-anchor="middle">full portal access</text>
+
+          <line class="edge" x1="470" y1="460" x2="470" y2="520" marker-end="url(#arr2)"/>
+          <rect class="n-rect" x="360" y="520" width="220" height="60" rx="6"/>
+          <text class="n-title" x="470" y="545" font-size="12.5" text-anchor="middle">Applicant edits &amp;</text>
+          <text class="n-title" x="470" y="562" font-size="12.5" text-anchor="middle">resubmits</text>
+
+          <path class="edge-exception" d="M 580,550 L 650,550 L 650,170 L 490,170" marker-end="url(#arr2a)"/>
+          <text class="edge-label-accent" x="558" y="360" font-size="10" transform="rotate(-90 658 360)">resubmit — same record (FR‑AUTH‑025)</text>
+        </svg>
+      </div>
+      <figcaption><strong>Reads as:</strong> exactly one human decision gates sign-in; email confirmation was deliberately dropped as a redundant second gate (SRS §4.2). Amber, dashed = the resubmission loop.</figcaption>
+    </figure>
+  </section>
+
+  <!-- ============ 03 TAG FUNNEL ============ -->
+  <section class="figure-section" id="tagging">
+    <div class="section-head">
+      <span class="kicker">03 — Content linking</span>
+      <h2>Tag-based relatedness, from pool to lecture</h2>
+      <p>There is no hand-maintained "this Law belongs to this Module" table. A Module, a Law, and a Tool are related purely because they share at least one value from a dynamic option list — Hazards, Categories, and whatever gets added later.</p>
+      <p>A lecturer then narrows that automatic pool down to whatever's actually worth a learner's attention on <em>one</em> lecture — a deliberate, hand-picked subset, shown here with a worked example.</p>
+    </div>
+    <figure>
+      <div class="diagram-card">
+        <svg viewBox="0 0 760 620" role="img" aria-label="The Hazards list (Flooding, Landslide, Chemical Spill) and Categories list (Waste Management, Water Quality) tag a Module, a Law, and a Tool. Any shared tag places the Law and Tool in the Module's related pool. A lecturer then curates that pool down to a smaller set shown on one lecture — in this example, only the Tool, not the Law.">
+          <defs>
+            <marker id="arr3" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" fill="var(--ink-faint)"/>
+            </marker>
+            <marker id="arr3g" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" fill="var(--forest)"/>
+            </marker>
+          </defs>
+
+          <rect class="n-rect" x="30" y="20" width="330" height="72" rx="6"/>
+          <text class="group-label" x="45" y="38">Hazards</text>
+          <rect class="n-chip" x="45" y="46" width="95" height="30" rx="15"/>
+          <text class="n-chip-text" x="92" y="65" font-size="10.5" text-anchor="middle">Flooding</text>
+          <rect class="n-chip-muted" x="150" y="46" width="95" height="30" rx="15"/>
+          <text class="n-chip-text-muted" x="197" y="65" font-size="10.5" text-anchor="middle">Landslide</text>
+          <rect class="n-chip-muted" x="255" y="46" width="95" height="30" rx="15"/>
+          <text class="n-chip-text-muted" x="302" y="65" font-size="10" text-anchor="middle">Chemical Spill</text>
+
+          <rect class="n-rect" x="400" y="20" width="330" height="72" rx="6"/>
+          <text class="group-label" x="415" y="38">Categories</text>
+          <rect class="n-chip" x="415" y="46" width="140" height="30" rx="15"/>
+          <text class="n-chip-text" x="485" y="65" font-size="10.5" text-anchor="middle">Waste Management</text>
+          <rect class="n-chip-muted" x="565" y="46" width="150" height="30" rx="15"/>
+          <text class="n-chip-text-muted" x="640" y="65" font-size="10.5" text-anchor="middle">Water Quality</text>
+
+          <line class="edge" x1="92" y1="76" x2="140" y2="150" marker-end="url(#arr3)"/>
+          <line class="edge" x1="485" y1="76" x2="140" y2="150" marker-end="url(#arr3)"/>
+          <line class="edge" x1="485" y1="76" x2="390" y2="150" marker-end="url(#arr3)"/>
+          <line class="edge" x1="485" y1="76" x2="630" y2="150" marker-end="url(#arr3)"/>
+          <line class="edge" x1="640" y1="76" x2="630" y2="150" marker-end="url(#arr3)"/>
+
+          <rect class="n-rect-scoped" x="30" y="150" width="220" height="70" rx="6"/>
+          <text class="n-title" x="140" y="176" font-size="12.5" text-anchor="middle">Module</text>
+          <text class="n-sub" x="140" y="195" font-size="9.5" text-anchor="middle">"Coastal Waste Management"</text>
+          <text class="n-sub" x="140" y="209" font-size="9" text-anchor="middle" fill="var(--ink-faint)">tags: Flooding, Waste Mgmt</text>
+
+          <rect class="n-rect" x="280" y="150" width="220" height="70" rx="6"/>
+          <text class="n-title" x="390" y="176" font-size="12.5" text-anchor="middle">Law</text>
+          <text class="n-sub" x="390" y="195" font-size="9.5" text-anchor="middle">"National Environmental Act §23"</text>
+          <text class="n-sub" x="390" y="209" font-size="9" text-anchor="middle" fill="var(--ink-faint)">tags: Waste Mgmt</text>
+
+          <rect class="n-rect" x="530" y="150" width="200" height="70" rx="6"/>
+          <text class="n-title" x="630" y="176" font-size="12.5" text-anchor="middle">Tool</text>
+          <text class="n-sub" x="630" y="195" font-size="9.5" text-anchor="middle">"Waste Audit Calculator"</text>
+          <text class="n-sub" x="630" y="209" font-size="9" text-anchor="middle" fill="var(--ink-faint)">tags: Waste Mgmt, Water Quality</text>
+
+          <line class="edge-accent" x1="390" y1="220" x2="360" y2="300" marker-end="url(#arr3g)"/>
+          <line class="edge-accent" x1="630" y1="220" x2="440" y2="300" marker-end="url(#arr3g)"/>
+          <text class="edge-label-accent" x="440" y="260" font-size="10.5">matches (any shared tag — BR‑26)</text>
+
+          <rect class="n-rect-scoped" x="200" y="300" width="400" height="60" rx="6"/>
+          <text class="n-title" x="400" y="325" font-size="13" text-anchor="middle">Module's related pool</text>
+          <text class="n-sub" x="400" y="343" font-size="10" text-anchor="middle">Law + Tool — everything a shared tag surfaced</text>
+
+          <line class="edge" x1="400" y1="360" x2="400" y2="420" marker-end="url(#arr3)"/>
+          <text class="edge-label" x="408" y="394" font-size="10.5">lecturer picks a subset (§4.10a)</text>
+          <rect class="n-rect" x="280" y="420" width="240" height="50" rx="6"/>
+          <text class="n-title" x="400" y="450" font-size="12.5" text-anchor="middle">Lecturer curates</text>
+
+          <line class="edge" x1="400" y1="470" x2="400" y2="520" marker-end="url(#arr3)"/>
+          <rect class="n-rect" x="230" y="520" width="300" height="80" rx="6"/>
+          <text class="n-title" x="380" y="544" font-size="12" text-anchor="middle">Lecture page shows:</text>
+          <rect class="n-chip-forest" x="255" y="556" width="150" height="28" rx="14"/>
+          <text class="n-chip-text" x="330" y="574" font-size="10" text-anchor="middle">Waste Audit Calculator</text>
+          <rect class="n-chip-muted" x="415" y="556" width="95" height="28" rx="14"/>
+          <text class="n-chip-text-muted" x="462" y="574" font-size="9.5" text-anchor="middle">Act §23 (not picked)</text>
+        </svg>
+      </div>
+      <figcaption><strong>Reads as:</strong> the pool is automatic and inclusive (an OR-match — <strong>BR‑26</strong>); what a learner actually sees on a lecture is a deliberately smaller, hand-picked set — here the Tool made the cut for this lecture, the Law didn't.</figcaption>
+    </figure>
+  </section>
+
+  <!-- ============ 04 PORTAL STRUCTURE ============ -->
+  <section class="figure-section" id="portal">
+    <div class="section-head">
+      <span class="kicker">04 — Learner portal</span>
+      <h2>Learn, Laws, and Tools</h2>
+      <p>The portal keeps its existing Learn experience unchanged and adds two standing, top-level tabs alongside it — full directories, not scoped views, though both link back into whatever Module or Lecture context brought a learner there.</p>
+    </div>
+    <figure>
+      <div class="diagram-card">
+        <svg viewBox="0 0 760 360" role="img" aria-label="Learner Portal splits into three tabs: Learn, containing Module, Lecture, and Quiz plus related Laws and Tools shown inline; Laws, showing the learner's own province first and other provinces below; and Tools, a flat directory filterable by tags.">
+          <defs>
+            <marker id="arr4" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" fill="var(--ink-faint)"/>
+            </marker>
+          </defs>
+
+          <rect class="n-rect-apex" x="280" y="20" width="200" height="50" rx="6"/>
+          <text class="n-title" x="380" y="50" font-size="13" text-anchor="middle">Learner Portal</text>
+
+          <line class="edge" x1="380" y1="70" x2="140" y2="130" marker-end="url(#arr4)"/>
+          <line class="edge" x1="380" y1="70" x2="380" y2="130" marker-end="url(#arr4)"/>
+          <line class="edge" x1="380" y1="70" x2="620" y2="130" marker-end="url(#arr4)"/>
+
+          <rect class="n-rect-scoped" x="40" y="130" width="200" height="50" rx="6"/>
+          <text class="n-title" x="140" y="160" font-size="13" text-anchor="middle">Learn</text>
+          <rect class="n-rect-scoped" x="280" y="130" width="200" height="50" rx="6"/>
+          <text class="n-title" x="380" y="160" font-size="13" text-anchor="middle">Laws</text>
+          <rect class="n-rect-scoped" x="520" y="130" width="200" height="50" rx="6"/>
+          <text class="n-title" x="620" y="160" font-size="13" text-anchor="middle">Tools</text>
+
+          <line class="edge" x1="140" y1="180" x2="140" y2="220" marker-end="url(#arr4)"/>
+          <rect class="n-rect" x="40" y="220" width="200" height="90" rx="6"/>
+          <text class="n-sub" x="140" y="245" font-size="11" text-anchor="middle">Module</text>
+          <text class="n-sub" x="140" y="264" font-size="11" text-anchor="middle">↓ Lecture</text>
+          <text class="n-sub" x="140" y="283" font-size="11" text-anchor="middle">↓ Quiz / fill-in-blank</text>
+          <text class="n-sub" x="140" y="300" font-size="9" text-anchor="middle" fill="var(--ink-faint)">+ related Laws/Tools inline</text>
+
+          <line class="edge" x1="380" y1="180" x2="380" y2="220" marker-end="url(#arr4)"/>
+          <rect class="n-rect" x="280" y="220" width="200" height="90" rx="6"/>
+          <text class="n-sub" x="380" y="250" font-size="11" text-anchor="middle">Your province — first</text>
+          <text class="n-sub" x="380" y="272" font-size="11" text-anchor="middle">Other provinces — below</text>
+          <text class="n-sub" x="380" y="294" font-size="9" text-anchor="middle" fill="var(--ink-faint)">§4.27, FR‑STU‑500</text>
+
+          <line class="edge" x1="620" y1="180" x2="620" y2="220" marker-end="url(#arr4)"/>
+          <rect class="n-rect" x="520" y="220" width="200" height="90" rx="6"/>
+          <text class="n-sub" x="620" y="250" font-size="11" text-anchor="middle">Flat directory</text>
+          <text class="n-sub" x="620" y="272" font-size="11" text-anchor="middle">filterable by tags</text>
+          <text class="n-sub" x="620" y="294" font-size="9" text-anchor="middle" fill="var(--ink-faint)">§4.28</text>
+        </svg>
+      </div>
+      <figcaption><strong>Reads as:</strong> Learn is unchanged in kind, only gaining inline pointers out to the other two tabs; Laws and Tools are new, standing, platform-wide sections, not sub-pages of a Module.</figcaption>
+    </figure>
+  </section>
+
+  <footer class="colophon">
+    Field-level data model, the full role/permission matrix, and every numbered requirement behind these diagrams live in <code>docs/SRS.md</code> (§7, §8). Open items called out above — the List Manager's future, multi-registrar provinces, National/Head Office ordering on the Laws tab — are tracked in Appendix D.
+  </footer>
+
+</div>

@@ -11,6 +11,7 @@ import {
   staffById,
 } from "@/lib/admin";
 import { attachmentsFor, pickerData } from "@/lib/materials";
+import { curatedForLecture, relatedPoolForModule } from "@/lib/laws-tools";
 import { PASS_MARK, quizFor, blankQuestionsFor } from "@/lib/portal";
 import { Badge, PageBody, PageHeader } from "@/components/console/ui";
 import {
@@ -108,6 +109,8 @@ export default async function LecturerLecturePage({ params }: Params) {
         content={content}
         attachments={attachmentsFor(moduleId, lectureId)}
         picker={pickerData()}
+        relatedPool={relatedPoolForModule(moduleId)}
+        related={curatedForLecture(moduleId, lectureId)}
         quiz={{
           questions: questions.length,
           stats: quizStatsFor(lectureId),
@@ -120,7 +123,7 @@ export default async function LecturerLecturePage({ params }: Params) {
           materials: "/lecturer/materials",
           material: (id) => `/lecturer/materials/${id}`,
           learner: live
-            ? `/modules/${mdl.id}/lectures/${mod.id}`
+            ? `/learn/modules/${mdl.id}/lectures/${mod.id}`
             : undefined,
         }}
         capability="authorLectures"

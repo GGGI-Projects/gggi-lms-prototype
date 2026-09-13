@@ -92,7 +92,7 @@ export default function ProfilePage() {
                     return (
                       <li key={certificate.id}>
                         <Link
-                          href={`/certificates/${certificate.id}`}
+                          href={`/learn/certificates/${certificate.id}`}
                           className="group flex items-start gap-3.5"
                         >
                           <span className="mt-0.5 grid size-9 shrink-0 place-items-center rounded-full bg-accent-pale text-accent-strong">

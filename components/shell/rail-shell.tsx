@@ -64,20 +64,28 @@ export function RailShell({
 }
 
 /**
- * A group of rail entries under a heading - "People", "Learning", "Account".
+ * A group of rail entries, optionally under a heading - "People", "Account".
  * The one piece of nav markup left to the caller is the `<li>` list itself,
  * since that is where a console item's padlock differs from a portal item's.
+ *
+ * `label` IS OPTIONAL: the portal's top group is Learn/Laws/Tools, three
+ * peers with nothing to introduce them (see `PORTAL_NAV` in `nav.tsx`) -
+ * an eyebrow reading "Learn" over an entry already labelled "Learn" would
+ * say the same word twice for no reason a heading over "Profile"/"Settings"
+ * doesn't already have ("Account").
  */
 export function RailGroup({
   label,
   children,
 }: {
-  label: string;
+  label?: string;
   children: ReactNode;
 }) {
   return (
     <div className="mb-6 last:mb-0">
-      <p className="label-eyebrow px-3 pb-2.5 text-primary-500">{label}</p>
+      {label ? (
+        <p className="label-eyebrow px-3 pb-2.5 text-primary-500">{label}</p>
+      ) : null}
       <ul className="space-y-1">{children}</ul>
     </div>
   );

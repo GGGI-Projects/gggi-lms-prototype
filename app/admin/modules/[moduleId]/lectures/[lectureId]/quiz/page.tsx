@@ -90,7 +90,7 @@ export default async function AdminQuizPage({ params }: Params) {
           module: base,
           settings: "/admin/settings",
           learner: live
-            ? `/modules/${mdl.id}/lectures/${mod.id}/quiz`
+            ? `/learn/modules/${mdl.id}/lectures/${mod.id}/quiz`
             : undefined,
         }}
         capability="authorLectures"

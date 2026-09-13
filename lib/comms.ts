@@ -24,6 +24,7 @@ import {
   managedModule,
   modulesFor,
   publishedModules,
+  ROLE_LABEL,
   sessionFor,
   staffById,
   staffName,
@@ -235,26 +236,29 @@ export function lecturersForStudent(student: StudentRecord): StaffMember[] {
 }
 
 /**
- * Who a lecturer's "Message admin" goes to - whoever appointed them, the
- * same account their profile page already points to for "who to ask" about
- * an assignment. Falls back to the session administrator, in case a lecturer
- * was ever seeded without one.
+ * Who a lecturer's "Message admin" goes to - whoever appointed them (now,
+ * per §4.29, most often a Module Administrator rather than the Super
+ * Administrator - see FR-MODADM-050), the same account their profile page
+ * already points to for "who to ask" about an assignment. Falls back to the
+ * Super Administrator, in case a lecturer was ever seeded without one.
  */
 export function adminContactFor(member: StaffMember): StaffMember {
   const appointedBy = member.createdBy ? staffById(member.createdBy) : undefined;
-  return appointedBy ?? staffById(SESSION.admin)!;
+  return appointedBy ?? staffById(SESSION["super-admin"])!;
 }
 
 /**
- * Who a learner's official "Contact GreenFin admin" channel reaches. A
- * lecturer without an appointer falls back to the session administrator
- * (above); a learner has no "who enrolled me" relationship to derive one
- * from at all, so there is just the one, and it is always this account -
- * a deliberate, named channel to the administration, separate from
- * `messageContactsForStudent` (lecturers only, for a different button).
+ * Who a learner's official "Contact GreenFin admin" channel reaches. Always
+ * the Super Administrator - the platform-wide, no-particular-Module channel
+ * stays pointed there since it is not asking about any one Module (see the
+ * ministry-pivot SRS's note extending §4.24 to the scoped roles). A learner
+ * has no "who enrolled me" relationship to derive a more specific contact
+ * from anyway - there is just the one, a deliberate, named channel to the
+ * administration, separate from `messageContactsForStudent` (lecturers only,
+ * for a different button).
  */
 export function adminContactForStudent(): StaffMember {
-  return staffById(SESSION.admin)!;
+  return staffById(SESSION["super-admin"])!;
 }
 
 /* ----------------------------------------------------------- the bell panel */
@@ -390,14 +394,16 @@ export function messageContactsForAdmin(): ContactOption[] {
   ];
 }
 
-/** A lecturer may message the administrator who appointed them, or any of
- *  their own students. */
+/** A lecturer may message whoever appointed them, or any of their own
+ *  students. The parenthetical names whichever role that actually is now
+ *  (most often a Module Administrator, see FR-MODADM-050) rather than
+ *  assuming "administrator", since the flat role no longer exists. */
 export function messageContactsForLecturer(member: StaffMember): ContactOption[] {
   const admin = adminContactFor(member);
   return [
     {
       id: admin.id,
-      label: `${admin.name} (administrator)`,
+      label: `${admin.name} (${ROLE_LABEL[admin.role]})`,
       avatarUrl: admin.avatarUrl,
       initials: admin.initials,
     },
@@ -541,12 +547,28 @@ export function feedViewForStudent(
  * The bell's data for every staff viewpoint at once, keyed by role - the
  * console's role switcher lives in client state and survives navigation
  * (see `role-context.tsx`), so the topbar cannot look up "the" feed on the
- * server; it has to be handed all three and pick the one for whichever
- * viewpoint is live. The lecturer area only ever renders its own slot, since
- * there is nothing to switch there.
+ * server; it has to be handed every role's own feed and pick the one for
+ * whichever viewpoint is live. Every area but `admin` only ever renders its
+ * own slot, since there is nothing to switch there - and four of those slots
+ * (registrar, module administrator, laws/tools administrator, list manager)
+ * are always empty, since `feedForStaff` never assigns any of those roles an
+ * announcement or a message (see the note on `REGISTRAR_NAV` in
+ * `components/console/nav.tsx`, and the same reasoning applied again for the
+ * ministry-pivot's other scoped roles) - none of their bells are even
+ * rendered, but this record is still complete because `ConsoleShell`'s prop
+ * type demands an entry for every role, not only the ones with something in
+ * it.
  */
 export function sessionNotifications(): Record<StaffRole, NotificationSummary[]> {
-  const roles: StaffRole[] = ["super-admin", "admin", "lecturer"];
+  const roles: StaffRole[] = [
+    "super-admin",
+    "module-admin",
+    "laws-admin",
+    "tools-admin",
+    "list-manager",
+    "provincial-registrar",
+    "lecturer",
+  ];
   const entries = roles.map((role) => {
     const member = sessionFor(role);
     return [role, summariseFeed(feedForStaff(member), member.id)] as const;

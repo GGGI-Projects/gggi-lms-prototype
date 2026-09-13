@@ -656,8 +656,10 @@ export const PLATFORM_SETTINGS = {
     timezone: "Asia/Colombo (UTC+5:30)",
   },
   enrolment: {
-    openRegistration: true,
-    requireEmailVerification: true,
+    /** Whether the registration form is currently open at all - never
+     *  "open, no review" any more (see docs/SRS.md §4.2). Every application
+     *  still goes to its province's registrar regardless of this setting. */
+    acceptingApplications: true,
     maxModulesPerLearner: "No limit",
     allowSelfUnenrol: true,
   },

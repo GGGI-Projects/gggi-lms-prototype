@@ -29,6 +29,7 @@ import {
   type StaffRole,
 } from "@/content/staff";
 import { STUDENTS, type StudentRecord } from "@/content/students";
+import { APPLICATIONS } from "@/content/applications";
 import {
   AUDIT,
   BY_DISTRICT,
@@ -92,15 +93,23 @@ export function consoleAccounts(): Record<
 
   return {
     "super-admin": entry("super-admin"),
-    admin: entry("admin"),
+    "module-admin": entry("module-admin"),
+    "laws-admin": entry("laws-admin"),
+    "tools-admin": entry("tools-admin"),
+    "list-manager": entry("list-manager"),
+    "provincial-registrar": entry("provincial-registrar"),
     lecturer: entry("lecturer"),
   };
 }
 
-export function admins(): StaffMember[] {
-  return STAFF.filter(
-    (member) => member.role === "admin" || member.role === "super-admin",
-  );
+/**
+ * Every appointed console role except Lecturer, which keeps its own
+ * dedicated roster at `/admin/lecturers` - the Super Administrator's own
+ * "who did I let in" screen (§4.21). Once the sole flat `admin` role (BR-31),
+ * this now spans six real roles instead of two.
+ */
+export function appointedStaff(): StaffMember[] {
+  return STAFF.filter((member) => member.role !== "lecturer");
 }
 
 export function lecturers(): StaffMember[] {
@@ -342,6 +351,7 @@ function demoLearnerRecord(): StudentRecord {
     avatarUrl: LEARNER.avatarUrl,
     email: LEARNER.email,
     district: LEARNER.district,
+    province: LEARNER.province,
     sector: LEARNER.sector,
     organisation: LEARNER.organisation,
     joined: LEARNER.joined,
@@ -423,8 +433,18 @@ export function summarise(student: StudentRecord): StudentSummary {
   };
 }
 
-/** Learners on the modules one lecturer is assigned to. */
+/**
+ * Learners a staff member may see: a lecturer's assigned modules, or a
+ * Provincial Registrar's own province (FR-REG-010) - never both at once,
+ * since nothing in the current role set holds both kinds of scope together.
+ * The one province-wide "console limited entirely to the one province" rule
+ * lives here, not in any page that calls this - a registrar page reusing the
+ * register component gets the scoping for free rather than re-filtering it.
+ */
 export function learnersFor(member: StaffMember): StudentRecord[] {
+  if (member.role === "provincial-registrar") {
+    return students().filter((student) => student.province === member.province);
+  }
   const ids = member.moduleIds ?? [];
   return students().filter((student) =>
     student.enrolments.some((enrolment) => ids.includes(enrolment.moduleId)),
@@ -639,6 +659,11 @@ export function queues() {
   const flagged = REVIEWS.filter(
     (review) => review.status === "pending" && review.flagged,
   );
+  const administeredModuleIds = new Set(
+    STAFF.filter((member) => member.role === "module-admin").flatMap(
+      (member) => member.moduleIds ?? [],
+    ),
+  );
 
   return {
     pendingReviews: pendingReviewCount(),
@@ -647,6 +672,16 @@ export function queues() {
     unassignedLecturers: unassigned.length,
     suspendedLearners: students().filter(
       (student) => student.status === "suspended",
+    ).length,
+    /** FR-ADM-010: a count only, platform-wide - the queues themselves
+     *  belong to each province's own Provincial Registrar (§4.33). */
+    pendingApplications: APPLICATIONS.filter(
+      (application) => application.status === "pending",
+    ).length,
+    /** FR-ADM-010/FR-ADM-065: a Module with none is a valid, ordinary state,
+     *  not an error - but one worth surfacing so it does not go unnoticed. */
+    modulesWithoutAdmin: MANAGED_MODULES.filter(
+      (mdl) => !administeredModuleIds.has(mdl.id),
     ).length,
   };
 }

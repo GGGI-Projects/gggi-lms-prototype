@@ -25,7 +25,7 @@ import { BODY, META } from "@/lib/theme";
 export function ModuleCard({ progress }: { progress: ModuleProgress }) {
   const { module: mdl, status, percent, lectureCount, completedCount } = progress;
 
-  const href = `/modules/${mdl.id}`;
+  const href = `/learn/modules/${mdl.id}`;
   const done = status === "completed";
   const started = status === "in-progress";
 

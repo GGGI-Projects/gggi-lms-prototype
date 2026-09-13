@@ -165,7 +165,7 @@ export default async function LecturerProfilePage({ params }: Params) {
                   {lectures.map(({ module: mdl, lecture }) => (
                     <li key={`${mdl.id}-${lecture.id}`}>
                       <Link
-                        href={`/modules/${mdl.id}/lectures/${lecture.id}`}
+                        href={`/learn/modules/${mdl.id}/lectures/${lecture.id}`}
                         className="flex items-center gap-4 px-5 py-4 transition-colors duration-300 hover:bg-surface/60"
                       >
                         <span className="min-w-0 flex-1">
