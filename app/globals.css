@@ -1684,6 +1684,18 @@ html:has(dialog[open]) {
     background-position: right 1rem center;
     background-size: 1.1rem;
   }
+
+  /**
+   * The same arrow, redrawn in `--color-paper` for a `<select>` sitting on
+   * `FIELD_TONE.dark` (`components/student-portal/ui.tsx`) - the muted
+   * brownish-grey above all but disappears against that field's own dark,
+   * translucent background. An extra class rather than a `!important`
+   * fight: `.field-on-dark` is one class more specific than the rule above,
+   * so it wins on ordinary specificity and needs no `!` of its own.
+   */
+  select.field.field-on-dark:not(.appearance-none) {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23faf9f6' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9.5 6 6 6-6'/%3E%3C/svg%3E");
+  }
 }
 
 /**

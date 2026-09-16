@@ -126,7 +126,7 @@ export default function DashboardPage() {
             }
           >
             {enrolled.length ? (
-              <div className="grid gap-5 sm:grid-cols-2">
+              <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
                 {enrolled.map((entry) => (
                   <ModuleCard key={entry.module.id} progress={entry} />
                 ))}
@@ -157,7 +157,7 @@ export default function DashboardPage() {
           title="Room for another"
           description="Each module is self-contained, so there is no order to follow and nothing to finish first."
         >
-          <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+          <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
             {catalogue.map((entry) => (
               <ModuleCard key={entry.module.id} progress={entry} />
             ))}

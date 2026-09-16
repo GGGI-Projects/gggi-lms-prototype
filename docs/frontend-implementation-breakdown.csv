@@ -1,0 +1,22 @@
+Area,#,Component,Description,Size (S/M/L/XL),Notes,Estimated Hours
+Foundation,1,Design system & shared UI components,"Buttons, cards, tables, drawers, filters, search boxes, avatars/PersonTag, confirmation dialogs, status badges - the prototype already has these visually, but they need rewiring to real API calls, loading states, and error states instead of static content files.",L,Blocks most screens below,55
+Foundation,2,Auth & session UI,"Login screens (learner + console, incl. 2-step verification), session-expiry handling, role-aware routing/redirects.",M,Depends on backend auth,28
+Public,3,Public marketing site,"Landing page, module info, FAQ - currently describes the old instant-signup flow and needs its own redesign pass (client explicitly deferred this).",M,,28
+Public,4,Registration & application status UI,"Registration form (incl. province field), and the pending/approved/rejected/resubmit status screen wired to a real application record instead of a prototype preview switcher.",M,,28
+Learner portal,5,Learner dashboard & module catalogue,"Dashboard, module browsing/enrolment, module filter/search UI.",M,,28
+Learner portal,6,Lecture consumption UI,"Content blocks (video player, text, materials list), lecture navigation.",M,Needs real video player once backend streaming exists,28
+Learner portal,7,Quiz engine UI,"Question flow, answer selection, result/explanation screens.",M,,28
+Learner portal,8,Fill-in-the-blank engine UI,"Click-to-toggle blanks, shared word bank, shuffle, submit/result flow.",M,,28
+Learner portal,9,Certificates UI,"Learner's own certificate view, rating/review form, and the public no-login certificate verification page.",M,,28
+Learner portal,10,Learner profile & settings UI,"Account details, notification preferences, password change.",S,,12
+Learner portal,11,Laws & Tools tabs (learner-facing),"Browse/search/filter Law and Tool entries, province-first ordering for Laws.",M,,28
+Learner portal,12,Learner chatbot widget,"Floating assistant UI, wired to a real backend once it exists instead of client-side keyword search.",S,,12
+Lecturer console,13,Lecturer dashboard & module/lecture management,"Own-module list, lecture list/detail, publish controls.",M,,28
+Lecturer console,14,Lecture/quiz/fill-in-blank authoring UI,"Content block editor, a real rich-text/video upload tool (prototype toolbar is decorative only), quiz and fill-in-blank question builders.",L,Biggest lecturer-side UI item,55
+Lecturer console,15,"Materials, Law/Tool picker & learner progress UI","Attach materials to a lecture, pick related Laws/Tools for a lecture, view own learners' progress.",M,,28
+Lecturer console,16,Lecturer profile management UI,"Bio, qualifications, experience, publications, achievements editor.",S,,12
+Admin consoles,17,Super Administrator console UI,"Platform dashboard/analytics, module creation, lecturer suspension, cross-province learner oversight, certificate oversight, staff/account management, audit log viewer, settings screen.",L,,55
+Admin consoles,18,Scoped admin consoles UI,"Module Administrator, Laws Administrator, Tools Administrator, List Manager and Provincial Registrar consoles - each a smaller, narrower version of the same list/detail/moderation patterns as the Super Admin console.",L,"Grouped here since each one alone is small, but there are five of them",55
+Shared,19,Communications UI,"Announcements composer/list, message threads, notification bell/feed - shared shell used by every console and the learner portal.",M,,28
+Shared,20,Reviews & moderation UI,Review submission forms (learner-facing) and the moderation queue (staff-facing).,S,,12
+Non-functional,21,Accessibility & performance polish,"Real screen-reader states for interactive components, reduced-motion support, SSR content that never depends on JS to appear, performance on low-end devices.",M,"Ongoing across every screen above, not a one-time pass",28

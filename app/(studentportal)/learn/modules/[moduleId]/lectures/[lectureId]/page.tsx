@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { ActionButton } from "@/components/ui/action-button";
 import { CompleteButton } from "@/components/student-portal/complete-button";
 import { MaterialsList } from "@/components/student-portal/materials-list";
-import { LawRow, ToolRow } from "@/components/student-portal/reference-row";
+import { LawCard, ToolCard } from "@/components/student-portal/reference-row";
 import { VideoStage } from "@/components/student-portal/video-stage";
 import { LecturerSection } from "@/components/student-portal/lecturer-link";
 import {
@@ -226,9 +226,9 @@ export default async function LecturePage({ params }: Params) {
                 Picked for this lecture specifically, from the module&rsquo;s own
                 related laws.
               </p>
-              <div className="mt-5 overflow-hidden rounded-sm border border-surface-deep bg-paper-raised divide-y divide-surface-deep">
+              <div className="mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                 {related.laws.map((law) => (
-                  <LawRow key={law.id} law={law} />
+                  <LawCard key={law.id} law={law} />
                 ))}
               </div>
             </section>
@@ -241,9 +241,9 @@ export default async function LecturePage({ params }: Params) {
                 Picked for this lecture specifically, from the module&rsquo;s own
                 related tools.
               </p>
-              <div className="mt-5 overflow-hidden rounded-sm border border-surface-deep bg-paper-raised divide-y divide-surface-deep">
+              <div className="mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                 {related.tools.map((tool) => (
-                  <ToolRow key={tool.id} tool={tool} />
+                  <ToolCard key={tool.id} tool={tool} />
                 ))}
               </div>
             </section>
@@ -447,7 +447,7 @@ function QuizCallout({
           <h2 className={HEADING.card}>
             {gateCleared ? "Quiz passed" : "Lecture quiz"}
           </h2>
-          <p className={`mt-2 ${BODY.base}`}>
+          <p className={`measure-wide mt-2 ${BODY.base}`}>
             {gateCleared
               ? `You scored ${score}%. You can take it again at any time - the highest score is the one that counts.`
               : status === "failed"

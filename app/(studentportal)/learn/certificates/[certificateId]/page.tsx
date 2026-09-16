@@ -106,7 +106,7 @@ export default async function CertificatePage({ params }: Params) {
           <p className={`${EYEBROW.muted} text-clay`}>
             This certificate was withdrawn
           </p>
-          <p className={`mt-3 ${BODY.base}`}>{record?.revoked?.reason}</p>
+          <p className={`measure-wide mt-3 ${BODY.base}`}>{record?.revoked?.reason}</p>
           <p className={`mt-2 ${META.base}`}>
             Withdrawn by {staffName(record?.revoked?.by ?? "")} on{" "}
             {record?.revoked ? formatDateLong(record.revoked.revokedOn) : ""}

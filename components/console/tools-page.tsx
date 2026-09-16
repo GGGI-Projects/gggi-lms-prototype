@@ -55,7 +55,8 @@ export function ToolsDirectory() {
     explanation: tool.explanation,
     link: tool.link,
     status: tool.status,
-    tags: toolTagLabels(tool),
+    hazardIds: tool.hazardIds,
+    categoryIds: tool.categoryIds,
     moduleCount: usage.length,
   }));
 

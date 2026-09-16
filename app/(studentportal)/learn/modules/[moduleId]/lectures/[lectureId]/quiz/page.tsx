@@ -99,9 +99,11 @@ export default async function QuizPage({ params }: Params) {
         ) : null}
       </div>
 
-      {/* Narrower than the rest of the portal on purpose. A question and four
-          options set across a 1200px column is a reading problem; this is the
-          one screen where the measure matters more than the density. */}
+      {/* Narrower than the rest of the portal on purpose, and more so now
+          that the portal matches the console's wider column - a question and
+          four options set across it is a reading problem, not a display of
+          more information. This is the one screen where the measure matters
+          more than the density. */}
       <div className="mt-10 max-w-3xl">
         <QuizRunner
           questions={questions}

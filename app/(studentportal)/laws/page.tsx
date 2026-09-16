@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
-import { LawRow } from "@/components/student-portal/reference-row";
-import { ReferenceFilter } from "@/components/student-portal/reference-filter";
+import { LawExplorer } from "@/components/student-portal/law-explorer";
 import { PageBody, PageHeader, StatTile } from "@/components/student-portal/ui";
-import { allTags } from "@/content/tags";
+import { CATEGORIES, HAZARDS } from "@/content/tags";
 import { LEARNER } from "@/content/portal";
 import { lawsForLearner } from "@/lib/laws-tools";
 import { PORTAL } from "@/lib/theme";
@@ -15,11 +14,13 @@ export const metadata: Metadata = {
 /**
  * The Laws tab.
  *
- * TWO SECTIONS, always, never a single flattened list - `lawsForLearner()`
- * does the split (national laws plus anything scoped to Galle's own
- * Southern Province come first; every other province's laws sit below), and
- * this page keeps that split through the filter rather than letting a
- * search or a tag pick collapse it back into one list (see FR-STU-500).
+ * THREE LEVELS, always, never a single flattened list - national law, the
+ * learner's own province, and every other province, in that order (see
+ * `<LawExplorer>` for why the client's own four-level reference doesn't
+ * apply verbatim here). `lawsForLearner()` gives the two-way split this
+ * page then breaks `own` apart from - national law is always relevant to
+ * everyone, so it deserves its own level rather than being buried inside
+ * "Southern".
  *
  * A Law is never reached from a Module or a Lecture page as a second copy -
  * both link back here, filtered (see FR-STU-530). This tab is the one place
@@ -27,6 +28,8 @@ export const metadata: Metadata = {
  */
 export default function LawsPage() {
   const { own, other } = lawsForLearner(LEARNER.province);
+  const nationalLaws = own.filter((law) => law.scope === "national");
+  const provinceLaws = own.filter((law) => law.scope !== "national");
 
   return (
     <PageBody>
@@ -43,33 +46,13 @@ export default function LawsPage() {
       </dl>
 
       <div className={PORTAL.stack}>
-        <ReferenceFilter
-          searchPlaceholder="Search laws by title"
-          emptyTitle="No law matches that search"
-          emptyBody="Try a different word, or clear the tag filter above - the library is still small enough that most searches are one adjustment away from something."
-          tagOptions={allTags()}
-          sections={[
-            {
-              id: "own",
-              label: `${LEARNER.province} (and national law)`,
-              items: own.map((law) => ({
-                id: law.id,
-                title: law.title,
-                tagIds: [...law.hazardIds, ...law.categoryIds],
-                row: <LawRow law={law} />,
-              })),
-            },
-            {
-              id: "other",
-              label: "Other provinces",
-              items: other.map((law) => ({
-                id: law.id,
-                title: law.title,
-                tagIds: [...law.hazardIds, ...law.categoryIds],
-                row: <LawRow law={law} />,
-              })),
-            },
-          ]}
+        <LawExplorer
+          nationalLaws={nationalLaws}
+          provinceLaws={provinceLaws}
+          otherLaws={other}
+          province={LEARNER.province}
+          hazardOptions={HAZARDS}
+          categoryOptions={CATEGORIES}
         />
       </div>
     </PageBody>

@@ -69,7 +69,7 @@ export default function CertificatesPage() {
         }
       >
         {earned.length ? (
-          <div className="grid gap-5 sm:grid-cols-2">
+          <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
             {earned.map(({ certificate, progress }) => (
               <article
                 key={certificate.id}
@@ -143,7 +143,7 @@ export default function CertificatesPage() {
           title="On the way"
           description="What is left between you and each of these."
         >
-          <div className="grid gap-5 sm:grid-cols-2">
+          <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
             {onTheWay.map((progress) => {
               const lecturesLeft = progress.lectureCount - progress.completedCount;
               const quizzesLeft = progress.lectureCount - progress.quizzesPassed;

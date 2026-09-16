@@ -5,7 +5,7 @@ import { ActionButton } from "@/components/ui/action-button";
 import { ModuleScene } from "@/components/art/scenes";
 import { LectureRow } from "@/components/student-portal/lecture-row";
 import { LecturerSection } from "@/components/student-portal/lecturer-link";
-import { LawRow, ToolRow } from "@/components/student-portal/reference-row";
+import { LawCard, ToolCard } from "@/components/student-portal/reference-row";
 import {
   Badge,
   DefinitionList,
@@ -146,7 +146,7 @@ export default async function ModulePage({ params }: Params) {
 
           <section className="mt-10">
             <h2 className={HEADING.card}>What you will cover</h2>
-            <ul className="mt-5 grid gap-x-8 gap-y-3 sm:grid-cols-2">
+            <ul className="mt-5 grid gap-x-8 gap-y-3 sm:grid-cols-2 lg:grid-cols-3">
               {mdl.topics.map((topic) => (
                 <li key={topic} className={`flex items-start gap-3 ${BODY.base}`}>
                   <span className="mt-[0.55rem] size-1.5 shrink-0 rounded-full bg-accent" />
@@ -211,9 +211,9 @@ export default async function ModulePage({ params }: Params) {
             }
           >
             {relatedPool.laws.length ? (
-              <div className="overflow-hidden rounded-sm border border-surface-deep bg-paper-raised divide-y divide-surface-deep">
+              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                 {relatedPool.laws.map((law) => (
-                  <LawRow key={law.id} law={law} />
+                  <LawCard key={law.id} law={law} />
                 ))}
               </div>
             ) : (
@@ -239,9 +239,9 @@ export default async function ModulePage({ params }: Params) {
             }
           >
             {relatedPool.tools.length ? (
-              <div className="overflow-hidden rounded-sm border border-surface-deep bg-paper-raised divide-y divide-surface-deep">
+              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                 {relatedPool.tools.map((tool) => (
-                  <ToolRow key={tool.id} tool={tool} />
+                  <ToolCard key={tool.id} tool={tool} />
                 ))}
               </div>
             ) : (

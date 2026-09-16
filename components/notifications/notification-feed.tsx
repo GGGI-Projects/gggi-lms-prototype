@@ -171,7 +171,7 @@ export function NotificationFeed({
                     {announcement.from} · {announcement.audience} ·{" "}
                     {formatDate(announcement.date)}
                   </p>
-                  <p className="mt-3 text-lg leading-relaxed text-ink">{announcement.body}</p>
+                  <p className="measure-wide mt-3 text-lg leading-relaxed text-ink">{announcement.body}</p>
                 </div>
               </li>
             ))}

@@ -1,0 +1,23 @@
+Area,#,Component,Description,Size (S/M/L/XL),Notes,Estimated Hours
+Core,1,Database schema & migrations,"Design and implement tables/relations for every record type (Learner, Module, Lecture, Quiz, FillInTheBlankQuestion, Enrolment, Attempts, Certificate, Materials, StaffMember, Law, Tool, OptionLists, RegistrationApplication, LecturerProfile, Review, Announcement/MessageThread, AuditEntry, PlatformSettings).",XL,Blocks almost everything else below,100
+Core,2,Authentication service,"Learner + staff login, 2-step verification for staff, password hashing/policies, session issuing/expiry (8h idle).",L,,55
+Core,3,Authorization / RBAC engine,"Server-side permission checks for all seven roles (super-admin, module-admin, laws-admin, tools-admin, list-manager, provincial-registrar, lecturer); the prototype's checks are UI-only and must be rebuilt for real.",L,Depends on #1 #2,55
+Content,4,Module & Lecture content API,"CRUD for Modules, Lectures, content blocks (video/text/materials), publishing states, ordering.",L,,55
+Content,5,Quiz & fill-in-the-blank engine,"Question storage, attempt submission, scoring/pass-fail logic, word-bank/blank matching for both question types.",M,,28
+Content,6,Materials library API,"Upload/store/list Material assets and groups, link assets to lectures.",M,Depends on file storage integration,28
+Content,7,Laws & Tools API,"CRUD for Law and Tool entities, province scoping for Laws, publishing states.",M,,28
+Content,8,Tagging / relatedness engine,"Dynamic option lists (Hazards, Categories, etc.) CRUD, and the tag-overlap queries that relate Modules to Laws/Tools and compute usage counts.",M,Depends on #4 #7,28
+Learner flows,9,Registration application workflow,"Submit application, province-based routing to the right Provincial Registrar, approve/reject/resubmit state machine.",M,Depends on #2 #3,28
+Learner flows,10,Enrolment & progress tracking API,"Enrol in a module, track current lecture, completed lectures, quiz/blank attempt history.",M,,28
+Learner flows,11,Certificate service,"Generate certificates on completion, reference numbering, withdrawal, and the public no-login lookup endpoint.",M,,28
+Staff flows,12,Staff/account management API,"Create/suspend staff accounts, appoint roles, assign modules (lecturer/module-admin) or provinces (registrar).",M,Depends on #3,28
+Staff flows,13,Reviews & moderation API,"Submit module/lecturer reviews, moderation queue (approve/reject), auto-flag handling.",S,,12
+Staff flows,14,Communications API,"Announcements (audience targeting), two-way message threads (valid role pairs only), notification/unread tracking.",M,,28
+Staff flows,15,Analytics / dashboard endpoints,"Aggregate stats each console's dashboard needs (learners, modules, certificates, pending queues, etc.) from one trusted source, never per-screen totals.",S,Depends on #1,12
+Platform,16,Audit logging service,Append-only writer + query endpoints for the action log; must be immutable at the DB level.,S,,12
+Platform,17,Platform settings API,"Single-record settings store (brand fields, registration toggle, chatbot knowledge-base text, etc.).",S,,12
+Integrations,18,File & media storage integration,"Real file uploads, video hosting/streaming, Law document storage/delivery (S3-style or equivalent).",M,,28
+Integrations,19,Email service integration,"Password resets, staff invitations, registration decision emails, certificate-given notices.",S,,12
+Integrations,20,Learner assistant (real) - backend,"Replace the prototype's keyword search with a real model/RAG reading live catalogue data, with an honest fallback when it doesn't know.",M,Can be deferred past MVP,28
+Non-functional,21,Security hardening,"Input validation, rate limiting, enforcing every permission check server-side, data retention/minimisation rules.",M,"Ongoing, not a single sprint",28
+Non-functional,22,DevOps / infrastructure,"Hosting, environment config, CI/CD pipeline, database backups, monitoring/alerting.",M,,28

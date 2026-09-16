@@ -61,7 +61,7 @@ export function LecturerSection({
   return (
     <section className={className}>
       <h2 className={HEADING.card}>{heading}</h2>
-      <div className="mt-5 grid gap-4 sm:grid-cols-2">
+      <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {lecturers.map((lecturer) => (
           <LecturerLink key={lecturer.id} lecturer={lecturer} />
         ))}

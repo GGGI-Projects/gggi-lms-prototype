@@ -166,6 +166,20 @@ export function SearchIcon({ className }: IconProps) {
   );
 }
 
+/** A funnel - narrowing a list down. `components/console/icons.tsx` draws
+ *  the identical mark for its own review/register filters; redrawn here
+ *  rather than imported across products, the same reasoning that keeps
+ *  every other icon in this file its own copy rather than a cross-import. */
+export function FilterIcon({ className }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M4 6h16" />
+      <path d="M7 12h10" />
+      <path d="M10 18h4" />
+    </svg>
+  );
+}
+
 export function BellIcon({ className }: IconProps) {
   return (
     <svg {...base} className={className}>

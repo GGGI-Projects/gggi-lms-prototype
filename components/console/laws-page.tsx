@@ -57,7 +57,8 @@ export function LawsLibrary() {
     reference: law.reference,
     scope: scopeLabel(law.scope),
     status: law.status,
-    tags: lawTagLabels(law),
+    hazardIds: law.hazardIds,
+    categoryIds: law.categoryIds,
     moduleCount: usage.length,
   }));
 

@@ -429,6 +429,32 @@ export function Badge({
 /* -------------------------------------------------------------- form input */
 
 /**
+ * `.field` on a dark ground - a translucent well rather than the plain
+ * white box `.field` draws everywhere else. globals.css is explicit that a
+ * form control "is always on paper" (see the note on `.field:focus-visible`),
+ * and that stays true for a field sitting on ordinary paper; a field sitting
+ * on `bg-primary-950` (the rail's own dark green, now also the Laws/Tools
+ * filter panel's - see `<LawExplorer>`) is the one real exception, where a
+ * stark white cutout reads as a mistake rather than a control. Every class
+ * carries `!` to beat `.field`'s own unlayered background/border/colour -
+ * the same device already used to override `.field`'s padding elsewhere in
+ * this file's siblings.
+ */
+/** Exported so a plain `<select className="field ...">` sitting on the same
+ *  dark ground - the Laws/Tools filter panel's own hazard/category dropdowns
+ *  - can carry the identical override rather than a second, hand-copied
+ *  class string drifting from this one. */
+export const FIELD_TONE = {
+  light: "",
+  // `field-on-dark` carries no styles of its own here - it exists only as a
+  // marker `globals.css`'s `select.field.field-on-dark` rule matches, to
+  // redraw a `<select>`'s arrow in a colour that shows up against this same
+  // dark background (see the note there).
+  dark:
+    "field-on-dark bg-primary-900/70! border-primary-700! text-paper! placeholder:text-primary-400! hover:border-primary-500! focus-visible:border-accent! focus-visible:outline-accent!",
+} as const;
+
+/**
  * The one search box, everywhere a list can be typed into rather than
  * scrolled through - `Register`'s own register-wide search, and every
  * embedded picker (a module's lecturer-assignment list, an announcement's
@@ -442,28 +468,38 @@ export function Badge({
  * list it's filtering lives in the caller's `useState` or is derived from a
  * prop. Same markup `Register` already used before this existed: `SearchIcon`
  * absolutely positioned over a `.field pl-12`, not a new search-box design.
+ *
+ * `tone` defaults to `"light"` - every existing call site keeps its plain
+ * white box unchanged - and only needs `"dark"` on the handful sitting on a
+ * dark panel instead of the ordinary page ground.
  */
 export function SearchField({
   value,
   onChange,
   placeholder,
   className = "",
+  tone = "light",
 }: {
   value: string;
   onChange: (value: string) => void;
   placeholder: string;
   className?: string;
+  tone?: keyof typeof FIELD_TONE;
 }) {
   return (
     <label className={`relative block ${className}`}>
       <span className="sr-only">{placeholder}</span>
-      <SearchIcon className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-muted-light" />
+      <SearchIcon
+        className={`pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 ${
+          tone === "dark" ? "text-primary-400" : "text-muted-light"
+        }`}
+      />
       <input
         type="search"
         value={value}
         onChange={(event) => onChange(event.target.value)}
         placeholder={placeholder}
-        className="field py-2.5 pl-12"
+        className={`field py-2.5 pl-12 ${FIELD_TONE[tone]}`}
       />
     </label>
   );

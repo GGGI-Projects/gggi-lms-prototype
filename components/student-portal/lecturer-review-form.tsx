@@ -27,7 +27,7 @@ export function LecturerReviewForm({ lecturerName }: { lecturerName: string }) {
     return (
       <div>
         <p className={EYEBROW.muted}>Your review</p>
-        <p className={`mt-4 ${BODY.base}`}>
+        <p className={`measure-wide mt-4 ${BODY.base}`}>
           Thank you - this is a design prototype, so nothing was sent. A real
           review would wait for an administrator to approve it before it
           appeared on {lecturerName}&rsquo;s page, the same as every review
@@ -42,7 +42,7 @@ export function LecturerReviewForm({ lecturerName }: { lecturerName: string }) {
   return (
     <div>
       <p className={EYEBROW.muted}>Rate {lecturerName}</p>
-      <p className={`mt-4 ${BODY.base}`}>
+      <p className={`measure-wide mt-4 ${BODY.base}`}>
         Worth five minutes if their teaching changed how you do the work - the
         next learner deciding whether to trust this lecturer reads this
         before they open a single lecture.

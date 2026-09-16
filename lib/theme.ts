@@ -48,13 +48,21 @@ export const GUTTER = "px-5 sm:px-8";
  * find where they stopped - there, whitespace that size means scrolling past
  * the thing you came for.
  *
- * `container` is the same editorial column the landing page uses, so the
- * content still lines up with the site it belongs to; only the vertical
- * measure changes. `stack` is the gap between blocks WITHIN a portal page,
- * named once for the same reason `SECTION.y` is.
+ * `container` MATCHES THE CONSOLE'S OWN WIDTH (`CONSOLE.container` below),
+ * not the landing page's editorial column - the same reasoning the console
+ * comment gives applies here too: a dashboard, a module grid, a two-column
+ * lecture reading layout with a sidebar are register-shaped screens, not
+ * continuous prose, and holding them to a 76rem reading measure was making
+ * cards crowd into fewer columns than the space could hold and leaving a
+ * lecture's sidebar cramped. Individual paragraphs still cap their own
+ * line-length with `.measure`/`.measure-wide` (see `globals.css`) regardless
+ * of how wide the page around them is, so this does not affect reading
+ * comfort - it only gives grids and side-by-side layouts more room. `stack`
+ * is the gap between blocks WITHIN a portal page, named once for the same
+ * reason `SECTION.y` is.
  */
 export const PORTAL = {
-  container: "mx-auto w-full max-w-editorial px-5 sm:px-8",
+  container: "mx-auto w-full max-w-[96rem] px-5 sm:px-8",
   pageY: "py-10 sm:py-14",
   stack: "mt-12 sm:mt-14",
 } as const;

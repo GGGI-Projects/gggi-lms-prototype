@@ -35,7 +35,7 @@ export function ReviewForm({ moduleTitle }: { moduleTitle: string }) {
     return (
       <div>
         <p className={EYEBROW.muted}>Your review</p>
-        <p className={`mt-4 ${BODY.base}`}>
+        <p className={`measure-wide mt-4 ${BODY.base}`}>
           Thank you - this is a design prototype, so nothing was sent. A real
           review would wait for an administrator to approve it before it
           appeared anywhere, the same as every review already on the
@@ -50,7 +50,7 @@ export function ReviewForm({ moduleTitle }: { moduleTitle: string }) {
   return (
     <div>
       <p className={EYEBROW.muted}>Rate this module</p>
-      <p className={`mt-4 ${BODY.base}`}>
+      <p className={`measure-wide mt-4 ${BODY.base}`}>
         Worth five minutes if {moduleTitle} changed how you do the work -
         the next person deciding whether to enrol reads this before they read
         the syllabus.

@@ -217,7 +217,7 @@ export default async function LecturerProfilePage({ params }: Params) {
                         ))}
                       </span>
                     </div>
-                    <p className={`mt-3 ${BODY.base}`}>{review.body}</p>
+                    <p className={`measure-wide mt-3 ${BODY.base}`}>{review.body}</p>
                     <p className={`mt-3 ${META.base}`}>{formatDate(review.submittedOn)}</p>
                   </li>
                   );
@@ -311,7 +311,7 @@ function CredentialSection({
       <h2 className={HEADING.card}>{title}</h2>
       <div className="mt-5">
         {items.length ? (
-          <ul className="space-y-3">
+          <ul className="grid gap-3 lg:grid-cols-2">
             {items.map((item) => (
               <li
                 key={item.key}
@@ -332,7 +332,7 @@ function CredentialSection({
                 {item.detail ? (
                   <p className={`mt-1 ${META.base}`}>{item.detail}</p>
                 ) : null}
-                {item.note ? <p className={`mt-2 ${BODY.base}`}>{item.note}</p> : null}
+                {item.note ? <p className={`measure-wide mt-2 ${BODY.base}`}>{item.note}</p> : null}
               </li>
             ))}
           </ul>
@@ -353,7 +353,7 @@ function LecturerReviewGate({ name }: { name: string }) {
   return (
     <div>
       <p className={EYEBROW.muted}>Reviews are for learners who have finished a lecture</p>
-      <p className={`mt-4 ${BODY.base}`}>
+      <p className={`measure-wide mt-4 ${BODY.base}`}>
         Finish any lecture written by {name} and a review form opens up right
         here - the same rule that holds for reviewing a module, applied to
         the person who taught it.

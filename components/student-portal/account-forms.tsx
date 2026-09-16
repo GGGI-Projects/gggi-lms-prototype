@@ -131,7 +131,11 @@ export function ProfileForm() {
         event.preventDefault();
         setSaved(true);
       }}
-      className="space-y-10"
+      // Capped independently of how wide its column is - a text field
+      // stretching to fill a wide page is a form nobody designed, it is a
+      // form that happened. The extra room in a wide viewport becomes
+      // margin beside the form, not a wider input.
+      className="max-w-2xl space-y-10"
     >
       <FieldGroup
         title="Your details"
@@ -215,7 +219,8 @@ export function SettingsForm() {
         event.preventDefault();
         setSaved(true);
       }}
-      className="space-y-10"
+      // Same cap as `ProfileForm`, for the same reason - see the note there.
+      className="max-w-2xl space-y-10"
     >
       <FieldGroup
         title="Email"
